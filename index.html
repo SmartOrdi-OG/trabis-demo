@@ -1291,6 +1291,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <button class="lp-back-btn" onclick="lpShowDefault()">← <span id="lp-back-lbl2">Back</span></button>
           <div class="lp-heading" id="lp-reg-heading">Create Account</div>
           <div class="lp-sub" id="lp-reg-sub">Join thousands of businesses</div>
+          <div style="font-size:11px;color:var(--text3);margin:-12px 0 16px" id="lp-reg-required-note">Fields marked with <span style="color:#ef4444;font-weight:700">*</span> are required. You must also agree to the Privacy Policy and Terms of Use to create an account.</div>
           <div class="lp-error" id="lp-reg-error"></div>
           <!-- Business Name -->
           <div class="lp-input-wrap">
@@ -1302,7 +1303,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
           <!-- Username -->
           <div class="lp-input-wrap">
-            <input class="lp-input" type="text" id="lp-reg-username" autocomplete="username" spellcheck="false" placeholder="Username" oninput="lpValidateReg()"/>
+            <input class="lp-input" type="text" id="lp-reg-username" autocomplete="username" spellcheck="false" placeholder="Username *" oninput="lpValidateReg()"/>
           </div>
           <!-- Email -->
           <div class="lp-input-wrap">
@@ -1465,14 +1466,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
           <!-- Password + strength -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
-            <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password (min 8 chars)" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwStrength(this.value);lpValidateReg()"/>
+            <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password (min 8 chars) *" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwStrength(this.value);lpValidateReg()"/>
             <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-password')" type="button" style="font-size:12px;font-weight:600">Show</button>
           </div>
           <div class="lp-pw-strength-bar"><div class="lp-pw-strength-fill" id="lp-pw-fill"></div></div>
           <div class="lp-field-feedback" id="lp-pw-strength-lbl" style="color:var(--text3)"></div>
           <!-- Confirm password + match -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
-            <input class="lp-input" type="password" id="lp-reg-confirm" autocomplete="new-password" placeholder="Confirm Password" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwMatch();lpValidateReg()" onkeydown="if(event.key==='Enter'&&!document.getElementById('lp-register-btn').disabled)lpRegister()"/>
+            <input class="lp-input" type="password" id="lp-reg-confirm" autocomplete="new-password" placeholder="Confirm Password *" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwMatch();lpValidateReg()" onkeydown="if(event.key==='Enter'&&!document.getElementById('lp-register-btn').disabled)lpRegister()"/>
             <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-confirm')" type="button" style="font-size:12px;font-weight:600">Show</button>
           </div>
           <div class="lp-field-feedback" id="lp-pw-match-lbl"></div>
@@ -1480,7 +1481,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <!-- Privacy Policy Agreement -->
           <div class="lp-privacy-wrap">
             <input type="checkbox" id="lp-reg-privacy" onchange="lpValidateReg()">
-            <span id="lp-privacy-text">I agree to the <span class="lp-privacy-link" onclick="document.getElementById('privacyModal').classList.add('open')" id="lp-link-pp">Privacy Policy</span> and <span class="lp-privacy-link" onclick="document.getElementById('termsModal').classList.add('open')" id="lp-link-tm">Terms of Use</span></span>
+            <span id="lp-privacy-text">I agree to the <span class="lp-privacy-link" onclick="document.getElementById('privacyModal').classList.add('open')" id="lp-link-pp">Privacy Policy</span> and <span class="lp-privacy-link" onclick="document.getElementById('termsModal').classList.add('open')" id="lp-link-tm">Terms of Use</span> <span style="color:#ef4444;font-weight:700">*</span></span>
           </div>
           <button class="lp-btn" id="lp-register-btn" onclick="lpRegister()" disabled style="opacity:0.55">Create Account</button>
           <div class="lp-divider" id="lp-or2">or</div>
