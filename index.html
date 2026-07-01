@@ -5915,7 +5915,7 @@ function downloadInvoicePDF(inv, type) {
 
   var html = buildInvoiceHTML(inv, type);
   var el = document.createElement('div');
-  el.style.cssText = 'position:absolute;left:-9999px;top:0;width:794px;background:#fff;';
+  el.style.cssText = 'position:relative;left:-9999px;top:0;width:794px;background:#fff;';
   el.innerHTML = html;
   var noPrintEls = el.querySelectorAll('.no-print');
   for(var i=0;i<noPrintEls.length;i++) noPrintEls[i].style.display = 'none';
