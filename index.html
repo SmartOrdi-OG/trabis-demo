@@ -441,7 +441,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .lp-lang-pills{display:flex;gap:8px;margin-bottom:28px}
 .lp-pill{padding:7px 18px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--text3);font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px}
 .lp-pill.active{background:#ffffff;border-color:#ffffff;color:#2E9E6B;box-shadow:0 4px 16px rgba(46,158,107,0.3)}
-.lp-auth-card{position:relative;z-index:1;width:100%;max-width:420px;background:#ffffff;border-radius:20px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.08);box-sizing:border-box}
+.lp-auth-card{position:relative;z-index:1;width:100%;max-width:420px;background:#ffffff;border-radius:20px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.08);box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:100vh}
 .lp-heading{font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.5px}
 .lp-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
 .lp-input-wrap{position:relative;display:flex;align-items:center}
@@ -1294,27 +1294,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-error" id="lp-reg-error"></div>
           <!-- Business Name -->
           <div class="lp-input-wrap">
-            <span class="lp-input-icon">🏢</span>
             <input class="lp-input" type="text" id="lp-reg-bizname" autocomplete="organization" spellcheck="false" placeholder="Business / Shop / Company name" oninput="lpValidateReg()"/>
           </div>
           <!-- Full Name -->
           <div class="lp-input-wrap">
-            <span class="lp-input-icon">👤</span>
             <input class="lp-input" type="text" id="lp-reg-fullname" autocomplete="name" spellcheck="false" placeholder="Full Name" oninput="lpValidateReg()"/>
           </div>
           <!-- Username -->
           <div class="lp-input-wrap">
-            <span class="lp-input-icon">🔑</span>
             <input class="lp-input" type="text" id="lp-reg-username" autocomplete="username" spellcheck="false" placeholder="Username" oninput="lpValidateReg()"/>
           </div>
           <!-- Email -->
           <div class="lp-input-wrap">
-            <span class="lp-input-icon">✉️</span>
             <input class="lp-input" type="email" id="lp-reg-email" autocomplete="email" placeholder="Email" oninput="lpValidateReg()"/>
           </div>
           <!-- Country (full dropdown — auto-fills phone prefix) -->
           <div class="lp-input-wrap" style="margin-bottom:14px">
-            <span class="lp-input-icon">🌍</span>
             <select class="lp-input" id="lp-reg-country-sel" onchange="lpOnCountryChange(this.value);lpValidateReg()" style="appearance:none;-webkit-appearance:none;cursor:pointer;margin-bottom:0">
               <option value="">Select Country</option>
               <option value="AF|+93">🇦🇫 Afghanistan (+93)</option>
@@ -1470,7 +1465,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
           <!-- Password + strength -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
-            <span class="lp-input-icon">🔒</span>
             <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password (min 8 chars)" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwStrength(this.value);lpValidateReg()"/>
             <button class="pw-toggle-btn" onclick="togglePwField(this,'lp-reg-password')" type="button">👁</button>
           </div>
@@ -1478,7 +1472,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-field-feedback" id="lp-pw-strength-lbl" style="color:var(--text3)"></div>
           <!-- Confirm password + match -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
-            <span class="lp-input-icon">🔒</span>
             <input class="lp-input" type="password" id="lp-reg-confirm" autocomplete="new-password" placeholder="Confirm Password" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwMatch();lpValidateReg()" onkeydown="if(event.key==='Enter'&&!document.getElementById('lp-register-btn').disabled)lpRegister()"/>
             <button class="pw-toggle-btn" onclick="togglePwField(this,'lp-reg-confirm')" type="button">👁</button>
           </div>
@@ -1876,28 +1869,28 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
   <div class="snav-biz-name" id="snav-biz-name"></div>
   <div class="snav-item active" id="snav-home" onclick="showNav('home')">
-    <span class="snav-icon">🏠</span><span id="snav-lbl-home">Home</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span id="snav-lbl-home">Home</span>
   </div>
   <div class="snav-item" id="snav-reports" onclick="showNav('reports')">
-    <span class="snav-icon">📈</span><span id="snav-lbl-reports">Reports</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span id="snav-lbl-reports">Reports</span>
   </div>
   <div class="snav-item" id="snav-debts" onclick="showNav('debts')">
-    <span class="snav-icon">🤝</span><span id="snav-lbl-debts">Debts</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span id="snav-lbl-debts">Debts</span>
   </div>
   <div class="snav-item" id="snav-invoices" onclick="showNav('invoices')">
-    <span class="snav-icon">📂</span><span id="snav-lbl-invoices">Invoices</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span id="snav-lbl-invoices">Invoices</span>
   </div>
   <div class="snav-item" id="snav-clients" onclick="showNav('clients')">
-    <span class="snav-icon">👥</span><span id="snav-lbl-clients">Clients</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span id="snav-lbl-clients">Clients</span>
   </div>
   <div class="snav-item" id="snav-suppliers" onclick="showNav('suppliers')">
-    <span class="snav-icon">🏭</span><span id="snav-lbl-suppliers">Suppliers</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span><span id="snav-lbl-suppliers">Suppliers</span>
   </div>
   <div class="snav-item" id="snav-fixed" onclick="showNav('fixed')">
-    <span class="snav-icon">📋</span><span id="snav-lbl-fixed">Fixed</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span id="snav-lbl-fixed">Fixed</span>
   </div>
   <div class="snav-item" id="snav-settings" onclick="showNav('settings')">
-    <span class="snav-icon">⚙️</span><span id="snav-lbl-settings">Settings</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span id="snav-lbl-settings">Settings</span>
   </div>
   <div class="snav-spacer"></div>
   <div class="snav-footer">
@@ -2236,36 +2229,36 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- BOTTOM NAV -->
 <div class="bnav">
   <div class="bnav-item active" id="nav-home" onclick="showNav('home')">
-    <div class="bnav-icon">🏠</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
     <div class="bnav-label">Home</div>
   </div>
   <div class="bnav-item" id="nav-reports" onclick="showNav('reports')">
-    <div class="bnav-icon">📈</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
     <div class="bnav-label">Reports</div>
   </div>
   <div class="bnav-item" id="nav-debts" onclick="showNav('debts')">
-    <div class="bnav-icon">🤝</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div>
     <div class="bnav-label">Debts</div>
   </div>
 
   <div class="bnav-item" id="nav-invoices" onclick="showNav('invoices')">
-    <div class="bnav-icon">📂</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
     <div class="bnav-label" id="nav-invoices-lbl">Invoices</div>
   </div>
   <div class="bnav-item" id="nav-clients" onclick="showNav('clients')">
-    <div class="bnav-icon">👥</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
     <div class="bnav-label" id="nav-clients-lbl">Clients</div>
   </div>
   <div class="bnav-item" id="nav-suppliers" onclick="showNav('suppliers')">
-    <div class="bnav-icon">🏭</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></div>
     <div class="bnav-label" id="nav-suppliers-lbl">Suppliers</div>
   </div>
   <div class="bnav-item" id="nav-fixed" onclick="showNav('fixed')">
-    <div class="bnav-icon">📋</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
     <div class="bnav-label" id="nav-fixed-lbl">Fixed</div>
   </div>
   <div class="bnav-item" id="nav-settings-mob" onclick="showNav('settings')">
-    <div class="bnav-icon">⚙️</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
     <div class="bnav-label" id="nav-settings-mob-lbl">Settings</div>
   </div>
   <div class="bnav-item" id="nav-logout-mob" onclick="logout()">
@@ -4458,17 +4451,13 @@ function renderAccountSection() {
   var card = document.getElementById('settings-account-card');
   if(!card) return;
   var user = localStorage.getItem('smartac_user') || '';
-  var previewHtml = '';
-  if(state.businessLogo) {
-    previewHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
-      + '<img src="' + state.businessLogo + '" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid var(--border)">'
-      + '<button id="removeLogoBtn" style="background:none;border:none;color:#ef4444;font-size:12px;font-weight:600;cursor:pointer">' + stx('removeLogo') + '</button>'
-      + '</div>';
-  } else {
-    previewHtml = '<div id="logoUploadArea" style="width:64px;height:64px;border:2px dashed var(--border);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;color:var(--text3);margin:0 auto">'
-      + '<div style="font-size:20px">🏢</div>'
-      + '</div>';
-  }
+  var previewHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
+    + '<img id="settingsLogoPreview" src="' + (state.businessLogo || '') + '" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid var(--border);display:' + (state.businessLogo ? 'block' : 'none') + '">'
+    + '<div id="settingsLogoPlaceholder" style="width:64px;height:64px;border:2px dashed var(--border);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;color:var(--text3);margin:0 auto;display:' + (state.businessLogo ? 'none' : 'flex') + '">'
+    + '<div style="font-size:20px">🏢</div>'
+    + '</div>'
+    + '<button id="removeLogoBtn" style="background:none;border:none;color:#ef4444;font-size:12px;font-weight:600;cursor:pointer;display:' + (state.businessLogo ? 'inline-block' : 'none') + '">' + stx('removeLogo') + '</button>'
+    + '</div>';
   card.innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:12px">' + stx('account') + '</div>'
     + '<div style="margin-bottom:14px">'
     + '<div style="font-size:12px;color:var(--text3);margin-bottom:6px">' + stx('bizNameLbl') + '</div>'
@@ -4492,7 +4481,7 @@ function renderAccountSection() {
   if(fileInput) fileInput.onchange = function(e) { handleLogoUpload(e.target.files[0]); };
   var chooseBtn = document.getElementById('logoChooseBtn');
   if(chooseBtn) chooseBtn.onclick = function() { fileInput.click(); };
-  var uploadArea = document.getElementById('logoUploadArea');
+  var uploadArea = document.getElementById('settingsLogoPlaceholder');
   if(uploadArea) uploadArea.onclick = function() { fileInput.click(); };
   var removeBtn = document.getElementById('removeLogoBtn');
   if(removeBtn) removeBtn.onclick = removeLogo;
@@ -4687,7 +4676,12 @@ function handleLogoUpload(file) {
   reader.onload = function(e) {
     state.businessLogo = e.target.result;
     save();
-    renderLogoSection();
+    var previewImg = document.getElementById('settingsLogoPreview');
+    var placeholder = document.getElementById('settingsLogoPlaceholder');
+    if(previewImg) { previewImg.src = state.businessLogo; previewImg.style.display = 'block'; }
+    if(placeholder) { placeholder.style.display = 'none'; }
+    var removeBtn = document.getElementById('removeLogoBtn');
+    if(removeBtn) { removeBtn.style.display = 'inline-block'; }
     updateBusinessNameDisplay();
   };
   reader.readAsDataURL(file);
