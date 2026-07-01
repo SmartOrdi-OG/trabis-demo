@@ -1300,6 +1300,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
           <!-- Full Name -->
           <div class="lp-input-wrap">
+            <span class="lp-required-star">*</span>
             <input class="lp-input" type="text" id="lp-reg-fullname" autocomplete="name" spellcheck="false" placeholder="Full Name" oninput="lpValidateReg()"/>
           </div>
           <!-- Username -->
@@ -1309,10 +1310,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
           <!-- Email -->
           <div class="lp-input-wrap">
+            <span class="lp-required-star">*</span>
             <input class="lp-input" type="email" id="lp-reg-email" autocomplete="email" placeholder="Email" oninput="lpValidateReg()"/>
           </div>
           <!-- Country (full dropdown — auto-fills phone prefix) -->
           <div class="lp-input-wrap" style="margin-bottom:14px">
+            <span class="lp-required-star">*</span>
             <select class="lp-input" id="lp-reg-country-sel" onchange="lpOnCountryChange(this.value);lpValidateReg()" style="appearance:none;-webkit-appearance:none;cursor:pointer;margin-bottom:0">
               <option value="">Select Country</option>
               <option value="AF|+93">🇦🇫 Afghanistan (+93)</option>
@@ -1464,7 +1467,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
             <div id="lp-reg-phone-prefix-wrap" style="display:flex;align-items:center;background:var(--card2);border:1.5px solid var(--border);border-radius:14px;padding:0 12px;min-width:68px;flex-shrink:0;transition:border-color 0.2s">
               <span id="lp-reg-phone-prefix" style="font-size:13px;font-weight:700;color:var(--primary);white-space:nowrap">+--</span>
             </div>
-            <input class="lp-input" type="tel" id="lp-reg-phone" autocomplete="tel" placeholder="Phone Number" style="flex:1;margin-bottom:0" oninput="lpValidateReg()"/>
+            <div style="position:relative;flex:1">
+              <span class="lp-required-star">*</span>
+              <input class="lp-input" type="tel" id="lp-reg-phone" autocomplete="tel" placeholder="Phone Number" style="flex:1;margin-bottom:0" oninput="lpValidateReg()"/>
+            </div>
           </div>
           <!-- Password + strength -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
@@ -1485,7 +1491,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <!-- Privacy Policy Agreement -->
           <div class="lp-privacy-wrap">
             <input type="checkbox" id="lp-reg-privacy" onchange="lpValidateReg()">
-            <span id="lp-privacy-text">I agree to the <span class="lp-privacy-link" onclick="document.getElementById('privacyModal').classList.add('open')" id="lp-link-pp">Privacy Policy</span> and <span class="lp-privacy-link" onclick="document.getElementById('termsModal').classList.add('open')" id="lp-link-tm">Terms of Use</span> <span style="color:#ef4444;font-weight:700">*</span></span>
+            <span style="color:#ef4444;font-weight:700;flex-shrink:0">*</span>
+            <span id="lp-privacy-text">I agree to the <span class="lp-privacy-link" onclick="document.getElementById('privacyModal').classList.add('open')" id="lp-link-pp">Privacy Policy</span> and <span class="lp-privacy-link" onclick="document.getElementById('termsModal').classList.add('open')" id="lp-link-tm">Terms of Use</span></span>
           </div>
           <button class="lp-btn" id="lp-register-btn" onclick="lpRegister()" disabled style="opacity:0.55">Create Account</button>
           <div class="lp-divider" id="lp-or2">or</div>
@@ -6973,16 +6980,27 @@ function lpRegister() {
   var errEl = document.getElementById('lp-reg-error');
   if(errEl){errEl.textContent='';errEl.style.display='none';}
   var E = {
+    errFullname: {en:'Please enter your full name', ar:'أدخل الاسم الكامل',                    de:'Vollständigen Namen eingeben'},
     errUser:  {en:'Please enter a username',       ar:'أدخل اسم المستخدم',                    de:'Benutzernamen eingeben'},
+    errEmail: {en:'Please enter your email',       ar:'أدخل بريدك الإلكتروني',                 de:'E-Mail-Adresse eingeben'},
+    errCountry: {en:'Please select your country',  ar:'اختر بلدك',                             de:'Land auswählen'},
+    errPhone: {en:'Please enter your phone number', ar:'أدخل رقم هاتفك',                       de:'Telefonnummer eingeben'},
     errPass:  {en:'Password must be at least 8 characters', ar:'كلمة المرور 8 أحرف على الأقل', de:'Passwort mind. 8 Zeichen'},
     errMatch: {en:'Passwords do not match',        ar:'كلمتا المرور غير متطابقتين',            de:'Passwörter stimmen nicht überein'},
     errExist: {en:'Username already taken',        ar:'اسم المستخدم مستخدم بالفعل',           de:'Benutzername bereits vergeben'},
+    errPrivacy: {en:'You must agree to the Privacy Policy and Terms of Use', ar:'يجب الموافقة على سياسة الخصوصية وشروط الاستخدام', de:'Sie müssen der Datenschutzerklärung und den Nutzungsbedingungen zustimmen'},
   };
   function em(k){return (E[k]&&E[k][lpLang])||(E[k]&&E[k].en)||k;}
   function showErr(m){if(errEl){errEl.textContent=m;errEl.style.display='block';}}
+  if(!fullname){showErr(em('errFullname'));return;}
   if(!user){showErr(em('errUser'));return;}
+  if(!email){showErr(em('errEmail'));return;}
+  if(!countryRaw){showErr(em('errCountry'));return;}
+  if(!phone){showErr(em('errPhone'));return;}
   if(pass.length<8){showErr(em('errPass'));return;}
   if(confirm&&pass!==confirm){showErr(em('errMatch'));return;}
+  var privacyChecked = document.getElementById('lp-reg-privacy') ? document.getElementById('lp-reg-privacy').checked : false;
+  if(!privacyChecked){showErr(em('errPrivacy'));return;}
   var accounts=JSON.parse(localStorage.getItem('smartac_accounts')||'{}');
   if(accounts[user]){showErr(em('errExist'));return;}
   accounts[user]={
@@ -7039,13 +7057,17 @@ function lpCheckPwMatch() {
 }
 
 function lpValidateReg() {
+  var fullname = (document.getElementById('lp-reg-fullname')?document.getElementById('lp-reg-fullname').value:'').trim();
   var user = (document.getElementById('lp-reg-username')?document.getElementById('lp-reg-username').value:'').trim();
+  var email = (document.getElementById('lp-reg-email')?document.getElementById('lp-reg-email').value:'').trim();
+  var country = document.getElementById('lp-reg-country-sel') ? document.getElementById('lp-reg-country-sel').value : '';
+  var phone = (document.getElementById('lp-reg-phone')?document.getElementById('lp-reg-phone').value:'').trim();
   var pass = document.getElementById('lp-reg-password')?document.getElementById('lp-reg-password').value:'';
   var confirm = document.getElementById('lp-reg-confirm')?document.getElementById('lp-reg-confirm').value:'';
   var btn = document.getElementById('lp-register-btn');
   if(!btn) return;
   var privacyOk = document.getElementById('lp-reg-privacy') ? document.getElementById('lp-reg-privacy').checked : true;
-  var valid = user.length>0 && pass.length>=8 && (!confirm||pass===confirm) && privacyOk;
+  var valid = fullname.length>0 && user.length>0 && email.length>0 && country.length>0 && phone.length>0 && pass.length>=8 && (!confirm||pass===confirm) && privacyOk;
   btn.disabled = !valid;
   btn.style.opacity = valid?'1':'0.55';
 }
@@ -7390,10 +7412,12 @@ function obFinish() {
   state.currency = obSelectedCur;
   state.employees = obSetupEmployees.length ? obSetupEmployees.slice() : [];
   state.recurring = obSetupRecurring.length ? obSetupRecurring.slice() : [];
+  state.businessName = (accounts[user] && accounts[user].businessName) || '';
   obSetupEmployees = [];
   obSetupRecurring = [];
   save(); // saves to uk() keys (smartac_username_tx etc)
   applyLang();
+  updateBusinessNameDisplay();
   var overlay = document.getElementById('onboardingOverlay');
   if(overlay) overlay.style.display = 'none';
   renderHome();
