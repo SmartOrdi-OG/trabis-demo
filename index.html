@@ -1466,14 +1466,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <!-- Password + strength -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
             <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password (min 8 chars)" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwStrength(this.value);lpValidateReg()"/>
-            <button class="pw-toggle-btn" onclick="togglePwField(this,'lp-reg-password')" type="button">👁</button>
+            <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-password')" type="button" style="font-size:12px;font-weight:600">Show</button>
           </div>
           <div class="lp-pw-strength-bar"><div class="lp-pw-strength-fill" id="lp-pw-fill"></div></div>
           <div class="lp-field-feedback" id="lp-pw-strength-lbl" style="color:var(--text3)"></div>
           <!-- Confirm password + match -->
           <div class="lp-input-wrap" style="margin-bottom:4px">
             <input class="lp-input" type="password" id="lp-reg-confirm" autocomplete="new-password" placeholder="Confirm Password" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwMatch();lpValidateReg()" onkeydown="if(event.key==='Enter'&&!document.getElementById('lp-register-btn').disabled)lpRegister()"/>
-            <button class="pw-toggle-btn" onclick="togglePwField(this,'lp-reg-confirm')" type="button">👁</button>
+            <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-confirm')" type="button" style="font-size:12px;font-weight:600">Show</button>
           </div>
           <div class="lp-field-feedback" id="lp-pw-match-lbl"></div>
 
