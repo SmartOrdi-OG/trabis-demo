@@ -2133,6 +2133,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-account-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
+  <div id="settings-profile-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
+
   <div id="settings-business-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
   <div id="settings-bank-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
@@ -2243,6 +2245,23 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="display:flex;gap:10px">
       <button id="da-confirm-btn" onclick="confirmDeleteAccount()" disabled style="flex:1;padding:12px;background:#ef4444;color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;opacity:0.5">Delete Account</button>
       <button onclick="document.getElementById('deleteAccountOverlay').classList.remove('open')" style="flex:1;padding:12px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- VERIFY PASSWORD MODAL (confirms account info changes) -->
+<div class="cleardata-overlay" id="verifyPwOverlay">
+  <div class="cleardata-box">
+    <div style="font-size:17px;font-weight:700;margin-bottom:6px" id="vpw-title">Confirm Password</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:14px" id="vpw-sub">Enter your password to confirm these changes</div>
+    <div class="pw-input-wrap">
+      <input type="password" id="vpw-input" placeholder="Password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none" onkeydown="if(event.key==='Enter')submitVerifyPassword()">
+      <button class="pw-toggle-btn" onclick="togglePwField(this,'vpw-input')" type="button">👁</button>
+    </div>
+    <div id="vpw-error" style="font-size:12px;color:#ef4444;margin-bottom:10px;display:none"></div>
+    <div style="display:flex;gap:10px">
+      <button onclick="submitVerifyPassword()" id="vpw-save-btn" style="flex:1;padding:12px;background:var(--primary);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer">Confirm</button>
+      <button onclick="closeVerifyPassword()" id="vpw-cancel-btn" style="flex:1;padding:12px;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer">Cancel</button>
     </div>
   </div>
 </div>
@@ -4379,6 +4398,18 @@ var SETTINGS_L = {
   chooseFile:   {en:'Choose File', ar:'اختر ملف', de:'Datei auswählen'},
   logoHelper:   {en:'Recommended: square image, max 2MB', ar:'يفضل: صورة مربعة، الحد الأقصى 2 ميجابايت', de:'Empfohlen: quadratisches Bild, max. 2 MB'},
 
+  profileInfo:      {en:'Full Account Info', ar:'معلومات الحساب الكاملة', de:'Vollständige Kontoinformationen'},
+  profileFullName:  {en:'Full Name', ar:'الاسم الكامل', de:'Vollständiger Name'},
+  profileUsername:  {en:'Username', ar:'اسم المستخدم', de:'Benutzername'},
+  profileUsernameNote: {en:'Username cannot be changed', ar:'لا يمكن تغيير اسم المستخدم', de:'Der Benutzername kann nicht geändert werden'},
+  profileEmail:     {en:'Email', ar:'البريد الإلكتروني', de:'E-Mail'},
+  profilePhone:     {en:'Phone Number', ar:'رقم الهاتف', de:'Telefonnummer'},
+  profileCountry:   {en:'Country', ar:'الدولة', de:'Land'},
+  verifyPwTitle:    {en:'Confirm Password', ar:'تأكيد كلمة المرور', de:'Passwort bestätigen'},
+  verifyPwSub:      {en:'Enter your password to confirm these changes', ar:'أدخل كلمة المرور لتأكيد هذه التغييرات', de:'Geben Sie Ihr Passwort ein, um diese Änderungen zu bestätigen'},
+  verifyPwConfirmBtn: {en:'Confirm', ar:'تأكيد', de:'Bestätigen'},
+  verifyPwWrong:    {en:'Incorrect password', ar:'كلمة المرور غير صحيحة', de:'Falsches Passwort'},
+
   bizInfo:      {en:'Business Info', ar:'معلومات العمل', de:'Geschäftsinformationen'},
   bizAddress:   {en:'Company Address', ar:'عنوان الشركة', de:'Firmenadresse'},
   bizTaxId:     {en:'UID-Nummer / Tax ID', ar:'الرقم الضريبي', de:'UID-Nummer / Steuernummer'},
@@ -4460,6 +4491,7 @@ function renderSettings() {
   updateBusinessNameDisplay();
   updatePrivacyTexts();
   renderAccountSection();
+  renderProfileSection();
   renderBusinessInfoSection();
   renderBankAccountSection();
   renderDataManagementSection();
@@ -4572,6 +4604,70 @@ function renderBusinessInfoSection() {
     var cancelBtn = document.getElementById('bizCancelBtn');
     if(cancelBtn) cancelBtn.onclick = function(){ _bizInfoEditMode = false; renderBusinessInfoSection(); };
   }
+}
+
+var _profileInfoEditMode = false;
+var _pendingProfileSave = null;
+
+function renderProfileSection() {
+  var card = document.getElementById('settings-profile-card');
+  if(!card) return;
+  var user = localStorage.getItem('smartac_user') || '';
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  var acc = accounts[user] || {};
+  var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<div style="font-weight:700;font-size:15px">' + stx('profileInfo') + '</div>'
+    + (!_profileInfoEditMode ? '<button id="profileEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + stx('editBtn') + '</button>' : '')
+    + '</div>';
+  var usernameDisplayRow = bizDisplayRow(stx('profileUsername'), user);
+
+  if(!_profileInfoEditMode) {
+    card.innerHTML = header
+      + bizDisplayRow(stx('profileFullName'), acc.fullname)
+      + usernameDisplayRow
+      + bizDisplayRow(stx('profileEmail'), acc.email)
+      + bizDisplayRow(stx('profilePhone'), acc.phone)
+      + bizDisplayRow(stx('profileCountry'), acc.country);
+    var editBtn = document.getElementById('profileEditBtn');
+    if(editBtn) editBtn.onclick = function(){ _profileInfoEditMode = true; renderProfileSection(); };
+  } else {
+    card.innerHTML = header
+      + bizField('profileFullNameInput', stx('profileFullName'), acc.fullname)
+      + usernameDisplayRow
+      + '<div style="font-size:11px;color:var(--text3);margin:-6px 0 10px">' + stx('profileUsernameNote') + '</div>'
+      + bizField('profileEmailInput', stx('profileEmail'), acc.email)
+      + bizField('profilePhoneInput', stx('profilePhone'), acc.phone)
+      + bizField('profileCountryInput', stx('profileCountry'), acc.country)
+      + _bizEditSaveCancelRow('profileSaveBtn', 'profileCancelBtn');
+    var saveBtn = document.getElementById('profileSaveBtn');
+    if(saveBtn) saveBtn.onclick = function() {
+      _pendingProfileSave = {
+        fullname: (document.getElementById('profileFullNameInput')||{}).value || '',
+        email: (document.getElementById('profileEmailInput')||{}).value || '',
+        phone: (document.getElementById('profilePhoneInput')||{}).value || '',
+        country: (document.getElementById('profileCountryInput')||{}).value || ''
+      };
+      openVerifyPassword(applyPendingProfileSave);
+    };
+    var cancelBtn = document.getElementById('profileCancelBtn');
+    if(cancelBtn) cancelBtn.onclick = function(){ _profileInfoEditMode = false; renderProfileSection(); };
+  }
+}
+
+function applyPendingProfileSave() {
+  if(!_pendingProfileSave) return;
+  var user = localStorage.getItem('smartac_user') || '';
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  if(accounts[user]) {
+    accounts[user].fullname = _pendingProfileSave.fullname;
+    accounts[user].email = _pendingProfileSave.email;
+    accounts[user].phone = _pendingProfileSave.phone;
+    accounts[user].country = _pendingProfileSave.country;
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+  }
+  _pendingProfileSave = null;
+  _profileInfoEditMode = false;
+  renderProfileSection();
 }
 
 function renderBankAccountSection() {
@@ -4795,6 +4891,46 @@ function submitChangePassword() {
   }
   document.getElementById('changePwOverlay').classList.remove('open');
   alert(lang==='ar' ? 'تم تغيير كلمة المرور بنجاح' : lang==='de' ? 'Passwort erfolgreich geändert' : 'Password changed successfully');
+}
+
+var _verifyPwCallback = null;
+
+function openVerifyPassword(callback) {
+  _verifyPwCallback = callback;
+  var errEl = document.getElementById('vpw-error');
+  document.getElementById('vpw-input').value = '';
+  errEl.style.display = 'none';
+  errEl.textContent = '';
+  document.getElementById('vpw-title').textContent = stx('verifyPwTitle');
+  document.getElementById('vpw-sub').textContent = stx('verifyPwSub');
+  document.getElementById('vpw-save-btn').textContent = stx('verifyPwConfirmBtn');
+  document.getElementById('vpw-cancel-btn').textContent = stx('cancelBtn');
+  document.getElementById('verifyPwOverlay').classList.add('open');
+  setTimeout(function(){ var i = document.getElementById('vpw-input'); if(i) i.focus(); }, 100);
+}
+
+function closeVerifyPassword() {
+  _verifyPwCallback = null;
+  document.getElementById('verifyPwOverlay').classList.remove('open');
+}
+
+function submitVerifyPassword() {
+  var errEl = document.getElementById('vpw-error');
+  var pw = document.getElementById('vpw-input').value;
+  var user = localStorage.getItem('smartac_user') || '';
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  var acc = accounts[user];
+  var stored = acc ? acc.password : '';
+  var hash = btoa(unescape(encodeURIComponent(pw)));
+  if(!pw || !stored || hash !== stored) {
+    errEl.textContent = stx('verifyPwWrong');
+    errEl.style.display = 'block';
+    return;
+  }
+  var cb = _verifyPwCallback;
+  _verifyPwCallback = null;
+  document.getElementById('verifyPwOverlay').classList.remove('open');
+  if(cb) cb();
 }
 
 function exportBackup() {
