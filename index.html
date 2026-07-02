@@ -8313,18 +8313,6 @@ function pwaDismiss() {
   if(banner) banner.style.display = 'none';
 }
 
-// ── Auto logout when app is closed/backgrounded ──
-document.addEventListener('visibilitychange', function() {
-  if(document.visibilityState === 'hidden') {
-    // Only clear login flag, keep user identity for data access
-    localStorage.removeItem('smartac_loggedin');
-  }
-});
-
-window.addEventListener('pagehide', function() {
-  localStorage.removeItem('smartac_loggedin');
-});
-
 // ═══════════════ THEME SYSTEM ═══════════════
 function applyTheme() {
   var theme = state.theme || 'light';
