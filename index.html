@@ -6102,24 +6102,74 @@ function downloadInvoicePDF(inv, type) {
     if(cover.parentNode) cover.parentNode.removeChild(cover);
   }
 
-  html2canvas(el, {scale: 2, useCORS: true}).then(function(canvas) {
+  function waitForImages(container, timeoutMs) {
+    return new Promise(function(resolve) {
+      var imgs = container.querySelectorAll('img');
+      if(!imgs.length) { resolve(); return; }
+      var remaining = imgs.length;
+      var done = false;
+      function finishOne() {
+        remaining--;
+        if(remaining <= 0 && !done) { done = true; resolve(); }
+      }
+      for(var i=0;i<imgs.length;i++) {
+        if(imgs[i].complete) { finishOne(); continue; }
+        imgs[i].addEventListener('load', finishOne);
+        imgs[i].addEventListener('error', finishOne);
+      }
+      setTimeout(function(){ if(!done) { done = true; resolve(); } }, timeoutMs);
+    });
+  }
+
+  waitForImages(el, 2000).then(function() {
+    return html2canvas(el, {scale: 2, useCORS: true});
+  }).then(function(canvas) {
+    var scale = 2;
+    var elTop = el.getBoundingClientRect().top;
+    var rows = el.querySelectorAll('tr');
+    var rowBoundaries = [];
+    for(var ri=0; ri<rows.length; ri++) {
+      var rowRect = rows[ri].getBoundingClientRect();
+      rowBoundaries.push((rowRect.bottom - elTop) * scale);
+    }
     cleanup();
-    var imgData = canvas.toDataURL('image/jpeg', 0.98);
+
     var pdf = new jspdf.jsPDF({unit: 'mm', format: 'a4', orientation: 'portrait'});
     var pageWidth = pdf.internal.pageSize.getWidth();
     var pageHeight = pdf.internal.pageSize.getHeight();
     var margin = 10;
     var usableWidth = pageWidth - margin * 2;
-    var imgHeight = canvas.height * usableWidth / canvas.width;
-    var heightLeft = imgHeight;
-    var position = margin;
-    pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-    heightLeft -= (pageHeight - margin * 2);
-    while(heightLeft > 0) {
-      position = heightLeft - imgHeight + margin;
-      pdf.addPage();
-      pdf.addImage(imgData, 'JPEG', margin, position, usableWidth, imgHeight);
-      heightLeft -= (pageHeight - margin * 2);
+    var usableHeight = pageHeight - margin * 2;
+    var pxPerMm = canvas.width / usableWidth;
+    var pageHeightPx = usableHeight * pxPerMm;
+
+    var sourceY = 0;
+    var firstPage = true;
+    while(sourceY < canvas.height - 1) {
+      var remainingPx = canvas.height - sourceY;
+      var sliceHeightPx = Math.min(pageHeightPx, remainingPx);
+      if(remainingPx > pageHeightPx) {
+        var idealBreak = sourceY + sliceHeightPx;
+        var bestBreak = null;
+        for(var bi=0; bi<rowBoundaries.length; bi++) {
+          var b = rowBoundaries[bi];
+          if(b > sourceY && b <= idealBreak) bestBreak = b;
+        }
+        if(bestBreak && bestBreak > sourceY) sliceHeightPx = bestBreak - sourceY;
+      }
+      var sliceCanvas = document.createElement('canvas');
+      sliceCanvas.width = canvas.width;
+      sliceCanvas.height = sliceHeightPx;
+      var ctx = sliceCanvas.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+      ctx.drawImage(canvas, 0, sourceY, canvas.width, sliceHeightPx, 0, 0, canvas.width, sliceHeightPx);
+      var sliceData = sliceCanvas.toDataURL('image/jpeg', 0.98);
+      var sliceHeightMm = sliceHeightPx / pxPerMm;
+      if(!firstPage) pdf.addPage();
+      pdf.addImage(sliceData, 'JPEG', margin, margin, usableWidth, sliceHeightMm);
+      sourceY += sliceHeightPx;
+      firstPage = false;
     }
     pdf.save(filename);
   }).catch(function() {
