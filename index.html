@@ -2133,8 +2133,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-account-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
-  <div id="settings-profile-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
-
   <div id="settings-business-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
   <div id="settings-bank-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
@@ -2143,7 +2141,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div id="lbl-prefs-title" style="font-weight:700;font-size:15px;margin-bottom:6px">App Preferences</div>
     <div class="settings-item">
       <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12)">🌐</div>
+        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12);color:#2563eb"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></div>
         <div class="settings-item-text">
           <div class="title" id="lbl-lang">Language</div>
           <div class="sub" id="lbl-lang-sub">Select language</div>
@@ -2157,7 +2155,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <div class="settings-item">
       <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12)">💱</div>
+        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12);color:#2563eb"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h13"/><path d="M14 3l4 4-4 4"/><path d="M20 17H7"/><path d="M10 21l-4-4 4-4"/></svg></div>
         <div class="settings-item-text">
           <div class="title" id="lbl-currency">Currency</div>
           <div class="sub" id="lbl-currency-sub">Select your currency</div>
@@ -2174,7 +2172,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <div class="settings-item" style="cursor:pointer" onclick="toggleTheme()">
       <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(76,175,80,0.12)" id="theme-icon-wrap">🌙</div>
+        <div class="settings-item-icon" style="background:rgba(76,175,80,0.12);color:#4CAF82" id="theme-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg></div>
         <div class="settings-item-text">
           <div class="title" id="lbl-theme">Dark Mode</div>
           <div class="sub" id="lbl-theme-sub">Switch theme</div>
@@ -2184,7 +2182,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <div class="settings-item">
       <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12)">📅</div>
+        <div class="settings-item-icon" style="background:rgba(37,99,235,0.12);color:#2563eb"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
         <div class="settings-item-text">
           <div class="title" id="lbl-dateformat">Date Format</div>
           <div class="sub" id="lbl-dateformat-sub">Display format for dates</div>
@@ -2217,15 +2215,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="font-size:17px;font-weight:700;margin-bottom:14px" id="cpw-title">Change Password</div>
     <div class="pw-input-wrap">
       <input type="password" id="cpw-current" placeholder="Current password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">
-      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-current')" type="button">👁</button>
+      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-current')" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
     <div class="pw-input-wrap">
       <input type="password" id="cpw-new" placeholder="New password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">
-      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-new')" type="button">👁</button>
+      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-new')" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
     <div class="pw-input-wrap">
       <input type="password" id="cpw-confirm" placeholder="Confirm new password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">
-      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-confirm')" type="button">👁</button>
+      <button class="pw-toggle-btn" onclick="togglePwField(this,'cpw-confirm')" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
     <div id="cpw-error" style="font-size:12px;color:#ef4444;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:10px">
@@ -2238,7 +2236,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- DELETE ACCOUNT MODAL -->
 <div class="cleardata-overlay" id="deleteAccountOverlay">
   <div class="cleardata-box">
-    <div style="font-size:24px;text-align:center;margin-bottom:8px">⚠️</div>
+    <div style="text-align:center;margin-bottom:8px;color:#ef4444"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></div>
     <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:10px" id="da-title">Delete Account</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:16px;text-align:center" id="da-msg">This will permanently delete your account and all data. This action CANNOT be undone. Type DELETE to confirm.</div>
     <input type="text" id="da-confirm-input" placeholder="DELETE" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none;margin-bottom:14px;text-align:center" oninput="document.getElementById('da-confirm-btn').disabled = this.value !== 'DELETE'; document.getElementById('da-confirm-btn').style.opacity = this.value !== 'DELETE' ? '0.5' : '1';">
@@ -2256,7 +2254,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="font-size:13px;color:var(--text2);margin-bottom:14px" id="vpw-sub">Enter your password to confirm these changes</div>
     <div class="pw-input-wrap">
       <input type="password" id="vpw-input" placeholder="Password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none" onkeydown="if(event.key==='Enter')submitVerifyPassword()">
-      <button class="pw-toggle-btn" onclick="togglePwField(this,'vpw-input')" type="button">👁</button>
+      <button class="pw-toggle-btn" onclick="togglePwField(this,'vpw-input')" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
     </div>
     <div id="vpw-error" style="font-size:12px;color:#ef4444;margin-bottom:10px;display:none"></div>
     <div style="display:flex;gap:10px">
@@ -2774,6 +2772,31 @@ function uk(key) {
 }
 
 function escHtml(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+var SVG_ICON_PATHS = {
+  lock: '<rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  logout: '<path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/>',
+  pencil: '<path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>',
+  download: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>',
+  upload: '<path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/>',
+  trash: '<path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/>',
+  eye: '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/>',
+  eyeOff: '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a21.86 21.86 0 0 1 5.06-6.06"/><path d="M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 7 11 7a21.9 21.9 0 0 1-3.22 4.36"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/>',
+  warning: '<path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/>',
+  building: '<path d="M4 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16"/><path d="M15 21v-9a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v9"/><path d="M9 8h.01M9 12h.01M9 16h.01M13 8h.01M13 12h.01M13 16h.01"/><path d="M4 21h16"/>',
+  globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/>',
+  exchange: '<path d="M4 7h13"/><path d="M14 3l4 4-4 4"/><path d="M20 17H7"/><path d="M10 21l-4-4 4-4"/>',
+  moon: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/>',
+  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+  xCircle: '<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/>',
+  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/>'
+};
+function svgIcon(name, size) {
+  size = size || 16;
+  var body = SVG_ICON_PATHS[name] || '';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0">' + body + '</svg>';
+}
 function save() {
   var txKey = uk('tx');
   localStorage.setItem(txKey, JSON.stringify(state.transactions));
@@ -4389,8 +4412,8 @@ function applyLang() {
 var SETTINGS_L = {
   account:      {en:'Account & Profile', ar:'الحساب والملف الشخصي', de:'Konto & Profil'},
   bizNameLbl:   {en:'Business / Username', ar:'اسم العمل / المستخدم', de:'Firmen-/Benutzername'},
-  changePw:     {en:'🔒 Change Password', ar:'🔒 تغيير كلمة المرور', de:'🔒 Passwort ändern'},
-  logoutBtn:    {en:'🚪 Logout', ar:'🚪 تسجيل الخروج', de:'🚪 Abmelden'},
+  changePw:     {en:'Change Password', ar:'تغيير كلمة المرور', de:'Passwort ändern'},
+  logoutBtn:    {en:'Logout', ar:'تسجيل الخروج', de:'Abmelden'},
   hello:        {en:'Hello, ', ar:'مرحباً، ', de:'Hallo, '},
   logoTitle:    {en:'Business Logo', ar:'شعار العمل التجاري', de:'Firmenlogo'},
   removeLogo:   {en:'Remove Logo', ar:'إزالة الشعار', de:'Logo entfernen'},
@@ -4398,7 +4421,6 @@ var SETTINGS_L = {
   chooseFile:   {en:'Choose File', ar:'اختر ملف', de:'Datei auswählen'},
   logoHelper:   {en:'Recommended: square image, max 2MB', ar:'يفضل: صورة مربعة، الحد الأقصى 2 ميجابايت', de:'Empfohlen: quadratisches Bild, max. 2 MB'},
 
-  profileInfo:      {en:'Full Account Info', ar:'معلومات الحساب الكاملة', de:'Vollständige Kontoinformationen'},
   profileFullName:  {en:'Full Name', ar:'الاسم الكامل', de:'Vollständiger Name'},
   profileUsername:  {en:'Username', ar:'اسم المستخدم', de:'Benutzername'},
   profileUsernameNote: {en:'Username cannot be changed', ar:'لا يمكن تغيير اسم المستخدم', de:'Der Benutzername kann nicht geändert werden'},
@@ -4421,7 +4443,7 @@ var SETTINGS_L = {
   bankIban:     {en:'IBAN', ar:'آيبان', de:'IBAN'},
   bankBic:      {en:'BIC/SWIFT', ar:'BIC/SWIFT', de:'BIC/SWIFT'},
   bankHolder:   {en:'Account Holder Name', ar:'اسم صاحب الحساب', de:'Name des Kontoinhabers'},
-  editBtn:      {en:'✏️ Edit', ar:'✏️ تعديل', de:'✏️ Bearbeiten'},
+  editBtn:      {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
   saveBtn:      {en:'Save', ar:'حفظ', de:'Speichern'},
   cancelBtn:    {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
 
@@ -4430,9 +4452,9 @@ var SETTINGS_L = {
   dateFormatSub:{en:'Display format for dates', ar:'تنسيق عرض التاريخ', de:'Anzeigeformat für Daten'},
 
   dataMgmt:     {en:'Data Management', ar:'إدارة البيانات', de:'Datenverwaltung'},
-  exportBackup: {en:'⬇️ Export Backup (JSON)', ar:'⬇️ تصدير نسخة احتياطية (JSON)', de:'⬇️ Backup exportieren (JSON)'},
-  importBackup: {en:'⬆️ Import Backup', ar:'⬆️ استيراد نسخة احتياطية', de:'⬆️ Backup importieren'},
-  clearAllData: {en:'🗑️ Clear All Data', ar:'🗑️ مسح كل البيانات', de:'🗑️ Alle Daten löschen'},
+  exportBackup: {en:'Export Backup (JSON)', ar:'تصدير نسخة احتياطية (JSON)', de:'Backup exportieren (JSON)'},
+  importBackup: {en:'Import Backup', ar:'استيراد نسخة احتياطية', de:'Backup importieren'},
+  clearAllData: {en:'Clear All Data', ar:'مسح كل البيانات', de:'Alle Daten löschen'},
   dataSize:     {en:'Approx. ', ar:'تقريباً ', de:'Ca. '},
   dataSizeUsed: {en:' KB used', ar:' كيلوبايت مستخدم', de:' KB verwendet'},
   importConfirm:{en:'This will overwrite your current data with the imported backup. Continue?', ar:'سيتم استبدال بياناتك الحالية بالنسخة الاحتياطية المستوردة. متابعة؟', de:'Dies überschreibt Ihre aktuellen Daten mit dem importierten Backup. Fortfahren?'},
@@ -4479,7 +4501,7 @@ function renderSettings() {
   var themeTog = document.getElementById('themeToggle');
   if(themeTog) { themeTog.classList.toggle('on', state.theme==='dark'); }
   var themeIco = document.getElementById('theme-icon-wrap');
-  if(themeIco) themeIco.textContent = state.theme==='dark' ? '☀️' : '🌙';
+  if(themeIco) themeIco.innerHTML = svgIcon(state.theme==='dark' ? 'sun' : 'moon', 18);
   var lblTheme = document.getElementById('lbl-theme');
   if(lblTheme) lblTheme.textContent = state.theme==='dark' ? t('lightMode') : t('darkMode');
   var lblThemeSub = document.getElementById('lbl-theme-sub');
@@ -4491,7 +4513,6 @@ function renderSettings() {
   updateBusinessNameDisplay();
   updatePrivacyTexts();
   renderAccountSection();
-  renderProfileSection();
   renderBusinessInfoSection();
   renderBankAccountSection();
   renderDataManagementSection();
@@ -4501,19 +4522,49 @@ function renderSettings() {
   renderDangerSection();
 }
 
+var _profileInfoEditMode = false;
+var _pendingProfileSave = null;
+
 function renderAccountSection() {
   var card = document.getElementById('settings-account-card');
   if(!card) return;
   var user = localStorage.getItem('smartac_user') || '';
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  var acc = accounts[user] || {};
+
+  var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+    + '<div style="font-weight:700;font-size:15px">' + stx('account') + '</div>'
+    + (!_profileInfoEditMode ? '<button id="profileEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('pencil', 14) + ' ' + stx('editBtn') + '</button>' : '')
+    + '</div>';
+  var usernameDisplayRow = bizDisplayRow(stx('profileUsername'), user);
+  var profileHtml;
+  if(!_profileInfoEditMode) {
+    profileHtml = bizDisplayRow(stx('profileFullName'), acc.fullname)
+      + usernameDisplayRow
+      + bizDisplayRow(stx('profileEmail'), acc.email)
+      + bizDisplayRow(stx('profilePhone'), acc.phone)
+      + bizDisplayRow(stx('profileCountry'), acc.country);
+  } else {
+    profileHtml = bizField('profileFullNameInput', stx('profileFullName'), acc.fullname)
+      + usernameDisplayRow
+      + '<div style="font-size:11px;color:var(--text3);margin:-6px 0 10px">' + stx('profileUsernameNote') + '</div>'
+      + bizField('profileEmailInput', stx('profileEmail'), acc.email)
+      + bizField('profilePhoneInput', stx('profilePhone'), acc.phone)
+      + bizField('profileCountryInput', stx('profileCountry'), acc.country)
+      + _bizEditSaveCancelRow('profileSaveBtn', 'profileCancelBtn');
+  }
+
   var previewHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
     + '<img id="settingsLogoPreview" src="' + (state.businessLogo || '') + '" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid var(--border);display:' + (state.businessLogo ? 'block' : 'none') + '">'
     + '<div id="settingsLogoPlaceholder" style="width:64px;height:64px;border:2px dashed var(--border);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;cursor:pointer;color:var(--text3);margin:0 auto;display:' + (state.businessLogo ? 'none' : 'flex') + '">'
-    + '<div style="font-size:20px">🏢</div>'
+    + svgIcon('building', 20)
     + '</div>'
     + '<button id="removeLogoBtn" style="background:none;border:none;color:#ef4444;font-size:12px;font-weight:600;cursor:pointer;display:' + (state.businessLogo ? 'inline-block' : 'none') + '">' + stx('removeLogo') + '</button>'
     + '</div>';
-  card.innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:12px">' + stx('account') + '</div>'
-    + '<div style="margin-bottom:14px">'
+
+  card.innerHTML = header
+    + profileHtml
+    + '<div style="margin:16px 0 14px;padding-top:14px;border-top:1px solid var(--border)">'
     + '<div style="font-size:12px;color:var(--text3);margin-bottom:6px">' + stx('bizNameLbl') + '</div>'
     + '<input type="text" id="bizNameInput" value="' + escHtml(state.businessName||'') + '" style="width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">'
     + '</div>'
@@ -4525,9 +4576,26 @@ function renderAccountSection() {
     + '<input type="file" accept="image/*" id="logoFileInput" style="display:none">'
     + '</div>'
     + '</div>'
-    + '<button id="changePwBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + stx('changePw') + '</button>'
+    + '<button id="changePwBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + svgIcon('lock', 15) + ' ' + stx('changePw') + '</button>'
     + '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">' + stx('hello') + '<strong>' + escHtml(user) + '</strong></div>'
-    + '<button id="logoutBtnSettings" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer">' + stx('logoutBtn') + '</button>';
+    + '<button id="logoutBtnSettings" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('logout', 15) + ' ' + stx('logoutBtn') + '</button>';
+
+  var editBtn = document.getElementById('profileEditBtn');
+  if(editBtn) editBtn.onclick = function(){ _profileInfoEditMode = true; renderAccountSection(); };
+  if(_profileInfoEditMode) {
+    var profileSaveBtn = document.getElementById('profileSaveBtn');
+    if(profileSaveBtn) profileSaveBtn.onclick = function() {
+      _pendingProfileSave = {
+        fullname: (document.getElementById('profileFullNameInput')||{}).value || '',
+        email: (document.getElementById('profileEmailInput')||{}).value || '',
+        phone: (document.getElementById('profilePhoneInput')||{}).value || '',
+        country: (document.getElementById('profileCountryInput')||{}).value || ''
+      };
+      openVerifyPassword(applyPendingProfileSave);
+    };
+    var profileCancelBtn = document.getElementById('profileCancelBtn');
+    if(profileCancelBtn) profileCancelBtn.onclick = function(){ _profileInfoEditMode = false; renderAccountSection(); };
+  }
 
   var nameInput = document.getElementById('bizNameInput');
   if(nameInput) { nameInput.onblur = function(){ saveBusinessName(this.value); }; nameInput.onchange = function(){ saveBusinessName(this.value); }; }
@@ -4572,7 +4640,7 @@ function renderBusinessInfoSection() {
   if(!card) return;
   var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
     + '<div style="font-weight:700;font-size:15px">' + stx('bizInfo') + '</div>'
-    + (!_bizInfoEditMode ? '<button id="bizEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + stx('editBtn') + '</button>' : '')
+    + (!_bizInfoEditMode ? '<button id="bizEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('pencil', 14) + ' ' + stx('editBtn') + '</button>' : '')
     + '</div>';
 
   if(!_bizInfoEditMode) {
@@ -4606,54 +4674,6 @@ function renderBusinessInfoSection() {
   }
 }
 
-var _profileInfoEditMode = false;
-var _pendingProfileSave = null;
-
-function renderProfileSection() {
-  var card = document.getElementById('settings-profile-card');
-  if(!card) return;
-  var user = localStorage.getItem('smartac_user') || '';
-  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
-  var acc = accounts[user] || {};
-  var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
-    + '<div style="font-weight:700;font-size:15px">' + stx('profileInfo') + '</div>'
-    + (!_profileInfoEditMode ? '<button id="profileEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + stx('editBtn') + '</button>' : '')
-    + '</div>';
-  var usernameDisplayRow = bizDisplayRow(stx('profileUsername'), user);
-
-  if(!_profileInfoEditMode) {
-    card.innerHTML = header
-      + bizDisplayRow(stx('profileFullName'), acc.fullname)
-      + usernameDisplayRow
-      + bizDisplayRow(stx('profileEmail'), acc.email)
-      + bizDisplayRow(stx('profilePhone'), acc.phone)
-      + bizDisplayRow(stx('profileCountry'), acc.country);
-    var editBtn = document.getElementById('profileEditBtn');
-    if(editBtn) editBtn.onclick = function(){ _profileInfoEditMode = true; renderProfileSection(); };
-  } else {
-    card.innerHTML = header
-      + bizField('profileFullNameInput', stx('profileFullName'), acc.fullname)
-      + usernameDisplayRow
-      + '<div style="font-size:11px;color:var(--text3);margin:-6px 0 10px">' + stx('profileUsernameNote') + '</div>'
-      + bizField('profileEmailInput', stx('profileEmail'), acc.email)
-      + bizField('profilePhoneInput', stx('profilePhone'), acc.phone)
-      + bizField('profileCountryInput', stx('profileCountry'), acc.country)
-      + _bizEditSaveCancelRow('profileSaveBtn', 'profileCancelBtn');
-    var saveBtn = document.getElementById('profileSaveBtn');
-    if(saveBtn) saveBtn.onclick = function() {
-      _pendingProfileSave = {
-        fullname: (document.getElementById('profileFullNameInput')||{}).value || '',
-        email: (document.getElementById('profileEmailInput')||{}).value || '',
-        phone: (document.getElementById('profilePhoneInput')||{}).value || '',
-        country: (document.getElementById('profileCountryInput')||{}).value || ''
-      };
-      openVerifyPassword(applyPendingProfileSave);
-    };
-    var cancelBtn = document.getElementById('profileCancelBtn');
-    if(cancelBtn) cancelBtn.onclick = function(){ _profileInfoEditMode = false; renderProfileSection(); };
-  }
-}
-
 function applyPendingProfileSave() {
   if(!_pendingProfileSave) return;
   var user = localStorage.getItem('smartac_user') || '';
@@ -4667,7 +4687,7 @@ function applyPendingProfileSave() {
   }
   _pendingProfileSave = null;
   _profileInfoEditMode = false;
-  renderProfileSection();
+  renderAccountSection();
 }
 
 function renderBankAccountSection() {
@@ -4675,7 +4695,7 @@ function renderBankAccountSection() {
   if(!card) return;
   var header = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
     + '<div style="font-weight:700;font-size:15px">' + stx('bankSectionTitle') + '</div>'
-    + (!_bankInfoEditMode ? '<button id="bankEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + stx('editBtn') + '</button>' : '')
+    + (!_bankInfoEditMode ? '<button id="bankEditBtn" style="background:transparent;border:none;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('pencil', 14) + ' ' + stx('editBtn') + '</button>' : '')
     + '</div>';
 
   if(!_bankInfoEditMode) {
@@ -4713,9 +4733,9 @@ function renderDataManagementSection() {
   if(!card) return;
   var sizeKb = Math.round((JSON.stringify(state).length / 1024) * 10) / 10;
   card.innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:12px">' + stx('dataMgmt') + '</div>'
-    + '<button id="exportBackupBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + stx('exportBackup') + '</button>'
-    + '<button id="importBackupBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + stx('importBackup') + '</button>'
-    + '<button id="clearAllDataBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + stx('clearAllData') + '</button>'
+    + '<button id="exportBackupBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + svgIcon('download', 15) + ' ' + stx('exportBackup') + '</button>'
+    + '<button id="importBackupBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + svgIcon('upload', 15) + ' ' + stx('importBackup') + '</button>'
+    + '<button id="clearAllDataBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + svgIcon('trash', 15) + ' ' + stx('clearAllData') + '</button>'
     + '<div style="font-size:11px;color:var(--text3);text-align:center">' + stx('dataSize') + sizeKb + stx('dataSizeUsed') + '</div>';
 
   var expBtn = document.getElementById('exportBackupBtn');
@@ -4782,12 +4802,12 @@ function handleLogoUpload(file) {
   var lang = state.lang;
   if(file.type.indexOf('image/') !== 0) {
     var errType = {en:'Please select an image file',ar:'يرجى اختيار ملف صورة',de:'Bitte wählen Sie eine Bilddatei'}[lang]||'Please select an image file';
-    showInAppBanner('red', '⚠️', {en:errType,ar:errType,de:errType}, {en:'',ar:'',de:''});
+    showInAppBanner('red', svgIcon('warning', 18), {en:errType,ar:errType,de:errType}, {en:'',ar:'',de:''});
     return;
   }
   if(file.size > 2*1024*1024) {
     var errSize = {en:'Image must be under 2MB',ar:'يجب أن تكون الصورة أقل من 2 ميجابايت',de:'Bild muss unter 2 MB sein'}[lang]||'Image must be under 2MB';
-    showInAppBanner('red', '⚠️', {en:errSize,ar:errSize,de:errSize}, {en:'',ar:'',de:''});
+    showInAppBanner('red', svgIcon('warning', 18), {en:errSize,ar:errSize,de:errSize}, {en:'',ar:'',de:''});
     return;
   }
   var reader = new FileReader();
@@ -4836,7 +4856,7 @@ function togglePwField(btn, inputId) {
   var inp = document.getElementById(inputId);
   if(!inp) return;
   inp.type = inp.type==='password' ? 'text' : 'password';
-  btn.textContent = inp.type==='password' ? '👁' : '🙈';
+  btn.innerHTML = svgIcon(inp.type==='password' ? 'eye' : 'eyeOff', 16);
 }
 
 function lpTogglePwText(btn, inputId) {
@@ -8320,7 +8340,7 @@ function applyTheme() {
   var tog = document.getElementById('themeToggle');
   var ico = document.getElementById('theme-icon-wrap');
   if(tog) { tog.classList.toggle('on', theme==='dark'); }
-  if(ico) ico.textContent = theme==='dark' ? '☀️' : '🌙';
+  if(ico) ico.innerHTML = svgIcon(theme==='dark' ? 'sun' : 'moon', 18);
 }
 function toggleTheme() {
   state.theme = (state.theme==='dark') ? 'light' : 'dark';
@@ -9507,7 +9527,7 @@ function showConfirm(title, msg, onOk, okLabel, cancelLabel) {
 // ── CLEAR DATA SECURE ──
 function clearData() {
   var lang = state.lang;
-  var titles = {en:'⚠️ Clear All Data',ar:'⚠️ مسح كل البيانات',de:'⚠️ Alle Daten löschen'};
+  var titles = {en:'Clear All Data',ar:'مسح كل البيانات',de:'Alle Daten löschen'};
   var msgs = {
     en:'This will permanently delete ALL your transactions, debts, clients, reports, and settings. This action CANNOT be undone.',
     ar:'سيتم حذف جميع معاملاتك والديون والعملاء والتقارير والإعدادات بشكل نهائي. هذا الإجراء لا يمكن التراجع عنه.',
@@ -9554,7 +9574,7 @@ function cdTogglePw(btn) {
   var inp = document.getElementById('cd-pw-input');
   if(!inp) return;
   inp.type = inp.type==='password' ? 'text' : 'password';
-  btn.textContent = inp.type==='password' ? '👁' : '🙈';
+  btn.innerHTML = svgIcon(inp.type==='password' ? 'eye' : 'eyeOff', 16);
 }
 function cdConfirmDelete() {
   var lang = state.lang;
@@ -9567,8 +9587,8 @@ function cdConfirmDelete() {
   var stored = acc ? acc.password : '';
   var correct = stored ? (btoa(unescape(encodeURIComponent(pw))) === stored) : (pw.length > 0);
   if(!correct) {
-    var errMsg = {en:'❌ Incorrect password. Data was NOT deleted.',ar:'❌ كلمة المرور غير صحيحة. لم يتم حذف البيانات.',de:'❌ Falsches Passwort. Daten wurden NICHT gelöscht.'}[lang]||'❌ Incorrect password.';
-    if(errEl){ errEl.textContent=errMsg; errEl.style.display=''; }
+    var errMsg = {en:'Incorrect password. Data was NOT deleted.',ar:'كلمة المرور غير صحيحة. لم يتم حذف البيانات.',de:'Falsches Passwort. Daten wurden NICHT gelöscht.'}[lang]||'Incorrect password.';
+    if(errEl){ errEl.innerHTML = svgIcon('xCircle', 13) + ' ' + errMsg; errEl.style.display=''; }
     return;
   }
   // Correct — clear all data
@@ -9582,7 +9602,7 @@ function cdConfirmDelete() {
   });
   save();
   document.getElementById('clearDataOverlay').classList.remove('open');
-  var okMsg = {en:'✅ All data cleared.',ar:'✅ تم مسح كل البيانات.',de:'✅ Alle Daten gelöscht.'}[lang]||'✅ All data cleared.';
+  var okMsg = {en:'All data cleared.',ar:'تم مسح كل البيانات.',de:'Alle Daten gelöscht.'}[lang]||'All data cleared.';
   alert(okMsg);
   renderHome(); showNav('home');
 }
@@ -9806,7 +9826,7 @@ function toggleSidebar() {
   <div class="cleardata-box" id="clearDataBox">
     <!-- Step 1 -->
     <div id="cd-step1">
-      <div style="font-size:24px;text-align:center;margin-bottom:8px">⚠️</div>
+      <div style="text-align:center;margin-bottom:8px;color:#ef4444"><svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 20h20L12 3Z"/><path d="M12 10v4"/><path d="M12 17h.01"/></svg></div>
       <div style="font-size:17px;font-weight:700;text-align:center;margin-bottom:10px" id="cd-title1">Clear All Data</div>
       <div style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:20px;text-align:center" id="cd-msg1">This will permanently delete ALL your data. This action CANNOT be undone.</div>
       <div style="display:flex;gap:10px">
@@ -9820,7 +9840,7 @@ function toggleSidebar() {
       <div style="font-size:13px;color:var(--text2);margin-bottom:16px" id="cd-msg2">Enter your password to confirm deletion</div>
       <div class="pw-input-wrap">
         <input type="password" id="cd-pw-input" placeholder="Password" style="width:100%;padding:12px 44px 12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">
-        <button class="pw-toggle-btn" onclick="cdTogglePw(this)" type="button">👁</button>
+        <button class="pw-toggle-btn" onclick="cdTogglePw(this)" type="button"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg></button>
       </div>
       <div id="cd-pw-error" style="font-size:12px;color:#ef4444;margin-bottom:10px;display:none"></div>
       <div style="display:flex;gap:10px">
