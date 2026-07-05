@@ -2786,8 +2786,12 @@ function formatDateDisplay(dateStr) {
   return y + '-' + m + '-' + d;
 }
 // Per-user storage key helper
+// Uses smartac_session (the currently active session) rather than
+// smartac_user (a remembered-for-convenience username that logout()
+// intentionally leaves behind), so a new/different user can never
+// resolve to a previous user's data keys.
 function uk(key) {
-  var user = localStorage.getItem('smartac_user') || 'default';
+  var user = localStorage.getItem('smartac_session') || 'default';
   return 'smartac_u_' + user + '_' + key;
 }
 
@@ -2879,7 +2883,11 @@ function save() {
   localStorage.setItem(uk('bankHolder'), state.bankAccountHolder || '');
 }
 
+var _loadedDataUser = null;
 function loadUserData() {
+  // Always read the active user fresh at call time (never cache it),
+  // and remember whose data this load call was for.
+  _loadedDataUser = localStorage.getItem('smartac_session') || 'default';
   state.transactions = JSON.parse(localStorage.getItem(uk('tx')) || '[]');
   state.debts = JSON.parse(localStorage.getItem(uk('debts')) || '[]');
   state.currency = localStorage.getItem(uk('currency')) || '€';
@@ -2907,7 +2915,7 @@ function loadUserData() {
   state.bankIban = localStorage.getItem(uk('bankIban')) || '';
   state.bankBic = localStorage.getItem(uk('bankBic')) || '';
   state.bankAccountHolder = localStorage.getItem(uk('bankHolder')) || '';
-  var user2 = localStorage.getItem('smartac_user') || '';
+  var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
     state.businessName = (accs[user2] && accs[user2].businessName) || '';
@@ -3583,9 +3591,11 @@ function renderBudgetDashboard(income, expense) {
 
 function renderHome() {
   try {
-  // Always reload from storage to ensure data is fresh
-  var storedUser = localStorage.getItem('smartac_user');
-  if(storedUser && storedUser !== (localStorage.getItem('smartac_session')||'')) {
+  // Always reload from storage to ensure data is fresh: compare the
+  // currently active session (read fresh, never cached) against whichever
+  // user loadUserData() last loaded data for.
+  var activeSessionUser = localStorage.getItem('smartac_session') || 'default';
+  if(activeSessionUser !== _loadedDataUser) {
     loadUserData();
   }
   var txs = getFiltered();
@@ -5199,7 +5209,7 @@ function openDeleteAccount() {
 }
 
 function confirmDeleteAccount() {
-  var user = localStorage.getItem('smartac_user') || '';
+  var user = localStorage.getItem('smartac_session') || '';
   var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
   if(user && accounts[user]) {
     delete accounts[user];
@@ -5207,7 +5217,7 @@ function confirmDeleteAccount() {
   }
   if(user) {
     var keys = ['tx','debts','currency','clients','suppliers','employees','recurring','budgets','lang','tax','theme','fixed_income','issued_inv','receipts','received_inv','logo','bizAddress','bizTaxId','bizPhone','bizEmail','dateFormat','notifyRecurring','notifyInvoiceDue','bankName','bankIban','bankBic','bankHolder'];
-    keys.forEach(function(k){ localStorage.removeItem('smartac_u_' + user + '_' + k); });
+    keys.forEach(function(k){ localStorage.removeItem(uk(k)); });
   }
   localStorage.removeItem('smartac_user');
   localStorage.removeItem('smartac_session');
