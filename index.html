@@ -1969,7 +1969,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       </div>
     </div>
     <div class="hdr-actions">
-      <button class="icon-btn" onclick="showNotif()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
+      <button class="icon-btn" id="notif-bell-btn" onclick="toggleNotificationCenter()" style="position:relative"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;min-width:14px;height:14px;border-radius:7px;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span></button>
     </div>
   </div>
   <div class="period-tabs" id="periodTabs" style="position:relative">
@@ -2737,6 +2737,7 @@ var state = {
   bankIban: '',
   bankBic: '',
   bankAccountHolder: '',
+  notifications: [],
 };
 
 var CURRENCIES = {
@@ -2897,6 +2898,7 @@ function save() {
   localStorage.setItem(uk('bankIban'), state.bankIban || '');
   localStorage.setItem(uk('bankBic'), state.bankBic || '');
   localStorage.setItem(uk('bankHolder'), state.bankAccountHolder || '');
+  localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
 }
 
 var _loadedDataUser = null;
@@ -2931,6 +2933,7 @@ function loadUserData() {
   state.bankIban = localStorage.getItem(uk('bankIban')) || '';
   state.bankBic = localStorage.getItem(uk('bankBic')) || '';
   state.bankAccountHolder = localStorage.getItem(uk('bankHolder')) || '';
+  state.notifications = JSON.parse(localStorage.getItem(uk('notifs')) || '[]');
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
@@ -5487,6 +5490,157 @@ function safeNotify(title, body, fallback) {
   }
 }
 
+// ── NOTIFICATION CENTER ──
+var NOTIF_COLORS = {success:'#16a34a', warning:'#f97316', error:'#dc2626', info:'#3b82f6'};
+
+function formatNotifTime(iso) {
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  var h = d.getHours();
+  var m = d.getMinutes();
+  var mm = m < 10 ? ('0' + m) : ('' + m);
+  return pad2(h) + ':' + mm;
+}
+
+function addNotification(message, type) {
+  var notif = {id: Date.now(), message: message, type: type || 'info', timestamp: new Date().toISOString(), read: false};
+  state.notifications.unshift(notif);
+  if (state.notifications.length > 50) state.notifications = state.notifications.slice(0, 50);
+  save();
+  updateNotifBadge();
+}
+
+function removeNotification(id) {
+  state.notifications = state.notifications.filter(function(n){ return n.id !== id; });
+  save();
+  toggleNotificationCenter();
+  toggleNotificationCenter();
+}
+
+function clearAllNotifications() {
+  state.notifications = [];
+  save();
+  toggleNotificationCenter();
+  toggleNotificationCenter();
+}
+
+function updateNotifBadge() {
+  var unread = state.notifications.filter(function(n){ return !n.read; }).length;
+  var badge = document.getElementById('notif-badge');
+  if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? 'flex' : 'none'; }
+}
+
+function _notifCenterOutsideHandler(e) {
+  var panel = document.getElementById('notifCenterPanel');
+  var bellBtn = document.getElementById('notif-bell-btn');
+  if(!panel) return;
+  if(panel.contains(e.target) || (bellBtn && bellBtn.contains(e.target))) return;
+  panel.parentNode.removeChild(panel);
+  document.removeEventListener('click', _notifCenterOutsideHandler);
+}
+
+function toggleNotificationCenter() {
+  var existing = document.getElementById('notifCenterPanel');
+  if(existing) {
+    existing.parentNode.removeChild(existing);
+    document.removeEventListener('click', _notifCenterOutsideHandler);
+    return;
+  }
+  var lang = state.lang;
+  var titleTx = {en:'Notifications', ar:'الإشعارات', de:'Benachrichtigungen'};
+  var clearTx = {en:'Clear all', ar:'مسح الكل', de:'Alle löschen'};
+  var emptyTx = {en:'No notifications', ar:'لا توجد إشعارات', de:'Keine Benachrichtigungen'};
+
+  var panel = document.createElement('div');
+  panel.id = 'notifCenterPanel';
+  panel.style.cssText = 'position:fixed;top:60px;right:16px;width:320px;max-height:480px;overflow-y:auto;background:var(--card);border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,0.18);z-index:9990;padding:0';
+
+  var h = '';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)">';
+  h += '<div style="font-weight:700;font-size:15px;color:var(--text)">' + (titleTx[lang]||titleTx.en) + '</div>';
+  h += '<button id="notifClearAllBtn" style="background:none;border:none;color:#16a34a;font-size:13px;font-weight:600;cursor:pointer;padding:0">' + (clearTx[lang]||clearTx.en) + '</button>';
+  h += '</div>';
+
+  if(!state.notifications.length) {
+    h += '<div style="text-align:center;padding:32px 16px;color:var(--text3);font-size:13px">' + (emptyTx[lang]||emptyTx.en) + '</div>';
+  } else {
+    for(var i=0; i<state.notifications.length; i++) {
+      var n = state.notifications[i];
+      var dotColor = NOTIF_COLORS[n.type] || NOTIF_COLORS.info;
+      var rowBg = n.read ? 'transparent' : 'rgba(46,158,107,0.08)';
+      h += '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:' + rowBg + '">';
+      h += '<div style="width:8px;height:8px;border-radius:50%;background:' + dotColor + ';margin-top:5px;flex-shrink:0"></div>';
+      h += '<div style="flex:1;min-width:0">';
+      h += '<div style="font-size:13px;color:var(--text)">' + escHtml(n.message) + '</div>';
+      h += '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + formatNotifTime(n.timestamp) + '</div>';
+      h += '</div>';
+      h += '<button class="notif-dismiss-btn" data-id="' + n.id + '" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;line-height:1;padding:0;flex-shrink:0">&times;</button>';
+      h += '</div>';
+    }
+  }
+  panel.innerHTML = h;
+  document.body.appendChild(panel);
+
+  var clearBtn = document.getElementById('notifClearAllBtn');
+  if(clearBtn) clearBtn.onclick = function(e){ e.stopPropagation(); clearAllNotifications(); };
+  var dismissBtns = panel.querySelectorAll('.notif-dismiss-btn');
+  for(var di=0; di<dismissBtns.length; di++) {
+    (function(btn){
+      btn.onclick = function(e){
+        e.stopPropagation();
+        removeNotification(parseInt(btn.getAttribute('data-id'), 10));
+      };
+    })(dismissBtns[di]);
+  }
+
+  // Mark all as read now that the panel is open
+  state.notifications.forEach(function(n){ n.read = true; });
+  save();
+  updateNotifBadge();
+
+  setTimeout(function(){
+    document.addEventListener('click', _notifCenterOutsideHandler);
+  }, 0);
+}
+
+var _toastStack = [];
+function showToast(message, type) {
+  var borderColor = NOTIF_COLORS[type] || NOTIF_COLORS.info;
+  var toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;right:16px;bottom:80px;z-index:99999;background:var(--card);border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);padding:12px 16px;max-width:300px;border-left:4px solid ' + borderColor + ';transition:opacity 0.4s,transform 0.4s;opacity:1';
+  var msgDiv = document.createElement('div');
+  msgDiv.style.cssText = 'font-size:13px;color:var(--text)';
+  msgDiv.textContent = message;
+  var timeDiv = document.createElement('div');
+  timeDiv.style.cssText = 'font-size:11px;color:var(--text3);margin-top:4px';
+  timeDiv.textContent = formatNotifTime(new Date().toISOString());
+  toast.appendChild(msgDiv);
+  toast.appendChild(timeDiv);
+  document.body.appendChild(toast);
+  _toastStack.push(toast);
+  _positionToasts();
+  setTimeout(function(){
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(8px)';
+    setTimeout(function(){
+      if(toast.parentNode) toast.parentNode.removeChild(toast);
+      var idx = _toastStack.indexOf(toast);
+      if(idx !== -1) _toastStack.splice(idx, 1);
+      _positionToasts();
+    }, 400);
+  }, 5000);
+}
+
+function _positionToasts() {
+  var bottom = 80;
+  for(var i=_toastStack.length-1; i>=0; i--) {
+    var t = _toastStack[i];
+    if(!t.parentNode) continue;
+    t.style.bottom = bottom + 'px';
+    bottom += t.offsetHeight + 10;
+  }
+}
+
 // ── NO SAMPLE DATA ──
 
 // ── INIT ──
@@ -7908,6 +8062,7 @@ function obFinishLogin(user) {
   localStorage.setItem('smartac_user', user);
   localStorage.setItem('smartac_session', user);
   loadUserData();
+  updateNotifBadge();
   applyLang();
   updateBusinessNameDisplay();
   var overlay = document.getElementById('onboardingOverlay');
@@ -8130,13 +8285,14 @@ function showInAppNotifications() {
   if(todayTxs.length>0) {
     var inc = todayTxs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
     var exp = todayTxs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
-    var title = {en:"Today's Activity",ar:'نشاط اليوم',de:'Heutige Aktivität'};
     var body = {
       en:todayTxs.length+' transaction(s) · Income: '+fmt(inc)+' · Exp: '+fmt(exp),
       ar:todayTxs.length+' معاملة · دخل: '+fmt(inc)+' · مصاريف: '+fmt(exp),
       de:todayTxs.length+' Transaktion(en) · Einnahmen: '+fmt(inc)+' · Ausgaben: '+fmt(exp),
     };
-    showInAppBanner('green','📊',title,body);
+    var todayMsg = body[lang] || body.en;
+    addNotification(todayMsg, 'success');
+    showToast(todayMsg, 'success');
   }
 
   // Orange: debts due in 1-3 days (not yet overdue)
@@ -8158,9 +8314,9 @@ function showInAppNotifications() {
       soonLines.ar.push((isIOwe?'💸 أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):'💰 '+d.person+' مدين لك بـ '+fmt(d.amount))+' — خلال '+dayStr.ar);
       soonLines.de.push((isIOwe?'💸 SIE schulden '+d.person+' '+fmt(d.amount):'💰 '+d.person+' schuldet IHNEN '+fmt(d.amount))+' — in '+dayStr.de);
     });
-    var title2 = {en:'Debt Due Soon',ar:'ديون قريبة الاستحقاق',de:'Schulden bald fällig'};
-    var body2 = {en:soonLines.en.join('<br/>'),ar:soonLines.ar.join('<br/>'),de:soonLines.de.join('<br/>')};
-    showInAppBanner('orange','⏰',title2,body2);
+    var soonMsg = (soonLines[lang]||soonLines.en).join('; ');
+    addNotification(soonMsg, 'warning');
+    showToast(soonMsg, 'warning');
   }
 
   // Red: overdue debts (>3 days past due date) — one banner per debt
@@ -8177,9 +8333,9 @@ function showInAppNotifications() {
       ovLines.ar.push((isIOwe?'💸 أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):'💰 '+d.person+' مدين لك بـ '+fmt(d.amount))+' — متأخر '+dStr.ar);
       ovLines.de.push((isIOwe?'💸 SIE schulden '+d.person+' '+fmt(d.amount):'💰 '+d.person+' schuldet IHNEN '+fmt(d.amount))+' — '+dStr.de+' überfällig');
     });
-    var title3 = {en:'⚠️ Overdue Debts',ar:'⚠️ ديون متأخرة',de:'⚠️ Überfällige Schulden'};
-    var body3 = {en:ovLines.en.join('<br/>'),ar:ovLines.ar.join('<br/>'),de:ovLines.de.join('<br/>')};
-    showInAppBanner('red','🔴',title3,body3);
+    var overdueMsg = (ovLines[lang]||ovLines.en).join('; ');
+    addNotification(overdueMsg, 'error');
+    showToast(overdueMsg, 'error');
     // Browser push notification if permission granted
     if('Notification' in window && Notification.permission==='granted') {
       var pushLines = ovLines[lang]||ovLines.en;
@@ -8308,65 +8464,27 @@ function checkInvoicesDue() {
   if(changed) save();
 
   var lang = state.lang || 'en';
-  var viewLabel = {en:'View', ar:'عرض', de:'Ansehen'};
-  var vLbl = viewLabel[lang] || viewLabel.en;
-
-  function showInvoiceDueBanner(bg, textColor, msgMap) {
-    var msg = msgMap[lang] || msgMap.en;
-    var container = document.getElementById('inAppNotifContainer');
-    var notif = document.createElement('div');
-    notif.style.cssText = 'padding:12px 14px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.15);animation:notifIn 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:all;font-size:13px;font-weight:600;line-height:1.4;background:' + bg + ';color:' + textColor + ';margin-bottom:8px';
-    if(!container) {
-      notif.style.position = 'fixed';
-      notif.style.top = '16px';
-      notif.style.left = '50%';
-      notif.style.transform = 'translateX(-50%)';
-      notif.style.zIndex = '999999';
-      notif.style.maxWidth = 'min(480px,calc(100vw - 32px))';
-    }
-    var msgSpan = document.createElement('span');
-    msgSpan.textContent = msg;
-    var viewBtn = document.createElement('button');
-    viewBtn.type = 'button';
-    viewBtn.textContent = vLbl;
-    viewBtn.style.cssText = 'background:none;border:none;color:inherit;font-weight:700;font-size:12px;cursor:pointer;padding:0;text-decoration:underline;flex-shrink:0';
-    viewBtn.onclick = function(e){ e.stopPropagation(); showNav('invoices'); if(notif.parentNode) notif.parentNode.removeChild(notif); };
-    notif.appendChild(msgSpan);
-    notif.appendChild(viewBtn);
-    (container || document.body).appendChild(notif);
-    setTimeout(function(){
-      if(notif.parentNode){
-        notif.style.transition = 'opacity 0.4s,transform 0.4s';
-        notif.style.opacity = '0';
-        notif.style.transform = (container ? '' : 'translateX(-50%) ') + 'translateY(-8px) scale(0.97)';
-        setTimeout(function(){ if(notif.parentNode) notif.parentNode.removeChild(notif); }, 400);
-      }
-    }, 5000);
-  }
 
   if(overdueList.length) {
     var n1 = overdueList.length;
-    showInvoiceDueBanner('#ef4444', '#ffffff', {
-      en: n1 + ' invoice(s) overdue',
-      ar: n1 + ' فاتورة متأخرة',
-      de: n1 + ' Rechnung(en) überfällig'
-    });
+    var msg1Map = { en: n1 + ' invoice(s) overdue', ar: n1 + ' فاتورة متأخرة', de: n1 + ' Rechnung(en) überfällig' };
+    var msg1 = msg1Map[lang] || msg1Map.en;
+    addNotification(msg1, 'error');
+    showToast(msg1, 'error');
   }
   if(dueTodayList.length) {
     var n2 = dueTodayList.length;
-    showInvoiceDueBanner('#f97316', '#ffffff', {
-      en: n2 + ' invoice(s) due today',
-      ar: n2 + ' فاتورة مستحقة اليوم',
-      de: n2 + ' Rechnung(en) heute fällig'
-    });
+    var msg2Map = { en: n2 + ' invoice(s) due today', ar: n2 + ' فاتورة مستحقة اليوم', de: n2 + ' Rechnung(en) heute fällig' };
+    var msg2 = msg2Map[lang] || msg2Map.en;
+    addNotification(msg2, 'warning');
+    showToast(msg2, 'warning');
   }
   if(dueSoonList.length) {
     var n3 = dueSoonList.length;
-    showInvoiceDueBanner('#eab308', '#1f2937', {
-      en: n3 + ' invoice(s) due in 1-3 days',
-      ar: n3 + ' فاتورة مستحقة خلال 3 أيام',
-      de: n3 + ' Rechnung(en) in 1-3 Tagen fällig'
-    });
+    var msg3Map = { en: n3 + ' invoice(s) due in 1-3 days', ar: n3 + ' فاتورة مستحقة خلال 3 أيام', de: n3 + ' Rechnung(en) in 1-3 Tagen fällig' };
+    var msg3 = msg3Map[lang] || msg3Map.en;
+    addNotification(msg3, 'info');
+    showToast(msg3, 'info');
   }
 }
 
@@ -8378,23 +8496,9 @@ function showRecurringNotification(count) {
     ar: 'تم تسجيل ' + count + ' معاملة متكررة تلقائياً هذا الشهر',
     de: count + ' wiederkehrende Transaktion(en) automatisch erfasst'
   };
-  var titleMap = {
-    en: 'Recurring Transactions',
-    ar: 'معاملات متكررة',
-    de: 'Wiederkehrende Transaktionen'
-  };
-  var bodyMap = { en: msgMap.en, ar: msgMap.ar, de: msgMap.de };
-  if(document.getElementById('inAppNotifContainer')) {
-    showInAppBanner('green', '🔁', titleMap, bodyMap);
-  } else {
-    var toast = document.createElement('div');
-    toast.textContent = msgMap[lang] || msgMap.en;
-    toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999999;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:notifIn 0.4s ease';
-    document.body.appendChild(toast);
-    setTimeout(function(){
-      if(toast.parentNode) toast.parentNode.removeChild(toast);
-    }, 4000);
-  }
+  var msg = msgMap[lang] || msgMap.en;
+  addNotification(msg, 'success');
+  showToast(msg, 'success');
 }
 
 // ── PDF EXPORT ──
@@ -8452,6 +8556,7 @@ function showSplash() {
   if(loggedIn === '1' && savedUser) {
     if(splashEl) splashEl.style.display = 'none';
     loadUserData();
+    updateNotifBadge();
     applyLang();
     checkRecurringDue();
     checkInvoicesDue();
