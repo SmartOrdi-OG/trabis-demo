@@ -444,12 +444,14 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .lp-auth-card{position:relative;z-index:1;width:100%;max-width:420px;background:#ffffff;border-radius:20px;padding:32px 28px;box-shadow:0 8px 32px rgba(0,0,0,0.08);box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:100vh}
 .lp-heading{font-size:24px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:-0.5px}
 .lp-sub{font-size:14px;color:var(--text3);margin-bottom:24px}
-.lp-input-wrap{position:relative;display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:0 14px}
+.lp-input-wrap{position:relative;display:flex;align-items:center;gap:10px;background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:0 14px;overflow:hidden;transition:border-color 0.2s}
+.reg-input-wrap{border-radius:12px;overflow:hidden;transition:border-color 0.2s}
+.reg-input-wrap:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,158,107,0.12)}
 .lp-input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px;z-index:1;line-height:1;display:flex;align-items:center;justify-content:center}
 .lp-required-star{position:absolute;left:16px;top:50%;transform:translateY(-50%);color:#ef4444;font-weight:700;font-size:16px;z-index:1;pointer-events:none}
 .lp-input{flex:1;border:none;outline:none;background:transparent;padding:14px 0;font-size:15px;color:#1e293b;box-sizing:border-box;margin-bottom:14px;display:block}
 .lp-input::placeholder{color:var(--text3)}
-.lp-input:focus{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-light)}
+.lp-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,158,107,0.12)}
 .lp-btn{width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#1a7fd4,var(--accent));color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 6px 24px var(--primary-glow);transition:all 0.2s;letter-spacing:0.3px}
 .lp-btn:hover{box-shadow:0 8px 30px var(--primary-glow)}
 .lp-btn:active{transform:scale(0.98)}
@@ -610,8 +612,11 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .ph-meta{font-size:12px;color:#666;margin-top:4px}
 
 /* ── LP REGISTER: password strength ── */
-.lp-pw-strength-bar{height:4px;border-radius:2px;background:var(--border);margin:4px 2px 2px;overflow:hidden}
-.lp-pw-strength-fill{height:100%;border-radius:2px;transition:width 0.3s,background 0.3s}
+.lp-pw-requirements{margin:6px 2px 10px}
+.lp-pw-req{display:flex;align-items:center;gap:8px;font-size:11px;color:#94a3b8;padding:2px 0;transition:color 0.2s}
+.lp-pw-req-dot{width:7px;height:7px;border-radius:50%;background:#94a3b8;flex-shrink:0;transition:background 0.2s}
+.lp-pw-strength-bar{width:100%;height:4px;border-radius:2px;background:#e2e8f0;margin:4px 2px 2px;overflow:hidden}
+.lp-pw-strength-fill{height:100%;width:0;border-radius:2px;transition:width 0.3s,background 0.3s}
 .lp-field-feedback{font-size:11px;min-height:16px;padding:0 2px;margin-bottom:10px}
 
 
@@ -1297,31 +1302,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-error" id="lp-reg-error"></div>
           <!-- Business Name -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Business Name</label>
-          <div class="lp-input-wrap">
+          <div class="lp-input-wrap reg-input-wrap">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><path d="M4 21V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v16"/><path d="M15 21v-9a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v9"/><path d="M9 8h.01M9 12h.01M9 16h.01M13 8h.01M13 12h.01M13 16h.01"/><path d="M4 21h16"/></svg>
             <input class="lp-input" type="text" id="lp-reg-bizname" autocomplete="organization" spellcheck="false" placeholder="Business / Shop / Company name" oninput="lpValidateReg()"/>
           </div>
           <!-- Full Name -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Full Name <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap">
+          <div class="lp-input-wrap reg-input-wrap">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
             <input class="lp-input" type="text" id="lp-reg-fullname" autocomplete="name" spellcheck="false" placeholder="Full Name" oninput="lpValidateReg()"/>
           </div>
           <!-- Username -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Username <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap">
+          <div class="lp-input-wrap reg-input-wrap">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><circle cx="12" cy="12" r="4"/><path d="M16 12v1.5a2.5 2.5 0 0 0 5 0V12a9 9 0 1 0-4 7.5"/></svg>
             <input class="lp-input" type="text" id="lp-reg-username" autocomplete="username" spellcheck="false" placeholder="Username" oninput="lpValidateReg()"/>
           </div>
           <!-- Email -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Email <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap">
+          <div class="lp-input-wrap reg-input-wrap">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
             <input class="lp-input" type="email" id="lp-reg-email" autocomplete="email" placeholder="Email" oninput="lpValidateReg()"/>
           </div>
           <!-- Country (full dropdown — auto-fills phone prefix) -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Country <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap" style="margin-bottom:14px">
+          <div class="lp-input-wrap reg-input-wrap" style="margin-bottom:14px">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg>
             <select class="lp-input" id="lp-reg-country-sel" onchange="lpOnCountryChange(this.value);lpValidateReg()" style="appearance:none;-webkit-appearance:none;cursor:pointer;margin-bottom:0">
               <option value="">Select Country</option>
@@ -1475,23 +1480,30 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
             <div id="lp-reg-phone-prefix-wrap" style="display:flex;align-items:center;background:var(--card2);border:1.5px solid var(--border);border-radius:14px;padding:0 12px;min-width:68px;flex-shrink:0;transition:border-color 0.2s">
               <span id="lp-reg-phone-prefix" style="font-size:13px;font-weight:700;color:var(--primary);white-space:nowrap">+--</span>
             </div>
-            <div class="lp-input-wrap" style="flex:1;margin-bottom:0">
+            <div class="lp-input-wrap reg-input-wrap" style="flex:1;margin-bottom:0">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><path d="M6 3h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 12l5 2v3a2 2 0 0 1-2 2c-8 0-14-6-14-14a2 2 0 0 1 2-2z"/></svg>
               <input class="lp-input" type="tel" id="lp-reg-phone" autocomplete="tel" placeholder="Phone Number" style="flex:1;margin-bottom:0" oninput="lpValidateReg()"/>
             </div>
           </div>
           <!-- Password + strength -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Password <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap" style="margin-bottom:4px">
+          <div class="lp-input-wrap reg-input-wrap" style="margin-bottom:4px">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
-            <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password (min 8 chars)" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwStrength(this.value);lpValidateReg()"/>
+            <input class="lp-input" type="password" id="lp-reg-password" autocomplete="new-password" placeholder="Password" style="margin-bottom:0;padding-right:44px" oninput="checkPasswordStrength(this.value);lpValidateReg()"/>
             <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-password')" type="button" style="font-size:12px;font-weight:600">Show</button>
+          </div>
+          <div class="lp-pw-requirements" id="lp-pw-requirements">
+            <div class="lp-pw-req" id="lp-pw-req-len"><span class="lp-pw-req-dot" id="lp-pw-req-len-dot"></span><span id="lp-pw-req-len-txt">At least 16 characters</span></div>
+            <div class="lp-pw-req" id="lp-pw-req-upper"><span class="lp-pw-req-dot" id="lp-pw-req-upper-dot"></span><span id="lp-pw-req-upper-txt">At least one uppercase letter (A-Z)</span></div>
+            <div class="lp-pw-req" id="lp-pw-req-lower"><span class="lp-pw-req-dot" id="lp-pw-req-lower-dot"></span><span id="lp-pw-req-lower-txt">At least one lowercase letter (a-z)</span></div>
+            <div class="lp-pw-req" id="lp-pw-req-num"><span class="lp-pw-req-dot" id="lp-pw-req-num-dot"></span><span id="lp-pw-req-num-txt">At least one number (0-9)</span></div>
+            <div class="lp-pw-req" id="lp-pw-req-special"><span class="lp-pw-req-dot" id="lp-pw-req-special-dot"></span><span id="lp-pw-req-special-txt">At least one special character (!@#$%^&amp;*)</span></div>
           </div>
           <div class="lp-pw-strength-bar"><div class="lp-pw-strength-fill" id="lp-pw-fill"></div></div>
           <div class="lp-field-feedback" id="lp-pw-strength-lbl" style="color:var(--text3)"></div>
           <!-- Confirm password + match -->
           <label style="font-size:12px;font-weight:600;color:#374151;margin-bottom:4px;display:block">Confirm Password <span style="color:#ef4444">*</span></label>
-          <div class="lp-input-wrap" style="margin-bottom:4px">
+          <div class="lp-input-wrap reg-input-wrap" style="margin-bottom:4px">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;color:#4ade80;width:16px;height:16px"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/><path d="M9.5 15.5l1.5 1.5 3-3"/></svg>
             <input class="lp-input" type="password" id="lp-reg-confirm" autocomplete="new-password" placeholder="Confirm Password" style="margin-bottom:0;padding-right:44px" oninput="lpCheckPwMatch();lpValidateReg()" onkeydown="if(event.key==='Enter'&&!document.getElementById('lp-register-btn').disabled)lpRegister()"/>
             <button class="pw-toggle-btn" onclick="lpTogglePwText(this,'lp-reg-confirm')" type="button" style="font-size:12px;font-weight:600">Show</button>
@@ -6983,6 +6995,10 @@ var LP_TEXT = {
     fullName:'Full Name', email:'Email', phone:'Phone Number', country:'Country',
     confirmPass:'Confirm Password',
     showPw:'Show', hidePw:'Hide',
+    pwReqLen:'At least 16 characters', pwReqUpper:'At least one uppercase letter (A-Z)',
+    pwReqLower:'At least one lowercase letter (a-z)', pwReqNum:'At least one number (0-9)',
+    pwReqSpecial:'At least one special character (!@#$%^&*)',
+    pwWeak:'Weak', pwFair:'Fair', pwGood:'Good', pwStrong:'Strong',
   },
   ar:{
     sub:'تتبع أعمالك بذكاء',
@@ -7009,6 +7025,10 @@ var LP_TEXT = {
     fullName:'الاسم الكامل', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة',
     confirmPass:'تأكيد كلمة المرور',
     showPw:'إظهار', hidePw:'إخفاء',
+    pwReqLen:'على الأقل 16 حرفاً', pwReqUpper:'حرف كبير واحد على الأقل (A-Z)',
+    pwReqLower:'حرف صغير واحد على الأقل (a-z)', pwReqNum:'رقم واحد على الأقل (0-9)',
+    pwReqSpecial:'رمز خاص واحد على الأقل (!@#$%^&*)',
+    pwWeak:'ضعيفة', pwFair:'متوسطة', pwGood:'جيدة', pwStrong:'قوية',
   },
   de:{
     sub:'Intelligenter Geschäfts-Tracker',
@@ -7035,6 +7055,10 @@ var LP_TEXT = {
     fullName:'Vollständiger Name', email:'E-Mail', phone:'Telefonnummer', country:'Land',
     confirmPass:'Passwort bestätigen',
     showPw:'Zeigen', hidePw:'Verbergen',
+    pwReqLen:'Mindestens 16 Zeichen', pwReqUpper:'Mindestens ein Großbuchstabe (A-Z)',
+    pwReqLower:'Mindestens ein Kleinbuchstabe (a-z)', pwReqNum:'Mindestens eine Zahl (0-9)',
+    pwReqSpecial:'Mindestens ein Sonderzeichen (!@#$%^&*)',
+    pwWeak:'Schwach', pwFair:'Mittel', pwGood:'Gut', pwStrong:'Stark',
   },
 };
 
@@ -7071,10 +7095,19 @@ function lpUpdateText() {
     'lp-reg-username': l.username,
     'lp-reg-email':    l.email||'Email',
     'lp-reg-phone':    l.phone||'Phone Number',
-    'lp-reg-password': (l.password||'Password')+' (min 8)',
+    'lp-reg-password': l.password||'Password',
     'lp-reg-confirm':  l.confirmPass||'Confirm Password',
   };
   Object.keys(rf).forEach(function(id){ var el=document.getElementById(id); if(el) el.placeholder=rf[id]; });
+  // Password requirement labels
+  var pwReqTxt = {
+    'lp-pw-req-len-txt': l.pwReqLen,
+    'lp-pw-req-upper-txt': l.pwReqUpper,
+    'lp-pw-req-lower-txt': l.pwReqLower,
+    'lp-pw-req-num-txt': l.pwReqNum,
+    'lp-pw-req-special-txt': l.pwReqSpecial,
+  };
+  Object.keys(pwReqTxt).forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=pwReqTxt[id]; });
   var cSel2=document.getElementById('lp-reg-country-sel');
   if(cSel2&&cSel2.options[0]) cSel2.options[0].text=l.country||'Select Country';
 }
@@ -7170,9 +7203,16 @@ function lpResetRegisterForm() {
   var errEl = document.getElementById('lp-reg-error');
   if (errEl) { errEl.textContent = ''; errEl.style.display = 'none'; }
   var pwFill = document.getElementById('lp-pw-fill');
-  if (pwFill) { pwFill.style.width = '0'; pwFill.style.background = ''; }
+  if (pwFill) { pwFill.style.width = '0%'; pwFill.style.background = ''; }
   var pwStrengthLbl = document.getElementById('lp-pw-strength-lbl');
   if (pwStrengthLbl) { pwStrengthLbl.textContent = ''; pwStrengthLbl.style.color = ''; }
+  var pwReqKeys = ['len','upper','lower','num','special'];
+  for (var pr = 0; pr < pwReqKeys.length; pr++) {
+    var prDot = document.getElementById('lp-pw-req-'+pwReqKeys[pr]+'-dot');
+    var prRow = document.getElementById('lp-pw-req-'+pwReqKeys[pr]);
+    if (prDot) prDot.style.background = '#94a3b8';
+    if (prRow) prRow.style.color = '#94a3b8';
+  }
   var pwMatchLbl = document.getElementById('lp-pw-match-lbl');
   if (pwMatchLbl) pwMatchLbl.textContent = '';
   var regBtn = document.getElementById('lp-register-btn');
@@ -7249,7 +7289,7 @@ function lpRegister() {
     errEmail: {en:'Please enter your email',       ar:'أدخل بريدك الإلكتروني',                 de:'E-Mail-Adresse eingeben'},
     errCountry: {en:'Please select your country',  ar:'اختر بلدك',                             de:'Land auswählen'},
     errPhone: {en:'Please enter your phone number', ar:'أدخل رقم هاتفك',                       de:'Telefonnummer eingeben'},
-    errPass:  {en:'Password must be at least 8 characters', ar:'كلمة المرور 8 أحرف على الأقل', de:'Passwort mind. 8 Zeichen'},
+    errPass:  {en:'Password does not meet all requirements', ar:'كلمة المرور لا تستوفي جميع المتطلبات', de:'Passwort erfüllt nicht alle Anforderungen'},
     errMatch: {en:'Passwords do not match',        ar:'كلمتا المرور غير متطابقتين',            de:'Passwörter stimmen nicht überein'},
     errExist: {en:'Username already taken',        ar:'اسم المستخدم مستخدم بالفعل',           de:'Benutzername bereits vergeben'},
     errPrivacy: {en:'You must agree to the Privacy Policy and Terms of Use', ar:'يجب الموافقة على سياسة الخصوصية وشروط الاستخدام', de:'Sie müssen der Datenschutzerklärung und den Nutzungsbedingungen zustimmen'},
@@ -7260,7 +7300,7 @@ function lpRegister() {
   if(!user){showErr(em('errUser'));return;}
   if(!email){showErr(em('errEmail'));return;}
   if(!countryRaw){showErr(em('errCountry'));return;}
-  if(pass.length<8){showErr(em('errPass'));return;}
+  if(lpPwScore(lpPwCriteria(pass))<5){showErr(em('errPass'));return;}
   if(confirm&&pass!==confirm){showErr(em('errMatch'));return;}
   var privacyChecked = document.getElementById('lp-reg-privacy') ? document.getElementById('lp-reg-privacy').checked : false;
   if(!privacyChecked){showErr(em('errPrivacy'));return;}
@@ -7279,27 +7319,56 @@ function lpRegister() {
   lpSelectLang(lpLang);
 }
 
-function lpCheckPwStrength(pass) {
+function lpPwCriteria(pass) {
+  pass = pass || '';
+  return {
+    len: pass.length >= 16,
+    upper: /[A-Z]/.test(pass),
+    lower: /[a-z]/.test(pass),
+    num: /[0-9]/.test(pass),
+    special: /[!@#$%^&*()_\-+=\[\]{};':"\\|,.<>\/?~`]/.test(pass)
+  };
+}
+
+function lpPwScore(c) {
+  var n = 0;
+  if(c.len) n++;
+  if(c.upper) n++;
+  if(c.lower) n++;
+  if(c.num) n++;
+  if(c.special) n++;
+  return n;
+}
+
+function checkPasswordStrength(val) {
+  var pass = val || '';
+  var l = LP_TEXT[lpLang] || LP_TEXT.en;
+  var c = lpPwCriteria(pass);
+  var keys = ['len','upper','lower','num','special'];
+  for (var i = 0; i < keys.length; i++) {
+    var k = keys[i];
+    var met = c[k];
+    var color = met ? 'var(--green)' : '#94a3b8';
+    var dot = document.getElementById('lp-pw-req-'+k+'-dot');
+    var row = document.getElementById('lp-pw-req-'+k);
+    if(dot) dot.style.background = color;
+    if(row) row.style.color = color;
+  }
+  var score = lpPwScore(c);
   var fill = document.getElementById('lp-pw-fill');
   var lbl = document.getElementById('lp-pw-strength-lbl');
-  if(!fill||!lbl) return;
-  if(!pass){fill.style.width='0';lbl.textContent='';return;}
-  var score = 0;
-  if(pass.length>=8) score++;
-  if(/[A-Z]/.test(pass)) score++;
-  if(/[0-9]/.test(pass)) score++;
-  if(/[^A-Za-z0-9]/.test(pass)) score++;
-  var labels = {
-    en:['Too short','Weak','Fair','Strong','Very Strong'],
-    ar:['قصيرة جداً','ضعيفة','متوسطة','قوية','قوية جداً'],
-    de:['Zu kurz','Schwach','Mittel','Stark','Sehr stark'],
-  };
-  var colors = ['#ef4444','#f97316','#eab308','#22c55e','#16a34a'];
-  var widths = ['15%','35%','55%','75%','100%'];
-  var idx = pass.length<8?0:Math.min(score,4);
-  fill.style.width = widths[idx]; fill.style.background = colors[idx];
-  lbl.textContent = (labels[lpLang]||labels.en)[idx]||'';
-  lbl.style.color = colors[idx];
+  var colors = ['#ef4444','#ef4444','#f97316','#f97316','#3b82f6','#16a34a'];
+  var widths = ['0%','20%','40%','60%','80%','100%'];
+  var labels = [l.pwWeak,l.pwWeak,l.pwFair,l.pwFair,l.pwGood,l.pwStrong];
+  if(fill){
+    if(!pass){ fill.style.width='0%'; fill.style.background=''; }
+    else { fill.style.width=widths[score]; fill.style.background=colors[score]; }
+  }
+  if(lbl){
+    if(!pass){ lbl.textContent=''; lbl.style.color=''; }
+    else { lbl.textContent=labels[score]||''; lbl.style.color=colors[score]; }
+  }
+  return c;
 }
 
 function lpCheckPwMatch() {
@@ -7329,7 +7398,8 @@ function lpValidateReg() {
   var btn = document.getElementById('lp-register-btn');
   if(!btn) return;
   var privacyOk = document.getElementById('lp-reg-privacy') ? document.getElementById('lp-reg-privacy').checked : true;
-  var valid = fullname.length>0 && user.length>0 && email.length>0 && country.length>0 && pass.length>=8 && (!confirm||pass===confirm) && privacyOk;
+  var passOk = lpPwScore(lpPwCriteria(pass))===5;
+  var valid = fullname.length>0 && user.length>0 && email.length>0 && country.length>0 && passOk && (!confirm||pass===confirm) && privacyOk;
   btn.disabled = !valid;
   btn.style.opacity = valid?'1':'0.55';
 }
