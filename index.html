@@ -5209,6 +5209,13 @@ function openDeleteAccount() {
 }
 
 function confirmDeleteAccount() {
+  // Typing DELETE only unlocks this button; require a password check
+  // before the account and its data are actually removed.
+  document.getElementById('deleteAccountOverlay').classList.remove('open');
+  openVerifyPassword(performDeleteAccount);
+}
+
+function performDeleteAccount() {
   var user = localStorage.getItem('smartac_session') || '';
   var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
   if(user && accounts[user]) {
@@ -5222,7 +5229,6 @@ function confirmDeleteAccount() {
   localStorage.removeItem('smartac_user');
   localStorage.removeItem('smartac_session');
   localStorage.removeItem('smartac_loggedin');
-  document.getElementById('deleteAccountOverlay').classList.remove('open');
   location.reload();
 }
 
