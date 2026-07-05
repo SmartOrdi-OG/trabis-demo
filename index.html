@@ -1141,7 +1141,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="pwaInstallBanner">
   <div class="pwa-text">📲 Install Smartac for the best experience</div>
   <button class="pwa-install-btn" onclick="pwaInstall()">Install</button>
-  <button class="pwa-dismiss-btn" onclick="pwaDismiss()">✕</button>
+  <button class="pwa-dismiss-btn" onclick="pwaDismiss()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 </div>
 
 <!-- TRANSACTION DETAIL OVERLAY -->
@@ -1155,7 +1155,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px">
       <button onclick="closeTxDetail()" style="background:var(--bg);border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer">←</button>
       <div id="txDetailTitle" style="font-size:15px;font-weight:700;flex:1;text-align:center;padding:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
-      <button id="txDetailEditBtn" style="background:rgba(59,91,219,0.1);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer">✏️</button>
+      <button id="txDetailEditBtn" style="background:rgba(59,91,219,0.1);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
     </div>
 
     <!-- VIEW MODE -->
@@ -1169,21 +1169,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div style="padding:0 16px">
         <div style="background:var(--bg);border-radius:16px;overflow:hidden">
           <div style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)">
-            <span style="font-size:18px;margin-right:12px">📅</span>
+            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-date-lbl">DATE</div>
               <div style="font-size:14px;font-weight:600" id="txDetailDate"></div>
             </div>
           </div>
           <div style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)">
-            <span style="font-size:18px;margin-right:12px">🏷️</span>
+            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H4a2 2 0 0 0-2 2v5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.82 0l6-6a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-cat-lbl">CATEGORY</div>
               <div style="font-size:14px;font-weight:600" id="txDetailCat"></div>
             </div>
           </div>
           <div id="txDetailInvoiceRow" style="display:flex;align-items:center;padding:13px 16px;cursor:pointer">
-            <span style="font-size:18px;margin-right:12px">📎</span>
+            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-inv-lbl">INVOICE</div>
               <div style="font-size:14px;font-weight:600;color:var(--primary)" id="txDetailInvoice"></div>
@@ -1222,16 +1222,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="font-size:15px;color:rgba(255,255,255,0.75);margin-top:6px;font-weight:500">Track your money easily</div>
   </div>
   <div id="splash-f1" style="opacity:0;transform:translateY(20px);transition:opacity 0.4s ease,transform 0.4s ease;display:flex;align-items:center;gap:14px;color:rgba(255,255,255,0.85);font-size:14px;font-weight:500;margin-bottom:14px;width:100%;max-width:320px">
-    <span style="font-size:22px;flex-shrink:0">📊</span><span>Real-time income &amp; expense tracking</span>
+    <span style="font-size:22px;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></span><span>Real-time income &amp; expense tracking</span>
   </div>
   <div id="splash-f2" style="opacity:0;transform:translateY(20px);transition:opacity 0.4s ease,transform 0.4s ease;display:flex;align-items:center;gap:14px;color:rgba(255,255,255,0.85);font-size:14px;font-weight:500;margin-bottom:14px;width:100%;max-width:320px">
-    <span style="font-size:22px;flex-shrink:0">🤝</span><span>Smart debt management</span>
+    <span style="font-size:22px;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span>Smart debt management</span>
   </div>
   <div id="splash-f3" style="opacity:0;transform:translateY(20px);transition:opacity 0.4s ease,transform 0.4s ease;display:flex;align-items:center;gap:14px;color:rgba(255,255,255,0.85);font-size:14px;font-weight:500;margin-bottom:14px;width:100%;max-width:320px">
-    <span style="font-size:22px;flex-shrink:0">📈</span><span>Visual reports &amp; trends</span>
+    <span style="font-size:22px;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></span><span>Visual reports &amp; trends</span>
   </div>
   <div id="splash-f4" style="opacity:0;transform:translateY(20px);transition:opacity 0.4s ease,transform 0.4s ease;display:flex;align-items:center;gap:14px;color:rgba(255,255,255,0.85);font-size:14px;font-weight:500;width:100%;max-width:320px">
-    <span style="font-size:22px;flex-shrink:0">🌍</span><span>Multi-language: English, العربية, Deutsch</span>
+    <span style="font-size:22px;flex-shrink:0"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></span><span>Multi-language: English, العربية, Deutsch</span>
   </div>
 </div>
 
@@ -1261,10 +1261,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div class="lp-headline" id="lp-headline">Track your money easily</div>
         <div class="lp-desc" id="lp-desc">Track income &amp; expenses, manage debts, and make data-driven decisions with beautiful reports.</div>
         <div class="lp-features">
-          <div class="lp-feature"><div class="lp-feature-icon">📊</div><div id="lp-f1">Real-time income &amp; expense tracking</div></div>
-          <div class="lp-feature"><div class="lp-feature-icon">🤝</div><div id="lp-f2">Smart debt management</div></div>
-          <div class="lp-feature"><div class="lp-feature-icon">📈</div><div id="lp-f3">Visual reports &amp; trends</div></div>
-          <div class="lp-feature"><div class="lp-feature-icon">🌍</div><div id="lp-f4">Multi-language: English, العربية, Deutsch</div></div>
+          <div class="lp-feature"><div class="lp-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div><div id="lp-f1">Real-time income &amp; expense tracking</div></div>
+          <div class="lp-feature"><div class="lp-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div><div id="lp-f2">Smart debt management</div></div>
+          <div class="lp-feature"><div class="lp-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div id="lp-f3">Visual reports &amp; trends</div></div>
+          <div class="lp-feature"><div class="lp-feature-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></div><div id="lp-f4">Multi-language: English, العربية, Deutsch</div></div>
         </div>
         <div class="lp-trusted" id="lp-trusted">Trusted by small businesses worldwide</div>
       </div>
@@ -1626,17 +1626,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div class="ob-step-sub" id="ob-login-sub">Sign in to your account</div>
         <div class="ob-error" id="ob-auth-error"></div>
         <div class="ob-input-wrap">
-          <span class="ob-input-icon">👤</span>
+          <span class="ob-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <input class="ob-input" type="text" id="ob-username" autocomplete="username" spellcheck="false" placeholder="Username"/>
         </div>
         <div class="ob-input-wrap">
-          <span class="ob-input-icon">🔒</span>
+          <span class="ob-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
           <input class="ob-input" type="password" id="ob-password" autocomplete="current-password" placeholder="Password"/>
         </div>
         <div style="text-align:right;margin:-6px 0 12px">
           <button onclick="toggleObPw('ob-password','ob-pw-eye')" id="ob-pw-eye"
             style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:4px 2px">
-            👁 <span id="ob-pw-eye-lbl">Show password</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg> <span id="ob-pw-eye-lbl">Show password</span>
           </button>
         </div>
         <button class="ob-btn" onclick="obLogin()" id="ob-login-btn">Sign In</button>
@@ -1656,15 +1656,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         </div>
         <div class="ob-error" id="ob-reg-error"></div>
         <div class="ob-input-wrap">
-          <span class="ob-input-icon">👤</span>
+          <span class="ob-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
           <input class="ob-input" type="text" id="ob-reg-username" autocomplete="username" spellcheck="false" placeholder="Username"/>
         </div>
         <div class="ob-input-wrap">
-          <span class="ob-input-icon">✉️</span>
+          <span class="ob-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></span>
           <input class="ob-input" type="email" id="ob-reg-email" autocomplete="email" placeholder="Email"/>
         </div>
         <div class="ob-input-wrap">
-          <span class="ob-input-icon">🌍</span>
+          <span class="ob-input-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.5 4 5.7 4 9s-1.5 6.5-4 9c-2.5-2.5-4-5.7-4-9s1.5-6.5 4-9z"/></svg></span>
           <select class="ob-input" id="ob-reg-country" style="appearance:none;-webkit-appearance:none" onchange="onCountryChange(this.value)">
             <option value="">Select Country</option>
             <option value="AF|+93">🇦🇫 Afghanistan</option>
@@ -1813,7 +1813,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         </div>
         <div style="display:flex;gap:8px;margin-bottom:14px">
           <div style="display:flex;align-items:center;background:var(--bg);border:2px solid var(--border);border-radius:14px;padding:0 12px;min-width:72px;transition:border-color 0.2s" id="ob-phone-prefix-wrap">
-            <span style="font-size:16px;margin-right:4px">📞</span>
+            <span style="font-size:16px;margin-right:4px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
             <span id="ob-phone-prefix" style="font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap">+--</span>
           </div>
           <input type="tel" id="ob-reg-phone" autocomplete="tel" placeholder="Phone Number"
@@ -1823,19 +1823,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         </div>
         <div style="margin-bottom:14px">
           <div style="position:relative">
-            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px">🔒</span>
+            <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
             <input class="ob-input" type="password" id="ob-reg-password" autocomplete="new-password"
               placeholder="Password (min 6 chars)" style="padding-left:42px"/>
           </div>
           <div style="text-align:right;margin-top:4px">
             <button onclick="toggleObPw('ob-reg-password','ob-reg-pw-eye')" id="ob-reg-pw-eye"
               style="background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;padding:2px">
-              👁 <span id="ob-reg-pw-eye-lbl">Show</span>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z"/><circle cx="12" cy="12" r="3"/></svg> <span id="ob-reg-pw-eye-lbl">Show</span>
             </button>
           </div>
         </div>
         <div style="position:relative;margin-bottom:14px">
-          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px">🔒</span>
+          <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
           <input class="ob-input" type="password" id="ob-reg-confirm" autocomplete="new-password"
             placeholder="Confirm Password" style="padding-left:42px"/>
         </div>
@@ -1898,7 +1898,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- SIDEBAR OVERLAY -->
 <div id="sidebarOverlay"></div>
 <!-- SIDEBAR TOGGLE BTN (mobile, hidden on desktop) -->
-<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+<button class="sidebar-toggle-btn" id="sidebarToggleBtn" onclick="toggleSidebar()" aria-label="Menu"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
 <div id="sidebarNav">
   <div class="snav-logo">
     <div class="snav-logo-icon" style="background:none;padding:0;overflow:hidden">
@@ -1934,7 +1934,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-spacer"></div>
   <div class="snav-footer">
     <div class="snav-user" id="snav-user-lbl">Logged in</div>
-    <button class="snav-logout" onclick="logout()">🚪 Logout</button>
+    <button class="snav-logout" onclick="logout()"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/></svg> Logout</button>
   </div>
 </div>
 
@@ -1953,7 +1953,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       </div>
     </div>
     <div class="hdr-actions">
-      <button class="icon-btn" onclick="showNotif()">🔔</button>
+      <button class="icon-btn" onclick="showNotif()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></button>
     </div>
   </div>
   <div class="period-tabs" id="periodTabs" style="position:relative">
@@ -1961,7 +1961,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <button class="period-tab" onclick="setPeriod('week',this)" data-period="week">Week</button>
     <button class="period-tab" onclick="setPeriod('month',this)" data-period="month">Month</button>
     <button class="period-tab" onclick="setPeriod('year',this)" data-period="year">Year</button>
-    <button class="period-tab" id="customPeriodBtn" onclick="toggleCustomDatePopover()" data-period="custom">📅 Custom</button>
+    <button class="period-tab" id="customPeriodBtn" onclick="toggleCustomDatePopover()" data-period="custom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Custom</button>
     <div id="customDatePopover" style="display:none;position:absolute;top:100%;right:0;margin-top:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:16px;z-index:500;width:240px">
       <div style="display:flex;gap:0;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:12px">
         <button type="button" id="customModeSingleBtn" onclick="setCustomDateMode('single')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)">Single Day</button>
@@ -1983,7 +1983,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
   <div id="customDateActiveBar" style="display:none;align-items:center;gap:8px;margin:0 0 4px;padding:8px 12px;background:var(--bg);border-radius:14px">
     <span id="customDateActiveLabel" style="font-size:13px;font-weight:600;color:var(--text)"></span>
-    <button type="button" onclick="clearCustomDateFilter()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:0 4px">✕</button>
+    <button type="button" onclick="clearCustomDateFilter()" style="margin-left:auto;background:none;border:none;color:var(--text3);font-size:15px;cursor:pointer;padding:0 4px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   </div>
 </div>
 
@@ -2018,15 +2018,15 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="qa-title">Quick Add</div>
     <div class="qa-btns">
       <button class="qa-btn income" onclick="openModal('income')">
-        <span class="icon">💰</span>
+        <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>
         <span class="label">Income</span>
       </button>
       <button class="qa-btn expense" onclick="openModal('expense')">
-        <span class="icon">💸</span>
+        <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
         <span class="label">Expense</span>
       </button>
       <button class="qa-btn debt" onclick="openModal('debt')">
-        <span class="icon">🤝</span>
+        <span class="icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
         <span class="label">Debt</span>
       </button>
     </div>
@@ -2104,9 +2104,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="report-card-title">
       <span id="rpt-period-title">This Month</span>
       <div style="display:flex;gap:8px;align-items:center">
-        <button class="share-btn" onclick="shareReport()">📤 <span id="rpt-share-lbl">Share</span></button>
-        <button class="share-btn rpt-pdf-btn" onclick="openExportDialog()" style="background:var(--primary);color:#fff;border:none;box-shadow:none">📄 <span id="rpt-pdf-lbl">PDF</span></button>
-        <button class="share-btn rpt-excel-btn" onclick="openExcelExportModal()" style="background:#2E9E6B;color:#fff;border:none;box-shadow:none">📊 <span id="rpt-excel-lbl">Export to Excel</span></button>
+        <button class="share-btn" onclick="shareReport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> <span id="rpt-share-lbl">Share</span></button>
+        <button class="share-btn rpt-pdf-btn" onclick="openExportDialog()" style="background:var(--primary);color:#fff;border:none;box-shadow:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> <span id="rpt-pdf-lbl">PDF</span></button>
+        <button class="share-btn rpt-excel-btn" onclick="openExcelExportModal()" style="background:#2E9E6B;color:#fff;border:none;box-shadow:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> <span id="rpt-excel-lbl">Export to Excel</span></button>
       </div>
     </div>
     <!-- Print header (visible only in print) -->
@@ -2318,7 +2318,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="bnav-label" id="nav-settings-mob-lbl">Settings</div>
   </div>
   <div class="bnav-item" id="nav-logout-mob" onclick="logout()">
-    <div class="bnav-icon">🚪</div>
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h4"/><path d="M15 17l5-5-5-5"/><path d="M20 12H9"/></svg></div>
     <div class="bnav-label">Logout</div>
   </div>
 </div>
@@ -2340,9 +2340,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="modal-title" id="modalTitle">Add Transaction</div>
 
     <div class="type-btns">
-      <button class="type-btn sel-income" id="type-income" onclick="setType('income')">💰<br/><span id="lbl-type-income">Income</span></button>
-      <button class="type-btn" id="type-expense" onclick="setType('expense')">💸<br/><span id="lbl-type-expense">Expense</span></button>
-      <button class="type-btn" id="type-debt" onclick="setType('debt')">🤝<br/><span id="lbl-type-debt">Debt</span></button>
+      <button class="type-btn sel-income" id="type-income" onclick="setType('income')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg><br/><span id="lbl-type-income">Income</span></button>
+      <button class="type-btn" id="type-expense" onclick="setType('expense')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg><br/><span id="lbl-type-expense">Expense</span></button>
+      <button class="type-btn" id="type-debt" onclick="setType('debt')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><br/><span id="lbl-type-debt">Debt</span></button>
     </div>
 
     <input class="amount-input" id="amountInput" type="number" placeholder="0.00" inputmode="decimal"/>
@@ -2355,11 +2355,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div style="display:flex;gap:8px">
         <button id="debt-dir-creditor" onclick="setDebtDirection('creditor')"
           style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--income);background:rgba(34,197,94,0.1);color:#16a34a;font-size:13px;font-weight:700;cursor:pointer">
-          💰 دائن (لي)
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg> <span id="debt-dir-creditor-lbl">دائن (لي)</span>
         </button>
         <button id="debt-dir-debtor" onclick="setDebtDirection('debtor')"
           style="flex:1;padding:10px;border-radius:12px;border:2px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:700;cursor:pointer">
-          💸 مدين (عليّ)
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg> <span id="debt-dir-debtor-lbl">مدين (عليّ)</span>
         </button>
       </div>
     </div>
@@ -2388,14 +2388,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
     <div style="margin:0 0 12px 0">
       <label for="invoiceInput" style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px dashed var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text2)">
-        <span style="font-size:18px">📎</span>
+        <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
         <span id="invoiceLabel">Attach Invoice (Image)</span>
       </label>
       <input type="file" id="invoiceInput" accept="image/*" style="display:none" onchange="handleInvoice(this)"/>
       <div id="invoicePreview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--card);border-radius:10px;font-size:12px;color:var(--text2);align-items:center;gap:8px">
-        <span style="font-size:16px">🖼️</span>
+        <span style="font-size:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
         <span id="invoiceFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
-        <button onclick="clearInvoice()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer">✕</button>
+        <button onclick="clearInvoice()" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
       </div>
     </div>
     <button class="submit-btn income" id="submitBtn" onclick="addTransaction()">Add Income</button>
@@ -2807,7 +2807,38 @@ var SVG_ICON_PATHS = {
   sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
   calendar: '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
   xCircle: '<circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/>',
-  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/>'
+  checkCircle: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.5 2.5 5-5"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  money: '<rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/>',
+  scissors: '<circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/>',
+  handshake: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+  bell: '<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>',
+  printDownload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+  mail: '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+  message: '<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>',
+  phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>',
+  file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+  fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  barChart: '<line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/>',
+  trendingUp: '<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>',
+  menu: '<line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>',
+  user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+  refreshCw: '<polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>',
+  paperclip: '<path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>',
+  image: '<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>',
+  shoppingCart: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>',
+  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+  pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  packageIcon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  lightbulb: '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>',
+  megaphone: '<path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
+  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+};
+var CAT_ICON_KEYS = {
+  Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
+  Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
+  Customer:'user', Supplier:'building', Friend:'users', Partner:'handshake',
 };
 function svgIcon(name, size) {
   size = size || 16;
@@ -3148,7 +3179,7 @@ function renderModal() {
   cats.forEach(function(cat) {
     var b = document.createElement('button');
     b.className = 'cat-btn' + (cat===state.currentCat?' active':'');
-    b.innerHTML = (ICONS[cat]||'📌') + '<br/>' + tc(cat);
+    b.innerHTML = svgIcon(CAT_ICON_KEYS[cat]||'pin',16) + '<br/>' + tc(cat);
     b.onclick = function() {
       state.currentCat = cat;
       grid.querySelectorAll('.cat-btn').forEach(function(x){ x.classList.remove('active'); });
@@ -3179,12 +3210,12 @@ function renderModal() {
 
   // Translate debt direction buttons
   var lang = state.lang;
-  var creditorLbl = {en:'💰 Creditor (owed to me)', ar:'💰 دائن (لي)', de:'💰 Gläubiger (mir geschuldet)'};
-  var debtorLbl  = {en:'💸 Debtor (I owe)', ar:'💸 مدين (عليّ)', de:'💸 Schuldner (ich schulde)'};
-  var cBtn = document.getElementById('debt-dir-creditor');
-  var dBtn = document.getElementById('debt-dir-debtor');
-  if(cBtn) cBtn.textContent = creditorLbl[lang]||creditorLbl.en;
-  if(dBtn) dBtn.textContent = debtorLbl[lang]||debtorLbl.en;
+  var creditorLbl = {en:'Creditor (owed to me)', ar:'دائن (لي)', de:'Gläubiger (mir geschuldet)'};
+  var debtorLbl  = {en:'Debtor (I owe)', ar:'مدين (عليّ)', de:'Schuldner (ich schulde)'};
+  var cBtnLbl = document.getElementById('debt-dir-creditor-lbl');
+  var dBtnLbl = document.getElementById('debt-dir-debtor-lbl');
+  if(cBtnLbl) cBtnLbl.textContent = creditorLbl[lang]||creditorLbl.en;
+  if(dBtnLbl) dBtnLbl.textContent = debtorLbl[lang]||debtorLbl.en;
 
   // Set default direction
   if(typ==='debt' && !state.debtDirection) {
@@ -3418,7 +3449,7 @@ function renderBudgetDashboard(income, expense) {
     return '<div style="margin-bottom:10px">'
       +'<div style="display:flex;justify-content:space-between;margin-bottom:4px">'
       +'<span style="font-size:12px;font-weight:600;color:var(--text2)">'+label+'</span>'
-      +'<span style="font-size:11px;color:'+(over?'var(--expense)':'var(--text3)')+'">'+fmt(actual)+' '+tx('of')+' '+fmt(target)+(over?' ⚠️ '+tx('over'):'')+'</span>'
+      +'<span style="font-size:11px;color:'+(over?'var(--expense)':'var(--text3)')+'">'+fmt(actual)+' '+tx('of')+' '+fmt(target)+(over?' '+svgIcon('warning',11)+' '+tx('over'):'')+'</span>'
       +'</div>'
       +'<div style="background:var(--border);border-radius:6px;height:10px;overflow:hidden">'
       +'<div style="height:100%;border-radius:6px;background:'+barColor+';width:'+pct+'%;transition:width 0.6s ease"></div>'
@@ -3428,7 +3459,7 @@ function renderBudgetDashboard(income, expense) {
 
   var h = '<div style="background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)">';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
-  h += '<div style="font-size:14px;font-weight:700">📊 '+tx('budget')+'</div>';
+  h += '<div style="font-size:14px;font-weight:700">'+svgIcon('barChart',14)+' '+tx('budget')+'</div>';
   h += '<button onclick="goSettings()" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer">'+tx('edit')+' →</button>';
   h += '</div>';
   h += bar(tx('income'), income, budInc, 'var(--income)');
@@ -3701,7 +3732,7 @@ function renderTxList(txs, showAll) {
       +tagHtml+'</div>'
       +'<div style="text-align:right">'
       +'<div class="tx-amount '+tx.type+'">'+(tx.type==='income'?'+':'-')+fmt(tx.amount)+'</div>'
-      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(tx.invoice?'📎':'')+'</div>'
+      +'<div style="font-size:10px;color:var(--text3);margin-top:2px">'+(tx.invoice?svgIcon('paperclip',10):'')+'</div>'
       +'</div>';
     // Open detail on click
     item.onclick = function() { showTxDetail(tx); };
@@ -4170,9 +4201,9 @@ function renderDebtsPage() {
 
   var paidDebts = state.debts.filter(function(d){ return d.status === 'paid'; });
   var paidLbl     = {en:'Paid Debts',ar:'الديون المسددة',de:'Bezahlte Schulden'}[lang]||'Paid Debts';
-  var markPaidLbl = {en:'✅ Mark as Paid',ar:'✅ كمدفوع',de:'✅ Bezahlt'}[lang]||'✅ Mark as Paid';
-  var editLblD    = '✏️';
-  var delLblD     = '🗑';
+  var markPaidLbl = svgIcon('check',13) + ' ' + ({en:'Mark as Paid',ar:'كمدفوع',de:'Bezahlt'}[lang]||'Mark as Paid');
+  var editLblD    = svgIcon('pencil',14);
+  var delLblD     = svgIcon('trash',14);
 
   function debtCard(d, isPaid) {
     var days = daysAgo(d.date);
@@ -4221,12 +4252,12 @@ function renderDebtsPage() {
   // ── Icon tab cards ──
   h += '<div class="debt-icon-tabs">';
   h += '<div class="debt-icon-tab'+(activeTab==='owes'?' active':'')+'" onclick="switchDebtTab(\'owes\')">'
-    +'<div class="dit-icon">💰</div>'
+    +'<div class="dit-icon">'+svgIcon('money',26)+'</div>'
     +'<div class="dit-label">'+owesLbl+'</div>'
     +'<div class="dit-amount" style="color:var(--green)">+'+fmt(totalOwesMe)+'</div>'
     +'</div>';
   h += '<div class="debt-icon-tab'+(activeTab==='iowe'?' active':'')+'" onclick="switchDebtTab(\'iowe\')">'
-    +'<div class="dit-icon">💸</div>'
+    +'<div class="dit-icon">'+svgIcon('scissors',26)+'</div>'
     +'<div class="dit-label">'+iOweLbl+'</div>'
     +'<div class="dit-amount" style="color:var(--red)">-'+fmt(totalIOwe)+'</div>'
     +'</div>';
@@ -4250,7 +4281,7 @@ function renderDebtsPage() {
   if(paidDebts.length) {
     h += '<details style="margin-top:16px">'
       +'<summary style="font-size:13px;font-weight:700;color:var(--text3);cursor:pointer;padding:10px 14px;background:var(--card);border-radius:12px;list-style:none;display:flex;align-items:center;justify-content:space-between">'
-      +'<span>✅ '+paidLbl+' ('+paidDebts.length+')</span><span style="font-size:10px">▼</span></summary>'
+      +'<span>'+svgIcon('check',13)+' '+paidLbl+' ('+paidDebts.length+')</span><span style="font-size:10px">▼</span></summary>'
       +'<div style="margin-top:8px">';
     paidDebts.forEach(function(d){ h += debtCard(d, true); });
     h += '</div></details>';
@@ -5454,9 +5485,9 @@ var INV_L = {
   confirmDeleteInv:{en:'Delete this invoice?', ar:'حذف هذه الفاتورة؟', de:'Diese Rechnung löschen?'},
   confirmDeleteRec:{en:'Delete this receipt?', ar:'حذف هذا الإيصال؟', de:'Diese Quittung löschen?'},
   invoiceNumLbl: {en:'Invoice Number', ar:'رقم الفاتورة', de:'Rechnungsnummer'},
-  markAsPaid:    {en:'✅ Mark as Paid', ar:'✅ تحديد كمدفوعة', de:'✅ Als bezahlt markieren'},
-  markAsPending: {en:'↩️ Mark as Pending', ar:'↩️ تحديد كمعلقة', de:'↩️ Als ausstehend markieren'},
-  downloadPdfLbl:{en:'⬇️ PDF', ar:'⬇️ PDF', de:'⬇️ PDF'},
+  markAsPaid:    {en:svgIcon('check',12)+' Mark as Paid', ar:svgIcon('check',12)+' تحديد كمدفوعة', de:svgIcon('check',12)+' Als bezahlt markieren'},
+  markAsPending: {en:svgIcon('exchange',12)+' Mark as Pending', ar:svgIcon('exchange',12)+' تحديد كمعلقة', de:svgIcon('exchange',12)+' Als ausstehend markieren'},
+  downloadPdfLbl:{en:svgIcon('download',12)+' PDF', ar:svgIcon('download',12)+' PDF', de:svgIcon('download',12)+' PDF'},
   downloadingPdf:{en:'Downloading PDF...', ar:'جاري تنزيل PDF...', de:'PDF wird heruntergeladen...'},
 };
 function itx(k) { return (INV_L[k] && INV_L[k][state.lang]) || (INV_L[k] && INV_L[k].en) || k; }
@@ -6026,8 +6057,8 @@ function buildInvoiceHTML(inv, type) {
   '@media print{body{margin:0}.no-print{display:none}@page{size:A4}}' +
   '</style></head><body dir="' + dirAttr + '">' +
   '<div class="no-print">' +
-  '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">🖨 ' + ptx('printBtn') + '</button>' +
-  '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">✕ ' + ptx('closeBtn') + '</button>' +
+  '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+  '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
   '</div>' +
   (state.businessLogo ? '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none"><img src="' + state.businessLogo + '" style="width:500px;height:500px;object-fit:contain;opacity:0.06"></div>' : '') +
   '<div style="position:relative;z-index:1">' +
@@ -6424,18 +6455,18 @@ function renderFixedPage() {
 
   // ── Fixed Income (1st) ──
   h += '<div>';
-  h += '<div style="font-size:17px;font-weight:700;margin-bottom:4px">💰 '+fiTx('title')+'</div>';
+  h += '<div style="font-size:17px;font-weight:700;margin-bottom:4px">'+svgIcon('money',17)+' '+fiTx('title')+'</div>';
   if(fiTotal>0) h += '<div style="font-size:12px;color:var(--income);font-weight:600;margin-bottom:12px">'+fiTx('total')+': '+fmt(fiTotal)+'</div>';
   else h += '<div style="height:12px"></div>';
 
   (state.fixedIncome||[]).forEach(function(fi){
     h += '<div style="background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px">';
-    h += '<div style="font-size:24px">💰</div>';
+    h += '<div style="font-size:24px">'+svgIcon('money',24)+'</div>';
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+escHtml(fi.name)+'</div>';
     if(fi.source) h += '<div style="font-size:11px;color:var(--text3)">'+escHtml(fi.source)+'</div>';
     h += '<div style="font-size:11px;color:var(--text3)">'+fiTypeTx(fi.type||'other')+' · '+fiTx('day')+' '+fi.day+'</div>';
     h += '<div style="font-size:12px;color:var(--income);font-weight:600">+'+fmt(parseFloat(fi.amount)||0)+'/mo</div></div>';
-    h += '<button id="fp-delfi_'+fi.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">✕</button>';
+    h += '<button id="fp-delfi_'+fi.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">'+svgIcon('x',12)+'</button>';
     h += '</div>';
   });
 
@@ -6467,11 +6498,11 @@ function renderFixedPage() {
     var daysLeft = r.day >= today2 ? r.day - today2 : (31 - today2 + r.day);
     var urgent = daysLeft <= 3;
     h += '<div style="background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px'+(urgent?';border:1.5px solid var(--expense)':'')+'">';
-    h += '<div style="font-size:24px">🔄</div>';
+    h += '<div style="font-size:24px">'+svgIcon('refreshCw',24)+'</div>';
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+r.name+'</div>';
-    h += '<div style="font-size:11px;color:var(--text3)">'+tx('day')+': '+r.day+(urgent?' ⚠️':'')+' </div>';
+    h += '<div style="font-size:11px;color:var(--text3)">'+tx('day')+': '+r.day+(urgent?' '+svgIcon('warning',11):'')+' </div>';
     h += '<div style="font-size:12px;color:var(--expense);font-weight:600">-'+fmt(parseFloat(r.amount)||0)+'/mo</div></div>';
-    h += '<button id="fp-delrec_'+r.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">✕</button>';
+    h += '<button id="fp-delrec_'+r.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">'+svgIcon('x',12)+'</button>';
     h += '</div>';
   });
 
@@ -6498,7 +6529,7 @@ function renderFixedPage() {
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+e.name+'</div>';
     if(e.role) h += '<div style="font-size:11px;color:var(--text3)">'+e.role+'</div>';
     h += '<div style="font-size:12px;color:var(--income);font-weight:600">'+fmt(parseFloat(e.salary)||0)+'/mo</div></div>';
-    h += '<button id="fp-delemp_'+e.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">✕</button>';
+    h += '<button id="fp-delemp_'+e.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">'+svgIcon('x',12)+'</button>';
     h += '</div>';
   });
 
@@ -6529,7 +6560,7 @@ function renderFixedPage() {
   };
   function taxTx(k){ return (taxL[k]&&taxL[k][lang])||(taxL[k]&&taxL[k].en)||k; }
   h += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">';
-  h += '<div style="font-size:17px;font-weight:700;margin-bottom:4px">🧾 '+taxTx('title')+'</div>';
+  h += '<div style="font-size:17px;font-weight:700;margin-bottom:4px">'+svgIcon('fileText',17)+' '+taxTx('title')+'</div>';
   if(taxObj.rate>0) h += '<div style="font-size:12px;color:var(--orange);font-weight:600;margin-bottom:12px">'+(taxObj.name||'Tax')+': '+taxObj.rate+'% ('+(taxObj.type==='on_sales'?taxTx('onSales').substring(0,20):taxObj.type==='on_profit'?taxTx('onProfit').substring(0,20):taxTx('both').substring(0,20))+')</div>';
   else h += '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">'+taxTx('none')+'</div>';
   h += '<div style="background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow)">';
@@ -6668,8 +6699,8 @@ function renderClientsPage() {
       h += '<div style="width:42px;height:42px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;font-weight:700;flex-shrink:0">'+c.name.charAt(0).toUpperCase()+'</div>';
       h += '<div style="flex:1;min-width:0">';
       h += '<div style="font-size:14px;font-weight:700">'+c.name+'</div>';
-      if(c.phone) h += '<div style="font-size:12px;color:var(--text3)">📞 '+c.phone+'</div>';
-      if(c.email) h += '<div style="font-size:12px;color:var(--text3)">✉️ '+c.email+'</div>';
+      if(c.phone) h += '<div style="font-size:12px;color:var(--text3)">'+svgIcon('phone',12)+' '+c.phone+'</div>';
+      if(c.email) h += '<div style="font-size:12px;color:var(--text3)">'+svgIcon('mail',12)+' '+c.email+'</div>';
       if(total>0) h += '<div style="font-size:12px;color:var(--income);font-weight:600;margin-top:3px">'+tx('total')+': '+fmt(total)+'</div>';
       h += '</div>';
       h += '<div style="display:flex;flex-direction:column;gap:4px">';
@@ -6715,7 +6746,7 @@ function renderEmployeesSection(container, lang) {
     salary: {en:'Monthly Salary', ar:'الراتب الشهري', de:'Monatsgehalt'},
     role:   {en:'Role', ar:'الوظيفة', de:'Position'},
     save:   {en:'Save', ar:'حفظ', de:'Speichern'},
-    del:    {en:'✕', ar:'✕', de:'✕'},
+    del:    {en:svgIcon('x',12), ar:svgIcon('x',12), de:svgIcon('x',12)},
     total:  {en:'Total payroll/mo', ar:'إجمالي الرواتب/شهر', de:'Gehaltskosten/Mo'},
     empty:  {en:'No employees yet.', ar:'لا يوجد موظفين.', de:'Noch keine Mitarbeiter.'},
   };
@@ -6743,11 +6774,11 @@ function renderEmployeesSection(container, lang) {
   } else {
     state.employees.forEach(function(e){
       h += '<div style="background:var(--card);border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)">';
-      h += '<div style="font-size:22px">👤</div>';
+      h += '<div style="font-size:22px">'+svgIcon('user',22)+'</div>';
       h += '<div style="flex:1"><div style="font-size:13px;font-weight:600">'+e.name+'</div>';
       if(e.role) h += '<div style="font-size:11px;color:var(--text3)">'+e.role+'</div>';
       h += '<div style="font-size:12px;color:var(--income);font-weight:600">'+fmt(parseFloat(e.salary)||0)+'/mo</div></div>';
-      h += '<button id="delemp_'+e.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:7px;padding:6px 8px;font-size:13px;cursor:pointer">✕</button>';
+      h += '<button id="delemp_'+e.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:7px;padding:6px 8px;font-size:13px;cursor:pointer">'+svgIcon('x',13)+'</button>';
       h += '</div>';
     });
   }
@@ -6813,11 +6844,11 @@ function renderRecurringSection(container, lang) {
       var daysLeft = r.day >= todayDay ? r.day - todayDay : (31 - todayDay + r.day);
       var urgent = daysLeft <= 3;
       h += '<div style="background:var(--card);border-radius:12px;padding:11px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;box-shadow:var(--shadow)'+(urgent?';border:1.5px solid var(--expense)':'')+'">';
-      h += '<div style="font-size:22px">🔄</div>';
+      h += '<div style="font-size:22px">'+svgIcon('refreshCw',22)+'</div>';
       h += '<div style="flex:1"><div style="font-size:13px;font-weight:600">'+r.name+'</div>';
-      h += '<div style="font-size:11px;color:var(--text3)">'+tx('due')+': '+r.day+(urgent?'  ⚠️ '+daysLeft+'d':'')+' </div></div>';
+      h += '<div style="font-size:11px;color:var(--text3)">'+tx('due')+': '+r.day+(urgent?'  '+svgIcon('warning',11)+' '+daysLeft+'d':'')+' </div></div>';
       h += '<div style="font-size:13px;font-weight:700;color:var(--expense)">-'+fmt(parseFloat(r.amount)||0)+'</div>';
-      h += '<button id="delrec_'+r.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:7px;padding:6px 8px;font-size:13px;cursor:pointer;margin-left:4px">✕</button>';
+      h += '<button id="delrec_'+r.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:7px;padding:6px 8px;font-size:13px;cursor:pointer;margin-left:4px">'+svgIcon('x',13)+'</button>';
       h += '</div>';
     });
   }
@@ -6884,14 +6915,14 @@ function renderBudgetSection(container, lang) {
   if(budgetIncome>0||budgetExpense>0) {
     h += '<div style="background:var(--card);border-radius:12px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)">';
     if(budgetIncome>0) {
-      h += '<div style="font-size:12px;font-weight:600;color:var(--income)">💰 '+tx('income')+'</div>';
+      h += '<div style="font-size:12px;font-weight:600;color:var(--income)">'+svgIcon('money',12)+' '+tx('income')+'</div>';
       h += bar(actualIncome, budgetIncome, 'var(--income)');
       h += '<div style="height:12px"></div>';
     }
     if(budgetExpense>0) {
-      h += '<div style="font-size:12px;font-weight:600;color:var(--expense)">💸 '+tx('expense')+'</div>';
+      h += '<div style="font-size:12px;font-weight:600;color:var(--expense)">'+svgIcon('scissors',12)+' '+tx('expense')+'</div>';
       h += bar(actualExpense, budgetExpense, 'var(--primary)');
-      if(actualExpense>budgetExpense) h += '<div style="font-size:11px;color:var(--expense);font-weight:700;margin-top:4px">⚠️ '+tx('over')+'</div>';
+      if(actualExpense>budgetExpense) h += '<div style="font-size:11px;color:var(--expense);font-weight:700;margin-top:4px">'+svgIcon('warning',11)+' '+tx('over')+'</div>';
     }
     h += '</div>';
   }
@@ -6937,7 +6968,7 @@ function renderBreakEvenSection(container, lang) {
 
   var saved = state.budgets.breakeven || {};
   var h = '<div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--border);margin-bottom:20px">';
-  h += '<div style="font-size:15px;font-weight:700;margin-bottom:12px">📊 '+tx('title')+'</div>';
+  h += '<div style="font-size:15px;font-weight:700;margin-bottom:12px">'+svgIcon('barChart',15)+' '+tx('title')+'</div>';
   h += '<div style="background:var(--bg);border-radius:12px;padding:14px;border:1.5px solid var(--border)">';
   h += '<input id="be-fixed" type="number" placeholder="'+tx('fixed')+(saved.fixed?(' ('+fmt(saved.fixed)+')'):'') +'" value="" style="width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
   h += '<input id="be-price" type="number" placeholder="'+tx('price')+(saved.price?(' ('+fmt(saved.price)+')'):'') +'" value="" style="width:100%;padding:9px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
@@ -6954,7 +6985,7 @@ function renderBreakEvenSection(container, lang) {
     var varCost = parseFloat(document.getElementById('be-var').value)||0;
     var margin = price - varCost;
     var result = document.getElementById('be-result');
-    if(margin <= 0) { result.innerHTML='<div style="color:var(--expense);font-size:13px">⚠️ Price must be higher than variable cost!</div>'; result.style.display='block'; return; }
+    if(margin <= 0) { result.innerHTML='<div style="color:var(--expense);font-size:13px">'+svgIcon('warning',13)+' Price must be higher than variable cost!</div>'; result.style.display='block'; return; }
     var units = Math.ceil(fixed / margin);
     state.budgets.breakeven = { fixed:fixed, price:price, varCost:varCost };
     save();
@@ -7846,7 +7877,7 @@ function obRenderSetupLists() {
           +'<div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">'+e.name.charAt(0).toUpperCase()+'</div>'
           +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+e.name+'</div>'
           +'<div style="font-size:11px;color:var(--income);font-weight:600">'+e.salary+' '+cur+'/mo</div></div>'
-          +'<button onclick="obSetupEmployees.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">✕</button>'
+          +'<button onclick="obSetupEmployees.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">'+svgIcon('x',16)+'</button>'
           +'</div>';
       }).join('');
     }
@@ -7858,10 +7889,10 @@ function obRenderSetupLists() {
     } else {
       recList.innerHTML = obSetupRecurring.map(function(r, i){
         return '<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
-          +'<div style="font-size:20px">🔄</div>'
+          +'<div style="font-size:20px">'+svgIcon('refreshCw',20)+'</div>'
           +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+r.name+'</div>'
           +'<div style="font-size:11px;color:var(--expense);font-weight:600">-'+r.amount+' '+cur+'/mo</div></div>'
-          +'<button onclick="obSetupRecurring.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">✕</button>'
+          +'<button onclick="obSetupRecurring.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">'+svgIcon('x',16)+'</button>'
           +'</div>';
       }).join('');
     }
@@ -7952,7 +7983,7 @@ function showInAppBanner(type, icon, titleMap, bodyMap, actionLabel, actionFn) {
     +'<div class="inapp-notif-text" style="white-space:normal">'+body+'</div>'
     +(actionLabel ? '<button class="inapp-notif-action" style="margin-top:6px;background:none;border:none;color:inherit;font-weight:700;font-size:12px;cursor:pointer;padding:0;text-decoration:underline">'+actionLabel+'</button>' : '')
     +'</div>'
-    +'<button class="inapp-notif-close" onclick="this.parentNode.remove()">✕</button>';
+    +'<button class="inapp-notif-close" onclick="this.parentNode.remove()">'+svgIcon('x',14)+'</button>';
   if(actionLabel && actionFn) {
     var actionBtn = notif.querySelector('.inapp-notif-action');
     if(actionBtn) actionBtn.onclick = function(e){ e.stopPropagation(); actionFn(); notif.remove(); };
@@ -9163,9 +9194,9 @@ function renderClientProfile(clientId) {
   h += '<div style="font-size:20px;font-weight:700">'+client.name+'</div>';
   if(client.company) h += '<div style="font-size:13px;opacity:0.8;margin-top:2px">'+client.company+'</div>';
   h += '<div class="cp-contact-btns">';
-  if(client.phone) h += '<a href="tel:'+client.phone+'" class="cp-contact-btn">📞 '+(lang==='ar'?'اتصال':lang==='de'?'Anrufen':'Call')+'</a>';
-  if(client.email) h += '<a href="mailto:'+client.email+'" class="cp-contact-btn">✉️ '+(lang==='ar'?'إيميل':'Email')+'</a>';
-  if(client.phone) h += '<a href="https://wa.me/'+client.phone.replace(/[^0-9]/g,'')+'" class="cp-contact-btn">💬 WhatsApp</a>';
+  if(client.phone) h += '<a href="tel:'+client.phone+'" class="cp-contact-btn">'+svgIcon('phone',13)+' '+(lang==='ar'?'اتصال':lang==='de'?'Anrufen':'Call')+'</a>';
+  if(client.email) h += '<a href="mailto:'+client.email+'" class="cp-contact-btn">'+svgIcon('mail',13)+' '+(lang==='ar'?'إيميل':'Email')+'</a>';
+  if(client.phone) h += '<a href="https://wa.me/'+client.phone.replace(/[^0-9]/g,'')+'" class="cp-contact-btn">'+svgIcon('message',13)+' WhatsApp</a>';
   h += '</div></div></div>';
   h += '<div class="cp-body" dir="'+(isRTL?'rtl':'ltr')+'">';
   h += '<div class="cp-stat-row">';
@@ -9176,7 +9207,7 @@ function renderClientProfile(clientId) {
   h += '</div>';
   if(client.notes) {
     h += '<div style="background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)">';
-    h += '<div style="font-size:13px;font-weight:700;margin-bottom:6px">📝 '+(lang==='ar'?'ملاحظات':lang==='de'?'Notizen':'Notes')+'</div>';
+    h += '<div style="font-size:13px;font-weight:700;margin-bottom:6px">'+svgIcon('pencil',13)+' '+(lang==='ar'?'ملاحظات':lang==='de'?'Notizen':'Notes')+'</div>';
     h += '<div style="font-size:13px;color:var(--text2)">'+client.notes+'</div></div>';
   }
   var txHistTitle = lang==='ar' ? 'تاريخ المعاملات' : lang==='de' ? 'Transaktionsverlauf' : 'Transaction History';
@@ -9317,8 +9348,8 @@ function renderSuppliersPage() {
       h += '<div style="flex:1;min-width:0">';
       h += '<div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(s.name) + '</div>';
       if(s.serviceType) h += '<div style="font-size:12px;color:var(--text3);margin-top:1px">' + escHtml(s.serviceType) + '</div>';
-      if(s.phone) h += '<div style="font-size:12px;color:var(--text2)">📞 ' + escHtml(s.phone) + '</div>';
-      if(s.email) h += '<div style="font-size:12px;color:var(--text2)">✉️ ' + escHtml(s.email) + '</div>';
+      if(s.phone) h += '<div style="font-size:12px;color:var(--text2)">' + svgIcon('phone',12) + ' ' + escHtml(s.phone) + '</div>';
+      if(s.email) h += '<div style="font-size:12px;color:var(--text2)">' + svgIcon('mail',12) + ' ' + escHtml(s.email) + '</div>';
       h += '<div style="font-size:12px;color:#ef4444;margin-top:2px">' + tx('totalSpent') + ' ' + fmt(totalSpent) + '</div>';
       h += '</div>';
       h += '<div style="display:flex;flex-direction:column;gap:6px;flex-shrink:0">';
@@ -9934,7 +9965,7 @@ function toggleSidebar() {
   <div class="edit-debt-sheet">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
       <div style="font-size:17px;font-weight:700" id="edit-debt-title">Edit Debt</div>
-      <button onclick="document.getElementById('editDebtOverlay').classList.remove('open')" style="background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px">✕</button>
+      <button onclick="document.getElementById('editDebtOverlay').classList.remove('open')" style="background:var(--bg);border:none;border-radius:50%;width:32px;height:32px;cursor:pointer;font-size:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     </div>
     <input id="ed-person" placeholder="Person" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
     <input id="ed-amount" type="number" placeholder="Amount" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
