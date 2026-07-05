@@ -2349,7 +2349,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="currency-label" id="currencyLabel">EUR €</div>
 
     <input class="input-field" id="nameInput" placeholder="Description (e.g. Coffee sales)" />
-    <input class="input-field" id="personInput" placeholder="Person name (for debts)" style="display:none"/>
+    <select id="modal-debt-person-select" onchange="refreshDebtPersonDropdown()" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:12px;display:none">
+      <option value="" disabled selected>Select person...</option>
+    </select>
+    <input class="input-field" id="modal-debt-person-other" placeholder="Enter name" style="display:none"/>
     <!-- Debt direction toggle -->
     <div id="debtDirectionWrap" style="display:none;margin-bottom:10px">
       <div style="display:flex;gap:8px">
@@ -2513,7 +2516,7 @@ var LANG = {
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
       Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
-      Customer:"Customer", Supplier:"Supplier", Friend:"Friend", Partner:"Partner",
+      Customer:"Customer", Supplier:"Supplier",
     }
   },
   ar: {
@@ -2589,7 +2592,7 @@ var LANG = {
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
       Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
-      Customer:"عميل", Supplier:"مورد", Friend:"صديق", Partner:"شريك",
+      Customer:"عميل", Supplier:"مورد",
     }
   },
   de: {
@@ -2665,7 +2668,7 @@ var LANG = {
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
       Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
-      Customer:"Kunde", Supplier:"Lieferant", Friend:"Freund", Partner:"Partner",
+      Customer:"Kunde", Supplier:"Lieferant",
     }
   }
 };
@@ -2739,13 +2742,13 @@ function getCurrencyLabel(sym) {
 var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
   expense: ['Supplies','Rent','Salary','Utilities','Marketing','Other'],
-  debt: ['Customer','Supplier','Friend','Partner','Other'],
+  debt: ['Customer','Supplier','Other'],
 };
 
 var ICONS = {
   Sales:'🛒', Service:'🔧', Rent:'🏠', Investment:'📈', Other:'📌',
   Supplies:'📦', Salary:'👤', Utilities:'💡', Marketing:'📣',
-  Customer:'👤', Supplier:'🏭', Friend:'👥', Partner:'🤝',
+  Customer:'👤', Supplier:'🏭',
 };
 
 // ── HELPERS ──
@@ -2838,7 +2841,7 @@ var SVG_ICON_PATHS = {
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
   Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
-  Customer:'user', Supplier:'building', Friend:'users', Partner:'handshake',
+  Customer:'user', Supplier:'building',
 };
 function svgIcon(name, size) {
   size = size || 16;
@@ -3142,7 +3145,10 @@ function closeModal() {
   document.getElementById('modalOverlay').classList.remove('open');
   document.getElementById('amountInput').value = '';
   document.getElementById('nameInput').value = '';
-  document.getElementById('personInput').value = '';
+  var debtPersonSelC = document.getElementById('modal-debt-person-select');
+  if(debtPersonSelC) debtPersonSelC.value = '';
+  var debtPersonOtherC = document.getElementById('modal-debt-person-other');
+  if(debtPersonOtherC) { debtPersonOtherC.value = ''; debtPersonOtherC.style.display = 'none'; }
   var di = document.getElementById('dateInput');
   if(di) di.value = '';
   var cliSelC = document.getElementById('modal-client');
@@ -3193,9 +3199,11 @@ function renderModal() {
   var addLabels = {income: t('addIncome'), expense: t('addExpense'), debt: t('addDebt')};
   sub.textContent = addLabels[typ] || 'Add';
 
-  document.getElementById('personInput').style.display = typ==='debt'?'block':'none';
+  var debtPersonSel = document.getElementById('modal-debt-person-select');
+  if(debtPersonSel) debtPersonSel.style.display = typ==='debt'?'block':'none';
   var ddWrap = document.getElementById('debtDirectionWrap');
   if(ddWrap) ddWrap.style.display = typ==='debt'?'block':'none';
+  if(typ==='debt') populateDebtPersonDropdown();
 
   // Date label: show "Due Date" for debt, hide for others
   var lang = state.lang;
@@ -3226,7 +3234,6 @@ function renderModal() {
   document.getElementById('lbl-type-expense').textContent = t('expense');
   document.getElementById('lbl-type-debt').textContent = t('debts');
   document.getElementById('nameInput').placeholder = t('description');
-  document.getElementById('personInput').placeholder = t('personName');
   document.getElementById('currencyLabel').textContent = getCurrencyLabel(state.currency);
   document.getElementById('modalTitle').textContent = t('addTx');
 
@@ -3301,6 +3308,80 @@ function refreshSupplierDropdown() {
   sel.value = currentVal;
 }
 
+function populateDebtPersonDropdown() {
+  var sel = document.getElementById('modal-debt-person-select');
+  if(!sel) return;
+  var lang = state.lang;
+  var selectPersonTx = {en:'Select person...', ar:'اختر شخصاً...', de:'Person auswählen...'};
+  var clientsTx = {en:'Clients', ar:'العملاء', de:'Kunden'};
+  var suppliersTx = {en:'Suppliers', ar:'الموردين', de:'Lieferanten'};
+  var otherTx = {en:'+ Other (new person)', ar:'+ آخر (شخص جديد)', de:'+ Andere (neue Person)'};
+  var currentVal = sel.value;
+  sel.innerHTML = '';
+
+  var defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.disabled = true;
+  defaultOpt.textContent = selectPersonTx[lang] || selectPersonTx.en;
+  sel.appendChild(defaultOpt);
+
+  var debtClients = state.clients || [];
+  if(debtClients.length) {
+    var clientsGroup = document.createElement('optgroup');
+    clientsGroup.label = clientsTx[lang] || clientsTx.en;
+    for(var ci = 0; ci < debtClients.length; ci++) {
+      var cOpt = document.createElement('option');
+      cOpt.value = debtClients[ci].id;
+      cOpt.textContent = debtClients[ci].name;
+      clientsGroup.appendChild(cOpt);
+    }
+    sel.appendChild(clientsGroup);
+  }
+
+  var debtSuppliers = state.suppliers || [];
+  if(debtSuppliers.length) {
+    var suppliersGroup = document.createElement('optgroup');
+    suppliersGroup.label = suppliersTx[lang] || suppliersTx.en;
+    for(var si = 0; si < debtSuppliers.length; si++) {
+      var sOpt = document.createElement('option');
+      sOpt.value = debtSuppliers[si].id;
+      sOpt.textContent = debtSuppliers[si].name;
+      suppliersGroup.appendChild(sOpt);
+    }
+    sel.appendChild(suppliersGroup);
+  }
+
+  var otherOpt = document.createElement('option');
+  otherOpt.value = '__other__';
+  otherOpt.textContent = otherTx[lang] || otherTx.en;
+  sel.appendChild(otherOpt);
+
+  var stillExists = false;
+  for(var oi = 0; oi < sel.options.length; oi++) {
+    if(sel.options[oi].value === currentVal) { stillExists = true; break; }
+  }
+  sel.value = stillExists ? currentVal : '';
+
+  var otherInp = document.getElementById('modal-debt-person-other');
+  if(otherInp) {
+    var enterNameTx = {en:'Enter name', ar:'أدخل الاسم', de:'Name eingeben'};
+    otherInp.placeholder = enterNameTx[lang] || enterNameTx.en;
+  }
+  refreshDebtPersonDropdown();
+}
+
+function refreshDebtPersonDropdown() {
+  var sel = document.getElementById('modal-debt-person-select');
+  var otherInp = document.getElementById('modal-debt-person-other');
+  if(!sel || !otherInp) return;
+  if(sel.value === '__other__') {
+    otherInp.style.display = 'block';
+    setTimeout(function(){ otherInp.focus(); }, 50);
+  } else {
+    otherInp.style.display = 'none';
+  }
+}
+
 function addTransaction() {
   // Limit to 10 transactions in free version
   if(state.transactions.length >= 10) {
@@ -3321,13 +3402,44 @@ function addTransaction() {
   var dateEl = document.getElementById('dateInput');
   var txDate = (dateEl && dateEl.value) ? dateEl.value : today();
 
+  var newDebtContactName = '';
   if(state.currentType === 'debt') {
-    var person = document.getElementById('personInput').value.trim() || 'Unknown';
+    var debtPersonSelEl = document.getElementById('modal-debt-person-select');
+    var debtPersonVal = debtPersonSelEl ? debtPersonSelEl.value : '';
+    var person = 'Unknown';
+    var debtClientId = null;
+    var debtSupplierId = null;
+    if(debtPersonVal === '__other__') {
+      var debtOtherInp = document.getElementById('modal-debt-person-other');
+      var typedPersonName = debtOtherInp ? debtOtherInp.value.trim() : '';
+      if(typedPersonName) { person = typedPersonName; newDebtContactName = typedPersonName; }
+    } else if(debtPersonVal) {
+      var foundDebtClient = null;
+      var debtCliList = state.clients || [];
+      for(var dci = 0; dci < debtCliList.length; dci++) {
+        if(String(debtCliList[dci].id) === debtPersonVal) { foundDebtClient = debtCliList[dci]; break; }
+      }
+      if(foundDebtClient) {
+        person = foundDebtClient.name;
+        debtClientId = foundDebtClient.id;
+      } else {
+        var foundDebtSupplier = null;
+        var debtSupList = state.suppliers || [];
+        for(var dsi = 0; dsi < debtSupList.length; dsi++) {
+          if(String(debtSupList[dsi].id) === debtPersonVal) { foundDebtSupplier = debtSupList[dsi]; break; }
+        }
+        if(foundDebtSupplier) {
+          person = foundDebtSupplier.name;
+          debtSupplierId = foundDebtSupplier.id;
+        }
+      }
+    }
     var debtType = state.debtDirection === 'debtor' ? 'i-owe' : 'owes-me';
     state.debts.push({
       id: Date.now(),
       person: person, amount: amount, category: state.currentCat,
       date: txDate, status: 'pending', type: debtType,
+      clientId: debtClientId, supplierId: debtSupplierId,
     });
   } else {
     var cliId = null;
@@ -3378,6 +3490,7 @@ function addTransaction() {
   save();
   closeModal();
   renderHome();
+  if(newDebtContactName) promptSaveNewDebtContact(newDebtContactName);
 }
 
 // ── PERIOD COMPARISON HELPERS ──
@@ -9667,7 +9780,7 @@ function generateReportPDF(r) {
 
 
 // ── GENERIC CONFIRM DIALOG ──
-function showConfirm(title, msg, onOk, okLabel, cancelLabel) {
+function showConfirm(title, msg, onOk, okLabel, cancelLabel, onCancel) {
   var lang = state.lang;
   var titleEl = document.getElementById('confirmTitle');
   var msgEl   = document.getElementById('confirmMsg');
@@ -9683,7 +9796,41 @@ function showConfirm(title, msg, onOk, okLabel, cancelLabel) {
     overlay.classList.remove('open');
     if(onOk) onOk();
   };
-  if(cancelBtn) cancelBtn.onclick = function(){ overlay.classList.remove('open'); };
+  if(cancelBtn) cancelBtn.onclick = function(){
+    overlay.classList.remove('open');
+    if(onCancel) onCancel();
+  };
+}
+
+function promptSaveNewDebtContact(name) {
+  var lang = state.lang;
+  var askTitle = {en:'Add to Contacts?', ar:'إضافة لجهات الاتصال؟', de:'Zu Kontakten hinzufügen?'}[lang] || 'Add to Contacts?';
+  var askMsg = {
+    en:"Would you like to add '"+name+"' to your contacts?",
+    ar:"هل تريد إضافة '"+name+"' لجهات اتصالك؟",
+    de:"Möchten Sie '"+name+"' zu Ihren Kontakten hinzufügen?"
+  }[lang] || "Would you like to add '"+name+"' to your contacts?";
+  var yesLbl = {en:'Yes', ar:'نعم', de:'Ja'}[lang] || 'Yes';
+  var noLbl = {en:'No', ar:'لا', de:'Nein'}[lang] || 'No';
+  showConfirm(askTitle, askMsg, function(){
+    var chooseTitle = {en:'Save as...', ar:'حفظ كـ...', de:'Speichern als...'}[lang] || 'Save as...';
+    var chooseMsg = {
+      en:"How would you like to save '"+name+"'?",
+      ar:"كيف تريد حفظ '"+name+"'؟",
+      de:"Wie möchten Sie '"+name+"' speichern?"
+    }[lang] || "How would you like to save '"+name+"'?";
+    var addAsClientLbl = {en:'Add as Client', ar:'إضافة كعميل', de:'Als Kunde hinzufügen'}[lang] || 'Add as Client';
+    var addAsSupplierLbl = {en:'Add as Supplier', ar:'إضافة كمورد', de:'Als Lieferant hinzufügen'}[lang] || 'Add as Supplier';
+    showConfirm(chooseTitle, chooseMsg, function(){
+      if(!state.clients) state.clients = [];
+      state.clients.push({id:Date.now(), name:name, company:'', phone:'', email:'', country:'', address:'', notes:'', since:''});
+      save();
+    }, addAsClientLbl, addAsSupplierLbl, function(){
+      if(!state.suppliers) state.suppliers = [];
+      state.suppliers.push({id:Date.now(), name:name, company:'', phone:'', email:'', country:'', address:'', notes:'', since:'', serviceType:''});
+      save();
+    });
+  }, yesLbl, noLbl);
 }
 
 // ── CLEAR DATA SECURE ──
