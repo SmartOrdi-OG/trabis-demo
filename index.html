@@ -2408,9 +2408,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="margin:0 0 12px 0">
       <label for="invoiceInput" style="display:flex;align-items:center;gap:8px;background:var(--bg);border:1.5px dashed var(--border);border-radius:12px;padding:10px 14px;cursor:pointer;font-size:13px;color:var(--text2)">
         <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
-        <span id="invoiceLabel">Attach Invoice (Image)</span>
+        <span id="invoiceLabel">Attach Invoice (Image or PDF)</span>
       </label>
-      <input type="file" id="invoiceInput" accept="image/*" style="display:none" onchange="handleInvoice(this)"/>
+      <input type="file" id="invoiceInput" accept="image/*,.pdf,application/pdf" style="display:none" onchange="handleInvoice(this)"/>
       <div id="invoicePreview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--card);border-radius:10px;font-size:12px;color:var(--text2);align-items:center;gap:8px">
         <span style="font-size:16px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
         <span id="invoiceFileName" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
@@ -2503,7 +2503,7 @@ var LANG = {
     setupTitle: 'Setup Your Business', setupSub: 'Add your fixed costs (you can skip)',
     empLbl: 'EMPLOYEES', recLbl: 'RECURRING EXPENSES', curLbl: 'CURRENCY',
     invoices: 'Invoices',
-    attachInvoice: 'Attach Invoice (Image)',
+    attachInvoice: 'Attach Invoice (Image or PDF)',
     language: 'Language',
     selectLang: 'Select language',
     notifOn: "9 PM notification",
@@ -2579,7 +2579,7 @@ var LANG = {
     setupTitle: 'إعداد عملك', setupSub: 'أضف تكاليفك الثابتة (يمكن تخطيها)',
     empLbl: 'الموظفين', recLbl: 'المصاريف المتكررة', curLbl: 'العملة',
     invoices: 'الفواتير',
-    attachInvoice: 'إرفق فاتورة (صورة)',
+    attachInvoice: 'إرفاق فاتورة (صورة أو PDF)',
     language: 'اللغة',
     selectLang: 'اختر اللغة',
     notifOn: "إشعار الساعة 9 مساءً",
@@ -2655,7 +2655,7 @@ var LANG = {
     setupTitle: 'Unternehmen einrichten', setupSub: 'Fixkosten hinzufügen (optional)',
     empLbl: 'MITARBEITER', recLbl: 'WIEDERKEHRENDE AUSGABEN', curLbl: 'WÄHRUNG',
     invoices: 'Rechnungen',
-    attachInvoice: 'Rechnung anhängen (Bild)',
+    attachInvoice: 'Rechnung anhängen (Bild oder PDF)',
     language: 'Sprache',
     selectLang: 'Sprache auswählen',
     notifOn: "Benachrichtigung um 21 Uhr",
@@ -5658,6 +5658,9 @@ applyLang();
 function handleInvoice(input) {
   var file = input.files[0];
   if (!file) return;
+  var isImage = file.type.indexOf('image/') === 0;
+  var isPdf = file.type === 'application/pdf' || file.type === 'application/octet-stream' || /\.pdf$/i.test(file.name || '');
+  if (!isImage && !isPdf) { alert('Only image or PDF files are allowed'); input.value=''; return; }
   if (file.size > 5 * 1024 * 1024) { alert('Max file size is 5MB'); input.value=''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
@@ -5705,11 +5708,26 @@ function openInvoice(dataUrl, name) {
   header.appendChild(title);
   header.appendChild(closeBtn);
   var body = document.createElement("div");
-  body.style.cssText = "flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:center;justify-content:center;padding:12px";
-  var img = document.createElement("img");
-  img.src = dataUrl;
-  img.style.cssText = "max-width:100%;max-height:85vh;border-radius:10px;object-fit:contain";
-  body.appendChild(img);
+  body.style.cssText = "flex:1;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px";
+  var isPdf = dataUrl.indexOf('data:application/pdf') === 0 || dataUrl.indexOf('data:application/octet-stream') === 0 || /\.pdf$/i.test(name || '');
+  if (isPdf) {
+    var embed = document.createElement("embed");
+    embed.src = dataUrl;
+    embed.type = "application/pdf";
+    embed.style.cssText = "width:100%;height:80vh;border-radius:8px";
+    body.appendChild(embed);
+    var fallbackLink = document.createElement("a");
+    fallbackLink.href = dataUrl;
+    fallbackLink.download = name || "invoice.pdf";
+    fallbackLink.textContent = "Can't see the PDF? Tap to download";
+    fallbackLink.style.cssText = "color:#4ade80;font-size:13px;margin-top:10px;text-align:center;text-decoration:underline";
+    body.appendChild(fallbackLink);
+  } else {
+    var img = document.createElement("img");
+    img.src = dataUrl;
+    img.style.cssText = "max-width:100%;max-height:85vh;border-radius:10px;object-fit:contain";
+    body.appendChild(img);
+  }
   overlay.innerHTML = "";
   overlay.appendChild(header);
   overlay.appendChild(body);
