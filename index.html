@@ -2087,24 +2087,24 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <!-- SUMMARY (mobile, Zoho-style) -->
   <div class="mobile-summary">
     <div style="background:#EEF2FF;border-radius:16px;padding:16px">
-      <div style="font-size:12px;color:#6366f1">Total Receivables</div>
+      <div style="font-size:12px;color:#6366f1" id="mobReceivablesLbl">Total Receivables</div>
       <div style="font-weight:700;font-size:20px;color:#3730a3" id="mobReceivablesAmt">€0</div>
       <div style="height:1px;background:rgba(99,102,241,0.25);margin:10px 0"></div>
-      <div style="font-size:12px;color:#6366f1">Total Payables</div>
+      <div style="font-size:12px;color:#6366f1" id="mobPayablesLbl">Total Payables</div>
       <div style="font-weight:700;font-size:20px;color:#3730a3" id="mobPayablesAmt">€0</div>
     </div>
     <div style="display:flex;flex-direction:column;gap:10px">
       <div style="background:#FEF2F2;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('invoices')">
         <div style="font-weight:700;font-size:24px;color:#dc2626" id="mobOverdueCount">0</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-          <div style="font-size:12px;color:#dc2626">Overdue Invoices</div>
+          <div style="font-size:12px;color:#dc2626" id="mobOverdueLbl">Overdue Invoices</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
       <div style="background:#FEF2F2;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('debts')">
         <div style="font-weight:700;font-size:24px;color:#dc2626" id="mobPendingDebtsCount">0</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-          <div style="font-size:12px;color:#dc2626">Pending Debts</div>
+          <div style="font-size:12px;color:#dc2626" id="mobPendingDebtsLbl">Pending Debts</div>
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
@@ -2134,19 +2134,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="mobile-quick-add">
     <div class="mqa-card" onclick="openModal('income')">
       <span class="mqa-icon" style="background:var(--green-light);color:var(--green)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></span>
-      <span class="mqa-label">Income</span>
+      <span class="mqa-label" id="mqa-lbl-income">Income</span>
     </div>
     <div class="mqa-card" onclick="openModal('expense')">
       <span class="mqa-icon" style="background:var(--red-light);color:var(--red)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg></span>
-      <span class="mqa-label">Expenses</span>
+      <span class="mqa-label" id="mqa-lbl-expense">Expenses</span>
     </div>
     <div class="mqa-card" onclick="openModal('debt')">
       <span class="mqa-icon" style="background:var(--orange-light);color:var(--orange)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span>
-      <span class="mqa-label">Debts</span>
+      <span class="mqa-label" id="mqa-lbl-debt">Debts</span>
     </div>
     <div class="mqa-card" onclick="showNav('invoices')">
       <span class="mqa-icon" style="background:var(--primary-light);color:var(--primary)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
-      <span class="mqa-label">Invoice</span>
+      <span class="mqa-label" id="mqa-lbl-invoice">Invoice</span>
     </div>
   </div>
 
@@ -2419,7 +2419,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div class="bnav">
   <div class="bnav-item active" id="nav-home" onclick="showNav('home')">
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
-    <div class="bnav-label">Home</div>
+    <div class="bnav-label" id="nav-home-lbl">Home</div>
   </div>
   <div class="bnav-item" id="nav-clients" onclick="showNav('clients')">
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
@@ -2580,7 +2580,7 @@ if(!String.prototype.padStart) {
 var LANG = {
   en: {
     appSub: "Track your money easily",
-    home: "Home", reports: "Reports", debts: "Debts", settings: "Settings",
+    home: "Home", reports: "Reports", debts: "Debts", settings: "Settings", more: "More",
     today: "Today", week: "Week", month: "Month", year: "Year",
     custom: "Custom", singleDay: "Single Day", dateRange: "Date Range",
     fromDate: "From", toDate: "To", apply: "Apply", cancel: "Cancel",
@@ -2657,7 +2657,7 @@ var LANG = {
   },
   ar: {
     appSub: "تتبع أموالك بسهولة",
-    home: "الرئيسية", reports: "التقارير", debts: "الديون", settings: "الإعدادات",
+    home: "الرئيسية", reports: "التقارير", debts: "الديون", settings: "الإعدادات", more: "المزيد",
     today: "اليوم", week: "الأسبوع", month: "الشهر", year: "السنة",
     custom: "تاريخ مخصص", singleDay: "يوم واحد", dateRange: "نطاق تاريخ",
     fromDate: "من", toDate: "إلى", apply: "تطبيق", cancel: "إلغاء",
@@ -2733,7 +2733,7 @@ var LANG = {
   },
   de: {
     appSub: "Verfolgen Sie Ihr Geld einfach",
-    home: "Start", reports: "Berichte", debts: "Schulden", settings: "Einstellungen",
+    home: "Start", reports: "Berichte", debts: "Schulden", settings: "Einstellungen", more: "Mehr",
     today: "Heute", week: "Woche", month: "Monat", year: "Jahr",
     custom: "Benutzerdefiniert", singleDay: "Einzelner Tag", dateRange: "Datumsbereich",
     fromDate: "Von", toDate: "Bis", apply: "Anwenden", cancel: "Abbrechen",
@@ -3137,10 +3137,10 @@ function showNav(page) {
   if(page === 'expenses') renderExpensesPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'help') renderHelpPage();
-  if(page === 'fleet') renderComingSoonPage('fleetPage', 'Fleet');
-  if(page === 'assets') renderComingSoonPage('assetsPage', 'Assets');
-  if(page === 'kalender') renderComingSoonPage('kalenderPage', 'Kalender');
-  if(page === 'notizen') renderComingSoonPage('notizenPage', 'Notizen');
+  if(page === 'fleet') renderComingSoonPage('fleetPage', 'fleet');
+  if(page === 'assets') renderComingSoonPage('assetsPage', 'assets');
+  if(page === 'kalender') renderComingSoonPage('kalenderPage', 'kalender');
+  if(page === 'notizen') renderComingSoonPage('notizenPage', 'notizen');
 }
 
 // ── MORE MENU (mobile) ──
@@ -3156,28 +3156,49 @@ function moreMenuGroupTitleHtml(label) {
   return '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin:18px 4px 8px">' + label + '</div>';
 }
 
+var MORE_MENU_L = {
+  manage: {en:'Manage', ar:'إدارة', de:'Verwalten'},
+  tools: {en:'Tools', ar:'أدوات', de:'Werkzeuge'},
+  support: {en:'Support & Settings', ar:'الدعم والإعدادات', de:'Support & Einstellungen'},
+  reports: {en:'Reports', ar:'التقارير', de:'Berichte'},
+  debts: {en:'Debts', ar:'الديون', de:'Schulden'},
+  suppliers: {en:'Suppliers', ar:'الموردون', de:'Lieferanten'},
+  employees: {en:'Employees', ar:'الموظفين', de:'Mitarbeiter'},
+  fixed: {en:'Fixed', ar:'ثابت', de:'Fix'},
+  fleet: {en:'Fleet', ar:'الأسطول', de:'Fuhrpark'},
+  assets: {en:'Assets', ar:'الأصول', de:'Vermögenswerte'},
+  kalender: {en:'Kalender', ar:'التقويم', de:'Kalender'},
+  notizen: {en:'Notizen', ar:'الملاحظات', de:'Notizen'},
+  settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
+  help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
+};
+function mtx(k) { return (MORE_MENU_L[k] && MORE_MENU_L[k][state.lang]) || (MORE_MENU_L[k] && MORE_MENU_L[k].en) || k; }
+
 function openMoreMenu() {
   var overlay = document.getElementById('moreMenuOverlay');
   var content = document.getElementById('moreMenuContent');
   if(!overlay || !content) return;
 
+  var titleEl = document.getElementById('moreMenuTitle');
+  if(titleEl) titleEl.textContent = t('more');
+
   var h = '';
-  h += moreMenuGroupTitleHtml('Manage');
-  h += moreMenuItemHtml('mm-reports', 'barChart', 'Reports');
-  h += moreMenuItemHtml('mm-debts', 'handshake', 'Debts');
-  h += moreMenuItemHtml('mm-suppliers', 'building', 'Suppliers');
-  h += moreMenuItemHtml('mm-employees', 'users', 'Employees');
-  h += moreMenuItemHtml('mm-fixed', 'checklist', 'Fixed');
+  h += moreMenuGroupTitleHtml(mtx('manage'));
+  h += moreMenuItemHtml('mm-reports', 'barChart', mtx('reports'));
+  h += moreMenuItemHtml('mm-debts', 'handshake', mtx('debts'));
+  h += moreMenuItemHtml('mm-suppliers', 'building', mtx('suppliers'));
+  h += moreMenuItemHtml('mm-employees', 'users', mtx('employees'));
+  h += moreMenuItemHtml('mm-fixed', 'checklist', mtx('fixed'));
 
-  h += moreMenuGroupTitleHtml('Tools');
-  if(state.businessType === 'Transport') h += moreMenuItemHtml('mm-fleet', 'truck', 'Fleet');
-  h += moreMenuItemHtml('mm-assets', 'packageIcon', 'Assets');
-  h += moreMenuItemHtml('mm-kalender', 'calendar', 'Kalender');
-  h += moreMenuItemHtml('mm-notizen', 'note', 'Notizen');
+  h += moreMenuGroupTitleHtml(mtx('tools'));
+  if(state.businessType === 'Transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
+  h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
+  h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
+  h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
 
-  h += moreMenuGroupTitleHtml('Support & Settings');
-  h += moreMenuItemHtml('mm-settings', 'gear', 'Settings');
-  h += moreMenuItemHtml('mm-help', 'helpCircle', 'Help');
+  h += moreMenuGroupTitleHtml(mtx('support'));
+  h += moreMenuItemHtml('mm-settings', 'gear', mtx('settings'));
+  h += moreMenuItemHtml('mm-help', 'helpCircle', mtx('help'));
 
   content.innerHTML = h;
 
@@ -3256,6 +3277,36 @@ function renderEmployeesPage() {
 }
 
 // ── HELP PAGE ──
+var HELP_L = {
+  title: {en:'Help', ar:'مساعدة', de:'Hilfe'},
+  gettingStarted: {en:'Getting Started', ar:'البدء', de:'Erste Schritte'},
+  addTx: {en:'How to add a transaction', ar:'كيفية إضافة معاملة', de:'Wie man eine Transaktion hinzufügt'},
+  createInv: {en:'How to create an invoice', ar:'كيفية إنشاء فاتورة', de:'Wie man eine Rechnung erstellt'},
+  addClients: {en:'How to add clients &amp; suppliers', ar:'كيفية إضافة عملاء وموردين', de:'Wie man Kunden &amp; Lieferanten hinzufügt'},
+  support: {en:'Support', ar:'الدعم', de:'Support'},
+  feedback: {en:'Send Feedback', ar:'إرسال ملاحظات', de:'Feedback senden'},
+  contact: {en:'Contact Support', ar:'التواصل مع الدعم', de:'Support kontaktieren'},
+  privacy: {en:'Privacy Policy', ar:'سياسة الخصوصية', de:'Datenschutzrichtlinie'},
+  terms: {en:'Terms of Use', ar:'شروط الاستخدام', de:'Nutzungsbedingungen'},
+  about: {en:'About', ar:'حول', de:'Über'},
+  addTxSteps: {
+    en:'1. Tap the + button (or a Quick Add card) on Home.\n2. Choose Income or Expense.\n3. Enter the amount, category and date.\n4. Save.',
+    ar:'1. اضغط على زر + (أو بطاقة الإضافة السريعة) في الرئيسية.\n2. اختر دخل أو مصروف.\n3. أدخل المبلغ والفئة والتاريخ.\n4. احفظ.',
+    de:'1. Tippen Sie auf die Schaltfläche + (oder eine Schnellzugriffskarte) auf der Startseite.\n2. Wählen Sie Einnahme oder Ausgabe.\n3. Geben Sie Betrag, Kategorie und Datum ein.\n4. Speichern.'
+  },
+  createInvSteps: {
+    en:'1. Go to Invoices.\n2. Tap + New Invoice.\n3. Select a client and add items.\n4. Save, then print or share.',
+    ar:'1. اذهب إلى الفواتير.\n2. اضغط على + فاتورة جديدة.\n3. اختر عميلاً وأضف العناصر.\n4. احفظ ثم اطبع أو شارك.',
+    de:'1. Gehen Sie zu Rechnungen.\n2. Tippen Sie auf + Neue Rechnung.\n3. Wählen Sie einen Kunden und fügen Sie Positionen hinzu.\n4. Speichern, dann drucken oder teilen.'
+  },
+  addClientsSteps: {
+    en:'1. Go to Clients or Suppliers.\n2. Tap + Add.\n3. Enter their details.\n4. Save.',
+    ar:'1. اذهب إلى العملاء أو الموردين.\n2. اضغط على + إضافة.\n3. أدخل بياناتهم.\n4. احفظ.',
+    de:'1. Gehen Sie zu Kunden oder Lieferanten.\n2. Tippen Sie auf + Hinzufügen.\n3. Geben Sie deren Daten ein.\n4. Speichern.'
+  }
+};
+function htx(k) { return (HELP_L[k] && HELP_L[k][state.lang]) || (HELP_L[k] && HELP_L[k].en) || k; }
+
 function renderHelpPage() {
   var page = document.getElementById('helpPage');
   if(!page) return;
@@ -3271,20 +3322,20 @@ function renderHelpPage() {
   }
 
   var h = '<div style="padding-bottom:120px">';
-  h += '<div style="padding:16px 16px 0;font-size:18px;font-weight:700">Help</div>';
+  h += '<div style="padding:16px 16px 0;font-size:18px;font-weight:700">' + htx('title') + '</div>';
 
-  h += helpSectionTitle('Getting Started');
-  h += helpRow('help-add-tx', 'How to add a transaction');
-  h += helpRow('help-create-inv', 'How to create an invoice');
-  h += helpRow('help-add-clients', 'How to add clients &amp; suppliers');
+  h += helpSectionTitle(htx('gettingStarted'));
+  h += helpRow('help-add-tx', htx('addTx'));
+  h += helpRow('help-create-inv', htx('createInv'));
+  h += helpRow('help-add-clients', htx('addClients'));
 
-  h += helpSectionTitle('Support');
-  h += helpRow('help-feedback', 'Send Feedback');
-  h += helpRow('help-contact', 'Contact Support');
-  h += helpRow('help-privacy', 'Privacy Policy');
-  h += helpRow('help-terms', 'Terms of Use');
+  h += helpSectionTitle(htx('support'));
+  h += helpRow('help-feedback', htx('feedback'));
+  h += helpRow('help-contact', htx('contact'));
+  h += helpRow('help-privacy', htx('privacy'));
+  h += helpRow('help-terms', htx('terms'));
 
-  h += helpSectionTitle('About');
+  h += helpSectionTitle(htx('about'));
   h += '<div style="padding:14px 16px;font-size:14px;color:var(--text)">Smartac v1.0</div>';
   h += '<div style="padding:0 16px 14px;font-size:12px;color:var(--text3)">Smartordi OG · Steingasse 6a, 4020 Linz</div>';
   h += '</div>';
@@ -3292,11 +3343,11 @@ function renderHelpPage() {
   page.innerHTML = h;
 
   var addTxBtn = document.getElementById('help-add-tx');
-  if(addTxBtn) addTxBtn.onclick = function(){ alert('1. Tap the + button (or a Quick Add card) on Home.\n2. Choose Income or Expense.\n3. Enter the amount, category and date.\n4. Save.'); };
+  if(addTxBtn) addTxBtn.onclick = function(){ alert(htx('addTxSteps')); };
   var createInvBtn = document.getElementById('help-create-inv');
-  if(createInvBtn) createInvBtn.onclick = function(){ alert('1. Go to Invoices.\n2. Tap + New Invoice.\n3. Select a client and add items.\n4. Save, then print or share.'); };
+  if(createInvBtn) createInvBtn.onclick = function(){ alert(htx('createInvSteps')); };
   var addClientsBtn = document.getElementById('help-add-clients');
-  if(addClientsBtn) addClientsBtn.onclick = function(){ alert('1. Go to Clients or Suppliers.\n2. Tap + Add.\n3. Enter their details.\n4. Save.'); };
+  if(addClientsBtn) addClientsBtn.onclick = function(){ alert(htx('addClientsSteps')); };
 
   var feedbackBtn = document.getElementById('help-feedback');
   if(feedbackBtn) feedbackBtn.onclick = function(){ window.location.href = 'mailto:team@smartordi.eu'; };
@@ -3309,12 +3360,13 @@ function renderHelpPage() {
 }
 
 // ── PLACEHOLDER "COMING SOON" PAGES ──
-function renderComingSoonPage(pageId, label) {
+function renderComingSoonPage(pageId, labelKey) {
   var page = document.getElementById(pageId);
   if(!page) return;
+  var comingSoonLbl = {en:'Coming soon.', ar:'قريباً.', de:'Demnächst verfügbar.'}[state.lang] || 'Coming soon.';
   page.innerHTML = '<div style="padding:80px 24px;text-align:center">'
-    + '<div style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)">' + label + '</div>'
-    + '<div style="font-size:14px;color:var(--text3)">Coming soon.</div>'
+    + '<div style="font-size:18px;font-weight:700;margin-bottom:8px;color:var(--text)">' + mtx(labelKey) + '</div>'
+    + '<div style="font-size:14px;color:var(--text3)">' + comingSoonLbl + '</div>'
     + '</div>';
 }
 
@@ -3964,15 +4016,16 @@ function renderHome() {
   if(incomeAmtEl) incomeAmtEl.textContent = fmt(income);
   if(expenseAmtEl) expenseAmtEl.textContent = fmt(expense);
 
-  // Net Income / Total Tax cards
-  var incomeTxs = txs.filter(function(t){ return t.type === 'income'; });
-  var nettoTotal = 0, taxTotal = 0;
-  incomeTxs.forEach(function(t){
-    var vatRate = t.vatRate || 0;
-    var netto = t.amount / (1 + vatRate / 100);
-    nettoTotal += netto;
-    taxTotal += (t.amount - netto);
-  });
+  // Net Income / Total Tax cards (uses the same tax configuration as Fixed Costs > Tax Configuration)
+  var taxCfg = state.tax || {rate:0, type:'on_sales'};
+  var taxTotal = 0;
+  if(taxCfg.rate > 0) {
+    if(taxCfg.type === 'on_sales') taxTotal = income * taxCfg.rate / 100;
+    else if(taxCfg.type === 'on_profit') taxTotal = net * taxCfg.rate / 100;
+    else taxTotal = income * taxCfg.rate / 100 + net * taxCfg.rate / 100;
+    taxTotal = Math.max(0, taxTotal);
+  }
+  var nettoTotal = income - taxTotal;
   var netIncomeLblEl = document.getElementById('netIncomeLbl');
   var netIncomeSubEl = document.getElementById('netIncomeSub');
   var totalTaxLblEl = document.getElementById('totalTaxLbl');
@@ -4807,11 +4860,35 @@ function applyLang() {
   document.body.style.fontFamily = isRTL ? '"SF Arabic",Arial,sans-serif' : '-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
 
   // Update nav labels
-  var navKeys = ['home','reports','debts','settings'];
+  var navKeys = ['home'];
   navKeys.forEach(function(k) {
     var el = document.querySelector('#nav-'+k+' .bnav-label');
     if(el) el.textContent = t(k);
   });
+  var expNavLbl = document.getElementById('nav-expenses-lbl');
+  if(expNavLbl) expNavLbl.textContent = t('expense');
+  var moreNavLbl = document.getElementById('nav-more-lbl');
+  if(moreNavLbl) moreNavLbl.textContent = t('more');
+
+  // Update mobile Zoho-style summary card labels
+  var mobRecvLbl = document.getElementById('mobReceivablesLbl');
+  if(mobRecvLbl) mobRecvLbl.textContent = {en:'Total Receivables', ar:'إجمالي المستحقات', de:'Gesamtforderungen'}[state.lang] || 'Total Receivables';
+  var mobPayLbl = document.getElementById('mobPayablesLbl');
+  if(mobPayLbl) mobPayLbl.textContent = {en:'Total Payables', ar:'إجمالي المستحقات الدائنة', de:'Gesamtverbindlichkeiten'}[state.lang] || 'Total Payables';
+  var mobOverdueLbl = document.getElementById('mobOverdueLbl');
+  if(mobOverdueLbl) mobOverdueLbl.textContent = {en:'Overdue Invoices', ar:'فواتير متأخرة', de:'Überfällige Rechnungen'}[state.lang] || 'Overdue Invoices';
+  var mobPendingDebtsLbl = document.getElementById('mobPendingDebtsLbl');
+  if(mobPendingDebtsLbl) mobPendingDebtsLbl.textContent = {en:'Pending Debts', ar:'ديون معلقة', de:'Offene Schulden'}[state.lang] || 'Pending Debts';
+
+  // Update mobile Quick Add card labels
+  var mqaIncomeLbl = document.getElementById('mqa-lbl-income');
+  if(mqaIncomeLbl) mqaIncomeLbl.textContent = t('income');
+  var mqaExpenseLbl = document.getElementById('mqa-lbl-expense');
+  if(mqaExpenseLbl) mqaExpenseLbl.textContent = t('expense');
+  var mqaDebtLbl = document.getElementById('mqa-lbl-debt');
+  if(mqaDebtLbl) mqaDebtLbl.textContent = t('debts');
+  var mqaInvoiceLbl = document.getElementById('mqa-lbl-invoice');
+  if(mqaInvoiceLbl) mqaInvoiceLbl.textContent = {en:'Invoice', ar:'فاتورة', de:'Rechnung'}[state.lang] || 'Invoice';
 
   // Update period tabs
   ['today','week','month','year'].forEach(function(p,i) {
