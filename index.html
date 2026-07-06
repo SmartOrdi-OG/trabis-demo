@@ -6619,6 +6619,7 @@ function _collectInvoiceFormData(type) {
   }
   var vatRate = parseFloat((document.getElementById('inv_vat')||{}).value||0);
   var obj = {
+    id: Date.now(),
     number: (document.getElementById('inv_number')||{}).value||'',
     issueDate: (document.getElementById('inv_issue')||{}).value||'',
     dueDate: (document.getElementById('inv_due')||{}).value||'',
@@ -9496,18 +9497,20 @@ setTimeout(hideLogoSplashScreen, 2000);
   if(!('serviceWorker' in navigator)) return;
   try {
     var swCode = [
-      "var CACHE_NAME='smartac-v1';",
+      "var CACHE_NAME='smartac-v2';",
       "self.addEventListener('install',function(e){",
       "  self.skipWaiting();",
       "});",
       "self.addEventListener('activate',function(e){",
-      "  e.waitUntil(clients.claim());",
+      "  e.waitUntil(caches.keys().then(function(keys){",
+      "    return Promise.all(keys.filter(function(k){ return k!==CACHE_NAME; }).map(function(k){ return caches.delete(k); }));",
+      "  }).then(function(){ return clients.claim(); }));",
       "});",
       "self.addEventListener('fetch',function(e){",
       "  if(e.request.method!=='GET') return;",
       "  e.respondWith(",
       "    caches.open(CACHE_NAME).then(function(cache){",
-      "      return fetch(e.request).then(function(r){",
+      "      return fetch(e.request, {cache:'no-store'}).then(function(r){",
       "        if(r && r.status===200) cache.put(e.request,r.clone());",
       "        return r;",
       "      }).catch(function(){ return caches.match(e.request); });",
