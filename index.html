@@ -1167,6 +1167,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -2328,6 +2329,21 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <option value="MM/DD/YYYY">MM/DD/YYYY</option>
       </select>
     </div>
+    <div class="settings-item">
+      <div class="settings-item-left">
+        <div class="settings-item-icon" style="background:rgba(124,58,237,0.12);color:#7c3aed"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+        <div class="settings-item-text">
+          <div class="title">Rechnungsvorlage</div>
+          <div class="sub">Design für gedruckte Rechnungen</div>
+        </div>
+      </div>
+      <select class="currency-select" id="invoiceTemplateSelect" onchange="setInvoiceTemplate(this.value)">
+        <option value="classic">Klassisch</option>
+        <option value="modern">Modern</option>
+        <option value="minimal">Minimal</option>
+        <option value="transport">Transport / Logistik</option>
+      </select>
+    </div>
   </div>
 
   <div id="settings-data-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
@@ -2843,6 +2859,7 @@ var state = {
   bankAccountHolder: '',
   notifications: [],
   businessType: 'General',
+  invoiceTemplate: 'classic',
 };
 
 var CURRENCIES = {
@@ -3012,6 +3029,7 @@ function save() {
   localStorage.setItem(uk('bankHolder'), state.bankAccountHolder || '');
   localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
   localStorage.setItem(uk('businessType'), state.businessType || 'General');
+  localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
 }
 
 var _loadedDataUser = null;
@@ -3048,6 +3066,7 @@ function loadUserData() {
   state.bankAccountHolder = localStorage.getItem(uk('bankHolder')) || '';
   state.notifications = JSON.parse(localStorage.getItem(uk('notifs')) || '[]');
   state.businessType = localStorage.getItem(uk('businessType')) || 'General';
+  state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
@@ -5039,6 +5058,9 @@ function renderSettings() {
   var dfSel = document.getElementById('dateFormatSelect');
   if(dfSel) dfSel.value = state.dateFormat || 'YYYY-MM-DD';
 
+  var invTplSel = document.getElementById('invoiceTemplateSelect');
+  if(invTplSel) invTplSel.value = state.invoiceTemplate || 'classic';
+
   updateBusinessNameDisplay();
   updatePrivacyTexts();
   renderAccountSection();
@@ -5379,6 +5401,11 @@ function setDateFormat(val) {
   save();
   renderHome();
   if(document.getElementById('settingsPage').style.display !== 'none') renderSettings();
+}
+
+function setInvoiceTemplate(val) {
+  state.invoiceTemplate = val;
+  save();
 }
 
 function togglePwField(btn, inputId) {
@@ -6658,6 +6685,14 @@ function ptx(k) { return (PRINT_L[k] && PRINT_L[k][state.lang]) || (PRINT_L[k] &
 function ltrSpan(s) { return '<span dir="ltr" style="unicode-bidi:bidi-override">' + s + '</span>'; }
 
 function buildInvoiceHTML(inv, type) {
+  var tpl = state.invoiceTemplate || 'classic';
+  if(tpl === 'modern') return buildModernInvoice(inv, type);
+  if(tpl === 'minimal') return buildMinimalInvoice(inv, type);
+  if(tpl === 'transport') return buildTransportInvoice(inv, type);
+  return buildClassicInvoice(inv, type);
+}
+
+function buildClassicInvoice(inv, type) {
   var isRTL = state.lang === 'ar';
   var dirAttr = isRTL ? 'rtl' : 'ltr';
   var alignStart = isRTL ? 'right' : 'left';
@@ -6768,6 +6803,299 @@ function buildInvoiceHTML(inv, type) {
   return doc;
 }
 
+function formatDateDE(dateStr) {
+  if(!dateStr) return '';
+  var s = String(dateStr).substring(0,10);
+  var parts = s.split('-');
+  if(parts.length !== 3) return s;
+  return parts[2] + '.' + parts[1] + '.' + parts[0];
+}
+
+var DE_MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+
+function invoiceNoPrintBar() {
+  return '<div class="no-print">' +
+    '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' Drucken</button>' +
+    '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' Schließen</button>' +
+    '</div>';
+}
+
+function buildModernInvoice(inv, type) {
+  var typeLabel = type === 'receipt' ? 'QUITTUNG' : (type === 'received' ? 'EINGANGSRECHNUNG' : 'RECHNUNG');
+  var partyName = inv.clientName || inv.supplierName || '';
+  var cur = inv.currency || state.currency;
+  var bizName = state.businessName || 'Your Company Name';
+  var bizAddress = state.businessAddress || 'Steingasse 6a, 4020 Linz';
+  var bizPhone = state.businessPhone || '+43 667 762439293';
+  var bizEmail = state.businessEmail || 'team@smartordi.eu';
+  var items = inv.items || [];
+
+  var itemRows = '';
+  for(var i=0;i<items.length;i++) {
+    itemRows += '<tr>' +
+      '<td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:left">' + (items[i].desc||'') + '</td>' +
+      '<td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:center">' + (items[i].qty||0) + '</td>' +
+      '<td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:right">' + cur + parseFloat(items[i].price||0).toFixed(2) + '</td>' +
+      '<td style="padding:10px;border-bottom:1px solid #e2e8f0;text-align:right">' + cur + parseFloat(items[i].sub||0).toFixed(2) + '</td>' +
+      '</tr>';
+  }
+
+  var bankHtml = '<div style="flex:1"></div>';
+  var qrHtml = '<div style="flex:1"></div>';
+  if(state.bankIban) {
+    bankHtml = '<div style="flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:14px;font-size:12px;color:#475569">' +
+      '<div style="font-weight:700;margin-bottom:6px">Zahlungsdetails</div>' +
+      (state.bankName ? '<div>Bank: ' + state.bankName + '</div>' : '') +
+      '<div>IBAN: ' + state.bankIban + '</div>' +
+      (state.bankBic ? '<div>BIC: ' + state.bankBic + '</div>' : '') +
+      (state.bankAccountHolder ? '<div>Kontoinhaber: ' + state.bankAccountHolder + '</div>' : '') +
+      '</div>';
+    qrHtml = '<div style="flex:1;display:flex;justify-content:flex-end">' +
+      '<div id="epc-qr-' + inv.id + '" style="width:120px;height:120px"></div>' +
+      '</div>';
+  }
+
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + typeLabel + ' ' + (inv.number||'') + '</title>' +
+  '<style>' +
+  'html,body{height:100%}' +
+  'body{font-family:Arial,sans-serif;margin:0;padding:0;color:#1f2937;background:#fff;box-sizing:border-box;display:flex;flex-direction:column;min-height:100vh}' +
+  '.no-print{display:flex;gap:10px;padding:16px 32px 0}' +
+  '@media print{.no-print{display:none}@page{size:A4}}' +
+  '</style></head><body>' +
+  invoiceNoPrintBar() +
+  '<div style="background:linear-gradient(135deg,#1e293b,#334155);color:#fff;padding:32px;display:flex;justify-content:space-between;align-items:flex-start">' +
+  '<div style="display:flex;align-items:center;gap:12px">' +
+  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="width:40px;height:40px;object-fit:contain;border-radius:6px">' : '') +
+  '<div><div style="font-size:22px;font-weight:700;color:#fff">' + bizName + '</div>' +
+  '<div style="font-size:12px;color:#cbd5e1;margin-top:4px">' + bizAddress + '<br>' + bizEmail + '<br>' + bizPhone + '</div></div>' +
+  '</div>' +
+  '<div style="text-align:right">' +
+  '<div style="font-size:40px;font-weight:700;color:#fff;letter-spacing:1px">' + typeLabel + '</div>' +
+  '<div style="font-size:14px;font-weight:600;color:#1a7fd4;margin-top:4px">' + (inv.number||'') + '</div>' +
+  '<div style="font-size:12px;color:#cbd5e1;margin-top:6px">Datum: ' + formatDateDisplay(inv.issueDate||'') + '</div>' +
+  (inv.dueDate ? '<div style="font-size:12px;color:#cbd5e1">Fälligkeitsdatum: ' + formatDateDisplay(inv.dueDate) + '</div>' : '') +
+  '</div>' +
+  '</div>' +
+  '<div style="padding:32px;flex:1">' +
+  '<div style="margin-bottom:24px">' +
+  '<div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px">RECHNUNGSEMPFÄNGER</div>' +
+  '<div style="font-size:16px;font-weight:700">' + partyName + '</div>' +
+  '</div>' +
+  '<table style="width:100%;border-collapse:collapse;margin-bottom:24px">' +
+  '<thead><tr style="background:#f8fafc">' +
+  '<th style="padding:10px;text-align:left;font-size:13px;border-bottom:1px solid #e2e8f0">Beschreibung</th>' +
+  '<th style="padding:10px;text-align:center;font-size:13px;border-bottom:1px solid #e2e8f0">Menge</th>' +
+  '<th style="padding:10px;text-align:right;font-size:13px;border-bottom:1px solid #e2e8f0">Einzelpreis</th>' +
+  '<th style="padding:10px;text-align:right;font-size:13px;border-bottom:1px solid #e2e8f0">Gesamt</th>' +
+  '</tr></thead><tbody>' + itemRows + '</tbody></table>' +
+  '<div style="display:flex;justify-content:flex-end">' +
+  '<div style="width:280px;border:2px solid #1a7fd4;border-radius:8px;padding:16px">' +
+  '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#6b7280"><span>Netto</span><span>' + cur + parseFloat(inv.subtotal||0).toFixed(2) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px;color:#6b7280"><span>MwSt. (' + (inv.vatRate||0) + '%)</span><span>' + cur + parseFloat(inv.vatAmount||0).toFixed(2) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:8px 0 0;margin-top:4px;border-top:1px solid #e2e8f0;font-size:16px;font-weight:700"><span>Gesamtbetrag</span><span style="color:#1a7fd4">' + cur + parseFloat(inv.total||0).toFixed(2) + '</span></div>' +
+  '</div></div>' +
+  '</div>' +
+  '<div style="background:#f8fafc;padding:20px 32px;display:flex;justify-content:space-between;align-items:center;gap:24px">' +
+  bankHtml +
+  '<div style="flex:2;text-align:center;font-size:12px;color:#9ca3af">Vielen Dank für Ihr Vertrauen<br>Smartordi OG &middot; FN 675586 i</div>' +
+  qrHtml +
+  '</div>' +
+  '</body></html>';
+
+  return doc;
+}
+
+function buildMinimalInvoice(inv, type) {
+  var typeLabel = type === 'receipt' ? 'Quittung' : (type === 'received' ? 'Eingangsrechnung' : 'Rechnung');
+  var partyName = inv.clientName || inv.supplierName || '';
+  var cur = inv.currency || state.currency;
+  var bizName = state.businessName || 'Your Company Name';
+  var items = inv.items || [];
+
+  var itemRows = '';
+  for(var i=0;i<items.length;i++) {
+    itemRows += '<tr>' +
+      '<td style="padding:8px 4px;border-bottom:1px solid #000;text-align:left">' + (items[i].desc||'') + '</td>' +
+      '<td style="padding:8px 4px;border-bottom:1px solid #000;text-align:center">' + (items[i].qty||0) + '</td>' +
+      '<td style="padding:8px 4px;border-bottom:1px solid #000;text-align:right">' + cur + parseFloat(items[i].price||0).toFixed(2) + '</td>' +
+      '<td style="padding:8px 4px;border-bottom:1px solid #000;text-align:right">' + cur + parseFloat(items[i].sub||0).toFixed(2) + '</td>' +
+      '</tr>';
+  }
+
+  var bankHtml = '';
+  var qrHtml = '';
+  if(state.bankIban) {
+    bankHtml = '<div style="font-size:12px;color:#000;margin-top:16px">' +
+      '<div style="font-weight:700;margin-bottom:4px">Zahlungsdetails</div>' +
+      (state.bankName ? '<div>Bank: ' + state.bankName + '</div>' : '') +
+      '<div>IBAN: ' + state.bankIban + '</div>' +
+      (state.bankBic ? '<div>BIC: ' + state.bankBic + '</div>' : '') +
+      (state.bankAccountHolder ? '<div>Kontoinhaber: ' + state.bankAccountHolder + '</div>' : '') +
+      '</div>';
+    qrHtml = '<div style="display:flex;justify-content:flex-end;margin-top:12px">' +
+      '<div id="epc-qr-' + inv.id + '" style="width:100px;height:100px"></div>' +
+      '</div>';
+  }
+
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + typeLabel + ' ' + (inv.number||'') + '</title>' +
+  '<style>' +
+  'body{font-family:Arial,sans-serif;margin:0;padding:32px;color:#000;background:#fff;box-sizing:border-box}' +
+  '.no-print{display:flex;gap:10px;margin-bottom:24px}' +
+  '@media print{.no-print{display:none}@page{size:A4}}' +
+  '</style></head><body>' +
+  invoiceNoPrintBar() +
+  '<div style="display:flex;justify-content:space-between;align-items:baseline">' +
+  '<div style="font-size:28px;font-weight:700">' + bizName + '</div>' +
+  '<div style="font-size:14px;color:#6b7280">Rechnung #' + (inv.number||'') + '</div>' +
+  '</div>' +
+  '<div style="border-top:1px solid #000;margin:16px 0"></div>' +
+  '<div style="display:flex;justify-content:space-between;font-size:13px;color:#6b7280;margin-bottom:24px">' +
+  '<span>Datum: ' + formatDateDisplay(inv.issueDate||'') + '</span>' +
+  (inv.dueDate ? '<span>Fällig: ' + formatDateDisplay(inv.dueDate) + '</span>' : '<span></span>') +
+  '</div>' +
+  '<div style="margin-bottom:24px">' +
+  '<div style="font-weight:700;font-size:14px;margin-bottom:4px">Rechnungsempfänger:</div>' +
+  '<div style="font-size:14px">' + partyName + '</div>' +
+  '</div>' +
+  '<table style="width:100%;border-collapse:collapse;margin-bottom:20px">' +
+  '<thead><tr>' +
+  '<th style="padding:8px 4px;text-align:left;font-size:13px;border-bottom:1px solid #000">Beschreibung</th>' +
+  '<th style="padding:8px 4px;text-align:center;font-size:13px;border-bottom:1px solid #000">Menge</th>' +
+  '<th style="padding:8px 4px;text-align:right;font-size:13px;border-bottom:1px solid #000">Einzelpreis</th>' +
+  '<th style="padding:8px 4px;text-align:right;font-size:13px;border-bottom:1px solid #000">Gesamt</th>' +
+  '</tr></thead><tbody>' + itemRows + '</tbody></table>' +
+  '<div style="display:flex;justify-content:flex-end">' +
+  '<div style="width:240px">' +
+  '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span>Netto</span><span>' + cur + parseFloat(inv.subtotal||0).toFixed(2) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:4px 0;font-size:13px"><span>MwSt. (' + (inv.vatRate||0) + '%)</span><span>' + cur + parseFloat(inv.vatAmount||0).toFixed(2) + '</span></div>' +
+  '<div style="border-top:1px solid #000;margin-top:4px"></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:16px;font-weight:700"><span>Gesamtbetrag</span><span>' + cur + parseFloat(inv.total||0).toFixed(2) + '</span></div>' +
+  '</div></div>' +
+  bankHtml +
+  qrHtml +
+  '<div style="border-top:1px solid #000;margin-top:24px;padding-top:12px;text-align:center;font-size:12px;color:#6b7280">Vielen Dank für Ihr Vertrauen</div>' +
+  '</body></html>';
+
+  return doc;
+}
+
+function buildTransportInvoice(inv, type) {
+  var typeLabel = type === 'receipt' ? 'QUITTUNG' : (type === 'received' ? 'EINGANGSRECHNUNG' : 'RECHNUNG');
+  var partyName = inv.clientName || inv.supplierName || '';
+  var cur = inv.currency || state.currency;
+  var bizName = state.businessName || 'Your Company Name';
+  var items = inv.items || [];
+
+  var periodLabel = '';
+  if(inv.notes) {
+    periodLabel = inv.notes;
+  } else if(inv.issueDate) {
+    var dParts = String(inv.issueDate).substring(0,10).split('-');
+    if(dParts.length === 3) {
+      var monthIdx = parseInt(dParts[1], 10) - 1;
+      periodLabel = (DE_MONTH_NAMES[monthIdx] || '') + ' ' + dParts[0];
+    }
+  }
+  var firstItemDesc = items.length ? (items[0].desc || '') : '';
+
+  var itemRows = '';
+  for(var i=0;i<items.length;i++) {
+    var rowBg = (i % 2 === 0) ? '#fff' : '#f8f9fa';
+    itemRows += '<tr style="background:' + rowBg + '">' +
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:left">' + (items[i].desc||'') + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:center">' + (items[i].qty||0) + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right">' + cur + parseFloat(items[i].price||0).toFixed(2) + '</td>' +
+      '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right">' + cur + parseFloat(items[i].sub||0).toFixed(2) + '</td>' +
+      '</tr>';
+  }
+
+  var logoOrName = state.businessLogo
+    ? '<img src="' + state.businessLogo + '" style="max-height:80px;object-fit:contain">'
+    : '<div style="font-size:24px;font-weight:700;color:#1a1a2e">' + bizName + '</div>';
+
+  var qrHtml = '';
+  if(state.bankIban) {
+    qrHtml = '<div style="text-align:center">' +
+      '<div id="epc-qr-' + inv.id + '" style="width:120px;height:120px;margin:0 auto"></div>' +
+      '<div style="font-size:11px;color:#374151;margin-top:6px">oder mit QR Code zahlen</div>' +
+      '</div>';
+  }
+  var kontaktHtml = '<div style="font-size:12px;color:#374151;line-height:1.6">' +
+    (state.businessTaxId ? '<div>UID: ' + state.businessTaxId + '</div>' : '') +
+    (state.bankIban ? '<div>IBAN: ' + state.bankIban + '</div>' : '') +
+    (state.bankBic ? '<div>BIC: ' + state.bankBic + '</div>' : '') +
+    '<div>Geschäftsführer: ' + (state.bankAccountHolder || state.businessName || '') + '</div>' +
+    (state.businessEmail ? '<div>E-Mail: ' + state.businessEmail + '</div>' : '') +
+    (state.businessPhone ? '<div>Telefon: ' + state.businessPhone + '</div>' : '') +
+    (state.businessAddress ? '<div>Adresse: ' + state.businessAddress + '</div>' : '') +
+    '</div>';
+
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + typeLabel + ' ' + (inv.number||'') + '</title>' +
+  '<style>' +
+  'body{font-family:Arial,sans-serif;margin:0;padding:24px;color:#1f2937;background:#fff;box-sizing:border-box}' +
+  '.no-print{display:flex;gap:10px;margin-bottom:16px}' +
+  '@media print{.no-print{display:none}@page{size:A4}}' +
+  '</style></head><body>' +
+  invoiceNoPrintBar() +
+  '<div style="border:2px solid #1a1a2e;padding:24px">' +
+  '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">' +
+  '<div style="font-size:13px;color:#1f2937;line-height:1.8">' +
+  '<div>Rechnungsnummer: ' + (inv.number||'') + '</div>' +
+  '<div>Datum: ' + formatDateDE(inv.issueDate||'') + '</div>' +
+  '<div>Rechnung an: ' + partyName + '</div>' +
+  '<div>Abrechnungsperiode: ' + periodLabel + '</div>' +
+  '<div>Rechnung für: ' + firstItemDesc + '</div>' +
+  '</div>' +
+  '<div>' + logoOrName + '</div>' +
+  '</div>' +
+  '<table style="width:100%;border-collapse:collapse;margin:20px 0">' +
+  '<thead><tr style="background:#2c3e7a;color:#fff">' +
+  '<th style="padding:10px;text-align:left">Beschreibung</th>' +
+  '<th style="padding:10px;text-align:center">Menge</th>' +
+  '<th style="padding:10px;text-align:right">Satz</th>' +
+  '<th style="padding:10px;text-align:right">Betrag</th>' +
+  '</tr></thead><tbody>' + itemRows +
+  '<tr style="background:#d4e6f1;font-weight:700">' +
+  '<td colspan="3" style="padding:8px 10px;border:1px solid #ddd;text-align:right">Netto</td>' +
+  '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right">' + cur + parseFloat(inv.subtotal||0).toFixed(2) + '</td>' +
+  '</tr>' +
+  '<tr style="background:#fff">' +
+  '<td colspan="3" style="padding:8px 10px;border:1px solid #ddd;text-align:right">MwSt. (' + (inv.vatRate||0) + '%)</td>' +
+  '<td style="padding:8px 10px;border:1px solid #ddd;text-align:right">' + cur + parseFloat(inv.vatAmount||0).toFixed(2) + '</td>' +
+  '</tr>' +
+  '<tr style="background:#d4e6f1;font-weight:700;font-size:16px">' +
+  '<td colspan="3" style="padding:10px;border:1px solid #ddd;text-align:right">Gesamtbetrag inkl. MwSt.</td>' +
+  '<td style="padding:10px;border:1px solid #ddd;text-align:right">' + cur + parseFloat(inv.total||0).toFixed(2) + '</td>' +
+  '</tr>' +
+  '</tbody></table>' +
+  '<div style="display:flex;justify-content:space-between;gap:24px;border-top:1px solid #ddd;padding-top:20px">' +
+  '<div style="flex:1">' +
+  '<div style="font-weight:700;font-size:13px;margin-bottom:8px">Wir ersuchen um Überweisung auf folgendes Konto</div>' +
+  kontaktHtml +
+  '</div>' +
+  '<div>' + qrHtml + '</div>' +
+  '</div>' +
+  '</div>' +
+  '</body></html>';
+
+  return doc;
+}
+
+function generateEPCQR(containerId, inv, doc, size) {
+  doc = doc || document;
+  size = size || 120;
+  var el = doc.getElementById(containerId);
+  if (!el) return;
+  if (typeof QRCode === 'undefined') return;
+  var bic = state.bankBic || '';
+  var holder = (state.bankAccountHolder || state.businessName || '').substring(0, 70);
+  var iban = (state.bankIban || '').replace(/\s/g, '');
+  var amount = 'EUR' + (parseFloat(inv.total) || 0).toFixed(2);
+  var ref = (inv.number || '').substring(0, 35);
+  var epcStr = 'BCD\n002\n1\nSCT\n' + bic + '\n' + holder + '\n' + iban + '\n' + amount + '\n\n\n' + ref;
+  new QRCode(el, {text: epcStr, width: size, height: size, colorDark: '#000000', colorLight: '#ffffff'});
+}
+
 function printInvoice(inv, type) {
   if(!inv) return;
   var win = window.open('','_blank','width=800,height=1000');
@@ -6775,6 +7103,8 @@ function printInvoice(inv, type) {
   var doc = buildInvoiceHTML(inv, type);
   win.document.write(doc);
   win.document.close();
+  var qrSize = state.invoiceTemplate === 'minimal' ? 100 : 120;
+  setTimeout(function(){ generateEPCQR('epc-qr-' + inv.id, inv, win.document, qrSize); }, 400);
 }
 
 function downloadInvoicePDF(inv, type) {
@@ -6802,6 +7132,8 @@ function downloadInvoicePDF(inv, type) {
   var noPrintEls = el.querySelectorAll('.no-print');
   for(var i=0;i<noPrintEls.length;i++) noPrintEls[i].style.display = 'none';
   document.body.appendChild(el);
+  var pdfQrSize = state.invoiceTemplate === 'minimal' ? 100 : 120;
+  generateEPCQR('epc-qr-' + inv.id, inv, document, pdfQrSize);
 
   var filename = (inv.number || 'invoice') + '.pdf';
 
