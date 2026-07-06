@@ -142,9 +142,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
 .modal-overlay.open{opacity:1;pointer-events:all}
-.modal{background:var(--card);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1)}
+.modal{position:relative;background:var(--card);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1)}
 .modal-overlay.open .modal{transform:translateY(0)}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:10px auto 20px}
+.modal-close-btn{position:absolute;top:14px;right:14px;width:32px;height:32px;border-radius:50%;background:var(--bg);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text3);z-index:2;padding:0}
 .modal-title{font-size:18px;font-weight:700;margin-bottom:20px;text-align:center}
 .type-btns{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:20px}
 .type-btn{padding:12px 8px;border-radius:12px;border:2px solid var(--border);background:none;cursor:pointer;font-size:12px;font-weight:600;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:4px}
@@ -552,6 +553,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   .bnav-item.active .bnav-label{color:var(--primary);font-weight:600}
   /* Mobile header username */
   #hdr-mobile-user{display:block}
+  /* Add Transaction modal: bottom sheet, not full-screen */
+  .modal{position:fixed;bottom:0;left:0;right:0;top:auto;width:auto;max-width:none;max-height:85vh;border-radius:20px 20px 0 0;background:var(--card);overflow-y:auto;-webkit-overflow-scrolling:touch}
   /* Invoice cards mobile layout */
   .inv-card-row{flex-direction:column!important;align-items:stretch!important}
   .inv-card-headrow{display:flex!important}
@@ -569,7 +572,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage{margin-left:240px !important;max-width:none}
   .fab{right:32px;bottom:32px;left:auto}
   .modal-overlay{align-items:center}
-  .modal{border-radius:24px;max-width:480px;max-height:85vh;width:calc(100% - 48px)}
+  .modal{border-radius:16px;max-width:520px;margin:auto;max-height:85vh;width:calc(100% - 48px)}
   .summary{grid-template-columns:repeat(3,1fr) !important;max-width:960px;padding:20px 24px 0;margin:0 auto}
   .sum-card.full{grid-column:auto;background:none;padding:0;box-shadow:none;border-radius:0}
   .hdr{max-width:none;padding-left:20px}
@@ -2066,6 +2069,20 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
   </div>
 
+  <!-- NET INCOME / TOTAL TAX -->
+  <div style="display:flex;gap:10px;padding:0 16px 16px;max-width:960px;margin:0 auto;box-sizing:border-box" id="taxSummaryRow">
+    <div style="background:var(--card);border-radius:14px;padding:14px;flex:1">
+      <div style="font-size:12px;color:var(--text3)" id="netIncomeLbl">Net Income</div>
+      <div style="font-weight:700;font-size:18px;color:var(--green)" id="netIncomeAmt">€0.00</div>
+      <div style="font-size:11px;color:var(--text3)" id="netIncomeSub">After tax deduction</div>
+    </div>
+    <div style="background:var(--card);border-radius:14px;padding:14px;flex:1">
+      <div style="font-size:12px;color:var(--text3)" id="totalTaxLbl">Total Tax</div>
+      <div style="font-weight:700;font-size:18px;color:#f97316" id="totalTaxAmt">€0.00</div>
+      <div style="font-size:11px;color:var(--text3)" id="totalTaxSub">Collected VAT</div>
+    </div>
+  </div>
+
   <!-- SUMMARY (mobile, Zoho-style) -->
   <div class="mobile-summary">
     <div style="background:#EEF2FF;border-radius:16px;padding:16px">
@@ -2438,6 +2455,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- ADD TRANSACTION MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalIfOutside(event)">
   <div class="modal" id="modal">
+    <button class="modal-close-btn" onclick="closeModal()" aria-label="Close"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
     <div class="modal-handle"></div>
     <div class="modal-title" id="modalTitle">Add Transaction</div>
 
@@ -3926,6 +3944,28 @@ function renderHome() {
   var netSubEl = document.getElementById('netSub');
   if(incomeAmtEl) incomeAmtEl.textContent = fmt(income);
   if(expenseAmtEl) expenseAmtEl.textContent = fmt(expense);
+
+  // Net Income / Total Tax cards
+  var incomeTxs = txs.filter(function(t){ return t.type === 'income'; });
+  var nettoTotal = 0, taxTotal = 0;
+  incomeTxs.forEach(function(t){
+    var vatRate = t.vatRate || 0;
+    var netto = t.amount / (1 + vatRate / 100);
+    nettoTotal += netto;
+    taxTotal += (t.amount - netto);
+  });
+  var netIncomeLblEl = document.getElementById('netIncomeLbl');
+  var netIncomeSubEl = document.getElementById('netIncomeSub');
+  var totalTaxLblEl = document.getElementById('totalTaxLbl');
+  var totalTaxSubEl = document.getElementById('totalTaxSub');
+  var netIncomeAmtEl = document.getElementById('netIncomeAmt');
+  var totalTaxAmtEl = document.getElementById('totalTaxAmt');
+  if(netIncomeLblEl) netIncomeLblEl.textContent = {en:'Net Income', ar:'صافي الدخل', de:'Nettoeinkommen'}[state.lang] || 'Net Income';
+  if(netIncomeSubEl) netIncomeSubEl.textContent = {en:'After tax deduction', ar:'بعد خصم الضريبة', de:'Nach Steuerabzug'}[state.lang] || 'After tax deduction';
+  if(totalTaxLblEl) totalTaxLblEl.textContent = {en:'Total Tax', ar:'إجمالي الضريبة', de:'Gesamtsteuer'}[state.lang] || 'Total Tax';
+  if(totalTaxSubEl) totalTaxSubEl.textContent = {en:'Collected VAT', ar:'ضريبة محصلة', de:'Erhobene MwSt.'}[state.lang] || 'Collected VAT';
+  if(netIncomeAmtEl) netIncomeAmtEl.textContent = fmt(nettoTotal);
+  if(totalTaxAmtEl) totalTaxAmtEl.textContent = fmt(taxTotal);
 
   // Mobile Zoho-style summary cards
   var mobReceivablesEl = document.getElementById('mobReceivablesAmt');
