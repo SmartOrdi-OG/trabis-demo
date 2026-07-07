@@ -8549,7 +8549,6 @@ function renderFixedPage() {
   var dir = isRTL?'rtl':'ltr';
   var L = {
     title:    {en:'Fixed Costs', ar:'التكاليف الثابتة', de:'Fixkosten'},
-    empTitle: {en:'Employees & Salaries', ar:'الموظفين والرواتب', de:'Mitarbeiter & Gehälter'},
     recTitle: {en:'Recurring Expenses', ar:'المصاريف المتكررة', de:'Wiederkehrende Ausgaben'},
     addRec:   {en:'+ Add Expense', ar:'+ إضافة مصروف', de:'+ Ausgabe'},
     desc:     {en:'Description', ar:'الوصف', de:'Beschreibung'},
@@ -8586,12 +8585,6 @@ function renderFixedPage() {
   function fiTypeTx(k){ return (fiL.types[k]&&fiL.types[k][lang])||(fiL.types[k]&&fiL.types[k].en)||k; }
 
   var h = '<div style="padding:16px 16px 120px;direction:'+dir+'">';
-
-  // ── Employees & Salaries (navigates to standalone Employees page) ──
-  h += '<div id="fp-nav-employees" style="display:flex;align-items:center;justify-content:space-between;background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:20px;box-shadow:var(--shadow);cursor:pointer">';
-  h += '<div style="display:flex;align-items:center;gap:10px;font-size:15px;font-weight:600">'+svgIcon('users',18)+' '+tx('empTitle')+'</div>';
-  h += svgIcon('chevronRight', 16);
-  h += '</div>';
 
   // ── Fixed Income (1st) ──
   h += '<div>';
@@ -8694,9 +8687,6 @@ function renderFixedPage() {
   page.innerHTML = h;
 
   // ── Events ──
-  var navEmpBtn = document.getElementById('fp-nav-employees');
-  if(navEmpBtn) navEmpBtn.onclick = function(){ showNav('employees'); };
-
   var addRecBtn = document.getElementById('fp-add-rec');
   if(addRecBtn) addRecBtn.onclick = function(){ document.getElementById('fp-rec-form').style.display='block'; };
   var saveRecBtn = document.getElementById('fp-save-rec');
