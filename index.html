@@ -5157,7 +5157,7 @@ function renderHome() {
     else taxTotal = income * taxCfg.rate / 100 + net * taxCfg.rate / 100;
     taxTotal = Math.max(0, taxTotal);
   }
-  var nettoTotal = income - taxTotal;
+  var nettoTotal = net - taxTotal;
   var netIncomeLblEl = document.getElementById('netIncomeLbl');
   var netIncomeSubEl = document.getElementById('netIncomeSub');
   var totalTaxLblEl = document.getElementById('totalTaxLbl');
@@ -5165,17 +5165,25 @@ function renderHome() {
   var netIncomeAmtEl = document.getElementById('netIncomeAmt');
   var totalTaxAmtEl = document.getElementById('totalTaxAmt');
   if(netIncomeLblEl) netIncomeLblEl.textContent = {en:'Net Income', ar:'صافي الدخل', de:'Nettoeinkommen'}[state.lang] || 'Net Income';
-  if(netIncomeSubEl) netIncomeSubEl.textContent = {en:'After tax deduction', ar:'بعد خصم الضريبة', de:'Nach Steuerabzug'}[state.lang] || 'After tax deduction';
+  if(netIncomeSubEl) netIncomeSubEl.textContent = {en:'After expenses & tax', ar:'بعد المصاريف والضريبة', de:'Nach Ausgaben & Steuer'}[state.lang] || 'After expenses & tax';
   if(totalTaxLblEl) totalTaxLblEl.textContent = {en:'Total Tax', ar:'إجمالي الضريبة', de:'Gesamtsteuer'}[state.lang] || 'Total Tax';
   if(totalTaxSubEl) totalTaxSubEl.textContent = {en:'Collected VAT', ar:'ضريبة محصلة', de:'Erhobene MwSt.'}[state.lang] || 'Collected VAT';
   if(netIncomeAmtEl) netIncomeAmtEl.textContent = fmt(nettoTotal);
   if(totalTaxAmtEl) totalTaxAmtEl.textContent = fmt(taxTotal);
 
-  // Mobile Zoho-style summary cards
+  // Mobile Zoho-style summary cards: Receivables/Payables are a running
+  // balance (unpaid invoices), not filtered to the selected period like
+  // income/expense are.
+  var totalReceivables = state.issuedInvoices
+    .filter(function(inv){ return inv.status === 'Pending' || inv.status === 'Overdue'; })
+    .reduce(function(s, inv){ return s + (parseFloat(inv.total) || 0); }, 0);
+  var totalPayables = state.receivedInvoices
+    .filter(function(inv){ return inv.status === 'Pending' || inv.status === 'Overdue'; })
+    .reduce(function(s, inv){ return s + (parseFloat(inv.total) || 0); }, 0);
   var mobReceivablesEl = document.getElementById('mobReceivablesAmt');
   var mobPayablesEl = document.getElementById('mobPayablesAmt');
-  if(mobReceivablesEl) mobReceivablesEl.textContent = fmt(income);
-  if(mobPayablesEl) mobPayablesEl.textContent = fmt(expense);
+  if(mobReceivablesEl) mobReceivablesEl.textContent = fmt(totalReceivables);
+  if(mobPayablesEl) mobPayablesEl.textContent = fmt(totalPayables);
   var mobOverdueEl = document.getElementById('mobOverdueCount');
   if(mobOverdueEl) mobOverdueEl.textContent = state.issuedInvoices.filter(function(inv){ return inv.status === 'Overdue'; }).length;
   var mobPendingDebtsEl = document.getElementById('mobPendingDebtsCount');
@@ -7593,10 +7601,33 @@ function toggleInvoiceStatus(idx, listType) {
   renderInvoicesPage();
 }
 
+function handleReceivedInvoicePaid(inv) {
+  if(inv.expenseTxId) return;
+  var rcvLbl = {en:'Received Invoice', ar:'فاتورة واردة', de:'Eingangsrechnung'}[state.lang] || 'Received Invoice';
+  var txDesc = (inv.number ? rcvLbl + ' ' + inv.number : rcvLbl);
+  var txId = Date.now();
+  state.transactions.push({
+    id: txId,
+    name: txDesc,
+    amount: inv.total || 0,
+    type: 'expense',
+    category: 'supplier',
+    date: today(),
+    icon: '📄',
+    supplierId: inv.supplierId || null,
+    supplierName: inv.supplierName || null,
+    invoiceRef: inv.supplierInvNum || inv.number || null,
+    hasInvoice: true,
+  });
+  inv.expenseTxId = txId;
+}
+
 function toggleReceivedInvoiceStatus(idx) {
   var inv = state.receivedInvoices[idx];
   if(!inv) return;
-  inv.status = (inv.status === 'Pending' || inv.status === 'Overdue') ? 'Paid' : 'Pending';
+  var becamePaid = (inv.status === 'Pending' || inv.status === 'Overdue');
+  inv.status = becamePaid ? 'Paid' : 'Pending';
+  if(becamePaid) handleReceivedInvoicePaid(inv);
   save();
   renderInvoicesPage();
 }
@@ -7929,23 +7960,7 @@ function saveReceivedInvoice() {
   _recalcInvoiceTotals();
   var inv = _collectInvoiceFormData('received');
   state.receivedInvoices.push(inv);
-  if(inv.supplierId || inv.supplierName) {
-    var rcvLbl = {en:'Received Invoice', ar:'فاتورة واردة', de:'Eingangsrechnung'}[state.lang] || 'Received Invoice';
-    var txDesc = (inv.number ? rcvLbl + ' ' + inv.number : rcvLbl);
-    state.transactions.push({
-      id: Date.now() + 1,
-      name: txDesc,
-      amount: inv.total || 0,
-      type: 'expense',
-      category: 'supplier',
-      date: inv.issueDate || today(),
-      icon: '📄',
-      supplierId: inv.supplierId || null,
-      supplierName: inv.supplierName || null,
-      invoiceRef: inv.supplierInvNum || inv.number || null,
-      hasInvoice: true,
-    });
-  }
+  if(inv.status === 'Paid') handleReceivedInvoicePaid(inv);
   save();
   _activeInvoiceTab = 'received';
   var ov = document.getElementById('inv_overlay');
