@@ -2375,21 +2375,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <option value="MM/DD/YYYY">MM/DD/YYYY</option>
       </select>
     </div>
-    <div class="settings-item">
-      <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(124,58,237,0.12);color:#7c3aed"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
-        <div class="settings-item-text">
-          <div class="title">Rechnungsvorlage</div>
-          <div class="sub">Design für gedruckte Rechnungen</div>
-        </div>
-      </div>
-      <select class="currency-select" id="invoiceTemplateSelect" onchange="setInvoiceTemplate(this.value)">
-        <option value="classic">Klassisch</option>
-        <option value="modern">Modern</option>
-        <option value="minimal">Minimal</option>
-        <option value="transport">Transport / Logistik</option>
-      </select>
-    </div>
   </div>
 
   <div id="settings-data-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
@@ -5200,9 +5185,6 @@ function renderSettings() {
   var dfSel = document.getElementById('dateFormatSelect');
   if(dfSel) dfSel.value = state.dateFormat || 'YYYY-MM-DD';
 
-  var invTplSel = document.getElementById('invoiceTemplateSelect');
-  if(invTplSel) invTplSel.value = state.invoiceTemplate || 'classic';
-
   updateBusinessNameDisplay();
   updatePrivacyTexts();
   renderAccountSection();
@@ -5546,11 +5528,6 @@ function setDateFormat(val) {
   save();
   renderHome();
   if(document.getElementById('settingsPage').style.display !== 'none') renderSettings();
-}
-
-function setInvoiceTemplate(val) {
-  state.invoiceTemplate = val;
-  save();
 }
 
 function togglePwField(btn, inputId) {
@@ -6926,10 +6903,6 @@ function ltrSpan(s) { return '<span dir="ltr" style="unicode-bidi:bidi-override"
 
 function buildInvoiceHTML(inv, type) {
   if(type === 'receipt') return buildProfessionalReceipt(inv);
-  var tpl = state.invoiceTemplate || 'classic';
-  if(tpl === 'modern') return buildModernInvoice(inv, type);
-  if(tpl === 'minimal') return buildMinimalInvoice(inv, type);
-  if(tpl === 'transport') return buildTransportInvoice(inv, type);
   return buildClassicInvoice(inv, type);
 }
 
@@ -7505,7 +7478,7 @@ function printInvoice(inv, type) {
   var doc = buildInvoiceHTML(inv, type);
   win.document.write(doc);
   win.document.close();
-  var qrSize = state.invoiceTemplate === 'minimal' ? 100 : 120;
+  var qrSize = type === 'receipt' ? 100 : 120;
   setTimeout(function(){ generateEPCQR('epc-qr-' + inv.id, inv, win.document, qrSize); }, 400);
 }
 
@@ -7534,7 +7507,7 @@ function downloadInvoicePDF(inv, type) {
   var noPrintEls = el.querySelectorAll('.no-print');
   for(var i=0;i<noPrintEls.length;i++) noPrintEls[i].style.display = 'none';
   document.body.appendChild(el);
-  var pdfQrSize = state.invoiceTemplate === 'minimal' ? 100 : 120;
+  var pdfQrSize = type === 'receipt' ? 100 : 120;
   generateEPCQR('epc-qr-' + inv.id, inv, document, pdfQrSize);
 
   var filename = (inv.number || 'invoice') + '.pdf';
