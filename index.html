@@ -348,6 +348,18 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 }
 .ob-cur-symbol { font-size:20px;font-weight:800;color:var(--primary); }
 .ob-cur-name { font-size:10px;color:var(--text3);margin-top:3px;font-weight:600; }
+/* Business type */
+.ob-biz-card {
+  background:var(--card);border:2px solid var(--border);border-radius:16px;
+  padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;transition:all 0.2s;text-align:center;font-size:13px;font-weight:600;color:var(--text);
+}
+.ob-biz-card.sel {
+  border-color:var(--primary);background:rgba(46,158,107,0.08);
+}
+.ob-btn:disabled {
+  opacity:0.4;cursor:not-allowed;box-shadow:none;
+}
 /* Auth inputs */
 .ob-input-wrap {
   position:relative;margin-bottom:14px;
@@ -1628,6 +1640,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div class="ob-dot" id="dot2"></div>
       <div class="ob-dot" id="dot3"></div>
       <div class="ob-dot" id="dot4"></div>
+      <div class="ob-dot" id="dot5"></div>
     </div>
 
     <!-- Step 1: Language (shown after registration) -->
@@ -1893,8 +1906,41 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button class="ob-btn" onclick="obNext(3)" id="ob-cur-next">Continue →</button>
     </div>
 
-    <!-- Step 3: Employees -->
+    <!-- Step 3: Business Type -->
     <div class="ob-step" id="ob-step3">
+      <div class="ob-step-title" id="ob-biz-title">What type of business do you have?</div>
+      <div class="ob-step-sub" id="ob-biz-sub">This helps us show the right features for your business</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px">
+        <div class="ob-biz-card" id="obbiz-general" onclick="selectObBizType('general')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
+          <span id="obbiz-general-lbl">General / Freelancer</span>
+        </div>
+        <div class="ob-biz-card" id="obbiz-transport" onclick="selectObBizType('transport')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+          <span id="obbiz-transport-lbl">Transport / Logistics</span>
+        </div>
+        <div class="ob-biz-card" id="obbiz-retail" onclick="selectObBizType('retail')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span id="obbiz-retail-lbl">Retail / Shop</span>
+        </div>
+        <div class="ob-biz-card" id="obbiz-restaurant" onclick="selectObBizType('restaurant')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>
+          <span id="obbiz-restaurant-lbl">Restaurant / Café</span>
+        </div>
+        <div class="ob-biz-card" id="obbiz-construction" onclick="selectObBizType('construction')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 12l-8.5 8.5a2.12 2.12 0 0 1-3-3L12 9"/><path d="M17.64 15L22 10.64"/><path d="M20.91 11.7l-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/></svg>
+          <span id="obbiz-construction-lbl">Construction</span>
+        </div>
+        <div class="ob-biz-card" id="obbiz-medical" onclick="selectObBizType('medical')">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          <span id="obbiz-medical-lbl">Medical / Clinic</span>
+        </div>
+      </div>
+      <button class="ob-btn" onclick="obBizNext()" id="ob-biz-next" disabled>Continue →</button>
+    </div>
+
+    <!-- Step 4: Employees -->
+    <div class="ob-step" id="ob-step4">
       <div class="ob-step-title" id="ob-emp-title">Add Employees</div>
       <div class="ob-step-sub" id="ob-emp-sub">Add your team and their salaries</div>
       <div id="ob-emp-list" style="margin-bottom:12px;max-height:180px;overflow-y:auto"></div>
@@ -1903,12 +1949,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <input id="ob-emp-salary" placeholder="Salary" type="number" style="width:100px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
       </div>
       <button class="ob-btn secondary" onclick="obAddEmployee()" id="ob-emp-add" style="margin-bottom:16px">+ Add Employee</button>
-      <button class="ob-btn" onclick="obNext(4)" id="ob-emp-next">Continue →</button>
-      <button class="ob-btn secondary" onclick="obNext(4)" id="ob-emp-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
+      <button class="ob-btn" onclick="obNext(5)" id="ob-emp-next">Continue →</button>
+      <button class="ob-btn secondary" onclick="obNext(5)" id="ob-emp-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
     </div>
 
-    <!-- Step 4: Recurring Expenses -->
-    <div class="ob-step" id="ob-step4">
+    <!-- Step 5: Recurring Expenses -->
+    <div class="ob-step" id="ob-step5">
       <div class="ob-step-title" id="ob-rec-title">Fixed Expenses</div>
       <div class="ob-step-sub" id="ob-rec-sub">Add your monthly fixed costs</div>
       <div id="ob-rec-list" style="margin-bottom:12px;max-height:180px;overflow-y:auto"></div>
@@ -2858,7 +2904,7 @@ var state = {
   bankBic: '',
   bankAccountHolder: '',
   notifications: [],
-  businessType: 'General',
+  businessType: '',
   invoiceTemplate: 'classic',
 };
 
@@ -3028,7 +3074,7 @@ function save() {
   localStorage.setItem(uk('bankBic'), state.bankBic || '');
   localStorage.setItem(uk('bankHolder'), state.bankAccountHolder || '');
   localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
-  localStorage.setItem(uk('businessType'), state.businessType || 'General');
+  localStorage.setItem(uk('businessType'), state.businessType);
   localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
 }
 
@@ -3065,16 +3111,20 @@ function loadUserData() {
   state.bankBic = localStorage.getItem(uk('bankBic')) || '';
   state.bankAccountHolder = localStorage.getItem(uk('bankHolder')) || '';
   state.notifications = JSON.parse(localStorage.getItem(uk('notifs')) || '[]');
-  state.businessType = localStorage.getItem(uk('businessType')) || 'General';
+  state.businessType = localStorage.getItem(uk('businessType')) || 'general';
   state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
     state.businessName = (accs[user2] && accs[user2].businessName) || '';
   }
-  var snavFleetEl = document.getElementById('snav-fleet');
-  if(snavFleetEl) snavFleetEl.style.display = state.businessType === 'Transport' ? 'flex' : 'none';
+  updateFleetNavVisibility();
   applyTheme();
+}
+
+function updateFleetNavVisibility() {
+  var snavFleetEl = document.getElementById('snav-fleet');
+  if(snavFleetEl) snavFleetEl.style.display = state.businessType === 'transport' ? 'flex' : 'none';
 }
 
 function getFiltered() {
@@ -3099,6 +3149,7 @@ function getFiltered() {
 
 // ── NAV ──
 function showNav(page) {
+  if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
   ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','kalenderPage','notizenPage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
@@ -3191,7 +3242,7 @@ function openMoreMenu() {
   h += moreMenuItemHtml('mm-fixed', 'checklist', mtx('fixed'));
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
-  if(state.businessType === 'Transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
+  if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
@@ -5052,6 +5103,14 @@ var SETTINGS_L = {
   profileEmail:     {en:'Email', ar:'البريد الإلكتروني', de:'E-Mail'},
   profilePhone:     {en:'Phone Number', ar:'رقم الهاتف', de:'Telefonnummer'},
   profileCountry:   {en:'Country', ar:'الدولة', de:'Land'},
+  bizTypeLbl:       {en:'Business Type', ar:'نوع النشاط', de:'Unternehmensart'},
+  bizTypeNote:      {en:'To change your business type, please create a new account', ar:'لتغيير نوع نشاطك، يرجى إنشاء حساب جديد', de:'Um Ihren Unternehmenstyp zu ändern, erstellen Sie bitte ein neues Konto'},
+  bizTypeGeneral:      {en:'General / Freelancer', ar:'عام / فريلانسر', de:'Allgemein / Freelancer'},
+  bizTypeTransport:    {en:'Transport / Logistics', ar:'نقل وخدمات', de:'Transport / Logistik'},
+  bizTypeRetail:       {en:'Retail / Shop', ar:'محل / تجزئة', de:'Einzelhandel / Shop'},
+  bizTypeRestaurant:   {en:'Restaurant / Café', ar:'مطعم / كافيه', de:'Restaurant / Café'},
+  bizTypeConstruction: {en:'Construction', ar:'مقاولات', de:'Bau / Handwerk'},
+  bizTypeMedical:      {en:'Medical / Clinic', ar:'طبي / عيادة', de:'Medizin / Klinik'},
   verifyPwTitle:    {en:'Confirm Password', ar:'تأكيد كلمة المرور', de:'Passwort bestätigen'},
   verifyPwSub:      {en:'Enter your password to confirm these changes', ar:'أدخل كلمة المرور لتأكيد هذه التغييرات', de:'Geben Sie Ihr Passwort ein, um diese Änderungen zu bestätigen'},
   verifyPwConfirmBtn: {en:'Confirm', ar:'تأكيد', de:'Bestätigen'},
@@ -5106,6 +5165,12 @@ var SETTINGS_L = {
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
 function stx(k) { return (SETTINGS_L[k] && SETTINGS_L[k][state.lang]) || (SETTINGS_L[k] && SETTINGS_L[k].en) || k; }
+
+function bizTypeLabel(type) {
+  var map = {general:'bizTypeGeneral', transport:'bizTypeTransport', retail:'bizTypeRetail', restaurant:'bizTypeRestaurant', construction:'bizTypeConstruction', medical:'bizTypeMedical'};
+  var key = map[type] || 'bizTypeGeneral';
+  return stx(key);
+}
 
 function renderSettings() {
   var updates = {
@@ -5181,6 +5246,9 @@ function renderAccountSection() {
       + bizField('profileCountryInput', stx('profileCountry'), acc.country)
       + _bizEditSaveCancelRow('profileSaveBtn', 'profileCancelBtn');
   }
+  profileHtml = profileHtml
+    + bizDisplayRow(stx('bizTypeLbl'), bizTypeLabel(state.businessType))
+    + '<div style="font-size:11px;color:var(--text3);margin:-6px 0 10px">' + stx('bizTypeNote') + '</div>';
 
   var previewHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
     + '<img id="settingsLogoPreview" src="' + (state.businessLogo || '') + '" style="width:64px;height:64px;object-fit:cover;border-radius:12px;border:2px solid var(--border);display:' + (state.businessLogo ? 'block' : 'none') + '">'
@@ -8817,6 +8885,7 @@ function lpShowRegister() {
 var obSelectedLang = localStorage.getItem('smartac_lang') || 'en';
 var obSelectedCur = localStorage.getItem('smartac_currency') || '€';
 var obSelectedCurCode = 'EUR';
+var obSelectedBizType = '';
 
 var OB_TEXT = {
   en: {
@@ -8828,6 +8897,9 @@ var OB_TEXT = {
     login:'Sign In', or:'or', register:'Create Account',
     curTitle:'Choose Currency', curSub:'Select your main currency',
     finish:'Get Started 🚀', cont:'Continue →', skip:'Skip',
+    bizTitle:'What type of business do you have?', bizSub:'This helps us show the right features for your business',
+    bizGeneral:'General / Freelancer', bizTransport:'Transport / Logistics', bizRetail:'Retail / Shop',
+    bizRestaurant:'Restaurant / Café', bizConstruction:'Construction', bizMedical:'Medical / Clinic',
     empTitle:'Add Employees', empSub:'Add your team and their salaries', empAdd:'+ Add Employee', empNext:'Save & Continue',
     recTitle:'Fixed Expenses', recSub:'Add your monthly fixed costs', recAdd:'+ Add Expense',
     errUser:'Please enter a username', email:'Email', phone:'Phone Number', country:'Country', confirmPass:'Confirm Password',
@@ -8845,6 +8917,9 @@ var OB_TEXT = {
     login:'تسجيل الدخول', or:'أو', register:'إنشاء حساب',
     curTitle:'اختر العملة', curSub:'اختر عملتك الرئيسية',
     finish:'ابدأ الآن 🚀', cont:'التالي →', skip:'تخطي',
+    bizTitle:'ما نوع نشاطك التجاري؟', bizSub:'هذا يساعدنا في عرض الميزات المناسبة لنشاطك',
+    bizGeneral:'عام / فريلانسر', bizTransport:'نقل وخدمات', bizRetail:'محل / تجزئة',
+    bizRestaurant:'مطعم / كافيه', bizConstruction:'مقاولات', bizMedical:'طبي / عيادة',
     empTitle:'إضافة الموظفين', empSub:'أضف فريقك ورواتبهم', empAdd:'+ إضافة موظف', empNext:'حفظ ومتابعة',
     recTitle:'المصاريف الثابتة', recSub:'أضف تكاليفك الشهرية الثابتة', recAdd:'+ إضافة مصروف',
     errUser:'الرجاء إدخال اسم المستخدم', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة', confirmPass:'تأكيد كلمة المرور',
@@ -8862,6 +8937,9 @@ var OB_TEXT = {
     login:'Anmelden', or:'oder', register:'Konto erstellen',
     curTitle:'Währung wählen', curSub:'Wählen Sie Ihre Hauptwährung',
     finish:'Loslegen 🚀', cont:'Weiter →', skip:'Überspringen',
+    bizTitle:'Was für ein Unternehmen haben Sie?', bizSub:'Dies hilft uns, die richtigen Funktionen anzuzeigen',
+    bizGeneral:'Allgemein / Freelancer', bizTransport:'Transport / Logistik', bizRetail:'Einzelhandel / Shop',
+    bizRestaurant:'Restaurant / Café', bizConstruction:'Bau / Handwerk', bizMedical:'Medizin / Klinik',
     empTitle:'Mitarbeiter hinzufügen', empSub:'Fügen Sie Ihr Team und Gehälter hinzu', empAdd:'+ Mitarbeiter', empNext:'Speichern & Weiter',
     recTitle:'Fixkosten', recSub:'Fügen Sie monatliche Fixkosten hinzu', recAdd:'+ Ausgabe',
     errUser:'Bitte Benutzernamen eingeben', email:'E-Mail', phone:'Telefonnummer', country:'Land', confirmPass:'Passwort bestätigen',
@@ -8900,6 +8978,9 @@ function updateObText() {
     'ob-auth-title':'authTitle','ob-auth-sub':'authSub',
     'ob-login-btn':'login','ob-register-btn':'register','ob-or-text':'or',
     'ob-cur-title':'curTitle','ob-cur-sub':'curSub','ob-cur-next':'cont','ob-cur-next2':'finish',
+    'ob-biz-title':'bizTitle','ob-biz-sub':'bizSub','ob-biz-next':'cont',
+    'obbiz-general-lbl':'bizGeneral','obbiz-transport-lbl':'bizTransport','obbiz-retail-lbl':'bizRetail',
+    'obbiz-restaurant-lbl':'bizRestaurant','obbiz-construction-lbl':'bizConstruction','obbiz-medical-lbl':'bizMedical',
     'ob-emp-title':'empTitle','ob-emp-sub':'empSub','ob-emp-add':'empAdd','ob-emp-next':'empNext','ob-emp-skip':'skip',
     'ob-rec-title':'recTitle','ob-rec-sub':'recSub','ob-rec-add':'recAdd','ob-rec-skip':'skip',
     'ob-emp-lbl':'empLbl','ob-rec-lbl':'recLbl','ob-cur-lbl':'curLbl',
@@ -8973,7 +9054,7 @@ function updateObText() {
 }
 
 function obNext(step) {
-  for(var i=0;i<5;i++){
+  for(var i=0;i<6;i++){
     var s = document.getElementById('ob-step'+i);
     if(s) s.className = 'ob-step'+(i===step?' active':'');
     var d = document.getElementById('dot'+i);
@@ -8986,8 +9067,25 @@ function obNext(step) {
       if(u) u.focus();
     }, 300);
   }
-  if(step===3) obRenderSetupLists();
   if(step===4) obRenderSetupLists();
+  if(step===5) obRenderSetupLists();
+}
+
+function selectObBizType(value) {
+  obSelectedBizType = value;
+  ['general','transport','retail','restaurant','construction','medical'].forEach(function(v){
+    var el = document.getElementById('obbiz-'+v);
+    if(el) el.className = 'ob-biz-card' + (v===value?' sel':'');
+  });
+  var nextBtn = document.getElementById('ob-biz-next');
+  if(nextBtn) nextBtn.disabled = false;
+}
+
+function obBizNext() {
+  if(!obSelectedBizType) return;
+  state.businessType = obSelectedBizType;
+  save();
+  obNext(4);
 }
 
 function selectObCur(code, symbol) {
@@ -9143,6 +9241,7 @@ function obFinish() {
   save(); // saves to uk() keys (smartac_username_tx etc)
   applyLang();
   updateBusinessNameDisplay();
+  updateFleetNavVisibility();
   var overlay = document.getElementById('onboardingOverlay');
   if(overlay) overlay.style.display = 'none';
   renderHome();
@@ -11167,7 +11266,7 @@ function cdConfirmDelete() {
   state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
-  state.bankName=''; state.bankIban=''; state.bankBic=''; state.bankAccountHolder=''; state.businessType='General';
+  state.bankName=''; state.bankIban=''; state.bankBic=''; state.bankAccountHolder=''; state.businessType='';
   ['tx','debts','currency','clients','suppliers','employees','recurring','budgets','lang','tax','theme','fixed_income','issued_inv','receipts','received_inv','logo','bizAddress','bizTaxId','bizPhone','bizEmail','bankName','bankIban','bankBic','bankHolder','businessType'].forEach(function(k){
     localStorage.removeItem(uk(k));
   });
