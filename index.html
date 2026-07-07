@@ -530,6 +530,20 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .snav-user{font-size:12px;color:var(--text3);margin-bottom:10px}
 .snav-logout{width:100%;padding:10px;border-radius:10px;border:1.5px solid rgba(239,68,68,0.3);background:rgba(239,68,68,0.08);color:#ef4444;font-size:13px;font-weight:600;cursor:pointer}
 
+/* ── RTL: sidebar moves to the right ── */
+body.lang-ar #sidebarNav{left:auto;right:0;border-right:none;border-left:1px solid var(--border);transform:translateX(100%)}
+body.lang-ar #sidebarNav.open{transform:translateX(0)}
+body.lang-ar #sidebarHoverZone{left:auto;right:0}
+body.lang-ar .snav-item{border-right:none;border-left:3px solid transparent}
+body.lang-ar .snav-item.active{border-left-color:var(--primary);border-right-color:transparent}
+body.lang-ar .ico-chevron{transform:scaleX(-1)}
+/* Kalender's month-nav buttons already pick the correct icon+function pairing for RTL in JS */
+body.lang-ar #kalLeftBtn .ico-chevron,body.lang-ar #kalRightBtn .ico-chevron{transform:none}
+/* Amounts, dates, phone numbers and IBANs always read LTR even in RTL mode */
+.lang-ar .amount,.lang-ar .date-value,.lang-ar .tx-amount,.lang-ar .debt-amount,.lang-ar .dit-amount,.lang-ar .inv-card-date,.lang-ar .sum-amount,.lang-ar input[type="number"],.lang-ar input[type="date"],.lang-ar input[type="tel"]{direction:ltr;unicode-bidi:embed}
+body.lang-ar .summary>.sum-card:first-child{border-left:none;border-right:4px solid var(--green)}
+body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px solid var(--red)}
+
 /* ── MOBILE LAYOUT (default: 430px centered) ── */
 @media (max-width:1023px) {
   .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage{max-width:430px;margin-left:auto;margin-right:auto}
@@ -581,7 +595,9 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 @media (min-width:1024px) {
   .bnav{display:none !important}
   #sidebarNav{transform:translateX(0)}
+  body.lang-ar #sidebarNav{transform:translateX(0)}
   .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage{margin-left:240px !important;max-width:none}
+  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
   .modal-overlay{align-items:center}
   .modal{border-radius:16px;max-width:520px;margin:auto;max-height:85vh;width:calc(100% - 48px)}
@@ -3032,7 +3048,8 @@ var CAT_ICON_KEYS = {
 function svgIcon(name, size) {
   size = size || 16;
   var body = SVG_ICON_PATHS[name] || '';
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0">' + body + '</svg>';
+  var classAttr = (name === 'chevronLeft' || name === 'chevronRight') ? ' class="ico-chevron"' : '';
+  return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0"' + classAttr + '>' + body + '</svg>';
 }
 function save() {
   var txKey = uk('tx');
@@ -7400,7 +7417,7 @@ function _renderInvoiceList(items, colorIsGreen, deleteFunc, type) {
     h += '</div>';
     h += '<div class="inv-card-ref-desktop" style="font-size:13px;font-weight:700;margin-bottom:2px">' + ref + '</div>';
     h += '<div style="font-size:12px;color:var(--text3);margin-bottom:2px">' + name + '</div>';
-    h += '<div style="font-size:14px;font-weight:700;color:' + amtColor + ';margin-bottom:4px">' + amtStr + '</div>';
+    h += '<div class="amount" style="font-size:14px;font-weight:700;color:' + amtColor + ';margin-bottom:4px">' + amtStr + '</div>';
     h += '<div class="inv-card-date" style="font-size:11px;color:var(--text3)">' + dateStr + '</div>';
     h += '</div>';
     h += '<div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0">';
