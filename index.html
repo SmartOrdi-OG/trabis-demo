@@ -3476,6 +3476,7 @@ function renderKalenderPage() {
   if(_kalYear === null) { _kalYear = now.getFullYear(); _kalMonth = now.getMonth(); }
   if(_kalSelectedDate === null) { _kalSelectedDate = today(); }
 
+  var isRTL = state.lang === 'ar';
   var autoAppts = generateAutoAppointments();
   var allAppts = (state.appointments || []).concat(autoAppts);
 
@@ -3503,14 +3504,30 @@ function renderKalenderPage() {
     cells.push({day: ni, outside: true, dateStr: null});
   }
 
+  // Grid items lay out DOM-order left-to-right regardless of dir="rtl", so for
+  // Arabic we mirror by reversing each week-row (keeps week order top-to-bottom,
+  // flips only the within-row left-right reading order).
+  var dayOrder = [0, 1, 2, 3, 4, 5, 6];
+  if(isRTL) {
+    dayOrder = [6, 5, 4, 3, 2, 1, 0];
+    var mirroredCells = [];
+    var rowStart;
+    for(rowStart = 0; rowStart < cells.length; rowStart += 7) {
+      var row = cells.slice(rowStart, rowStart + 7);
+      row.reverse();
+      mirroredCells = mirroredCells.concat(row);
+    }
+    cells = mirroredCells;
+  }
+
   var todayStr = today();
 
   var h = '';
   h += '<div style="position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:8px">';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
-  h += '<button id="kalPrevBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronLeft', 18) + '</button>';
+  h += '<button id="kalLeftBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronLeft', 18) + '</button>';
   h += '<div style="font-size:18px;font-weight:700">' + monthLabel + '</div>';
-  h += '<button id="kalNextBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronRight', 18) + '</button>';
+  h += '<button id="kalRightBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronRight', 18) + '</button>';
   h += '</div>';
   h += '<button id="kalAddBtn" style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">' + kaltx('addAppt') + '</button>';
   h += '</div>';
@@ -3518,7 +3535,7 @@ function renderKalenderPage() {
   h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">';
   var wi;
   for(wi = 0; wi < 7; wi++) {
-    h += '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--text3)">' + dayNames[wi] + '</div>';
+    h += '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--text3)">' + dayNames[dayOrder[wi]] + '</div>';
   }
   h += '</div>';
 
@@ -3553,10 +3570,11 @@ function renderKalenderPage() {
   } else {
     selectedAppts.forEach(function(a) {
       var color = KAL_TYPE_COLORS[a.type] || '#999';
-      h += '<div style="background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;border-left:4px solid ' + color + ';box-shadow:var(--shadow)">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+      var borderSide = isRTL ? 'border-right' : 'border-left';
+      h += '<div style="background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;' + borderSide + ':4px solid ' + color + ';box-shadow:var(--shadow);text-align:' + (isRTL ? 'right' : 'left') + '">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px' + (isRTL ? ';flex-direction:row-reverse' : '') + '">';
       h += '<div style="flex:1;min-width:0">';
-      h += '<div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px">' + (a.isAuto ? svgIcon('lock', 12) : '') + escHtml(a.title) + '</div>';
+      h += '<div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px' + (isRTL ? ';flex-direction:row-reverse;justify-content:flex-end' : '') + '">' + (a.isAuto ? svgIcon('lock', 12) : '') + escHtml(a.title) + '</div>';
       if(a.time) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + a.time + '</div>';
       if(a.description) h += '<div style="font-size:12px;color:var(--text2);margin-top:4px">' + escHtml(a.description) + '</div>';
       h += '</div>';
@@ -3573,10 +3591,15 @@ function renderKalenderPage() {
 
   page.innerHTML = h;
 
-  var prevBtn = document.getElementById('kalPrevBtn');
-  if(prevBtn) prevBtn.onclick = function(){ kalChangeMonth(-1); };
-  var nextBtn = document.getElementById('kalNextBtn');
-  if(nextBtn) nextBtn.onclick = function(){ kalChangeMonth(1); };
+  var leftBtn = document.getElementById('kalLeftBtn');
+  var rightBtn = document.getElementById('kalRightBtn');
+  if(isRTL) {
+    if(leftBtn) leftBtn.onclick = function(){ kalChangeMonth(1); };
+    if(rightBtn) rightBtn.onclick = function(){ kalChangeMonth(-1); };
+  } else {
+    if(leftBtn) leftBtn.onclick = function(){ kalChangeMonth(-1); };
+    if(rightBtn) rightBtn.onclick = function(){ kalChangeMonth(1); };
+  }
   var addBtn = document.getElementById('kalAddBtn');
   if(addBtn) addBtn.onclick = function(){ openAppointmentForm(_kalSelectedDate); };
 
