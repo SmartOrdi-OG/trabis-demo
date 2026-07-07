@@ -3218,8 +3218,8 @@ var MORE_MENU_L = {
   fixed: {en:'Fixed', ar:'ثابت', de:'Fix'},
   fleet: {en:'Fleet', ar:'الأسطول', de:'Fuhrpark'},
   assets: {en:'Assets', ar:'الأصول', de:'Vermögenswerte'},
-  kalender: {en:'Kalender', ar:'التقويم', de:'Kalender'},
-  notizen: {en:'Notizen', ar:'الملاحظات', de:'Notizen'},
+  kalender: {en:'Calendar', ar:'التقويم', de:'Kalender'},
+  notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
   help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
 };
@@ -5067,8 +5067,8 @@ function applyLang() {
   snavLabels.employees = {en:'Employees',ar:'الموظفين',de:'Mitarbeiter'}[state.lang]||'Employees';
   snavLabels.fleet = {en:'Fleet',ar:'الأسطول',de:'Fuhrpark'}[state.lang]||'Fleet';
   snavLabels.assets = {en:'Assets',ar:'الأصول',de:'Vermögenswerte'}[state.lang]||'Assets';
-  snavLabels.kalender = {en:'Kalender',ar:'التقويم',de:'Kalender'}[state.lang]||'Kalender';
-  snavLabels.notizen = {en:'Notizen',ar:'الملاحظات',de:'Notizen'}[state.lang]||'Notizen';
+  snavLabels.kalender = {en:'Calendar',ar:'التقويم',de:'Kalender'}[state.lang]||'Calendar';
+  snavLabels.notizen = {en:'Notes',ar:'الملاحظات',de:'Notizen'}[state.lang]||'Notes';
   snavLabels.help = {en:'Help',ar:'مساعدة',de:'Hilfe'}[state.lang]||'Help';
   Object.keys(snavLabels).forEach(function(k){
     var el = document.getElementById('snav-lbl-'+k);
@@ -7217,8 +7217,8 @@ var DE_MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','Au
 
 function invoiceNoPrintBar() {
   return '<div class="no-print">' +
-    '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' Drucken</button>' +
-    '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' Schließen</button>' +
+    '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+    '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
     '</div>';
 }
 
