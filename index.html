@@ -6379,11 +6379,61 @@ function deleteReceivedInvoice(idx) {
   save(); renderInvoicesPage();
 }
 
+function handleInvoicePaid(inv) {
+  if(inv.incomeTxId) return;
+  var items = inv.items || [];
+  var itemNames = items.map(function(it){ return it.desc; }).filter(Boolean).join(', ');
+  var category = inv.category || 'Sales';
+  var txId = Date.now();
+  state.transactions.push({
+    id: txId,
+    name: itemNames || (inv.number || itx('newInvoice')),
+    amount: inv.total || 0,
+    type: 'income',
+    category: category,
+    date: today(),
+    icon: ICONS[category] || '📌',
+    invoice: null,
+    invoiceName: null,
+    clientId: inv.clientId || null,
+    clientName: inv.clientName || null,
+    supplierId: null,
+    supplierName: null,
+    invoiceRef: inv.number || null,
+  });
+  inv.incomeTxId = txId;
+
+  if(!inv.autoReceiptId) {
+    var receiptId = Date.now() + 1;
+    state.receipts.push({
+      id: receiptId,
+      number: 'REC-' + receiptId,
+      issueDate: today(),
+      items: items,
+      vatRate: inv.vatRate,
+      notes: inv.notes,
+      subtotal: inv.subtotal,
+      vatAmount: inv.vatAmount,
+      total: inv.total,
+      status: 'Paid',
+      currency: inv.currency || state.currency,
+      clientId: inv.clientId || null,
+      clientName: inv.clientName || null,
+      paymentMethod: state.bankIban ? 'Bank Transfer' : 'Cash',
+      category: category,
+      sourceInvoiceId: inv.id,
+    });
+    inv.autoReceiptId = receiptId;
+  }
+}
+
 function toggleInvoiceStatus(idx, listType) {
   var list = listType === 'receipts' ? state.receipts : state.issuedInvoices;
   var inv = list[idx];
   if(!inv) return;
-  inv.status = (inv.status === 'Pending' || inv.status === 'Overdue') ? 'Paid' : 'Pending';
+  var becamePaid = (inv.status === 'Pending' || inv.status === 'Overdue');
+  inv.status = becamePaid ? 'Paid' : 'Pending';
+  if(becamePaid && listType === 'issued') handleInvoicePaid(inv);
   save();
   renderInvoicesPage();
 }
@@ -6471,6 +6521,14 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
   html += '</div>';
 
   if(extraFields) html += extraFields;
+
+  if(type === 'issued') {
+    var itemCatLbl = {en:'Item Type', ar:'نوع العنصر', de:'Artikelart'}[state.lang] || 'Item Type';
+    html += '<div style="margin-bottom:12px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + itemCatLbl + '</label>';
+    html += '<select id="inv_category" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px">';
+    CATS.income.forEach(function(c){ html += '<option value="' + c + '">' + tc(c) + '</option>'; });
+    html += '</select></div>';
+  }
 
   html += '<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:700;margin-bottom:8px">' + itx('lineItems') + '</div>';
   html += '<div id="inv_items_wrap">';
@@ -6632,6 +6690,9 @@ function _collectInvoiceFormData(type) {
     status: type==='receipt' ? 'Paid' : (window._invStatus||'Pending'),
     currency: state.currency,
   };
+  if(type==='issued') {
+    obj.category = (document.getElementById('inv_category')||{}).value || 'Sales';
+  }
   if(type==='issued'||type==='receipt') {
     var invCliEl = document.getElementById('inv_client');
     var invCliVal = invCliEl ? invCliEl.value : '';
@@ -6686,6 +6747,7 @@ function saveIssuedInvoice() {
   _recalcInvoiceTotals();
   var inv = _collectInvoiceFormData('issued');
   state.issuedInvoices.push(inv);
+  if(inv.status === 'Paid') handleInvoicePaid(inv);
   save();
   _activeInvoiceTab = 'issued';
   var ov = document.getElementById('inv_overlay');
