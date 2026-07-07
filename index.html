@@ -586,6 +586,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   .modal-overlay{align-items:center}
   .modal{border-radius:16px;max-width:520px;margin:auto;max-height:85vh;width:calc(100% - 48px)}
   .summary{grid-template-columns:repeat(3,1fr) !important;max-width:960px;padding:20px 24px 0;margin:0 auto}
+  .notiz-grid{grid-template-columns:repeat(3,1fr) !important}
   .sum-card.full{grid-column:auto;background:none;padding:0;box-shadow:none;border-radius:0}
   .hdr{max-width:none;padding-left:20px}
   .hdr-top{max-width:960px;margin:0 auto}
@@ -2891,6 +2892,8 @@ var state = {
   notifications: [],
   businessType: '',
   invoiceTemplate: 'classic',
+  appointments: [],
+  notes: [],
 };
 
 var CURRENCIES = {
@@ -3017,7 +3020,9 @@ var SVG_ICON_PATHS = {
   note: '<rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>',
   helpCircle: '<circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
   chevronRight: '<polyline points="9 18 15 12 9 6"/>',
-  chevronLeft: '<polyline points="15 18 9 12 15 6"/>'
+  chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
+  camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+  link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>'
 };
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
@@ -3061,6 +3066,8 @@ function save() {
   localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
   localStorage.setItem(uk('businessType'), state.businessType);
   localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
+  localStorage.setItem(uk('appointments'), JSON.stringify(state.appointments));
+  localStorage.setItem(uk('notes'), JSON.stringify(state.notes));
 }
 
 var _loadedDataUser = null;
@@ -3097,6 +3104,8 @@ function loadUserData() {
   state.bankAccountHolder = localStorage.getItem(uk('bankHolder')) || '';
   state.notifications = JSON.parse(localStorage.getItem(uk('notifs')) || '[]');
   state.businessType = localStorage.getItem(uk('businessType')) || 'general';
+  state.appointments = JSON.parse(localStorage.getItem(uk('appointments')) || '[]');
+  state.notes = JSON.parse(localStorage.getItem(uk('notes')) || '[]');
   state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
@@ -3175,8 +3184,8 @@ function showNav(page) {
   if(page === 'help') renderHelpPage();
   if(page === 'fleet') renderComingSoonPage('fleetPage', 'fleet');
   if(page === 'assets') renderComingSoonPage('assetsPage', 'assets');
-  if(page === 'kalender') renderComingSoonPage('kalenderPage', 'kalender');
-  if(page === 'notizen') renderComingSoonPage('notizenPage', 'notizen');
+  if(page === 'kalender') renderKalenderPage();
+  if(page === 'notizen') renderNotizenPage();
 }
 
 // ── MORE MENU (mobile) ──
@@ -3393,6 +3402,746 @@ function renderHelpPage() {
   if(privacyBtn) privacyBtn.onclick = function(){ openPrivacy(); };
   var termsBtn = document.getElementById('help-terms');
   if(termsBtn) termsBtn.onclick = function(){ openTerms(); };
+}
+
+// ── KALENDER ──
+var KAL_L = {
+  addAppt:  {en:'+ Appointment', ar:'+ موعد', de:'+ Termin'},
+  noAppts:  {en:'No appointments for this day', ar:'لا مواعيد لهذا اليوم', de:'Keine Termine für diesen Tag'},
+  edit:     {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
+  del:      {en:'Delete', ar:'حذف', de:'Löschen'},
+  confirmDelete: {en:'Delete this appointment?', ar:'حذف هذا الموعد؟', de:'Diesen Termin löschen?'},
+  docExpires: {en:' - Document expires', ar:' - انتهاء صلاحية المستند', de:' - Dokument läuft ab'},
+};
+function kaltx(k) { return (KAL_L[k] && KAL_L[k][state.lang]) || (KAL_L[k] && KAL_L[k].en) || k; }
+
+var KAL_MONTH_NAMES = {
+  en: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+  ar: ['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'],
+  de: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+};
+var KAL_DAY_NAMES = {
+  en: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+  ar: ['اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت','أحد'],
+  de: ['Mo','Di','Mi','Do','Fr','Sa','So'],
+};
+var KAL_TYPE_COLORS = {personal:'#16a34a', business:'#2563eb', document:'#f59e0b', vehicle:'#dc2626'};
+
+var _kalYear = null;
+var _kalMonth = null;
+var _kalSelectedDate = null;
+
+function generateAutoAppointments() {
+  var list = [];
+  var suffix = kaltx('docExpires');
+  (state.employees || []).forEach(function(emp) {
+    if(emp.workPermitExpiry) {
+      list.push({id:'auto-emp-'+emp.id+'-workPermit', title:(emp.name||'')+suffix, date:String(emp.workPermitExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
+    }
+    if(emp.drivingLicenseExpiry) {
+      list.push({id:'auto-emp-'+emp.id+'-drivingLicense', title:(emp.name||'')+suffix, date:String(emp.drivingLicenseExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
+    }
+  });
+  if(state.fleet && state.fleet.length) {
+    state.fleet.forEach(function(v) {
+      ['pickerl','tuev','insurance'].forEach(function(field) {
+        if(v[field]) {
+          list.push({id:'auto-veh-'+v.id+'-'+field, title:(v.name||v.plate||'')+suffix, date:String(v[field]).substring(0,10), time:'', type:'vehicle', description:'', isAuto:true});
+        }
+      });
+    });
+  }
+  return list;
+}
+
+function kalChangeMonth(delta) {
+  _kalMonth += delta;
+  if(_kalMonth < 0) { _kalMonth = 11; _kalYear--; }
+  else if(_kalMonth > 11) { _kalMonth = 0; _kalYear++; }
+  renderKalenderPage();
+}
+
+function deleteAppointment(id) {
+  if(!confirm(kaltx('confirmDelete'))) return;
+  state.appointments = state.appointments.filter(function(a){ return a.id !== id; });
+  save();
+  renderKalenderPage();
+}
+
+function renderKalenderPage() {
+  var page = document.getElementById('kalenderPage');
+  if(!page) return;
+
+  var now = new Date();
+  if(_kalYear === null) { _kalYear = now.getFullYear(); _kalMonth = now.getMonth(); }
+  if(_kalSelectedDate === null) { _kalSelectedDate = today(); }
+
+  var autoAppts = generateAutoAppointments();
+  var allAppts = (state.appointments || []).concat(autoAppts);
+
+  var monthNames = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+  var dayNames = KAL_DAY_NAMES[state.lang] || KAL_DAY_NAMES.en;
+  var monthLabel = monthNames[_kalMonth] + ' ' + _kalYear;
+
+  var firstOfMonth = new Date(_kalYear, _kalMonth, 1);
+  var startWeekday = (firstOfMonth.getDay() + 6) % 7;
+  var daysInMonth = new Date(_kalYear, _kalMonth + 1, 0).getDate();
+  var daysInPrevMonth = new Date(_kalYear, _kalMonth, 0).getDate();
+
+  var cells = [];
+  var pi;
+  for(pi = 0; pi < startWeekday; pi++) {
+    cells.push({day: daysInPrevMonth - startWeekday + 1 + pi, outside: true, dateStr: null});
+  }
+  var d;
+  for(d = 1; d <= daysInMonth; d++) {
+    cells.push({day: d, outside: false, dateStr: _kalYear + '-' + pad2(_kalMonth + 1) + '-' + pad2(d)});
+  }
+  var remaining = (7 - (cells.length % 7)) % 7;
+  var ni;
+  for(ni = 1; ni <= remaining; ni++) {
+    cells.push({day: ni, outside: true, dateStr: null});
+  }
+
+  var todayStr = today();
+
+  var h = '';
+  h += '<div style="position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:8px">';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
+  h += '<button id="kalPrevBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronLeft', 18) + '</button>';
+  h += '<div style="font-size:18px;font-weight:700">' + monthLabel + '</div>';
+  h += '<button id="kalNextBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronRight', 18) + '</button>';
+  h += '</div>';
+  h += '<button id="kalAddBtn" style="width:100%;background:#16a34a;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">' + kaltx('addAppt') + '</button>';
+  h += '</div>';
+
+  h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">';
+  var wi;
+  for(wi = 0; wi < 7; wi++) {
+    h += '<div style="text-align:center;font-size:12px;font-weight:700;color:var(--text3)">' + dayNames[wi] + '</div>';
+  }
+  h += '</div>';
+
+  h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:16px">';
+  cells.forEach(function(cell) {
+    var isToday = cell.dateStr === todayStr;
+    var isSelected = cell.dateStr === _kalSelectedDate;
+    var dayAppts = cell.dateStr ? allAppts.filter(function(a){ return a.date === cell.dateStr; }) : [];
+    var dotsHtml = '';
+    if(dayAppts.length) {
+      var seenTypes = {};
+      dayAppts.forEach(function(a){ seenTypes[a.type] = true; });
+      dotsHtml = '<div style="display:flex;gap:2px;justify-content:center;margin-top:2px">';
+      Object.keys(seenTypes).forEach(function(t) {
+        dotsHtml += '<span style="width:5px;height:5px;border-radius:50%;background:' + (KAL_TYPE_COLORS[t] || '#999') + ';display:inline-block"></span>';
+      });
+      dotsHtml += '</div>';
+    }
+    var circleStyle = isToday ? 'background:var(--primary);color:#fff;border-radius:50%' : (isSelected ? 'background:var(--primary-light);border-radius:50%' : '');
+    var textColor = cell.outside ? 'color:var(--text3);opacity:0.4' : (isToday ? 'color:#fff' : 'color:var(--text)');
+    h += '<div class="kal-day-cell" data-date="' + (cell.dateStr || '') + '" style="text-align:center;padding:6px 0;cursor:' + (cell.outside ? 'default' : 'pointer') + '">';
+    h += '<div style="width:28px;height:28px;margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;' + circleStyle + ';' + textColor + '">' + cell.day + '</div>';
+    h += dotsHtml || '<div style="height:7px;margin-top:2px"></div>';
+    h += '</div>';
+  });
+  h += '</div>';
+
+  var selectedAppts = allAppts.filter(function(a){ return a.date === _kalSelectedDate; }).sort(function(a, b){ return (a.time || '').localeCompare(b.time || ''); });
+  h += '<div id="kalApptsList">';
+  if(!selectedAppts.length) {
+    h += '<div style="text-align:center;padding:30px;color:var(--text3);font-size:13px">' + kaltx('noAppts') + '</div>';
+  } else {
+    selectedAppts.forEach(function(a) {
+      var color = KAL_TYPE_COLORS[a.type] || '#999';
+      h += '<div style="background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;border-left:4px solid ' + color + ';box-shadow:var(--shadow)">';
+      h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">';
+      h += '<div style="flex:1;min-width:0">';
+      h += '<div style="font-size:14px;font-weight:700;display:flex;align-items:center;gap:6px">' + (a.isAuto ? svgIcon('lock', 12) : '') + escHtml(a.title) + '</div>';
+      if(a.time) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + a.time + '</div>';
+      if(a.description) h += '<div style="font-size:12px;color:var(--text2);margin-top:4px">' + escHtml(a.description) + '</div>';
+      h += '</div>';
+      if(!a.isAuto) {
+        h += '<div style="display:flex;gap:6px;flex-shrink:0">';
+        h += '<button class="kal-edit-btn" data-id="' + a.id + '" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--text2)">' + kaltx('edit') + '</button>';
+        h += '<button class="kal-del-btn" data-id="' + a.id + '" style="background:rgba(239,68,68,0.1);border:none;border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer;color:#ef4444">' + kaltx('del') + '</button>';
+        h += '</div>';
+      }
+      h += '</div></div>';
+    });
+  }
+  h += '</div>';
+
+  page.innerHTML = h;
+
+  var prevBtn = document.getElementById('kalPrevBtn');
+  if(prevBtn) prevBtn.onclick = function(){ kalChangeMonth(-1); };
+  var nextBtn = document.getElementById('kalNextBtn');
+  if(nextBtn) nextBtn.onclick = function(){ kalChangeMonth(1); };
+  var addBtn = document.getElementById('kalAddBtn');
+  if(addBtn) addBtn.onclick = function(){ openAppointmentForm(_kalSelectedDate); };
+
+  var dayCells = page.querySelectorAll('.kal-day-cell');
+  var ci;
+  for(ci = 0; ci < dayCells.length; ci++) {
+    var cellEl = dayCells[ci];
+    var cellDate = cellEl.getAttribute('data-date');
+    if(!cellDate) continue;
+    (function(dd) {
+      cellEl.onclick = function(){ _kalSelectedDate = dd; renderKalenderPage(); };
+    })(cellDate);
+  }
+
+  var editBtns = page.querySelectorAll('.kal-edit-btn');
+  var ei;
+  for(ei = 0; ei < editBtns.length; ei++) {
+    (function(btn) {
+      var apptId = parseInt(btn.getAttribute('data-id'), 10);
+      btn.onclick = function(){ openAppointmentForm(null, apptId); };
+    })(editBtns[ei]);
+  }
+
+  var delBtns = page.querySelectorAll('.kal-del-btn');
+  var di;
+  for(di = 0; di < delBtns.length; di++) {
+    (function(btn) {
+      var apptId = parseInt(btn.getAttribute('data-id'), 10);
+      btn.onclick = function(){ deleteAppointment(apptId); };
+    })(delBtns[di]);
+  }
+}
+
+function closeAppointmentForm() {
+  var ov = document.getElementById('apptOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+}
+
+function openAppointmentForm(date, editId) {
+  var existingOv = document.getElementById('apptOverlay');
+  if(existingOv) existingOv.parentNode.removeChild(existingOv);
+
+  var editing = null;
+  if(editId) {
+    var found = (state.appointments || []).filter(function(a){ return a.id === editId; });
+    editing = found.length ? found[0] : null;
+  }
+
+  var lang = state.lang;
+  var L = {
+    title:     {en:'Appointment', ar:'موعد', de:'Termin'},
+    titleLbl:  {en:'Title', ar:'العنوان', de:'Titel'},
+    dateLbl:   {en:'Date', ar:'التاريخ', de:'Datum'},
+    timeLbl:   {en:'Time', ar:'الوقت', de:'Uhrzeit'},
+    typeLbl:   {en:'Type', ar:'النوع', de:'Typ'},
+    descLbl:   {en:'Description', ar:'الوصف', de:'Beschreibung'},
+    reminderLbl: {en:'Reminder', ar:'التذكير', de:'Erinnerung'},
+    save:      {en:'Save', ar:'حفظ', de:'Speichern'},
+    cancel:    {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+    personal:  {en:'Personal', ar:'شخصي', de:'Persönlich'},
+    business:  {en:'Business', ar:'عمل', de:'Business'},
+    document:  {en:'Document', ar:'مستند', de:'Dokument'},
+    vehicle:   {en:'Vehicle', ar:'مركبة', de:'Fahrzeug'},
+    remNone:   {en:'No reminder', ar:'بدون تذكير', de:'Keine Erinnerung'},
+    rem1d:     {en:'1 day before', ar:'قبل يوم واحد', de:'1 Tag vorher'},
+    rem3d:     {en:'3 days before', ar:'قبل 3 أيام', de:'3 Tage vorher'},
+    rem1w:     {en:'1 week before', ar:'قبل أسبوع', de:'1 Woche vorher'},
+    rem2w:     {en:'2 weeks before', ar:'قبل أسبوعين', de:'2 Wochen vorher'},
+  };
+  function fx(k) { return (L[k] && L[k][lang]) || (L[k] && L[k].en) || k; }
+
+  var ov = document.createElement('div');
+  ov.id = 'apptOverlay';
+  ov.className = 'modal-overlay open';
+
+  var selType = editing ? editing.type : 'personal';
+  var types = ['personal', 'business', 'document', 'vehicle'];
+
+  var html = '';
+  html += '<div class="modal" id="apptModal">';
+  html += '<button class="modal-close-btn" id="apptCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + fx('title') + '</div>';
+  html += '<input class="input-field" id="appt-title" placeholder="' + fx('titleLbl') + ' *" value="' + (editing ? escHtml(editing.title) : '') + '">';
+  html += '<div style="display:flex;gap:10px;margin-bottom:12px">';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('dateLbl') + '</label><input type="date" class="input-field" id="appt-date" style="margin-bottom:0" value="' + (editing ? editing.date : (date || today())) + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('timeLbl') + '</label><input type="time" class="input-field" id="appt-time" style="margin-bottom:0" value="' + (editing ? (editing.time || '') : '') + '"></div>';
+  html += '</div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">' + fx('typeLbl') + '</label>';
+  html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px" id="appt-type-grid">';
+  types.forEach(function(tpe) {
+    var isSel = tpe === selType;
+    html += '<button type="button" class="appt-type-btn" data-type="' + tpe + '" style="padding:10px 4px;border-radius:10px;border:2px solid ' + (isSel ? KAL_TYPE_COLORS[tpe] : 'var(--border)') + ';background:' + (isSel ? KAL_TYPE_COLORS[tpe] + '22' : 'none') + ';color:' + (isSel ? KAL_TYPE_COLORS[tpe] : 'var(--text2)') + ';cursor:pointer;font-size:11px;font-weight:600">' + fx(tpe) + '</button>';
+  });
+  html += '</div>';
+  html += '<textarea class="input-field" id="appt-desc" rows="2" placeholder="' + fx('descLbl') + '" style="resize:none">' + (editing ? escHtml(editing.description || '') : '') + '</textarea>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin:4px 0 6px">' + fx('reminderLbl') + '</label>';
+  html += '<select class="input-field" id="appt-reminder">';
+  var remOptions = [[0, 'remNone'], [1, 'rem1d'], [3, 'rem3d'], [7, 'rem1w'], [14, 'rem2w']];
+  remOptions.forEach(function(opt) {
+    var val = opt[0];
+    var selAttr = editing ? (editing.reminderDays === val ? ' selected' : '') : (val === 0 ? ' selected' : '');
+    html += '<option value="' + val + '"' + selAttr + '>' + fx(opt[1]) + '</option>';
+  });
+  html += '</select>';
+  html += '<div style="display:flex;gap:10px;margin-top:16px">';
+  html += '<button id="apptSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fx('save') + '</button>';
+  html += '<button id="apptCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fx('cancel') + '</button>';
+  html += '</div>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  window._apptEditId = editId || null;
+  window._apptSelectedType = selType;
+
+  var typeBtns = ov.querySelectorAll('.appt-type-btn');
+  var ti;
+  for(ti = 0; ti < typeBtns.length; ti++) {
+    (function(btn) {
+      btn.onclick = function() {
+        window._apptSelectedType = btn.getAttribute('data-type');
+        var tj;
+        for(tj = 0; tj < typeBtns.length; tj++) {
+          var t2 = typeBtns[tj].getAttribute('data-type');
+          var isSel2 = t2 === window._apptSelectedType;
+          typeBtns[tj].style.borderColor = isSel2 ? KAL_TYPE_COLORS[t2] : 'var(--border)';
+          typeBtns[tj].style.background = isSel2 ? KAL_TYPE_COLORS[t2] + '22' : 'none';
+          typeBtns[tj].style.color = isSel2 ? KAL_TYPE_COLORS[t2] : 'var(--text2)';
+        }
+      };
+    })(typeBtns[ti]);
+  }
+
+  var closeBtn = document.getElementById('apptCloseBtn');
+  if(closeBtn) closeBtn.onclick = closeAppointmentForm;
+  var cancelBtn = document.getElementById('apptCancelBtn');
+  if(cancelBtn) cancelBtn.onclick = closeAppointmentForm;
+  var saveBtn = document.getElementById('apptSaveBtn');
+  if(saveBtn) saveBtn.onclick = saveAppointment;
+  ov.onclick = function(e) { if(e.target === ov) closeAppointmentForm(); };
+}
+
+function saveAppointment() {
+  var titleEl = document.getElementById('appt-title');
+  var title = titleEl ? titleEl.value.trim() : '';
+  if(!title) { if(titleEl) titleEl.focus(); return; }
+  var dateEl = document.getElementById('appt-date');
+  var timeEl = document.getElementById('appt-time');
+  var descEl = document.getElementById('appt-desc');
+  var remEl = document.getElementById('appt-reminder');
+  var dateVal = (dateEl && dateEl.value) ? dateEl.value : today();
+
+  if(window._apptEditId) {
+    var existing = null;
+    var i;
+    for(i = 0; i < state.appointments.length; i++) {
+      if(state.appointments[i].id === window._apptEditId) { existing = state.appointments[i]; break; }
+    }
+    if(existing) {
+      existing.title = title;
+      existing.date = dateVal;
+      existing.time = (timeEl && timeEl.value) || '';
+      existing.type = window._apptSelectedType || 'personal';
+      existing.description = (descEl && descEl.value) || '';
+      existing.reminderDays = parseInt((remEl && remEl.value) || '0', 10) || 0;
+    }
+  } else {
+    state.appointments.push({
+      id: Date.now(),
+      title: title,
+      date: dateVal,
+      time: (timeEl && timeEl.value) || '',
+      type: window._apptSelectedType || 'personal',
+      description: (descEl && descEl.value) || '',
+      reminderDays: parseInt((remEl && remEl.value) || '0', 10) || 0,
+      createdAt: new Date().toISOString(),
+    });
+  }
+  save();
+  closeAppointmentForm();
+  _kalSelectedDate = dateVal;
+  renderKalenderPage();
+}
+
+// ── NOTIZEN ──
+var NOTIZ_L = {
+  title:    {en:'Notes', ar:'الملاحظات', de:'Notizen'},
+  newNote:  {en:'+ New Note', ar:'+ ملاحظة جديدة', de:'+ Neue Notiz'},
+  empty:    {en:'No notes yet', ar:'لا ملاحظات', de:'Keine Notizen'},
+  confirmDelete: {en:'Delete this note?', ar:'حذف هذه الملاحظة؟', de:'Diese Notiz löschen?'},
+};
+function nztx(k) { return (NOTIZ_L[k] && NOTIZ_L[k][state.lang]) || (NOTIZ_L[k] && NOTIZ_L[k].en) || k; }
+
+function formatNoteDate(iso) {
+  if(!iso) return '';
+  var d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return formatDateDisplay(d.toISOString().substring(0, 10));
+}
+
+function deleteNote(id) {
+  if(!confirm(nztx('confirmDelete'))) return;
+  state.notes = state.notes.filter(function(n){ return n.id !== id; });
+  save();
+  renderNotizenPage();
+}
+
+function renderNotizenPage() {
+  var page = document.getElementById('notizenPage');
+  if(!page) return;
+
+  var h = '';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
+  h += '<div style="font-size:18px;font-weight:700">' + nztx('title') + '</div>';
+  h += '<button id="notizAddBtn" style="background:#16a34a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + nztx('newNote') + '</button>';
+  h += '</div>';
+
+  var notes = (state.notes || []).slice().sort(function(a, b) {
+    return new Date(b.updatedAt || b.createdAt || 0) - new Date(a.updatedAt || a.createdAt || 0);
+  });
+
+  if(!notes.length) {
+    h += '<div style="text-align:center;padding:60px 20px;color:var(--text3);font-size:14px">' + nztx('empty') + '</div>';
+  } else {
+    h += '<div class="notiz-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px">';
+    notes.forEach(function(n) {
+      var preview = (n.content || '').substring(0, 80);
+      var dateStr = formatNoteDate(n.updatedAt || n.createdAt);
+      h += '<div class="notiz-card" data-id="' + n.id + '" style="background:var(--card);border-radius:16px;padding:16px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06);position:relative">';
+      h += '<button class="notiz-del-btn" data-id="' + n.id + '" style="position:absolute;top:8px;right:8px;background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;border-radius:6px">' + svgIcon('x', 14) + '</button>';
+      h += '<div style="font-size:14px;font-weight:700;margin-bottom:4px;padding-right:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(n.title || '') + '</div>';
+      h += '<div style="font-size:12px;color:var(--text3);margin-bottom:8px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical">' + escHtml(preview) + '</div>';
+      if(n.images && n.images.length) {
+        h += '<div style="display:flex;gap:4px;margin-bottom:6px;overflow:hidden">';
+        n.images.slice(0, 3).forEach(function(img) {
+          h += '<img src="' + img + '" style="width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0">';
+        });
+        h += '</div>';
+      }
+      var badges = '';
+      if(n.pdfs && n.pdfs.length) badges += '<span style="font-size:10px;color:var(--text3);display:inline-flex;align-items:center;gap:2px;margin-right:8px">' + svgIcon('paperclip', 10) + n.pdfs.length + '</span>';
+      if(n.links && n.links.length) badges += '<span style="font-size:10px;color:var(--text3);display:inline-flex;align-items:center;gap:2px">' + svgIcon('link', 10) + n.links.length + '</span>';
+      if(badges) h += '<div style="margin-bottom:4px">' + badges + '</div>';
+      h += '<div style="font-size:11px;color:var(--text3)">' + dateStr + '</div>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  page.innerHTML = h;
+
+  var addBtn = document.getElementById('notizAddBtn');
+  if(addBtn) addBtn.onclick = function(){ openNoteEditor(null); };
+
+  var cards = page.querySelectorAll('.notiz-card');
+  var ci;
+  for(ci = 0; ci < cards.length; ci++) {
+    (function(card) {
+      var id = parseInt(card.getAttribute('data-id'), 10);
+      card.onclick = function() { openNoteEditor(id); };
+    })(cards[ci]);
+  }
+
+  var delBtns = page.querySelectorAll('.notiz-del-btn');
+  var di;
+  for(di = 0; di < delBtns.length; di++) {
+    (function(btn) {
+      var id = parseInt(btn.getAttribute('data-id'), 10);
+      btn.onclick = function(e) { e.stopPropagation(); deleteNote(id); };
+    })(delBtns[di]);
+  }
+}
+
+// ── NOTE EDITOR ──
+var _noteEditorId = null;
+var _noteEditorImages = [];
+var _noteEditorPdfs = [];
+var _noteEditorLinks = [];
+
+var NOTE_ED_L = {
+  back:        {en:'← Back', ar:'→ رجوع', de:'← Zurück'},
+  save:        {en:'Save', ar:'حفظ', de:'Speichern'},
+  titlePh:     {en:'Title...', ar:'العنوان...', de:'Titel...'},
+  contentPh:   {en:'Write a note...', ar:'اكتب ملاحظة...', de:'Notiz schreiben...'},
+  linkLabelPh: {en:'Label', ar:'التسمية', de:'Bezeichnung'},
+  linkUrlPh:   {en:'URL', ar:'الرابط', de:'URL'},
+  add:         {en:'Add', ar:'إضافة', de:'Hinzufügen'},
+  cancel:      {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+};
+function nedtx(k) { return (NOTE_ED_L[k] && NOTE_ED_L[k][state.lang]) || (NOTE_ED_L[k] && NOTE_ED_L[k].en) || k; }
+
+function closeNoteEditor() {
+  var ov = document.getElementById('noteEditorOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+}
+
+function removeNoteImage(idx) {
+  _noteEditorImages.splice(idx, 1);
+  renderNoteAttachments();
+}
+function removeNotePdf(idx) {
+  _noteEditorPdfs.splice(idx, 1);
+  renderNoteAttachments();
+}
+function removeNoteLink(idx) {
+  _noteEditorLinks.splice(idx, 1);
+  renderNoteAttachments();
+}
+
+function renderNoteAttachments() {
+  var wrap = document.getElementById('note-attachments');
+  if(!wrap) return;
+  var h = '';
+  if(_noteEditorImages.length) {
+    h += '<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:8px">';
+    _noteEditorImages.forEach(function(img, idx) {
+      h += '<div style="position:relative;flex-shrink:0">';
+      h += '<img class="note-img-thumb" data-idx="' + idx + '" src="' + img + '" style="width:60px;height:60px;border-radius:8px;object-fit:cover;cursor:pointer">';
+      h += '<button class="note-img-remove" data-idx="' + idx + '" style="position:absolute;top:-6px;right:-6px;background:#ef4444;color:#fff;border:none;border-radius:50%;width:18px;height:18px;font-size:11px;cursor:pointer;line-height:18px;padding:0">×</button>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+  if(_noteEditorPdfs.length) {
+    h += '<div style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">';
+    _noteEditorPdfs.forEach(function(pdf, idx) {
+      h += '<div style="display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:8px 10px">';
+      h += '<span class="note-pdf-chip" data-idx="' + idx + '" style="flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;overflow:hidden;font-size:12px;color:var(--text)">' + svgIcon('paperclip', 14) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(pdf.name) + '</span></span>';
+      h += '<button class="note-pdf-remove" data-idx="' + idx + '" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:2px">×</button>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+  if(_noteEditorLinks.length) {
+    h += '<div style="display:flex;flex-direction:column;gap:6px">';
+    _noteEditorLinks.forEach(function(link, idx) {
+      h += '<div style="display:flex;align-items:center;gap:8px;background:var(--card);border-radius:10px;padding:8px 10px">';
+      h += '<span class="note-link-chip" data-idx="' + idx + '" style="flex:1;display:flex;align-items:center;gap:6px;cursor:pointer;overflow:hidden;font-size:12px;color:var(--primary)">' + svgIcon('link', 14) + '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(link.label) + '</span></span>';
+      h += '<button class="note-link-remove" data-idx="' + idx + '" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:14px;padding:2px">×</button>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+  wrap.innerHTML = h;
+
+  var thumbs = wrap.querySelectorAll('.note-img-thumb');
+  var ti;
+  for(ti = 0; ti < thumbs.length; ti++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { openInvoice(_noteEditorImages[idx], 'image'); };
+    })(thumbs[ti]);
+  }
+  var imgRemoves = wrap.querySelectorAll('.note-img-remove');
+  var iri;
+  for(iri = 0; iri < imgRemoves.length; iri++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { removeNoteImage(idx); };
+    })(imgRemoves[iri]);
+  }
+  var pdfChips = wrap.querySelectorAll('.note-pdf-chip');
+  var pci;
+  for(pci = 0; pci < pdfChips.length; pci++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { openInvoice(_noteEditorPdfs[idx].data, _noteEditorPdfs[idx].name); };
+    })(pdfChips[pci]);
+  }
+  var pdfRemoves = wrap.querySelectorAll('.note-pdf-remove');
+  var pri;
+  for(pri = 0; pri < pdfRemoves.length; pri++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { removeNotePdf(idx); };
+    })(pdfRemoves[pri]);
+  }
+  var linkChips = wrap.querySelectorAll('.note-link-chip');
+  var lci;
+  for(lci = 0; lci < linkChips.length; lci++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { window.open(_noteEditorLinks[idx].url, '_blank'); };
+    })(linkChips[lci]);
+  }
+  var linkRemoves = wrap.querySelectorAll('.note-link-remove');
+  var lri;
+  for(lri = 0; lri < linkRemoves.length; lri++) {
+    (function(el) {
+      var idx = parseInt(el.getAttribute('data-idx'), 10);
+      el.onclick = function() { removeNoteLink(idx); };
+    })(linkRemoves[lri]);
+  }
+}
+
+function openNoteEditor(noteId) {
+  var existingOv = document.getElementById('noteEditorOverlay');
+  if(existingOv) existingOv.parentNode.removeChild(existingOv);
+
+  var editing = null;
+  if(noteId) {
+    var found = (state.notes || []).filter(function(n){ return n.id === noteId; });
+    editing = found.length ? found[0] : null;
+  }
+
+  _noteEditorId = editing ? editing.id : null;
+  _noteEditorImages = (editing && editing.images) ? editing.images.slice() : [];
+  _noteEditorPdfs = (editing && editing.pdfs) ? editing.pdfs.slice() : [];
+  _noteEditorLinks = (editing && editing.links) ? editing.links.slice() : [];
+
+  var ov = document.createElement('div');
+  ov.id = 'noteEditorOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column';
+
+  var html = '';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0">';
+  html += '<button id="noteBackBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:6px 4px">' + nedtx('back') + '</button>';
+  html += '<button id="noteSaveBtn" style="background:none;border:none;color:var(--primary);font-size:15px;font-weight:700;cursor:pointer;padding:6px 4px">' + nedtx('save') + '</button>';
+  html += '</div>';
+
+  html += '<div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column">';
+  html += '<input id="note-title" placeholder="' + nedtx('titlePh') + '" style="font-size:20px;font-weight:700;border:none;outline:none;background:none;color:var(--text);padding:6px 0;border-bottom:2px solid transparent;margin-bottom:10px" value="' + (editing ? escHtml(editing.title || '') : '') + '">';
+  html += '<textarea id="note-content" placeholder="' + nedtx('contentPh') + '" style="flex:1;min-height:160px;resize:none;border:none;outline:none;background:none;color:var(--text);font-size:15px;line-height:1.7;font-family:inherit">' + (editing ? escHtml(editing.content || '') : '') + '</textarea>';
+  html += '<div id="note-attachments" style="margin-top:12px"></div>';
+  html += '</div>';
+
+  html += '<div id="note-link-input-row" style="display:none;padding:10px 16px;border-top:1px solid var(--border);gap:8px;flex-direction:column">';
+  html += '<input id="note-link-label" placeholder="' + nedtx('linkLabelPh') + '" style="padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box">';
+  html += '<input id="note-link-url" placeholder="' + nedtx('linkUrlPh') + '" type="url" style="padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box">';
+  html += '<div style="display:flex;gap:8px">';
+  html += '<button id="noteLinkAddBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:600;cursor:pointer">' + nedtx('add') + '</button>';
+  html += '<button id="noteLinkCancelBtn" style="flex:1;background:var(--card);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:9px;font-size:13px;cursor:pointer">' + nedtx('cancel') + '</button>';
+  html += '</div>';
+  html += '</div>';
+
+  html += '<div style="display:flex;gap:10px;padding:12px 16px;border-top:1px solid var(--border);flex-shrink:0">';
+  html += '<button id="noteImgBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)">' + svgIcon('camera', 18) + '</button>';
+  html += '<button id="notePdfBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)">' + svgIcon('paperclip', 18) + '</button>';
+  html += '<button id="noteLinkBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--text2)">' + svgIcon('link', 18) + '</button>';
+  html += '</div>';
+
+  html += '<input type="file" id="noteImgInput" accept="image/*" style="display:none">';
+  html += '<input type="file" id="notePdfInput" accept=".pdf,application/pdf" style="display:none">';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  renderNoteAttachments();
+
+  var backBtn = document.getElementById('noteBackBtn');
+  if(backBtn) backBtn.onclick = closeNoteEditor;
+  var saveBtn = document.getElementById('noteSaveBtn');
+  if(saveBtn) saveBtn.onclick = saveNote;
+
+  var titleEl = document.getElementById('note-title');
+  if(titleEl) {
+    titleEl.onfocus = function(){ titleEl.style.borderBottomColor = 'var(--primary)'; };
+    titleEl.onblur = function(){ titleEl.style.borderBottomColor = 'transparent'; };
+  }
+
+  var imgBtn = document.getElementById('noteImgBtn');
+  var imgInput = document.getElementById('noteImgInput');
+  if(imgBtn && imgInput) {
+    imgBtn.onclick = function(){ imgInput.click(); };
+    imgInput.onchange = function(){
+      var file = imgInput.files[0];
+      if(!file) return;
+      if(file.type.indexOf('image/') !== 0) { imgInput.value = ''; return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        _noteEditorImages.push(e.target.result);
+        renderNoteAttachments();
+      };
+      reader.readAsDataURL(file);
+      imgInput.value = '';
+    };
+  }
+
+  var pdfBtn = document.getElementById('notePdfBtn');
+  var pdfInput = document.getElementById('notePdfInput');
+  if(pdfBtn && pdfInput) {
+    pdfBtn.onclick = function(){ pdfInput.click(); };
+    pdfInput.onchange = function(){
+      var file = pdfInput.files[0];
+      if(!file) return;
+      var isPdf = file.type === 'application/pdf' || /\.pdf$/i.test(file.name || '');
+      if(!isPdf) { pdfInput.value = ''; return; }
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        _noteEditorPdfs.push({name: file.name, data: e.target.result});
+        renderNoteAttachments();
+      };
+      reader.readAsDataURL(file);
+      pdfInput.value = '';
+    };
+  }
+
+  var linkBtn = document.getElementById('noteLinkBtn');
+  var linkRow = document.getElementById('note-link-input-row');
+  if(linkBtn && linkRow) {
+    linkBtn.onclick = function(){ linkRow.style.display = linkRow.style.display === 'none' ? 'flex' : 'none'; };
+  }
+  var linkCancelBtn = document.getElementById('noteLinkCancelBtn');
+  if(linkCancelBtn) linkCancelBtn.onclick = function(){
+    linkRow.style.display = 'none';
+    document.getElementById('note-link-label').value = '';
+    document.getElementById('note-link-url').value = '';
+  };
+  var linkAddBtn = document.getElementById('noteLinkAddBtn');
+  if(linkAddBtn) linkAddBtn.onclick = function(){
+    var labelEl = document.getElementById('note-link-label');
+    var urlEl = document.getElementById('note-link-url');
+    var url = urlEl.value.trim();
+    if(!url) { urlEl.focus(); return; }
+    if(!/^https?:\/\//i.test(url)) url = 'https://' + url;
+    var label = labelEl.value.trim() || url;
+    _noteEditorLinks.push({label: label, url: url});
+    labelEl.value = '';
+    urlEl.value = '';
+    linkRow.style.display = 'none';
+    renderNoteAttachments();
+  };
+}
+
+function saveNote() {
+  var titleEl = document.getElementById('note-title');
+  var contentEl = document.getElementById('note-content');
+  var title = titleEl ? titleEl.value.trim() : '';
+  var content = contentEl ? contentEl.value : '';
+  if(!title && !content && !_noteEditorImages.length && !_noteEditorPdfs.length && !_noteEditorLinks.length) {
+    closeNoteEditor();
+    return;
+  }
+  var nowIso = new Date().toISOString();
+  if(_noteEditorId) {
+    var existing = null;
+    var i;
+    for(i = 0; i < state.notes.length; i++) {
+      if(state.notes[i].id === _noteEditorId) { existing = state.notes[i]; break; }
+    }
+    if(existing) {
+      existing.title = title;
+      existing.content = content;
+      existing.images = _noteEditorImages.slice();
+      existing.pdfs = _noteEditorPdfs.slice();
+      existing.links = _noteEditorLinks.slice();
+      existing.updatedAt = nowIso;
+    }
+  } else {
+    state.notes.push({
+      id: Date.now(),
+      title: title,
+      content: content,
+      images: _noteEditorImages.slice(),
+      pdfs: _noteEditorPdfs.slice(),
+      links: _noteEditorLinks.slice(),
+      createdAt: nowIso,
+      updatedAt: nowIso,
+    });
+  }
+  save();
+  closeNoteEditor();
+  renderNotizenPage();
 }
 
 // ── PLACEHOLDER "COMING SOON" PAGES ──
@@ -5989,8 +6738,8 @@ function formatNotifTime(iso) {
   return pad2(h) + ':' + mm;
 }
 
-function addNotification(message, type) {
-  var notif = {id: Date.now(), message: message, type: type || 'info', timestamp: new Date().toISOString(), read: false};
+function addNotification(message, type, sourceId) {
+  var notif = {id: Date.now(), message: message, type: type || 'info', timestamp: new Date().toISOString(), read: false, sourceId: sourceId || null};
   state.notifications.unshift(notif);
   if (state.notifications.length > 50) state.notifications = state.notifications.slice(0, 50);
   save();
@@ -9495,6 +10244,31 @@ function checkRecurringDue() {
   return recordedCount;
 }
 
+function checkAppointmentReminders() {
+  var todayDate = new Date(today() + 'T00:00:00');
+  var lang = state.lang || 'en';
+  (state.appointments || []).forEach(function(appt) {
+    if(!appt.date || !appt.reminderDays) return;
+    var apptDate = new Date(appt.date + 'T00:00:00');
+    var daysUntil = Math.round((apptDate - todayDate) / 86400000);
+    if(daysUntil < 0 || daysUntil > appt.reminderDays) return;
+    var sourceId = 'appt-' + appt.id;
+    var already = state.notifications.some(function(n){ return n.sourceId === sourceId; });
+    if(already) return;
+    var msg;
+    if(daysUntil === 0) {
+      msg = ({en:'Appointment today: ', ar:'موعد اليوم: ', de:'Termin heute: '}[lang] || 'Appointment today: ') + appt.title;
+    } else if(daysUntil === 1) {
+      msg = ({en:'Appointment tomorrow: ', ar:'موعد غداً: ', de:'Termin morgen: '}[lang] || 'Appointment tomorrow: ') + appt.title;
+    } else {
+      var prefix = ({en:'Appointment in ', ar:'موعد خلال ', de:'Termin in '}[lang] || 'Appointment in ');
+      var suffix = ({en:' days: ', ar:' أيام: ', de:' Tagen: '}[lang] || ' days: ');
+      msg = prefix + daysUntil + suffix + appt.title;
+    }
+    addNotification(msg, 'warning', sourceId);
+  });
+}
+
 function checkInvoicesDue() {
   var todayStr = today();
   var todayDate = new Date(todayStr + 'T00:00:00');
@@ -9616,6 +10390,7 @@ function showSplash() {
     applyLang();
     checkRecurringDue();
     checkInvoicesDue();
+    checkAppointmentReminders();
     renderHome();
   } else {
     var lp = document.getElementById('landingPage');
