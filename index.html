@@ -6382,29 +6382,43 @@ function deleteReceivedInvoice(idx) {
 function handleInvoicePaid(inv) {
   if(inv.incomeTxId) return;
   var items = inv.items || [];
-  var itemNames = items.map(function(it){ return it.desc; }).filter(Boolean).join(', ');
-  var category = inv.category || 'Sales';
-  var txId = Date.now();
-  state.transactions.push({
-    id: txId,
-    name: itemNames || (inv.number || itx('newInvoice')),
-    amount: inv.total || 0,
-    type: 'income',
-    category: category,
-    date: today(),
-    icon: ICONS[category] || '📌',
-    invoice: null,
-    invoiceName: null,
-    clientId: inv.clientId || null,
-    clientName: inv.clientName || null,
-    supplierId: null,
-    supplierName: null,
-    invoiceRef: inv.number || null,
+  var vatRate = inv.vatRate || 0;
+  var groups = {};
+  var order = [];
+  items.forEach(function(it){
+    var cat = it.category || 'Sales';
+    if(!groups[cat]) { groups[cat] = {names: [], amount: 0}; order.push(cat); }
+    if(it.desc) groups[cat].names.push(it.desc);
+    groups[cat].amount += (it.sub || (it.qty * it.price) || 0);
   });
-  inv.incomeTxId = txId;
+  if(!order.length) { order.push('Sales'); groups.Sales = {names: [], amount: inv.total || 0}; }
+
+  var firstTxId = null;
+  order.forEach(function(cat, gi){
+    var g = groups[cat];
+    var txId = Date.now() + gi;
+    if(firstTxId === null) firstTxId = txId;
+    state.transactions.push({
+      id: txId,
+      name: g.names.join(', ') || (inv.number || itx('newInvoice')),
+      amount: g.amount * (1 + vatRate / 100),
+      type: 'income',
+      category: cat,
+      date: today(),
+      icon: ICONS[cat] || '📌',
+      invoice: null,
+      invoiceName: null,
+      clientId: inv.clientId || null,
+      clientName: inv.clientName || null,
+      supplierId: null,
+      supplierName: null,
+      invoiceRef: inv.number || null,
+    });
+  });
+  inv.incomeTxId = firstTxId;
 
   if(!inv.autoReceiptId) {
-    var receiptId = Date.now() + 1;
+    var receiptId = Date.now() + order.length;
     state.receipts.push({
       id: receiptId,
       number: 'REC-' + receiptId,
@@ -6420,7 +6434,7 @@ function handleInvoicePaid(inv) {
       clientId: inv.clientId || null,
       clientName: inv.clientName || null,
       paymentMethod: state.bankIban ? 'Bank Transfer' : 'Cash',
-      category: category,
+      category: (items[0] && items[0].category) || 'Sales',
       sourceInvoiceId: inv.id,
     });
     inv.autoReceiptId = receiptId;
@@ -6522,17 +6536,9 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
 
   if(extraFields) html += extraFields;
 
-  if(type === 'issued') {
-    var itemCatLbl = {en:'Item Type', ar:'نوع العنصر', de:'Artikelart'}[state.lang] || 'Item Type';
-    html += '<div style="margin-bottom:12px"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + itemCatLbl + '</label>';
-    html += '<select id="inv_category" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px">';
-    CATS.income.forEach(function(c){ html += '<option value="' + c + '">' + tc(c) + '</option>'; });
-    html += '</select></div>';
-  }
-
   html += '<div style="margin-bottom:12px"><div style="font-size:13px;font-weight:700;margin-bottom:8px">' + itx('lineItems') + '</div>';
   html += '<div id="inv_items_wrap">';
-  html += _buildLineItemRow(0);
+  html += _buildLineItemRow(0, type);
   html += '</div>';
   html += '<button id="inv_add_item" style="width:100%;padding:8px;border-radius:10px;border:2px dashed var(--border);background:transparent;color:var(--primary);font-size:13px;font-weight:600;cursor:pointer;margin-top:6px">' + itx('addItem') + '</button></div>';
 
@@ -6579,7 +6585,7 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
     window._invItemCount++;
     var row = document.createElement('div');
     row.id = 'inv_item_' + idx;
-    row.innerHTML = _buildLineItemRow(idx);
+    row.innerHTML = _buildLineItemRow(idx, type);
     wrap.appendChild(row);
     _attachRowListeners(idx);
     _recalcInvoiceTotals();
@@ -6595,8 +6601,21 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
   _recalcInvoiceTotals();
 }
 
-function _buildLineItemRow(idx) {
+function _buildLineItemRow(idx, type) {
   var base = 'style="padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"';
+  if(type === 'issued') {
+    var catOptions = '';
+    CATS.income.forEach(function(c){ catOptions += '<option value="' + c + '">' + tc(c) + '</option>'; });
+    return '<div id="inv_item_' + idx + '" style="border:1px solid var(--border);border-radius:10px;padding:8px;margin-bottom:8px">' +
+      '<input type="text" id="inv_desc_' + idx + '" placeholder="' + itx('descPh') + '" style="width:100%;padding:8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:6px">' +
+      '<div style="display:grid;grid-template-columns:1fr 60px 80px 70px 30px;gap:6px;align-items:center">' +
+      '<select id="inv_cat_' + idx + '" ' + base + '>' + catOptions + '</select>' +
+      '<input type="number" id="inv_qty_' + idx + '" placeholder="' + itx('qtyPh') + '" value="1" min="0" ' + base + '>' +
+      '<input type="number" id="inv_price_' + idx + '" placeholder="' + itx('pricePh') + '" min="0" ' + base + '>' +
+      '<span id="inv_sub_' + idx + '" style="font-size:12px;font-weight:600;text-align:right">0.00</span>' +
+      '<button onclick="removeInvRow(' + idx + ')" style="background:#ff4444;color:#fff;border:none;border-radius:6px;padding:4px 6px;font-size:13px;cursor:pointer">\xD7</button>' +
+      '</div></div>';
+  }
   return '<div id="inv_item_' + idx + '" style="display:grid;grid-template-columns:1fr 60px 80px 70px 30px;gap:6px;margin-bottom:6px;align-items:center">' +
     '<input type="text" id="inv_desc_' + idx + '" placeholder="' + itx('descPh') + '" ' + base + '>' +
     '<input type="number" id="inv_qty_' + idx + '" placeholder="' + itx('qtyPh') + '" value="1" min="0" ' + base + '>' +
@@ -6673,7 +6692,9 @@ function _collectInvoiceFormData(type) {
     var desc = dEl.value.trim();
     var qty = parseFloat(qEl.value)||0;
     var price = parseFloat(pEl.value)||0;
-    if(desc||qty||price) items.push({desc:desc, qty:qty, price:price, sub:(qty*price)});
+    var catEl = document.getElementById('inv_cat_'+i);
+    var itemCategory = catEl ? catEl.value : 'Sales';
+    if(desc||qty||price) items.push({desc:desc, qty:qty, price:price, sub:(qty*price), category:itemCategory});
   }
   var vatRate = parseFloat((document.getElementById('inv_vat')||{}).value||0);
   var obj = {
@@ -6690,9 +6711,6 @@ function _collectInvoiceFormData(type) {
     status: type==='receipt' ? 'Paid' : (window._invStatus||'Pending'),
     currency: state.currency,
   };
-  if(type==='issued') {
-    obj.category = (document.getElementById('inv_category')||{}).value || 'Sales';
-  }
   if(type==='issued'||type==='receipt') {
     var invCliEl = document.getElementById('inv_client');
     var invCliVal = invCliEl ? invCliEl.value : '';
@@ -6820,16 +6838,188 @@ var PRINT_L = {
   closeBtn:       {en:'Close', ar:'إغلاق', de:'Schließen'},
   supplierInvNum: {en:'Supplier Inv #', ar:'رقم فاتورة المورد', de:'Lieferanten-Rechnungs-Nr.'},
   paymentLbl:     {en:'Payment', ar:'الدفع', de:'Zahlung'},
+  receiptTitle:   {en:'Receipt', ar:'إيصال', de:'Quittung'},
+  invoiceNumber:  {en:'Invoice number', ar:'رقم الفاتورة', de:'Rechnungsnummer'},
+  receiptNumber:  {en:'Receipt number', ar:'رقم الإيصال', de:'Belegnummer'},
+  datePaid:       {en:'Date paid', ar:'تاريخ الدفع', de:'Zahlungsdatum'},
+  billToLbl:      {en:'Bill to', ar:'إلى', de:'Rechnung an'},
+  paidOn:         {en:'paid on', ar:'دُفع في', de:'bezahlt am'},
+  taxCol:         {en:'Tax', ar:'الضريبة', de:'Steuer'},
+  amountCol:      {en:'Amount', ar:'المبلغ', de:'Betrag'},
+  totalExclTax:   {en:'Total excluding tax', ar:'الإجمالي بدون ضريبة', de:'Gesamt ohne MwSt.'},
+  amountPaidLbl:  {en:'Amount paid', ar:'المبلغ المدفوع', de:'Bezahlter Betrag'},
+  paymentHistory: {en:'Payment history', ar:'سجل الدفع', de:'Zahlungsverlauf'},
+  paymentMethodCol:{en:'Payment method', ar:'طريقة الدفع', de:'Zahlungsmethode'},
+  dateCol:        {en:'Date', ar:'التاريخ', de:'Datum'},
+  pageFooter:     {en:'Page 1 of 1', ar:'صفحة 1 من 1', de:'Seite 1 von 1'},
 };
 function ptx(k) { return (PRINT_L[k] && PRINT_L[k][state.lang]) || (PRINT_L[k] && PRINT_L[k].en) || k; }
 function ltrSpan(s) { return '<span dir="ltr" style="unicode-bidi:bidi-override">' + s + '</span>'; }
 
 function buildInvoiceHTML(inv, type) {
+  if(type === 'receipt') return buildProfessionalReceipt(inv);
   var tpl = state.invoiceTemplate || 'classic';
   if(tpl === 'modern') return buildModernInvoice(inv, type);
   if(tpl === 'minimal') return buildMinimalInvoice(inv, type);
   if(tpl === 'transport') return buildTransportInvoice(inv, type);
   return buildClassicInvoice(inv, type);
+}
+
+function formatDateLong(dateStr) {
+  if(!dateStr) return '';
+  var s = String(dateStr).substring(0,10);
+  var d = new Date(s + 'T12:00:00');
+  if(isNaN(d.getTime())) return s;
+  var locale = state.lang === 'ar' ? 'ar' : state.lang === 'de' ? 'de-DE' : 'en-US';
+  try { return d.toLocaleDateString(locale, {year:'numeric', month:'long', day:'numeric'}); }
+  catch(e) { return s; }
+}
+
+function buildProfessionalReceipt(inv) {
+  var cur = inv.currency || state.currency;
+  var items = inv.items || [];
+  var vatRate = inv.vatRate || 0;
+  var bizName = state.businessName || 'Your Company Name';
+  var bizAddress = state.businessAddress || '';
+  var bizTaxId = state.businessTaxId || '';
+  var bizPhone = state.businessPhone || '';
+  var bizEmail = state.businessEmail || 'team@smartordi.eu';
+
+  var sourceInv = null;
+  if(inv.sourceInvoiceId) {
+    var srcList = state.issuedInvoices || [];
+    for(var si=0; si<srcList.length; si++) {
+      if(srcList[si].id === inv.sourceInvoiceId) { sourceInv = srcList[si]; break; }
+    }
+  }
+  var client = null;
+  if(inv.clientId) {
+    var cliList = state.clients || [];
+    for(var ci=0; ci<cliList.length; ci++) {
+      if(cliList[ci].id === inv.clientId) { client = cliList[ci]; break; }
+    }
+  }
+
+  var paymentMethodLabel = itx('cashOpt');
+  if(inv.paymentMethod === 'Bank Transfer') paymentMethodLabel = itx('bankTransferOpt');
+  else if(inv.paymentMethod === 'Card') paymentMethodLabel = itx('cardOpt');
+  else if(inv.paymentMethod === 'Other') paymentMethodLabel = itx('otherOpt');
+
+  var metaRows = '';
+  if(sourceInv) metaRows += '<div style="display:flex;gap:8px;font-size:12px;margin-bottom:2px"><span style="font-weight:700;width:120px;flex-shrink:0">' + ptx('invoiceNumber') + '</span><span>' + ltrSpan(sourceInv.number||'') + '</span></div>';
+  metaRows += '<div style="display:flex;gap:8px;font-size:12px;margin-bottom:2px"><span style="font-weight:700;width:120px;flex-shrink:0">' + ptx('receiptNumber') + '</span><span>' + ltrSpan(inv.number||'') + '</span></div>';
+  metaRows += '<div style="display:flex;gap:8px;font-size:12px"><span style="font-weight:700;width:120px;flex-shrink:0">' + ptx('datePaid') + '</span><span>' + formatDateLong(inv.issueDate) + '</span></div>';
+
+  var billToLines = '';
+  if(client) {
+    if(client.company) billToLines += '<div>' + escHtml(client.company) + '</div>';
+    if(client.address) billToLines += '<div>' + escHtml(client.address) + '</div>';
+    if(client.country) billToLines += '<div>' + escHtml(client.country) + '</div>';
+    if(client.email) billToLines += '<div>' + escHtml(client.email) + '</div>';
+    if(client.phone) billToLines += '<div>' + escHtml(client.phone) + '</div>';
+  }
+
+  var itemRows = '';
+  for(var i=0;i<items.length;i++) {
+    itemRows += '<tr>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:left;font-size:13px">' + (items[i].desc||'') + '</td>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px">' + ltrSpan(items[i].qty||0) + '</td>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:right;font-size:13px">' + ltrSpan(cur + parseFloat(items[i].price||0).toFixed(2)) + '</td>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:right;font-size:13px">' + vatRate + '%</td>' +
+      '<td style="padding:10px 0;border-bottom:1px solid #e5e7eb;text-align:right;font-size:13px">' + ltrSpan(cur + parseFloat(items[i].sub||0).toFixed(2)) + '</td>' +
+      '</tr>';
+  }
+
+  var showBankBox = state.bankIban && inv.paymentMethod === 'Bank Transfer';
+  var bankQrHtml = '';
+  if(showBankBox) {
+    bankQrHtml = '<div style="margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb;display:flex;justify-content:space-between;align-items:flex-start;gap:16px">' +
+      '<div style="font-size:12px;color:#6b7280">' +
+      '<div style="font-weight:700;color:#0f172a;margin-bottom:4px">' + ptx('paymentDetails') + '</div>' +
+      (state.bankName ? '<div>' + ptx('bank') + ': ' + state.bankName + '</div>' : '') +
+      '<div>' + ptx('iban') + ': ' + ltrSpan(state.bankIban) + '</div>' +
+      (state.bankBic ? '<div>' + ptx('bic') + ': ' + ltrSpan(state.bankBic) + '</div>' : '') +
+      '</div>' +
+      '<div id="epc-qr-' + inv.id + '" style="width:100px;height:100px;flex-shrink:0"></div>' +
+      '</div>';
+  }
+
+  var doc = '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' + ptx('receiptTitle') + ' ' + (inv.number||'') + '</title>' +
+  '<style>' +
+  'html,body{height:100%}' +
+  'body{font-family:Arial,sans-serif;margin:0;color:#0f172a;background:#fff;box-sizing:border-box}' +
+  '.no-print{display:flex;gap:10px;padding:16px 40px 0}' +
+  '@media print{.no-print{display:none}@page{size:A4}}' +
+  '</style></head><body>' +
+  invoiceNoPrintBar() +
+  '<div style="max-width:760px;margin:0 auto;padding:40px;display:flex;flex-direction:column;min-height:1043px;box-sizing:border-box">' +
+  '<div style="flex:1">' +
+
+  '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">' +
+  '<div style="font-size:30px;font-weight:700">' + ptx('receiptTitle') + '</div>' +
+  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="height:40px;object-fit:contain">' : '') +
+  '</div>' +
+
+  metaRows +
+
+  '<div style="display:flex;justify-content:space-between;gap:24px;margin-top:24px;margin-bottom:24px">' +
+  '<div style="font-size:13px;line-height:1.6">' +
+  '<div style="font-weight:700;margin-bottom:2px">' + bizName + '</div>' +
+  (bizAddress ? '<div>' + escHtml(bizAddress) + '</div>' : '') +
+  (bizEmail ? '<div>' + escHtml(bizEmail) + '</div>' : '') +
+  (bizPhone ? '<div>' + ltrSpan(escHtml(bizPhone)) + '</div>' : '') +
+  (bizTaxId ? '<div>UID: ' + escHtml(bizTaxId) + '</div>' : '') +
+  '</div>' +
+  '<div style="font-size:13px;line-height:1.6;text-align:right">' +
+  '<div style="font-weight:700;margin-bottom:2px">' + ptx('billToLbl') + '</div>' +
+  '<div>' + (inv.clientName||'') + '</div>' +
+  billToLines +
+  '</div>' +
+  '</div>' +
+
+  '<div style="font-size:18px;font-weight:700;margin-bottom:4px">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + ' ' + ptx('paidOn') + ' ' + formatDateLong(inv.issueDate) + '</div>' +
+  '<div style="font-size:12px;color:#6b7280;margin-bottom:20px">' + ptx('paymentLbl') + ': ' + paymentMethodLabel + '</div>' +
+
+  '<table style="width:100%;border-collapse:collapse;margin-bottom:4px">' +
+  '<thead><tr>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('description') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:center;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('qty') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:right;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('unitPrice') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:right;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('taxCol') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:right;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('amountCol') + '</th>' +
+  '</tr></thead><tbody>' + itemRows + '</tbody></table>' +
+
+  '<div style="display:flex;justify-content:flex-end;margin-bottom:20px">' +
+  '<div style="width:280px">' +
+  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('subtotal') + '</span><span>' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('totalExclTax') + '</span><span>' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('vat') + ' (' + vatRate + '% ' + ({en:'on', ar:'على', de:'auf'}[state.lang]||'on') + ' ' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + ')</span><span>' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-top:1px solid #e5e7eb;margin-top:2px"><span style="color:#6b7280">' + ptx('total') + '</span><span>' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;font-weight:700"><span>' + ptx('amountPaidLbl') + '</span><span>' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
+  '</div></div>' +
+
+  bankQrHtml +
+
+  '<div style="font-size:16px;font-weight:700;margin-top:24px;margin-bottom:10px">' + ptx('paymentHistory') + '</div>' +
+  '<table style="width:100%;border-collapse:collapse">' +
+  '<thead><tr>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('paymentMethodCol') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('dateCol') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('amountPaidLbl') + '</th>' +
+  '<th style="padding:8px 0;border-bottom:1px solid #0f172a;text-align:left;font-size:11px;color:#6b7280;text-transform:uppercase">' + ptx('receiptNumber') + '</th>' +
+  '</tr></thead><tbody><tr>' +
+  '<td style="padding:10px 0;font-size:13px">' + paymentMethodLabel + '</td>' +
+  '<td style="padding:10px 0;font-size:13px">' + formatDateLong(inv.issueDate) + '</td>' +
+  '<td style="padding:10px 0;font-size:13px">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</td>' +
+  '<td style="padding:10px 0;font-size:13px">' + ltrSpan(inv.number||'') + '</td>' +
+  '</tr></tbody></table>' +
+
+  '</div>' +
+  '<div style="border-top:1px solid #e5e7eb;margin-top:24px;padding-top:10px;text-align:right;font-size:11px;color:#9ca3af">' + ptx('pageFooter') + '</div>' +
+  '</div>' +
+  '</body></html>';
+
+  return doc;
 }
 
 function buildClassicInvoice(inv, type) {
@@ -6889,7 +7079,7 @@ function buildClassicInvoice(inv, type) {
   var doc = '<!DOCTYPE html><html dir="' + dirAttr + '"><head><meta charset="utf-8"><title>' + typeLabel + ' ' + (inv.number||'') + '</title>' +
   '<style>' +
   'html,body{height:100%}' +
-  'body{font-family:Arial,sans-serif;margin:0;padding:32px;color:#1f2937;background:#fff;position:relative;box-sizing:border-box;display:flex;flex-direction:column;min-height:100vh;text-align:' + alignStart + '}' +
+  'body{font-family:Arial,sans-serif;margin:0;color:#1f2937;background:#fff;position:relative;box-sizing:border-box;text-align:' + alignStart + '}' +
   '.no-print{display:flex;gap:10px;margin-bottom:24px}' +
   '@media print{body{margin:0}.no-print{display:none}@page{size:A4}}' +
   '</style></head><body dir="' + dirAttr + '">' +
@@ -6897,7 +7087,8 @@ function buildClassicInvoice(inv, type) {
   '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
   '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
   '</div>' +
-  (state.businessLogo ? '<div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none"><img src="' + state.businessLogo + '" style="width:500px;height:500px;object-fit:contain;opacity:0.06"></div>' : '') +
+  '<div style="position:relative;display:flex;flex-direction:column;min-height:1123px;padding:32px;box-sizing:border-box">' +
+  (state.businessLogo ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none"><img src="' + state.businessLogo + '" style="width:1000px;height:1000px;object-fit:contain;opacity:0.06"></div>' : '') +
   '<div style="position:relative;z-index:1">' +
   '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">' +
   '<div style="display:flex;align-items:center;gap:10px">' +
@@ -6939,6 +7130,7 @@ function buildClassicInvoice(inv, type) {
   '</div>' +
   '<div style="position:relative;z-index:1;border-top:1px solid #e2e8f0;margin-top:auto;padding-top:12px;text-align:center;font-size:12px;color:#9ca3af">' +
   ptx('thanks') + ' &middot; Smartordi OG &middot; FN 675586 i &middot; Steingasse 6a, 4020 Linz' +
+  '</div>' +
   '</div>' +
   '</body></html>';
 
