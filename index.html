@@ -556,7 +556,9 @@ body.lang-ar .ico-chevron{transform:scaleX(-1)}
 /* Kalender's month-nav buttons already pick the correct icon+function pairing for RTL in JS */
 body.lang-ar #kalLeftBtn .ico-chevron,body.lang-ar #kalRightBtn .ico-chevron{transform:none}
 /* Amounts, dates, phone numbers and IBANs always read LTR even in RTL mode */
-.lang-ar .amount,.lang-ar .date-value,.lang-ar .tx-amount,.lang-ar .debt-amount,.lang-ar .dit-amount,.lang-ar .inv-card-date,.lang-ar .sum-amount,.lang-ar input[type="number"],.lang-ar input[type="date"],.lang-ar input[type="tel"]{direction:ltr;unicode-bidi:embed}
+.lang-ar .amount,.lang-ar .date-value,.lang-ar .tx-amount,.lang-ar .debt-amount,.lang-ar .dit-amount,.lang-ar .inv-card-date,.lang-ar .sum-amount,.lang-ar .net-amount,.lang-ar input[type="number"],.lang-ar input[type="date"],.lang-ar input[type="tel"]{direction:ltr;unicode-bidi:embed}
+/* Forecast table header stays left-aligned in LTR; mirror it for Arabic */
+.lang-ar .forecast-table th{text-align:right}
 body.lang-ar .summary>.sum-card:first-child{border-left:none;border-right:4px solid var(--green)}
 body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px solid var(--red)}
 
@@ -623,7 +625,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .hdr{max-width:none;padding-left:20px}
   .hdr-top{max-width:960px;margin:0 auto}
   .period-tabs{max-width:960px;margin:0 auto 4px}
-  .section,.quick-add,.chart-card{max-width:960px;margin-left:auto;margin-right:auto}
+  .section,.quick-add,.chart-card,#dashCards{max-width:960px;margin-left:auto;margin-right:auto}
   .scroll{padding-bottom:48px}
   .lp-left{display:flex;flex:0 0 50%;padding:48px 44px}
   .lp-right{flex:0 0 50%;justify-content:center;align-items:center;min-height:100vh}
@@ -1247,27 +1249,27 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <!-- Details rows -->
       <div style="padding:0 16px">
         <div style="background:var(--bg);border-radius:16px;overflow:hidden">
-          <div style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)">
-            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border)">
+            <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-date-lbl">DATE</div>
               <div style="font-size:14px;font-weight:600" id="txDetailDate"></div>
             </div>
           </div>
-          <div style="display:flex;align-items:center;padding:13px 16px;border-bottom:1px solid var(--border)">
-            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H4a2 2 0 0 0-2 2v5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.82 0l6-6a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border)">
+            <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41 11 3.83A2 2 0 0 0 9.59 3.24H4a2 2 0 0 0-2 2v5.59a2 2 0 0 0 .59 1.41l9.58 9.58a2 2 0 0 0 2.82 0l6-6a2 2 0 0 0 0-2.82Z"/><circle cx="7.5" cy="7.5" r="1.5"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-cat-lbl">CATEGORY</div>
               <div style="font-size:14px;font-weight:600" id="txDetailCat"></div>
             </div>
           </div>
-          <div id="txDetailInvoiceRow" style="display:flex;align-items:center;padding:13px 16px;cursor:pointer">
-            <span style="font-size:18px;margin-right:12px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
+          <div id="txDetailInvoiceRow" style="display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer">
+            <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></span>
             <div style="flex:1">
               <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-inv-lbl">INVOICE</div>
               <div style="font-size:14px;font-weight:600;color:var(--primary)" id="txDetailInvoice"></div>
             </div>
-            <span id="txDetailInvChevron" style="color:var(--text3)">›</span>
+            <span id="txDetailInvChevron" class="ico-chevron" style="color:var(--text3);display:inline-block">›</span>
           </div>
         </div>
         <!-- Delete button -->
@@ -2129,63 +2131,39 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="mainPage" class="scroll">
   <div id="dashboard-greeting" style="padding:12px 16px 0;font-size:14px;font-weight:600;color:var(--primary);display:none"></div>
 
-  <!-- SUMMARY (desktop / tablet) -->
-  <div class="summary">
-    <div class="sum-card">
-      <div class="sum-label">Income</div>
-      <div class="sum-amount green" id="incomeAmt">€0</div>
-      <div class="sum-change up" id="incomeChange">+0%</div>
+  <!-- DASHBOARD SUMMARY CARDS -->
+  <div id="dashCards">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px 16px 0">
+      <div style="background:#f0fdf4;border-radius:16px;padding:16px">
+        <div style="font-size:12px;color:var(--green)" id="dashIncomeLbl">Total Income</div>
+        <div class="sum-amount" style="font-size:20px;font-weight:700;color:var(--green)" id="dashIncomeAmt">€0</div>
+      </div>
+      <div style="background:#fef2f2;border-radius:16px;padding:16px">
+        <div style="font-size:12px;color:#dc2626" id="dashExpenseLbl">Total Expenses</div>
+        <div class="sum-amount" style="font-size:20px;font-weight:700;color:#dc2626" id="dashExpenseAmt">€0</div>
+      </div>
     </div>
-    <div class="sum-card">
-      <div class="sum-label">Expenses</div>
-      <div class="sum-amount red" id="expenseAmt">€0</div>
-      <div class="sum-change down" id="expenseChange">+0%</div>
-    </div>
-    <div class="sum-card" id="netCard" style="grid-column:auto">
-      <div class="net-label">Net Profit</div>
-      <div class="net-amount" id="netAmt">€0</div>
-      <div class="net-sub" id="netSub">No transactions yet</div>
-      <div id="netTrend" style="font-size:11px;opacity:0.8;margin-top:3px"></div>
-    </div>
-  </div>
-
-  <!-- NET INCOME / TOTAL TAX -->
-  <div style="display:flex;gap:10px;padding:0 16px 16px;max-width:960px;margin:0 auto;box-sizing:border-box" id="taxSummaryRow">
-    <div style="background:var(--card);border-radius:14px;padding:14px;flex:1">
-      <div style="font-size:12px;color:var(--text3)" id="netIncomeLbl">Net Income</div>
-      <div style="font-weight:700;font-size:18px;color:var(--green)" id="netIncomeAmt">€0.00</div>
-      <div style="font-size:11px;color:var(--text3)" id="netIncomeSub">After tax deduction</div>
-    </div>
-    <div style="background:var(--card);border-radius:14px;padding:14px;flex:1">
-      <div style="font-size:12px;color:var(--text3)" id="totalTaxLbl">Total Tax</div>
-      <div style="font-weight:700;font-size:18px;color:#f97316" id="totalTaxAmt">€0.00</div>
-      <div style="font-size:11px;color:var(--text3)" id="totalTaxSub">Collected VAT</div>
-    </div>
-  </div>
-
-  <!-- SUMMARY (mobile, Zoho-style) -->
-  <div class="mobile-summary">
-    <div style="background:#EEF2FF;border-radius:16px;padding:16px">
-      <div style="font-size:12px;color:#6366f1" id="mobReceivablesLbl">Total Receivables</div>
-      <div style="font-weight:700;font-size:20px;color:#3730a3" id="mobReceivablesAmt">€0</div>
-      <div style="height:1px;background:rgba(99,102,241,0.25);margin:10px 0"></div>
-      <div style="font-size:12px;color:#6366f1" id="mobPayablesLbl">Total Payables</div>
-      <div style="font-weight:700;font-size:20px;color:#3730a3" id="mobPayablesAmt">€0</div>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:10px">
-      <div style="background:#FEF2F2;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('invoices')">
-        <div style="font-weight:700;font-size:24px;color:#dc2626" id="mobOverdueCount">0</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:10px 16px 0">
+      <div style="background:#fff7ed;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('invoices')">
+        <div style="font-weight:700;font-size:22px;color:#ea580c;direction:ltr;unicode-bidi:embed" id="dashOverdueCount">0</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-          <div style="font-size:12px;color:#dc2626" id="mobOverdueLbl">Overdue Invoices</div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+          <div style="font-size:12px;color:#ea580c" id="dashOverdueLbl">Overdue Invoices</div>
+          <svg class="ico-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ea580c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
       </div>
-      <div style="background:#FEF2F2;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('debts')">
-        <div style="font-weight:700;font-size:24px;color:#dc2626" id="mobPendingDebtsCount">0</div>
+      <div style="background:#fefce8;border-radius:16px;padding:16px;cursor:pointer" onclick="showNav('debts')">
+        <div style="font-weight:700;font-size:22px;color:#ca8a04;direction:ltr;unicode-bidi:embed" id="dashPendingDebtsCount">0</div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:6px">
-          <div style="font-size:12px;color:#dc2626" id="mobPendingDebtsLbl">Pending Debts</div>
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
+          <div style="font-size:12px;color:#ca8a04" id="dashPendingDebtsLbl">Pending Debts</div>
+          <svg class="ico-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><polyline points="9 18 15 12 9 6"/></svg>
         </div>
+      </div>
+    </div>
+    <div style="padding:10px 16px 0">
+      <div id="dashNetCard" style="background:var(--card);border-left:4px solid var(--green);border-radius:16px;padding:16px">
+        <div style="font-size:12px;color:var(--text3)" id="dashNetLbl">Net Income</div>
+        <div class="net-amount" style="font-size:24px;font-weight:700;margin:4px 0" id="dashNetAmt">€0</div>
+        <div style="font-size:11px;color:var(--text3)" id="dashNetSub">Income − Expenses − Tax due</div>
       </div>
     </div>
   </div>
@@ -5126,6 +5104,32 @@ function renderBudgetDashboard(income, expense) {
   el.innerHTML = h;
 }
 
+// Umsatzsteuer/Vorsteuer-aware net income for the dashboard cards. Falls back
+// to plain income-minus-expenses when transactions have no vatRate (VAT not
+// yet implemented), so it's a safe drop-in ahead of that feature landing.
+function calculateNetIncome(filteredTransactions) {
+  var totalIncome = 0;
+  var totalExpenses = 0;
+  var umsatzsteuer = 0;
+  var vorsteuer = 0;
+  var i, tx, vatRate, netOfVat;
+  for(i = 0; i < filteredTransactions.length; i++) {
+    tx = filteredTransactions[i];
+    vatRate = tx.vatRate || 0;
+    netOfVat = tx.amount / (1 + vatRate / 100);
+    if(tx.type === 'income') {
+      totalIncome += tx.amount;
+      umsatzsteuer += tx.amount - netOfVat;
+    } else if(tx.type === 'expense') {
+      totalExpenses += tx.amount;
+      vorsteuer += tx.amount - netOfVat;
+    }
+  }
+  var zahllast = umsatzsteuer - vorsteuer;
+  var netIncome = totalIncome - totalExpenses - Math.max(0, zahllast);
+  return {totalIncome: totalIncome, totalExpenses: totalExpenses, zahllast: zahllast, netIncome: netIncome};
+}
+
 function renderHome() {
   try {
   // Always reload from storage to ensure data is fresh: compare the
@@ -5136,6 +5140,34 @@ function renderHome() {
     loadUserData();
   }
   var txs = getFiltered();
+
+  // Dashboard summary cards: one consistent calculation for income, expenses & net
+  var netCalc = calculateNetIncome(txs);
+  var dashIncomeEl = document.getElementById('dashIncomeAmt');
+  if(dashIncomeEl) dashIncomeEl.textContent = fmt(netCalc.totalIncome);
+  var dashExpenseEl = document.getElementById('dashExpenseAmt');
+  if(dashExpenseEl) dashExpenseEl.textContent = fmt(netCalc.totalExpenses);
+  var dashOverdueEl = document.getElementById('dashOverdueCount');
+  if(dashOverdueEl) dashOverdueEl.textContent = state.issuedInvoices.filter(function(inv){ return inv.status === 'Overdue'; }).length;
+  var dashPendingDebtsEl = document.getElementById('dashPendingDebtsCount');
+  if(dashPendingDebtsEl) dashPendingDebtsEl.textContent = state.debts.filter(function(d){ return d.status !== 'paid'; }).length;
+  var dashNetAmtEl = document.getElementById('dashNetAmt');
+  var dashNetCardEl = document.getElementById('dashNetCard');
+  var dashNetColor = netCalc.netIncome >= 0 ? 'var(--green)' : '#dc2626';
+  if(dashNetAmtEl) {
+    dashNetAmtEl.textContent = (netCalc.netIncome < 0 ? '-' : '') + fmt(Math.abs(netCalc.netIncome));
+    dashNetAmtEl.style.color = dashNetColor;
+  }
+  if(dashNetCardEl) {
+    if(state.lang === 'ar') {
+      dashNetCardEl.style.borderLeft = 'none';
+      dashNetCardEl.style.borderRight = '4px solid ' + dashNetColor;
+    } else {
+      dashNetCardEl.style.borderRight = 'none';
+      dashNetCardEl.style.borderLeft = '4px solid ' + dashNetColor;
+    }
+  }
+
   var income = txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
   var txExpense = txs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
 
@@ -6026,15 +6058,19 @@ function applyLang() {
   var moreNavLbl = document.getElementById('nav-more-lbl');
   if(moreNavLbl) moreNavLbl.textContent = t('more');
 
-  // Update mobile Zoho-style summary card labels
-  var mobRecvLbl = document.getElementById('mobReceivablesLbl');
-  if(mobRecvLbl) mobRecvLbl.textContent = {en:'Total Receivables', ar:'إجمالي المستحقات', de:'Gesamtforderungen'}[state.lang] || 'Total Receivables';
-  var mobPayLbl = document.getElementById('mobPayablesLbl');
-  if(mobPayLbl) mobPayLbl.textContent = {en:'Total Payables', ar:'إجمالي المستحقات الدائنة', de:'Gesamtverbindlichkeiten'}[state.lang] || 'Total Payables';
-  var mobOverdueLbl = document.getElementById('mobOverdueLbl');
-  if(mobOverdueLbl) mobOverdueLbl.textContent = {en:'Overdue Invoices', ar:'فواتير متأخرة', de:'Überfällige Rechnungen'}[state.lang] || 'Overdue Invoices';
-  var mobPendingDebtsLbl = document.getElementById('mobPendingDebtsLbl');
-  if(mobPendingDebtsLbl) mobPendingDebtsLbl.textContent = {en:'Pending Debts', ar:'ديون معلقة', de:'Offene Schulden'}[state.lang] || 'Pending Debts';
+  // Update dashboard summary card labels
+  var dashIncomeLbl = document.getElementById('dashIncomeLbl');
+  if(dashIncomeLbl) dashIncomeLbl.textContent = {en:'Total Income', ar:'إجمالي الدخل', de:'Gesamteinnahmen'}[state.lang] || 'Total Income';
+  var dashExpenseLbl = document.getElementById('dashExpenseLbl');
+  if(dashExpenseLbl) dashExpenseLbl.textContent = {en:'Total Expenses', ar:'إجمالي المصروفات', de:'Gesamtausgaben'}[state.lang] || 'Total Expenses';
+  var dashOverdueLbl = document.getElementById('dashOverdueLbl');
+  if(dashOverdueLbl) dashOverdueLbl.textContent = {en:'Overdue Invoices', ar:'فواتير متأخرة', de:'Überfällige Rechnungen'}[state.lang] || 'Overdue Invoices';
+  var dashPendingDebtsLbl = document.getElementById('dashPendingDebtsLbl');
+  if(dashPendingDebtsLbl) dashPendingDebtsLbl.textContent = {en:'Pending Debts', ar:'ديون معلقة', de:'Ausstehende Schulden'}[state.lang] || 'Pending Debts';
+  var dashNetLbl = document.getElementById('dashNetLbl');
+  if(dashNetLbl) dashNetLbl.textContent = {en:'Net Income', ar:'صافي الدخل', de:'Nettoeinkommen'}[state.lang] || 'Net Income';
+  var dashNetSub = document.getElementById('dashNetSub');
+  if(dashNetSub) dashNetSub.textContent = {en:'Income − Expenses − Tax due', ar:'الدخل − المصروفات − الضريبة المستحقة', de:'Einnahmen − Ausgaben − Fällige Steuer'}[state.lang] || 'Income − Expenses − Tax due';
 
   // Update mobile Quick Add card labels
   var mqaIncomeLbl = document.getElementById('mqa-lbl-income');
