@@ -8061,7 +8061,8 @@ var PRINT_L = {
   dateCol:        {en:'Date', ar:'التاريخ', de:'Datum'},
   pageFooter:     {en:'Page 1 of 1', ar:'صفحة 1 من 1', de:'Seite 1 von 1'},
 };
-function ptx(k) { return (PRINT_L[k] && PRINT_L[k][state.lang]) || (PRINT_L[k] && PRINT_L[k].en) || k; }
+// Invoice/receipt PDFs always render in German, regardless of the app's UI language.
+function ptx(k) { return (PRINT_L[k] && PRINT_L[k].de) || (PRINT_L[k] && PRINT_L[k].en) || k; }
 function ltrSpan(s) { return '<span dir="ltr" style="unicode-bidi:bidi-override">' + s + '</span>'; }
 
 function buildInvoiceHTML(inv, type) {
@@ -8074,7 +8075,7 @@ function formatDateLong(dateStr) {
   var s = String(dateStr).substring(0,10);
   var d = new Date(s + 'T12:00:00');
   if(isNaN(d.getTime())) return s;
-  var locale = state.lang === 'ar' ? 'ar' : state.lang === 'de' ? 'de-DE' : 'en-US';
+  var locale = 'de-DE';
   try { return d.toLocaleDateString(locale, {year:'numeric', month:'long', day:'numeric'}); }
   catch(e) { return s; }
 }
@@ -8197,7 +8198,7 @@ function buildProfessionalReceipt(inv) {
   '<div style="width:280px">' +
   '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('subtotal') + '</span><span>' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
   '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('totalExclTax') + '</span><span>' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
-  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('vat') + ' (' + vatRate + '% ' + ({en:'on', ar:'على', de:'auf'}[state.lang]||'on') + ' ' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + ')</span><span>' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px"><span style="color:#6b7280">' + ptx('vat') + ' (' + vatRate + '% auf ' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + ')</span><span>' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
   '<div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;border-top:1px solid #e5e7eb;margin-top:2px"><span style="color:#6b7280">' + ptx('total') + '</span><span>' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
   '<div style="display:flex;justify-content:space-between;padding:6px 0;font-size:14px;font-weight:700"><span>' + ptx('amountPaidLbl') + '</span><span>' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
   '</div></div>' +
@@ -8227,7 +8228,7 @@ function buildProfessionalReceipt(inv) {
 }
 
 function buildClassicInvoice(inv, type) {
-  var isRTL = state.lang === 'ar';
+  var isRTL = false; // invoice PDFs always render German/LTR, regardless of app language
   var dirAttr = isRTL ? 'rtl' : 'ltr';
   var alignStart = isRTL ? 'right' : 'left';
   var alignEnd = isRTL ? 'left' : 'right';
