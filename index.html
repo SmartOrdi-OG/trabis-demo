@@ -4080,58 +4080,71 @@ function renderVehicleProfileCard(v) {
   }
 }
 
-var _fleetAssetEditMode = false;
-
 function renderVehicleAssetSection(v) {
   var wrap = document.getElementById('fleetAssetSection');
   if(!wrap) return;
   var dep = calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
 
-  if(!_fleetAssetEditMode) {
-    var html = '';
-    if(dep) {
-      html += fleetInfoRow(fleettx('assetPrice'), fmt(v.assetValue));
-      html += fleetInfoRow(fleettx('assetDate'), formatDateDisplay(v.assetPurchaseDate));
-      html += fleetInfoRow(fleettx('assetRate'), v.assetDepreciationRate + '%');
-      html += '<div style="display:flex;gap:10px;margin-top:4px">';
-      html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetBookValue') + '</div><div style="font-size:17px;font-weight:700;color:var(--primary)">' + fmt(dep.bookValue) + '</div></div>';
-      html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetMonthly') + '</div><div style="font-size:17px;font-weight:700;color:var(--expense)">' + fmt(dep.monthly) + '</div></div>';
-      html += '</div>';
-      html += '<button onclick="_fleetAssetEditMode=true;renderVehicleAssetSection(state.fleet.find(function(x){return x.id===' + v.id + ';}))" style="width:100%;margin-top:12px;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + fleettx('edit') + '</button>';
-    } else {
-      html += '<div style="font-size:13px;color:var(--text3);margin-bottom:10px">' + fleettx('assetNotLinked') + '</div>';
-      html += '<button onclick="_fleetAssetEditMode=true;renderVehicleAssetSection(state.fleet.find(function(x){return x.id===' + v.id + ';}))" style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">' + fleettx('assetLinkBtn') + '</button>';
-    }
-    wrap.innerHTML = html;
+  var html = '';
+  if(dep) {
+    html += fleetInfoRow(fleettx('assetPrice'), fmt(v.assetValue));
+    html += fleetInfoRow(fleettx('assetDate'), formatDateDisplay(v.assetPurchaseDate));
+    html += fleetInfoRow(fleettx('assetRate'), v.assetDepreciationRate + '%');
+    html += '<div style="display:flex;gap:10px;margin-top:4px">';
+    html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetBookValue') + '</div><div style="font-size:17px;font-weight:700;color:var(--primary)">' + fmt(dep.bookValue) + '</div></div>';
+    html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetMonthly') + '</div><div style="font-size:17px;font-weight:700;color:var(--expense)">' + fmt(dep.monthly) + '</div></div>';
+    html += '</div>';
+    html += '<button onclick="assetFormOpen(' + v.id + ')" style="width:100%;margin-top:12px;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + fleettx('edit') + '</button>';
   } else {
-    var eh = '';
-    eh += '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5">' + fleettx('assetHint') + '</div>';
-    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
-    eh += '<input id="fas-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetValue || '') + '">';
-    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
-    eh += '<input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || '') + '">';
-    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
-    eh += '<input id="fas-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetDepreciationRate != null ? v.assetDepreciationRate : '12.5') + '">';
-    eh += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px;line-height:1.5">' + fleettx('assetRateHint') + '</div>';
-    eh += '<div style="display:flex;gap:10px">';
-    eh += '<button id="fas-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
-    eh += '<button id="fas-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:11px;font-size:14px;cursor:pointer">' + fleettx('cancel') + '</button>';
-    eh += '</div>';
-    wrap.innerHTML = eh;
-
-    document.getElementById('fas-saveBtn').onclick = function() {
-      v.assetValue = parseAmount(document.getElementById('fas-price').value) || 0;
-      v.assetPurchaseDate = document.getElementById('fas-date').value || '';
-      v.assetDepreciationRate = parseAmount(document.getElementById('fas-rate').value) || 0;
-      save();
-      _fleetAssetEditMode = false;
-      renderVehicleAssetSection(v);
-    };
-    document.getElementById('fas-cancelBtn').onclick = function() {
-      _fleetAssetEditMode = false;
-      renderVehicleAssetSection(v);
-    };
+    html += '<div style="font-size:13px;color:var(--text3);margin-bottom:10px">' + fleettx('assetNotLinked') + '</div>';
+    html += '<button onclick="assetFormOpen(' + v.id + ')" style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">' + fleettx('assetLinkBtn') + '</button>';
   }
+  wrap.innerHTML = html;
+}
+
+function assetFormOpen(vehicleId) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+
+  var existing = document.getElementById('assetFormOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'assetFormOverlay';
+  ov.className = 'modal-overlay open';
+  ov.style.zIndex = '99999'; // above the full-screen vehicle profile overlay (z-index 9999)
+  var html = '';
+  html += '<div class="modal" id="assetFormModal">';
+  html += '<button class="modal-close-btn" id="assetFormCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + fleettx('asset') + '</div>';
+  html += '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5">' + fleettx('assetHint') + '</div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
+  html += '<input id="fas-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetValue || '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
+  html += '<input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
+  html += '<input id="fas-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetDepreciationRate != null ? v.assetDepreciationRate : '12.5') + '">';
+  html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px;line-height:1.5">' + fleettx('assetRateHint') + '</div>';
+  html += '<div style="display:flex;gap:10px">';
+  html += '<button id="fas-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+  html += '<button id="fas-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:11px;font-size:14px;cursor:pointer">' + fleettx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('assetFormOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('assetFormCloseBtn').onclick = close;
+  document.getElementById('fas-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('fas-saveBtn').onclick = function() {
+    v.assetValue = parseAmount(document.getElementById('fas-price').value) || 0;
+    v.assetPurchaseDate = document.getElementById('fas-date').value || '';
+    v.assetDepreciationRate = parseAmount(document.getElementById('fas-rate').value) || 0;
+    save();
+    close();
+    renderVehicleAssetSection(v);
+  };
 }
 
 function renderVehicleProfile(id) {
@@ -4140,7 +4153,6 @@ function renderVehicleProfile(id) {
   var v = found[0];
   _fleetProfileId = id;
   _fleetProfileEditMode = false;
-  _fleetAssetEditMode = false;
 
   var existingOv = document.getElementById('fleetProfileOverlay');
   if(existingOv) existingOv.parentNode.removeChild(existingOv);
