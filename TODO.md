@@ -231,3 +231,4 @@
 - OCR + PDF Generation (Puppeteer) + AI Extraction = Pro features مدفوعة في v2.0
 - Gmail Integration + Multi-account + Chat = v2.0 فقط (محتاجين backend)
 - DATEV ASCII Export = مرحلة مستقبلية للسوق النمساوي/الألماني
+- حد الـ 10 معاملات في addTransaction() (leftover من v1.0) اتشال مؤقتًا — البيزنس متاح بلا حدود لحد ما نبني نظام الـ Free plan الحقيقي في المرحلة 4

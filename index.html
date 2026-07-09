@@ -7144,18 +7144,7 @@ function refreshDebtPersonDropdown() {
 }
 
 function addTransaction() {
-  // Limit to 10 transactions in free version
-  if(state.transactions.length >= 10) {
-    var lang = state.lang;
-    var msg = lang==='ar'
-      ? 'وصلت للحد المجاني (10 إدخالات). سيتوفر الاشتراك قريباً!'
-      : lang==='de'
-      ? 'Kostenloses Limit erreicht (10 Einträge). Abo kommt bald!'
-      : 'Free limit reached (10 entries). Subscription coming soon!';
-    alert(msg);
-    closeModal();
-    return;
-  }
+  // Free-plan limit disabled until the real freemium system (Phase 4: Stripe + Upgrade Modal) is built
   var amount = parseAmount(document.getElementById('amountInput').value);
   var name = document.getElementById('nameInput').value.trim() || state.currentCat;
   if(!amount || amount <= 0) { alert('Please enter a valid amount'); return; }
