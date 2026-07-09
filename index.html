@@ -583,7 +583,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 
 /* ── MOBILE LAYOUT (default: 430px centered) ── */
 @media (max-width:1023px) {
-  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage{max-width:430px;margin-left:auto;margin-right:auto}
+  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage{max-width:430px;margin-left:auto;margin-right:auto}
   .bnav{max-width:430px}
   #mainPage{max-width:430px;margin-left:auto;margin-right:auto}
   /* Landing page mobile */
@@ -633,8 +633,8 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .bnav{display:none !important}
   #sidebarNav{transform:translateX(0)}
   body.lang-ar #sidebarNav{transform:translateX(0)}
-  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage{margin-left:240px !important;max-width:none}
-  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage{margin-left:0 !important;margin-right:240px !important}
+  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage{margin-left:240px !important;max-width:none}
+  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
   .modal-overlay{align-items:center}
   .modal{border-radius:16px;max-width:520px;margin:auto;max-height:85vh;width:calc(100% - 48px)}
@@ -699,7 +699,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 /* ── PRINT / PDF EXPORT ── */
 @media print {
   body{background:#fff!important;margin:0;padding:0;color:#000!important}
-  #landingPage,#onboardingOverlay,.bnav,.fab,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
+  #landingPage,#onboardingOverlay,.bnav,.fab,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
   #reportsPage{display:block!important;position:static!important;overflow:visible!important;padding:20px!important;max-width:210mm!important;margin:0 auto!important;background:#fff!important}
   .report-card{box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid;margin-bottom:16px;background:#fff!important}
   .bar-chart{display:none!important}
@@ -2095,6 +2095,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item" id="snav-fleet" onclick="showNav('fleet')" style="display:none">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l3 3v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></span><span id="snav-lbl-fleet">Fleet</span>
   </div>
+  <div class="snav-item" id="snav-inventory" onclick="showNav('inventory')" style="display:none">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg></span><span id="snav-lbl-inventory">Inventory</span>
+  </div>
   <div class="snav-item" id="snav-assets" onclick="showNav('assets')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span id="snav-lbl-assets">Assets</span>
   </div>
@@ -2562,6 +2565,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="helpPage" style="display:none" class="settings-page"></div>
 <div id="fleetPage" style="display:none" class="settings-page"></div>
 <div id="assetsPage" style="display:none" class="settings-page"></div>
+<div id="inventoryPage" style="display:none" class="settings-page"></div>
 <div id="kalenderPage" style="display:none" class="settings-page"></div>
 <div id="notizenPage" style="display:none" class="settings-page"></div>
 
@@ -2623,6 +2627,17 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <input class="input-field" id="dateInput" type="date" style="margin-bottom:8px"/>
 
     <div id="catGrid" class="category-grid"></div>
+
+    <div id="modal-product-wrap" style="display:none;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:4px" id="modal-product-lbl">Product (optional)</div>
+      <div style="display:flex;gap:8px">
+        <select id="modal-product" onchange="onModalProductChange()" style="flex:2;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box">
+          <option value="">— No product —</option>
+        </select>
+        <input type="text" id="modal-product-qty" inputmode="decimal" oninput="sanitizeAmountField(this)" placeholder="Qty" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box">
+      </div>
+      <div id="modal-product-stock-hint" style="font-size:11px;color:var(--text3);margin-top:4px"></div>
+    </div>
 
     <div id="modal-client-wrap" style="display:none">
       <div style="font-size:13px;color:var(--text2);margin-bottom:4px" id="modal-client-lbl">Client (optional)</div>
@@ -2991,6 +3006,7 @@ var state = {
   notes: [],
   fleet: [],
   assets: [],
+  inventory: [],
 };
 
 var CURRENCIES = {
@@ -3175,6 +3191,7 @@ function save() {
   localStorage.setItem(uk('employees'), JSON.stringify(state.employees));
   localStorage.setItem(uk('fleet'), JSON.stringify(state.fleet));
   localStorage.setItem(uk('assets'), JSON.stringify(state.assets));
+  localStorage.setItem(uk('inventory'), JSON.stringify(state.inventory));
   localStorage.setItem(uk('recurring'), JSON.stringify(state.recurring));
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
@@ -3219,6 +3236,7 @@ function loadUserData() {
   state.employees = JSON.parse(localStorage.getItem(uk('employees')) || '[]');
   state.fleet = JSON.parse(localStorage.getItem(uk('fleet')) || '[]');
   state.assets = JSON.parse(localStorage.getItem(uk('assets')) || '[]');
+  state.inventory = JSON.parse(localStorage.getItem(uk('inventory')) || '[]');
   state.recurring = JSON.parse(localStorage.getItem(uk('recurring')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.tax = JSON.parse(localStorage.getItem(uk('tax')) || '{"name":"","rate":0,"type":"on_sales"}');
@@ -3258,6 +3276,8 @@ function loadUserData() {
 function updateFleetNavVisibility() {
   var snavFleetEl = document.getElementById('snav-fleet');
   if(snavFleetEl) snavFleetEl.style.display = state.businessType === 'transport' ? 'flex' : 'none';
+  var snavInvEl = document.getElementById('snav-inventory');
+  if(snavInvEl) snavInvEl.style.display = state.businessType === 'retail' ? 'flex' : 'none';
 }
 
 function getFiltered() {
@@ -3283,11 +3303,12 @@ function getFiltered() {
 // ── NAV ──
 function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
+  if(page === 'inventory' && state.businessType !== 'retail') { showNav('home'); return; }
   closeMoreMenu();
-  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','kalenderPage','notizenPage'].forEach(function(p) {
+  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
   });
-  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','kalender','notizen'].forEach(function(n) {
+  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen'].forEach(function(n) {
     var navEl = document.getElementById('nav-'+n);
     if(navEl) navEl.classList.remove('active');
     var snavEl = document.getElementById('snav-'+n);
@@ -3297,7 +3318,7 @@ function showNav(page) {
   var snavSettings = document.getElementById('snav-settings');
   if(snavSettings) snavSettings.classList.remove('active');
 
-  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',kalender:'kalenderPage',notizen:'notizenPage'};
+  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
   if(page !== 'home') {
@@ -3325,6 +3346,7 @@ function showNav(page) {
   if(page === 'help') renderHelpPage();
   if(page === 'fleet') renderFleetPage();
   if(page === 'assets') renderAssetsPage();
+  if(page === 'inventory') renderInventoryPage();
   if(page === 'kalender') renderKalenderPage();
   if(page === 'notizen') renderNotizenPage();
 }
@@ -3353,6 +3375,7 @@ var MORE_MENU_L = {
   fixed: {en:'Fixed', ar:'ثابت', de:'Fix'},
   fleet: {en:'Fleet', ar:'الأسطول', de:'Fuhrpark'},
   assets: {en:'Assets', ar:'الأصول', de:'Vermögenswerte'},
+  inventory: {en:'Inventory', ar:'المخزون', de:'Lagerbestand'},
   kalender: {en:'Calendar', ar:'التقويم', de:'Kalender'},
   notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
@@ -3378,6 +3401,7 @@ function openMoreMenu() {
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
   if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
+  if(state.businessType === 'retail') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
@@ -3400,6 +3424,8 @@ function openMoreMenu() {
   if(mmFixed) mmFixed.onclick = function(){ showNav('fixed'); };
   var mmFleet = document.getElementById('mm-fleet');
   if(mmFleet) mmFleet.onclick = function(){ showNav('fleet'); };
+  var mmInventory = document.getElementById('mm-inventory');
+  if(mmInventory) mmInventory.onclick = function(){ showNav('inventory'); };
   var mmAssets = document.getElementById('mm-assets');
   if(mmAssets) mmAssets.onclick = function(){ showNav('assets'); };
   var mmKalender = document.getElementById('mm-kalender');
@@ -4657,6 +4683,209 @@ function assetsExportPDF() {
   doc.save('Assets_' + today() + '.pdf');
 }
 
+// ── INVENTORY (Retail) ──
+var PRODUCT_L = {
+  title:      {en:'Inventory', ar:'المخزون', de:'Lagerbestand'},
+  add:        {en:'+ Add Product', ar:'+ إضافة منتج', de:'+ Produkt hinzufügen'},
+  addTitle:   {en:'Add Product', ar:'إضافة منتج', de:'Produkt hinzufügen'},
+  editTitle:  {en:'Edit Product', ar:'تعديل المنتج', de:'Produkt bearbeiten'},
+  empty:      {en:'No products yet', ar:'لا توجد منتجات بعد', de:'Noch keine Produkte'},
+  name:       {en:'Product Name', ar:'اسم المنتج', de:'Produktname'},
+  description:{en:'Description (optional)', ar:'الوصف (اختياري)', de:'Beschreibung (optional)'},
+  purchasePrice:{en:'Purchase Price', ar:'سعر الشراء', de:'Einkaufspreis'},
+  sellPrice:  {en:'Sell Price', ar:'سعر البيع', de:'Verkaufspreis'},
+  quantity:   {en:'Quantity', ar:'الكمية', de:'Menge'},
+  unit:       {en:'Unit (pcs, kg, box...)', ar:'الوحدة (قطعة، كجم، كرتونة...)', de:'Einheit (Stk, kg, Karton...)'},
+  lowStockThreshold: {en:'Low Stock Alert Below', ar:'تنبيه نفاد لو الكمية أقل من', de:'Warnung bei Bestand unter'},
+  save:       {en:'Save', ar:'حفظ', de:'Speichern'},
+  cancel:     {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  confirmDelete: {en:'Delete this product?', ar:'حذف هذا المنتج؟', de:'Dieses Produkt löschen?'},
+  invalid:    {en:'Enter a name, purchase price, sell price and quantity', ar:'ادخل الاسم وسعر الشراء وسعر البيع والكمية', de:'Bitte Name, Einkaufspreis, Verkaufspreis und Menge eingeben'},
+  totalValue: {en:'Total Inventory Value', ar:'إجمالي قيمة المخزون', de:'Gesamter Lagerwert'},
+  totalItems: {en:'Products', ar:'المنتجات', de:'Produkte'},
+  lowStock:   {en:'Low Stock', ar:'قرب النفاد', de:'Niedriger Bestand'},
+  outOfStock: {en:'Out of stock', ar:'نفدت الكمية', de:'Nicht auf Lager'},
+  lowStockBadge: {en:'Low stock', ar:'قرب النفاد', de:'Niedriger Bestand'},
+  exportPdf:  {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
+  lowStockNotif: {en:' is low on stock: ', ar:' قرب ينفد: ', de:' hat niedrigen Bestand: '},
+  outOfStockNotif: {en:' is out of stock', ar:' نفدت كميته', de:' ist nicht mehr auf Lager'},
+};
+function invtx(k) { return (PRODUCT_L[k] && PRODUCT_L[k][state.lang]) || (PRODUCT_L[k] && PRODUCT_L[k].en) || k; }
+
+function checkLowStock(prod) {
+  if(!prod) return;
+  var qty = parseFloat(prod.quantity) || 0;
+  var threshold = parseFloat(prod.lowStockThreshold);
+  if(isNaN(threshold) || qty > threshold) return;
+  var sourceId = 'lowstock-' + prod.id + '-' + today();
+  var already = state.notifications.some(function(n){ return n.sourceId === sourceId; });
+  if(already) return;
+  var lang = state.lang;
+  var msg = prod.name + (qty <= 0 ? (invtx('outOfStockNotif')) : (invtx('lowStockNotif') + qty + ' ' + (prod.unit||'')));
+  addNotification(msg, 'warning', sourceId);
+}
+function checkLowStockAll() {
+  (state.inventory || []).forEach(function(p){ checkLowStock(p); });
+}
+
+function renderInventoryPage() {
+  var page = document.getElementById('inventoryPage');
+  if(!page) return;
+
+  var products = state.inventory || [];
+  var totalValue = products.reduce(function(s,p){ return s + (parseFloat(p.purchasePrice)||0) * (parseFloat(p.quantity)||0); }, 0);
+  var lowStockCount = products.filter(function(p){ var t = parseFloat(p.lowStockThreshold); return !isNaN(t) && (parseFloat(p.quantity)||0) <= t; }).length;
+
+  var h = '';
+  h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  h += '<div style="font-size:18px;font-weight:700">' + invtx('title') + '</div>';
+  h += '<button id="invAddBtn" style="background:#16a34a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + invtx('add') + '</button>';
+  h += '</div></div>';
+
+  h += '<div style="padding:0 16px">';
+  h += '<div style="display:flex;gap:10px;margin-bottom:16px">';
+  h += '<div style="flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--text3)">' + invtx('totalValue') + '</div><div style="font-size:17px;font-weight:700;color:var(--primary)">' + fmt(totalValue) + '</div></div>';
+  h += '<div style="flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--text3)">' + invtx('totalItems') + '</div><div style="font-size:17px;font-weight:700">' + products.length + '</div></div>';
+  h += '<div style="flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--text3)">' + invtx('lowStock') + '</div><div style="font-size:17px;font-weight:700;color:' + (lowStockCount ? '#ea580c' : 'var(--text)') + '">' + lowStockCount + '</div></div>';
+  h += '</div>';
+
+  if(!products.length) {
+    h += '<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px">' + invtx('empty') + '</div>';
+  } else {
+    products.forEach(function(p) {
+      var qty = parseFloat(p.quantity) || 0;
+      var threshold = parseFloat(p.lowStockThreshold);
+      var isLow = !isNaN(threshold) && qty <= threshold;
+      h += '<div style="background:var(--card);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)">';
+      h += '<span style="color:var(--primary)">' + svgIcon('shoppingCart', 20) + '</span>';
+      h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="productOpenForm(' + p.id + ')">';
+      h += '<div style="font-size:14px;font-weight:700">' + escHtml(p.name) + '</div>';
+      h += '<div style="font-size:12px;color:var(--text3)">' + fmt(p.sellPrice) + ' · ' + qty + ' ' + escHtml(p.unit||'')
+        + (isLow ? ' <span style="color:' + (qty<=0?'#ef4444':'#ea580c') + ';font-weight:700">· ' + (qty<=0?invtx('outOfStock'):invtx('lowStockBadge')) + '</span>' : '') + '</div>';
+      h += '</div>';
+      h += '<button onclick="productDelete(' + p.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 15) + '</button>';
+      h += '</div>';
+    });
+  }
+
+  h += '<button onclick="inventoryExportPDF()" style="width:100%;margin:8px 0 100px;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">' + svgIcon('download', 15) + ' ' + invtx('exportPdf') + '</button>';
+  h += '</div>';
+
+  page.innerHTML = h;
+  var addBtn = document.getElementById('invAddBtn');
+  if(addBtn) addBtn.onclick = function(){ productOpenForm(); };
+}
+
+function productOpenForm(editId) {
+  var editing = editId != null ? (state.inventory || []).find(function(p){ return p.id === editId; }) : null;
+
+  var existing = document.getElementById('productFormOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'productFormOverlay';
+  ov.className = 'modal-overlay open';
+  var html = '';
+  html += '<div class="modal" id="productFormModal">';
+  html += '<button class="modal-close-btn" id="productFormCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + (editing ? invtx('editTitle') : invtx('addTitle')) + '</div>';
+  html += '<input class="input-field" id="pf-name" placeholder="' + invtx('name') + ' *" value="' + (editing ? escHtml(editing.name) : '') + '">';
+  html += '<input class="input-field" id="pf-desc" placeholder="' + invtx('description') + '" value="' + (editing ? escHtml(editing.description||'') : '') + '">';
+  html += '<div style="display:flex;gap:10px">';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('purchasePrice') + '</label><input id="pf-purchase" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.purchasePrice : '') + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('sellPrice') + '</label><input id="pf-sell" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.sellPrice : '') + '"></div>';
+  html += '</div>';
+  html += '<div style="height:12px"></div>';
+  html += '<div style="display:flex;gap:10px">';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('quantity') + '</label><input id="pf-qty" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.quantity : '') + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('unit') + '</label><input id="pf-unit" class="input-field" style="margin-bottom:0" value="' + (editing ? escHtml(editing.unit||'') : '') + '"></div>';
+  html += '</div>';
+  html += '<div style="height:12px"></div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('lowStockThreshold') + '</label>';
+  html += '<input id="pf-threshold" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (editing && editing.lowStockThreshold != null ? editing.lowStockThreshold : '5') + '">';
+  html += '<div id="pf-error" style="display:none;color:#ef4444;font-size:12px;margin:-8px 0 12px"></div>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="productFormSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + invtx('save') + '</button>';
+  html += '<button id="productFormCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + invtx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('productFormOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('productFormCloseBtn').onclick = close;
+  document.getElementById('productFormCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('productFormSaveBtn').onclick = function() {
+    var name = document.getElementById('pf-name').value.trim();
+    var desc = document.getElementById('pf-desc').value.trim();
+    var purchasePrice = parseAmount(document.getElementById('pf-purchase').value);
+    var sellPrice = parseAmount(document.getElementById('pf-sell').value);
+    var qty = parseAmount(document.getElementById('pf-qty').value);
+    var unit = document.getElementById('pf-unit').value.trim();
+    var threshold = parseAmount(document.getElementById('pf-threshold').value);
+    var errEl = document.getElementById('pf-error');
+    if(!name || isNaN(purchasePrice) || isNaN(sellPrice) || isNaN(qty)) { errEl.textContent = invtx('invalid'); errEl.style.display = 'block'; return; }
+    if(!state.inventory) state.inventory = [];
+    if(editing) {
+      editing.name = name; editing.description = desc; editing.purchasePrice = purchasePrice;
+      editing.sellPrice = sellPrice; editing.quantity = qty; editing.unit = unit;
+      editing.lowStockThreshold = isNaN(threshold) ? null : threshold;
+    } else {
+      state.inventory.push({id: Date.now(), name: name, description: desc, purchasePrice: purchasePrice,
+        sellPrice: sellPrice, quantity: qty, unit: unit, lowStockThreshold: isNaN(threshold) ? null : threshold});
+    }
+    save();
+    close();
+    renderInventoryPage();
+    checkLowStockAll();
+  };
+}
+
+function productDelete(id) {
+  if(!confirm(invtx('confirmDelete'))) return;
+  state.inventory = (state.inventory || []).filter(function(p){ return p.id !== id; });
+  save();
+  renderInventoryPage();
+}
+
+function inventoryExportPDF() {
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) { alert('PDF library not available'); return; }
+  var products = state.inventory || [];
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Inventory Report', 14, y); y += 7;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text((state.businessName || '') + ' · ' + new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
+
+  doc.setFont(undefined, 'bold'); doc.setFontSize(9);
+  doc.text('Name', 14, y); doc.text('Qty', 100, y, {align:'right'}); doc.text('Sell Price', 140, y, {align:'right'}); doc.text('Value', 196, y, {align:'right'});
+  y += 3; doc.line(14, y, 196, y); y += 5;
+  doc.setFont(undefined, 'normal');
+
+  var totalValue = 0;
+  products.forEach(function(p) {
+    var val = (parseFloat(p.purchasePrice)||0) * (parseFloat(p.quantity)||0);
+    totalValue += val;
+    doc.setFontSize(9);
+    doc.text(String(p.name).substring(0, 40), 14, y);
+    doc.text(String(parseFloat(p.quantity)||0) + ' ' + (p.unit||''), 100, y, {align:'right'});
+    doc.text(fmt(p.sellPrice), 140, y, {align:'right'});
+    doc.text(fmt(val), 196, y, {align:'right'});
+    y += 6;
+    if(y > 280) { doc.addPage(); y = 20; }
+  });
+
+  y += 2; doc.line(14, y, 196, y); y += 6;
+  doc.setFont(undefined, 'bold');
+  doc.text('Total Value', 14, y);
+  doc.text(fmt(totalValue), 196, y, {align:'right'});
+
+  doc.save('Inventory_' + today() + '.pdf');
+}
+
 // ── HELP PAGE ──
 var HELP_L = {
   title: {en:'Help', ar:'مساعدة', de:'Hilfe'},
@@ -5713,6 +5942,12 @@ function closeModal() {
   if(supSel) supSel.value = '';
   var refInp = document.getElementById('modal-invoice-ref');
   if(refInp) refInp.value = '';
+  var prodSelC = document.getElementById('modal-product');
+  if(prodSelC) prodSelC.value = '';
+  var prodQtyC = document.getElementById('modal-product-qty');
+  if(prodQtyC) prodQtyC.value = '';
+  var prodHintC = document.getElementById('modal-product-stock-hint');
+  if(prodHintC) prodHintC.textContent = '';
   receiptClear();
   clearInvoice();
 }
@@ -6701,6 +6936,15 @@ function renderModal() {
   document.getElementById('currencyLabel').textContent = getCurrencyLabel(state.currency);
   document.getElementById('modalTitle').textContent = t('addTx');
 
+  var prodWrap = document.getElementById('modal-product-wrap');
+  if(prodWrap) prodWrap.style.display = (state.businessType === 'retail' && typ !== 'debt') ? 'block' : 'none';
+  var prodLbl = document.getElementById('modal-product-lbl');
+  if(prodLbl) {
+    var prodLblTx = {en:'Product (optional)', ar:'المنتج (اختياري)', de:'Produkt (optional)'};
+    prodLbl.textContent = prodLblTx[lang] || prodLblTx.en;
+  }
+  if(state.businessType === 'retail' && typ !== 'debt') refreshProductDropdown();
+
   var cliWrap = document.getElementById('modal-client-wrap');
   if(cliWrap) cliWrap.style.display = typ === 'income' ? 'block' : 'none';
   var cliLbl = document.getElementById('modal-client-lbl');
@@ -6728,6 +6972,38 @@ function renderModal() {
     refEl.placeholder = refPh[lang] || refPh.en;
   }
   if(typ === 'expense') refreshSupplierDropdown();
+}
+
+function refreshProductDropdown() {
+  var sel = document.getElementById('modal-product');
+  if(!sel) return;
+  var lang = state.lang;
+  var noProdTx = {en:'— No product —', ar:'— بدون منتج —', de:'— Kein Produkt —'};
+  var currentVal = sel.value;
+  sel.innerHTML = '';
+  var defaultOpt = document.createElement('option');
+  defaultOpt.value = '';
+  defaultOpt.textContent = noProdTx[lang] || noProdTx.en;
+  sel.appendChild(defaultOpt);
+  (state.inventory || []).forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.id;
+    opt.textContent = p.name + ' (' + (parseFloat(p.quantity)||0) + ' ' + (p.unit||'') + ')';
+    sel.appendChild(opt);
+  });
+  sel.value = currentVal;
+  onModalProductChange();
+}
+
+function onModalProductChange() {
+  var sel = document.getElementById('modal-product');
+  var hint = document.getElementById('modal-product-stock-hint');
+  if(!sel || !hint) return;
+  var prod = (state.inventory || []).find(function(p){ return String(p.id) === sel.value; });
+  if(!prod) { hint.textContent = ''; return; }
+  var lang = state.lang;
+  var inStockTx = {en:'In stock: ', ar:'المتاح: ', de:'Auf Lager: '};
+  hint.textContent = (inStockTx[lang]||inStockTx.en) + (parseFloat(prod.quantity)||0) + ' ' + (prod.unit||'');
 }
 
 function refreshClientDropdown() {
@@ -6940,6 +7216,15 @@ function addTransaction() {
       var refInp = document.getElementById('modal-invoice-ref');
       invRef = refInp ? refInp.value.trim() : null;
     }
+    var prodId = null, prodQty = 0;
+    if(state.businessType === 'retail') {
+      var prodSel = document.getElementById('modal-product');
+      var rawProdId = prodSel ? prodSel.value : '';
+      if(rawProdId) {
+        prodId = parseInt(rawProdId, 10);
+        prodQty = parseAmount(document.getElementById('modal-product-qty').value) || 0;
+      }
+    }
     var newTxId = Date.now();
     var hasReceipt = state.currentType === 'expense' && state.pendingReceipt;
     state.transactions.push({
@@ -6957,6 +7242,8 @@ function addTransaction() {
       invoiceRef: invRef || null,
       receiptId: hasReceipt ? newTxId : null,
       receiptName: hasReceipt ? state.pendingReceipt.name : null,
+      productId: prodId,
+      productQty: prodId ? prodQty : null,
     });
     if(hasReceipt) {
       receiptPut({
@@ -6968,6 +7255,13 @@ function addTransaction() {
         createdAt: new Date().toISOString()
       }).catch(function(){});
       state.pendingReceipt = null;
+    }
+    if(prodId && prodQty > 0) {
+      var prod = (state.inventory || []).find(function(p){ return p.id === prodId; });
+      if(prod) {
+        prod.quantity = (parseFloat(prod.quantity) || 0) + (state.currentType === 'income' ? -prodQty : prodQty);
+        checkLowStock(prod);
+      }
     }
   }
   save();
@@ -8209,6 +8503,7 @@ function applyLang() {
   snavLabels.expenses = {en:'Expenses',ar:'المصروفات',de:'Ausgaben'}[state.lang]||'Expenses';
   snavLabels.employees = {en:'Employees',ar:'الموظفين',de:'Mitarbeiter'}[state.lang]||'Employees';
   snavLabels.fleet = {en:'Fleet',ar:'الأسطول',de:'Fuhrpark'}[state.lang]||'Fleet';
+  snavLabels.inventory = {en:'Inventory',ar:'المخزون',de:'Lagerbestand'}[state.lang]||'Inventory';
   snavLabels.assets = {en:'Assets',ar:'الأصول',de:'Vermögenswerte'}[state.lang]||'Assets';
   snavLabels.kalender = {en:'Calendar',ar:'التقويم',de:'Kalender'}[state.lang]||'Calendar';
   snavLabels.notizen = {en:'Notes',ar:'الملاحظات',de:'Notizen'}[state.lang]||'Notes';
@@ -12212,6 +12507,7 @@ function obFinishLogin(user) {
   checkRecurringDue();
   checkInvoicesDue();
   checkAppointmentReminders();
+  checkLowStockAll();
   var overlay = document.getElementById('onboardingOverlay');
   if(overlay) overlay.style.display = 'none';
   renderHome();
@@ -12709,6 +13005,7 @@ function logout() {
   state.employees = [];
   state.fleet = [];
   state.assets = [];
+  state.inventory = [];
   state.recurring = [];
   state.budgets = {};
   // Hide any open overlays
@@ -12740,6 +13037,7 @@ function showSplash() {
     checkRecurringDue();
     checkInvoicesDue();
     checkAppointmentReminders();
+    checkLowStockAll();
     renderHome();
     playHomeAnim();
   } else {
@@ -14360,7 +14658,7 @@ function cdConfirmDelete() {
     return;
   }
   // Correct — clear all data
-  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[];
+  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[]; state.inventory=[];
   state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
