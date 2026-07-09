@@ -3054,15 +3054,19 @@ function parseAmount(str) {
   return parseFloat(s);
 }
 
-// Light input mask: keep only digits and a single decimal separator (, or .)
+// Light input mask: digits only, plus at most one '.' and at most one ','
+// (both may appear together, e.g. "2.200,50" — thousands dot + decimal comma)
 function sanitizeAmountField(el) {
   var v = el.value;
   var cleaned = v.replace(/[^0-9.,]/g, '');
-  var firstSep = cleaned.search(/[.,]/);
-  if(firstSep !== -1) {
-    cleaned = cleaned.slice(0, firstSep + 1) + cleaned.slice(firstSep + 1).replace(/[.,]/g, '');
+  var seenDot = false, seenComma = false, out = '';
+  for(var i = 0; i < cleaned.length; i++) {
+    var ch = cleaned[i];
+    if(ch === '.') { if(seenDot) continue; seenDot = true; }
+    else if(ch === ',') { if(seenComma) continue; seenComma = true; }
+    out += ch;
   }
-  if(cleaned !== v) el.value = cleaned;
+  if(out !== v) el.value = out;
 }
 function today() {
   var d = new Date();
@@ -3449,8 +3453,8 @@ var EMP_L = {
   empty:      {en:'No employees yet', ar:'لا يوجد موظفون بعد', de:'Noch keine Mitarbeiter'},
   fullName:   {en:'Full Name', ar:'الاسم الكامل', de:'Vollständiger Name'},
   position:   {en:'Position / Job Title', ar:'المنصب / الوظيفة', de:'Position / Berufsbezeichnung'},
-  salary:     {en:'Monthly Salary', ar:'الراتب الشهري', de:'Monatsgehalt'},
-  salaryNote: {en:'Salary is automatically recorded as a monthly expense', ar:'يتم تسجيل الراتب تلقائياً كمصروف شهري', de:'Gehalt wird automatisch als monatliche Ausgabe erfasst'},
+  salary:     {en:'Monthly Salary (Brutto)', ar:'الراتب الشهري (Brutto)', de:'Monatsgehalt (Brutto)'},
+  salaryNote: {en:'This is the gross (Brutto) salary, recorded automatically as a monthly expense. Net (Netto) pay and payroll deductions are calculated by your accountant (Lohnverrechnung).', ar:'ده الراتب الإجمالي (Brutto)، وبيتسجل تلقائيًا كمصروف شهري. صافي الراتب (Netto) والخصومات بيحسبها المحاسب (Lohnverrechnung).', de:'Dies ist das Bruttogehalt, wird automatisch als monatliche Ausgabe erfasst. Das Nettogehalt und die Abzüge werden von Ihrem Steuerberater (Lohnverrechnung) berechnet.'},
   phone:      {en:'Phone', ar:'الهاتف', de:'Telefon'},
   email:      {en:'Email', ar:'البريد الإلكتروني', de:'E-Mail'},
   address:    {en:'Address', ar:'العنوان', de:'Adresse'},
@@ -3561,7 +3565,7 @@ function openAddEmployeeForm() {
   html += '<div class="modal-title">' + emptx('addTitle') + '</div>';
   html += '<input class="input-field" id="ea-fullname" placeholder="' + emptx('fullName') + ' *">';
   html += '<input class="input-field" id="ea-position" placeholder="' + emptx('position') + '">';
-  html += '<input class="input-field" id="ea-salary" type="number" placeholder="' + emptx('salary') + ' *">';
+  html += '<input class="input-field" id="ea-salary" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" placeholder="' + emptx('salary') + ' *">';
   html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">' + emptx('salaryNote') + '</div>';
   html += '<input class="input-field" id="ea-phone" type="tel" placeholder="' + emptx('phone') + '">';
   html += '<input class="input-field" id="ea-email" type="email" placeholder="' + emptx('email') + '">';
@@ -3590,7 +3594,7 @@ function saveNewEmployee() {
   var name = nameEl ? nameEl.value.trim() : '';
   if(!name) { if(nameEl) nameEl.focus(); return; }
   var salaryEl = document.getElementById('ea-salary');
-  var salary = salaryEl ? (parseFloat(salaryEl.value) || 0) : 0;
+  var salary = salaryEl ? (parseAmount(salaryEl.value) || 0) : 0;
   var positionEl = document.getElementById('ea-position');
   var position = (positionEl && positionEl.value.trim()) || '';
   var phoneEl = document.getElementById('ea-phone');
@@ -3669,7 +3673,7 @@ function renderEmployeeProfileCard(emp) {
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('nationality') + '</label><input id="epf-nationality" class="input-field" style="margin-bottom:0" value="' + escHtml(emp.nationality || '') + '"></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('birthDate') + '</label><input id="epf-birthdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.birthDate || '') + '"></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label><input id="epf-startdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.startDate || '') + '"></div>';
-    eh += '<div style="margin-bottom:14px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('salary') + '</label><input id="epf-salary" type="number" class="input-field" style="margin-bottom:0" value="' + (parseFloat(emp.salary) || 0) + '"></div>';
+    eh += '<div style="margin-bottom:14px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('salary') + '</label><input id="epf-salary" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:4px" value="' + (parseFloat(emp.salary) || 0) + '"><div style="font-size:11px;color:var(--text3)">' + emptx('salaryNote') + '</div></div>';
     eh += '<div style="display:flex;gap:10px">';
     eh += '<button id="epf-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
     eh += '<button id="epf-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:11px;font-size:14px;cursor:pointer">' + emptx('cancel') + '</button>';
@@ -3692,7 +3696,7 @@ function renderEmployeeProfileCard(emp) {
       emp.nationality = document.getElementById('epf-nationality').value.trim();
       emp.birthDate = document.getElementById('epf-birthdate').value;
       emp.startDate = document.getElementById('epf-startdate').value;
-      emp.salary = parseFloat(document.getElementById('epf-salary').value) || 0;
+      emp.salary = parseAmount(document.getElementById('epf-salary').value) || 0;
       save();
       _empProfileEditMode = false;
       renderEmployeeProfileCard(emp);
