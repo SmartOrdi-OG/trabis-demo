@@ -221,6 +221,22 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .slide-up{animation:slideUp 0.3s ease}
+/* ── HOME LOAD ANIMATION (staggered fade-up) ── */
+@keyframes homeItemIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+#mainPage.home-anim>*{animation:homeItemIn 0.45s cubic-bezier(.16,1,.3,1) both}
+#mainPage.home-anim>*:nth-child(1){animation-delay:0.02s}
+#mainPage.home-anim>*:nth-child(2){animation-delay:0.09s}
+#mainPage.home-anim>*:nth-child(3){animation-delay:0.16s}
+#mainPage.home-anim>*:nth-child(4){animation-delay:0.23s}
+#mainPage.home-anim>*:nth-child(5){animation-delay:0.30s}
+#mainPage.home-anim>*:nth-child(6){animation-delay:0.37s}
+#mainPage.home-anim>*:nth-child(n+7){animation-delay:0.44s}
+#mainPage.home-anim>#dashCards{animation:none}
+#mainPage.home-anim #dashCards>div{animation:homeItemIn 0.45s cubic-bezier(.16,1,.3,1) both}
+#mainPage.home-anim #dashCards>div:nth-child(1){animation-delay:0.09s}
+#mainPage.home-anim #dashCards>div:nth-child(2){animation-delay:0.17s}
+#mainPage.home-anim #dashCards>div:nth-child(3){animation-delay:0.25s}
+@media (prefers-reduced-motion:reduce){#mainPage.home-anim>*,#mainPage.home-anim #dashCards>div{animation:none}}
 
 /* ── SPLASH (kept for compat) ── */
 #splashScreen {
@@ -3172,8 +3188,10 @@ function showNav(page) {
   var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',kalender:'kalenderPage',notizen:'notizenPage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
-  el.classList.add('slide-up');
-  setTimeout(function(){ el.classList.remove('slide-up'); }, 300);
+  if(page !== 'home') {
+    el.classList.add('slide-up');
+    setTimeout(function(){ el.classList.remove('slide-up'); }, 300);
+  }
 
   var activeNav = document.getElementById('nav-'+page);
   if(activeNav) activeNav.classList.add('active');
@@ -3181,7 +3199,7 @@ function showNav(page) {
   if(activeSNav) activeSNav.classList.add('active');
   document.getElementById('fab').style.display = page === 'home' ? 'flex' : 'none';
 
-  if(page === 'home') renderHome();
+  if(page === 'home') { renderHome(); playHomeAnim(); }
   if(page === 'reports') { renderReports(); renderChart(); }
   updatePeriodBarVisibility(page);
   if(page === 'settings') renderSettings();
@@ -4688,6 +4706,88 @@ function closeModal() {
 function closeModalIfOutside(e) {
   if(e.target === document.getElementById('modalOverlay')) closeModal();
 }
+
+// ── HOME LOAD ANIMATION (staggered entrance) ──
+function playHomeAnim() {
+  var mp = document.getElementById('mainPage');
+  if(!mp) return;
+  mp.classList.remove('home-anim');
+  void mp.offsetWidth; // force reflow so the animation restarts
+  mp.classList.add('home-anim');
+}
+
+// ── SCROLL LOCK: pin the background page while any modal/overlay is open (iOS-safe) ──
+var _scrollLockY = 0, _scrollLocked = false;
+function anyOverlayOpen() {
+  if(document.querySelector('.modal-overlay.open,.cleardata-overlay.open,.export-overlay.open,.policy-overlay.open,.client-profile-overlay.open,.edit-debt-overlay.open,#sidebarOverlay.open')) return true;
+  var tx = document.getElementById('txDetailOverlay');
+  if(tx && tx.style.display && tx.style.display !== 'none') return true;
+  var mm = document.getElementById('moreMenuOverlay');
+  if(mm && mm.style.display && mm.style.display !== 'none') return true;
+  return false;
+}
+function syncScrollLock() {
+  var open = anyOverlayOpen();
+  if(open && !_scrollLocked) {
+    _scrollLockY = window.pageYOffset || document.documentElement.scrollTop || 0;
+    document.body.style.position = 'fixed';
+    document.body.style.top = (-_scrollLockY) + 'px';
+    document.body.style.left = '0';
+    document.body.style.right = '0';
+    document.body.style.width = '100%';
+    _scrollLocked = true;
+  } else if(!open && _scrollLocked) {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.left = '';
+    document.body.style.right = '';
+    document.body.style.width = '';
+    _scrollLocked = false;
+    window.scrollTo(0, _scrollLockY);
+  }
+}
+new MutationObserver(syncScrollLock).observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['class','style']});
+
+// ── SWIPE-DOWN TO CLOSE: bottom-sheet gesture for all modals (mobile) ──
+(function(){
+  var m = null, startY = 0, curY = 0, dragging = false;
+  document.addEventListener('touchstart', function(e) {
+    var t = e.target.closest ? e.target.closest('.modal') : null;
+    if(!t) return;
+    var ov = t.parentElement;
+    if(!ov || !ov.classList.contains('modal-overlay') || !ov.classList.contains('open')) return;
+    m = t; startY = curY = e.touches[0].clientY; dragging = false;
+  }, {passive:true});
+  document.addEventListener('touchmove', function(e) {
+    if(!m) return;
+    curY = e.touches[0].clientY;
+    var dy = curY - startY;
+    if(dy > 0 && m.scrollTop <= 0) {
+      if(!dragging) { dragging = true; startY = curY; dy = 0; }
+      m.style.transition = 'none';
+      m.style.transform = 'translateY(' + dy + 'px)';
+      if(e.cancelable) e.preventDefault();
+    } else if(dragging) {
+      m.style.transform = 'translateY(0px)';
+    }
+  }, {passive:false});
+  document.addEventListener('touchend', function() {
+    if(!m) return;
+    var el = m, dy = curY - startY;
+    m = null;
+    el.style.transition = '';
+    el.style.transform = '';
+    if(dragging && dy > 90) {
+      var ov = el.parentElement;
+      if(ov && ov.id === 'modalOverlay') { closeModal(); }
+      else {
+        var btn = el.querySelector('.modal-close-btn');
+        if(btn) { btn.click(); }
+        else if(ov) { ov.classList.remove('open'); }
+      }
+    }
+  });
+})();
 
 function setType(type) {
   state.currentType = type;
@@ -10210,6 +10310,7 @@ function obFinishLogin(user) {
   var overlay = document.getElementById('onboardingOverlay');
   if(overlay) overlay.style.display = 'none';
   renderHome();
+  playHomeAnim();
   // Request browser notification permission on first login
   if('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission().catch(function(){});
@@ -10730,6 +10831,7 @@ function showSplash() {
     checkInvoicesDue();
     checkAppointmentReminders();
     renderHome();
+    playHomeAnim();
   } else {
     var lp = document.getElementById('landingPage');
     if(lp) {
