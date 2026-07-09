@@ -2990,6 +2990,7 @@ var state = {
   appointments: [],
   notes: [],
   fleet: [],
+  assets: [],
 };
 
 var CURRENCIES = {
@@ -3173,6 +3174,7 @@ function save() {
   localStorage.setItem(uk('suppliers'), JSON.stringify(state.suppliers));
   localStorage.setItem(uk('employees'), JSON.stringify(state.employees));
   localStorage.setItem(uk('fleet'), JSON.stringify(state.fleet));
+  localStorage.setItem(uk('assets'), JSON.stringify(state.assets));
   localStorage.setItem(uk('recurring'), JSON.stringify(state.recurring));
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
@@ -3216,6 +3218,7 @@ function loadUserData() {
   state.suppliers = JSON.parse(localStorage.getItem(uk('suppliers')) || '[]');
   state.employees = JSON.parse(localStorage.getItem(uk('employees')) || '[]');
   state.fleet = JSON.parse(localStorage.getItem(uk('fleet')) || '[]');
+  state.assets = JSON.parse(localStorage.getItem(uk('assets')) || '[]');
   state.recurring = JSON.parse(localStorage.getItem(uk('recurring')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.tax = JSON.parse(localStorage.getItem(uk('tax')) || '{"name":"","rate":0,"type":"on_sales"}');
@@ -3321,7 +3324,7 @@ function showNav(page) {
   if(page === 'employees') renderEmployeesPage();
   if(page === 'help') renderHelpPage();
   if(page === 'fleet') renderFleetPage();
-  if(page === 'assets') renderComingSoonPage('assetsPage', 'assets');
+  if(page === 'assets') renderAssetsPage();
   if(page === 'kalender') renderKalenderPage();
   if(page === 'notizen') renderNotizenPage();
 }
@@ -3853,9 +3856,37 @@ var FLEET_L = {
   catFuel:    {en:'Fuel', ar:'وقود', de:'Treibstoff'},
   catInsurance:{en:'Insurance', ar:'تأمين', de:'Versicherung'},
   catOther:   {en:'Other', ar:'أخرى', de:'Sonstiges'},
+  asset:          {en:'Asset / Depreciation', ar:'الأصل / الإهلاك', de:'Anlagegut / Abschreibung'},
+  assetHint:      {en:'Linking this reduces the vehicle\'s book value over time — it will also appear on the Assets page.', ar:'ربط ده هيقلل قيمة العربية الدفترية مع الوقت — وهتظهر برضه في صفحة الأصول.', de:'Diese Verknüpfung reduziert den Buchwert des Fahrzeugs über die Zeit — es erscheint auch auf der Vermögenswerte-Seite.'},
+  assetPrice:     {en:'Purchase Price', ar:'سعر الشراء', de:'Anschaffungswert'},
+  assetDate:      {en:'Purchase Date', ar:'تاريخ الشراء', de:'Anschaffungsdatum'},
+  assetRate:      {en:'Depreciation Rate (% / year)', ar:'معدل الإهلاك (% سنويًا)', de:'Abschreibungssatz (% / Jahr)'},
+  assetRateHint:  {en:'Austria: passenger cars ≥ 8 years useful life ≈ 12.5%/year (accountant may set a different rate)', ar:'النمسا: العربيات الشخصية عمرها الافتراضي ٨ سنين على الأقل ≈ ١٢.٥٪ سنويًا (المحاسب ممكن يحدد نسبة تانية)', de:'Österreich: PKW Mindestnutzungsdauer 8 Jahre ≈ 12,5%/Jahr (Steuerberater kann abweichenden Satz festlegen)'},
+  assetBookValue: {en:'Current Book Value', ar:'القيمة الدفترية الحالية', de:'Aktueller Buchwert'},
+  assetMonthly:   {en:'Monthly Depreciation', ar:'الإهلاك الشهري', de:'Monatliche Abschreibung'},
+  assetNotLinked: {en:'Not linked to an asset value yet', ar:'لسه مش مربوطة بقيمة أصل', de:'Noch nicht mit einem Anlagewert verknüpft'},
+  assetLinkBtn:   {en:'Add Purchase Price & Rate', ar:'إضافة سعر الشراء والمعدل', de:'Kaufpreis & Satz hinzufügen'},
 };
 function fleettx(k) { return (FLEET_L[k] && FLEET_L[k][state.lang]) || (FLEET_L[k] && FLEET_L[k].en) || k; }
 var FLEET_CATS = ['catService','catRepair','catFuel','catInsurance','catOther'];
+
+// ── Depreciation (shared by Fleet vehicles and general Assets) ──
+function monthsBetween(fromDateStr, toDateStr) {
+  var f = new Date(fromDateStr + 'T00:00:00'), t = new Date(toDateStr + 'T00:00:00');
+  var months = (t.getFullYear() - f.getFullYear()) * 12 + (t.getMonth() - f.getMonth());
+  if(t.getDate() < f.getDate()) months -= 1;
+  return Math.max(0, months);
+}
+function calcDepreciation(price, purchaseDate, ratePercent) {
+  price = parseFloat(price) || 0;
+  ratePercent = parseFloat(ratePercent) || 0;
+  if(!price || !purchaseDate || !ratePercent) return null;
+  var annual = price * (ratePercent / 100);
+  var monthly = annual / 12;
+  var months = monthsBetween(purchaseDate, today());
+  var accumulated = Math.min(monthly * months, price);
+  return {annual: annual, monthly: monthly, accumulated: accumulated, bookValue: Math.max(0, price - accumulated)};
+}
 
 function renderFleetPage() {
   var page = document.getElementById('fleetPage');
@@ -4020,12 +4051,67 @@ function renderVehicleProfileCard(v) {
   }
 }
 
+var _fleetAssetEditMode = false;
+
+function renderVehicleAssetSection(v) {
+  var wrap = document.getElementById('fleetAssetSection');
+  if(!wrap) return;
+  var dep = calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
+
+  if(!_fleetAssetEditMode) {
+    var html = '';
+    if(dep) {
+      html += fleetInfoRow(fleettx('assetPrice'), fmt(v.assetValue));
+      html += fleetInfoRow(fleettx('assetDate'), formatDateDisplay(v.assetPurchaseDate));
+      html += fleetInfoRow(fleettx('assetRate'), v.assetDepreciationRate + '%');
+      html += '<div style="display:flex;gap:10px;margin-top:4px">';
+      html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetBookValue') + '</div><div style="font-size:17px;font-weight:700;color:var(--primary)">' + fmt(dep.bookValue) + '</div></div>';
+      html += '<div style="flex:1;background:var(--bg);border-radius:12px;padding:12px"><div style="font-size:11px;color:var(--text3)">' + fleettx('assetMonthly') + '</div><div style="font-size:17px;font-weight:700;color:var(--expense)">' + fmt(dep.monthly) + '</div></div>';
+      html += '</div>';
+      html += '<button onclick="_fleetAssetEditMode=true;renderVehicleAssetSection(state.fleet.find(function(x){return x.id===' + v.id + ';}))" style="width:100%;margin-top:12px;padding:11px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + fleettx('edit') + '</button>';
+    } else {
+      html += '<div style="font-size:13px;color:var(--text3);margin-bottom:10px">' + fleettx('assetNotLinked') + '</div>';
+      html += '<button onclick="_fleetAssetEditMode=true;renderVehicleAssetSection(state.fleet.find(function(x){return x.id===' + v.id + ';}))" style="width:100%;padding:11px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">' + fleettx('assetLinkBtn') + '</button>';
+    }
+    wrap.innerHTML = html;
+  } else {
+    var eh = '';
+    eh += '<div style="font-size:11px;color:var(--text3);margin-bottom:12px;line-height:1.5">' + fleettx('assetHint') + '</div>';
+    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
+    eh += '<input id="fas-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetValue || '') + '">';
+    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
+    eh += '<input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || '') + '">';
+    eh += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
+    eh += '<input id="fas-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetDepreciationRate != null ? v.assetDepreciationRate : '12.5') + '">';
+    eh += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px;line-height:1.5">' + fleettx('assetRateHint') + '</div>';
+    eh += '<div style="display:flex;gap:10px">';
+    eh += '<button id="fas-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+    eh += '<button id="fas-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:11px;font-size:14px;cursor:pointer">' + fleettx('cancel') + '</button>';
+    eh += '</div>';
+    wrap.innerHTML = eh;
+
+    document.getElementById('fas-saveBtn').onclick = function() {
+      v.assetValue = parseAmount(document.getElementById('fas-price').value) || 0;
+      v.assetPurchaseDate = document.getElementById('fas-date').value || '';
+      v.assetDepreciationRate = parseAmount(document.getElementById('fas-rate').value) || 0;
+      save();
+      _fleetAssetEditMode = false;
+      renderVehicleAssetSection(v);
+    };
+    document.getElementById('fas-cancelBtn').onclick = function() {
+      _fleetAssetEditMode = false;
+      renderVehicleAssetSection(v);
+    };
+  }
+}
+
 function renderVehicleProfile(id) {
   var found = state.fleet.filter(function(v){ return v.id === id; });
   if(!found.length) return;
   var v = found[0];
   _fleetProfileId = id;
   _fleetProfileEditMode = false;
+  _fleetAssetEditMode = false;
 
   var existingOv = document.getElementById('fleetProfileOverlay');
   if(existingOv) existingOv.parentNode.removeChild(existingOv);
@@ -4058,6 +4144,11 @@ function renderVehicleProfile(id) {
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
+  html += '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + fleettx('asset') + '</div>';
+  html += '<div id="fleetAssetSection"></div>';
+  html += '</div>';
+
+  html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
   html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
   html += '<div style="font-size:15px;font-weight:700">' + fleettx('maintenance') + '</div>';
   html += '<button onclick="maintOpenForm(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('maintAdd') + '</button>';
@@ -4079,6 +4170,7 @@ function renderVehicleProfile(id) {
 
   renderVehicleProfileCard(v);
   renderFleetDocsSection(v);
+  renderVehicleAssetSection(v);
   renderMaintSection(v);
 
   document.getElementById('fleetBackBtn').onclick = closeVehicleProfile;
@@ -4368,6 +4460,201 @@ function renderMaintSection(v) {
     h += '</div>';
   });
   list.innerHTML = h;
+}
+
+// ── ANLAGEVERMÖGEN (Assets) ──
+var ASSETS_L = {
+  title:      {en:'Assets', ar:'الأصول', de:'Vermögenswerte'},
+  sub:        {en:'Anlagevermögen & depreciation', ar:'الأصول الثابتة والإهلاك', de:'Anlagevermögen & Abschreibung'},
+  add:        {en:'+ Add Asset', ar:'+ إضافة أصل', de:'+ Vermögenswert hinzufügen'},
+  addTitle:   {en:'Add Asset', ar:'إضافة أصل', de:'Vermögenswert hinzufügen'},
+  editTitle:  {en:'Edit Asset', ar:'تعديل الأصل', de:'Vermögenswert bearbeiten'},
+  empty:      {en:'No assets yet', ar:'لا توجد أصول بعد', de:'Noch keine Vermögenswerte'},
+  name:       {en:'Asset Name', ar:'اسم الأصل', de:'Bezeichnung'},
+  vehicles:   {en:'Vehicles (from Fleet)', ar:'المركبات (من الأسطول)', de:'Fahrzeuge (aus Fuhrpark)'},
+  general:    {en:'Other Assets', ar:'أصول أخرى', de:'Sonstige Vermögenswerte'},
+  totalValue: {en:'Total Book Value', ar:'إجمالي القيمة الدفترية', de:'Gesamter Buchwert'},
+  totalMonthly:{en:'Total Monthly Depreciation', ar:'إجمالي الإهلاك الشهري', de:'Gesamte monatliche Abschreibung'},
+  rateHint:   {en:'e.g. 20 for a 5-year useful life, 12.5 for 8 years', ar:'مثال: ٢٠ لعمر افتراضي ٥ سنين، ١٢.٥ لـ ٨ سنين', de:'z.B. 20 für 5 Jahre Nutzungsdauer, 12,5 für 8 Jahre'},
+  confirmDelete: {en:'Delete this asset?', ar:'حذف هذا الأصل؟', de:'Diesen Vermögenswert löschen?'},
+  invalid:    {en:'Enter a name, purchase price, date and depreciation rate', ar:'ادخل الاسم وسعر الشراء والتاريخ ومعدل الإهلاك', de:'Bitte Name, Kaufpreis, Datum und Abschreibungssatz eingeben'},
+  exportPdf:  {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
+  disclaimer: {en:'Estimated straight-line depreciation for planning purposes — not tax advice. Your accountant determines the official rate and method.',
+               ar:'إهلاك خطي تقديري لأغراض التخطيط — مش استشارة ضريبية. المحاسب بيحدد النسبة والطريقة الرسمية.',
+               de:'Geschätzte lineare Abschreibung zu Planungszwecken — keine Steuerberatung. Ihr Steuerberater legt Satz und Methode offiziell fest.'},
+};
+function assetstx(k) { return (ASSETS_L[k] && ASSETS_L[k][state.lang]) || (ASSETS_L[k] && ASSETS_L[k].en) || k; }
+
+function renderAssetsPage() {
+  var page = document.getElementById('assetsPage');
+  if(!page) return;
+
+  var vehicles = (state.fleet || []).filter(function(v){ return calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
+  var generalAssets = state.assets || [];
+
+  var totalValue = 0, totalMonthly = 0;
+  vehicles.forEach(function(v) { var d = calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); totalValue += d.bookValue; totalMonthly += d.monthly; });
+  generalAssets.forEach(function(a) { var d = calcDepreciation(a.value, a.purchaseDate, a.rate); if(d) { totalValue += d.bookValue; totalMonthly += d.monthly; } });
+
+  var h = '';
+  h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
+  h += '<div style="font-size:18px;font-weight:700">' + assetstx('title') + '</div>';
+  h += '<button id="assetAddBtn" style="background:#16a34a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + assetstx('add') + '</button>';
+  h += '</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px">' + assetstx('sub') + '</div></div>';
+
+  h += '<div style="padding:0 16px">';
+  h += '<div style="display:flex;gap:10px;margin-bottom:16px">';
+  h += '<div style="flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--text3)">' + assetstx('totalValue') + '</div><div style="font-size:18px;font-weight:700;color:var(--primary)">' + fmt(totalValue) + '</div></div>';
+  h += '<div style="flex:1;background:var(--card);border-radius:16px;padding:14px;box-shadow:var(--shadow)"><div style="font-size:11px;color:var(--text3)">' + assetstx('totalMonthly') + '</div><div style="font-size:18px;font-weight:700;color:var(--expense)">' + fmt(totalMonthly) + '</div></div>';
+  h += '</div>';
+
+  if(!vehicles.length && !generalAssets.length) {
+    h += '<div style="text-align:center;padding:40px 20px;color:var(--text3);font-size:14px">' + assetstx('empty') + '</div>';
+  } else {
+    if(vehicles.length) {
+      h += '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:4px 0 8px">' + assetstx('vehicles') + '</div>';
+      vehicles.forEach(function(v) {
+        var d = calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
+        h += '<div class="emp-card" onclick="renderVehicleProfile(' + v.id + ')" style="background:var(--card);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:var(--shadow)">';
+        h += '<span style="color:var(--primary)">' + svgIcon('truck', 20) + '</span>';
+        h += '<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700">' + escHtml(v.name || v.plate || '') + '</div>';
+        h += '<div style="font-size:12px;color:var(--text3)">' + fmt(d.bookValue) + ' · ' + fmt(d.monthly) + '/mo</div></div>';
+        h += svgIcon('chevronRight', 16);
+        h += '</div>';
+      });
+    }
+    if(generalAssets.length) {
+      h += '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;margin:16px 0 8px">' + assetstx('general') + '</div>';
+      generalAssets.forEach(function(a) {
+        var d = calcDepreciation(a.value, a.purchaseDate, a.rate);
+        h += '<div style="background:var(--card);border-radius:16px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)">';
+        h += '<span style="color:var(--primary)">' + svgIcon('packageIcon', 20) + '</span>';
+        h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="assetOpenForm(' + a.id + ')"><div style="font-size:14px;font-weight:700">' + escHtml(a.name) + '</div>';
+        h += '<div style="font-size:12px;color:var(--text3)">' + (d ? (fmt(d.bookValue) + ' · ' + fmt(d.monthly) + '/mo') : fmt(a.value)) + '</div></div>';
+        h += '<button onclick="assetDelete(' + a.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 15) + '</button>';
+        h += '</div>';
+      });
+    }
+  }
+
+  h += '<button onclick="assetsExportPDF()" style="width:100%;margin:8px 0 4px;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">' + svgIcon('download', 15) + ' ' + assetstx('exportPdf') + '</button>';
+  h += '<div style="font-size:10px;color:var(--text3);margin:10px 0 100px;line-height:1.5">' + assetstx('disclaimer') + '</div>';
+  h += '</div>';
+
+  page.innerHTML = h;
+  var addBtn = document.getElementById('assetAddBtn');
+  if(addBtn) addBtn.onclick = function(){ assetOpenForm(); };
+}
+
+function assetOpenForm(editId) {
+  var editing = editId != null ? (state.assets || []).find(function(a){ return a.id === editId; }) : null;
+
+  var existing = document.getElementById('assetFormOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'assetFormOverlay';
+  ov.className = 'modal-overlay open';
+  var html = '';
+  html += '<div class="modal" id="assetFormModal">';
+  html += '<button class="modal-close-btn" id="assetFormCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + (editing ? assetstx('editTitle') : assetstx('addTitle')) + '</div>';
+  html += '<input class="input-field" id="af-name" placeholder="' + assetstx('name') + ' *" value="' + (editing ? escHtml(editing.name) : '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
+  html += '<input class="input-field" id="af-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" value="' + (editing ? editing.value : '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
+  html += '<input class="input-field" id="af-date" type="date" value="' + (editing ? editing.purchaseDate : today()) + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
+  html += '<input class="input-field" id="af-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" value="' + (editing ? editing.rate : '') + '">';
+  html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">' + assetstx('rateHint') + '</div>';
+  html += '<div id="af-error" style="display:none;color:#ef4444;font-size:12px;margin:-8px 0 12px"></div>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="assetFormSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+  html += '<button id="assetFormCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fleettx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('assetFormOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('assetFormCloseBtn').onclick = close;
+  document.getElementById('assetFormCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('assetFormSaveBtn').onclick = function() {
+    var name = document.getElementById('af-name').value.trim();
+    var price = parseAmount(document.getElementById('af-price').value);
+    var purchaseDate = document.getElementById('af-date').value;
+    var rate = parseAmount(document.getElementById('af-rate').value);
+    var errEl = document.getElementById('af-error');
+    if(!name || !price || price <= 0 || !purchaseDate || !rate || rate <= 0) { errEl.textContent = assetstx('invalid'); errEl.style.display = 'block'; return; }
+    if(!state.assets) state.assets = [];
+    if(editing) {
+      editing.name = name; editing.value = price; editing.purchaseDate = purchaseDate; editing.rate = rate;
+    } else {
+      state.assets.push({id: Date.now(), name: name, value: price, purchaseDate: purchaseDate, rate: rate});
+    }
+    save();
+    close();
+    renderAssetsPage();
+  };
+}
+
+function assetDelete(id) {
+  if(!confirm(assetstx('confirmDelete'))) return;
+  state.assets = (state.assets || []).filter(function(a){ return a.id !== id; });
+  save();
+  renderAssetsPage();
+}
+
+function assetsExportPDF() {
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) { alert('PDF library not available'); return; }
+  var vehicles = (state.fleet || []).filter(function(v){ return calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
+  var generalAssets = state.assets || [];
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Anlagevermögen — Assets', 14, y); y += 7;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text((state.businessName || '') + ' · ' + new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
+
+  function row(name, price, purchaseDate, rate, bookValue, monthly) {
+    doc.setFontSize(9);
+    doc.text(String(name).substring(0, 26), 14, y);
+    doc.text(fmt(price), 88, y, {align:'right'});
+    doc.text(String(purchaseDate || ''), 92, y);
+    doc.text(rate + '%', 150, y, {align:'right'});
+    doc.text(fmt(bookValue), 175, y, {align:'right'});
+    doc.text(fmt(monthly), 196, y, {align:'right'});
+    y += 6;
+  }
+  doc.setFont(undefined, 'bold'); doc.setFontSize(9);
+  doc.text('Name', 14, y); doc.text('Kaufpreis', 88, y, {align:'right'}); doc.text('Datum', 92, y);
+  doc.text('Satz', 150, y, {align:'right'}); doc.text('Buchwert', 175, y, {align:'right'}); doc.text('Mtl.', 196, y, {align:'right'});
+  y += 3; doc.line(14, y, 196, y); y += 5;
+  doc.setFont(undefined, 'normal');
+
+  var totalValue = 0, totalMonthly = 0;
+  vehicles.forEach(function(v) {
+    var d = calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
+    row(v.name || v.plate, v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate, d.bookValue, d.monthly);
+    totalValue += d.bookValue; totalMonthly += d.monthly;
+  });
+  generalAssets.forEach(function(a) {
+    var d = calcDepreciation(a.value, a.purchaseDate, a.rate);
+    if(d) { row(a.name, a.value, a.purchaseDate, a.rate, d.bookValue, d.monthly); totalValue += d.bookValue; totalMonthly += d.monthly; }
+  });
+
+  y += 2; doc.line(14, y, 196, y); y += 6;
+  doc.setFont(undefined, 'bold');
+  doc.text('Total', 14, y);
+  doc.text(fmt(totalValue), 170, y, {align:'right'});
+  doc.text(fmt(totalMonthly), 196, y, {align:'right'});
+  y += 12;
+
+  doc.setFontSize(8); doc.setFont(undefined, 'normal'); doc.setTextColor(120);
+  doc.text(assetstx('disclaimer'), 14, y, {maxWidth: 182});
+  doc.save('Assets_' + today() + '.pdf');
 }
 
 // ── HELP PAGE ──
@@ -12421,6 +12708,7 @@ function logout() {
   state.clients = [];
   state.employees = [];
   state.fleet = [];
+  state.assets = [];
   state.recurring = [];
   state.budgets = {};
   // Hide any open overlays
@@ -14072,7 +14360,7 @@ function cdConfirmDelete() {
     return;
   }
   // Correct — clear all data
-  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[];
+  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[];
   state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
