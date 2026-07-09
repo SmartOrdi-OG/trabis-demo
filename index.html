@@ -1298,6 +1298,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
             </div>
             <span id="txDetailInvChevron" class="ico-chevron" style="color:var(--text3);display:inline-block">›</span>
           </div>
+          <div id="txDetailReceiptRow" style="display:none;align-items:center;gap:12px;padding:13px 16px;border-top:1px solid var(--border);cursor:pointer">
+            <span style="font-size:18px"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg></span>
+            <div style="flex:1">
+              <div style="font-size:11px;color:var(--text3);font-weight:600" id="txDetail-receipt-lbl">RECEIPT</div>
+              <div style="font-size:14px;font-weight:600;color:var(--primary)" id="txDetailReceipt"></div>
+            </div>
+            <span class="ico-chevron" style="color:var(--text3);display:inline-block">›</span>
+          </div>
         </div>
         <!-- Delete button -->
         <button id="txDetailDelete" style="width:100%;margin-top:16px;padding:14px;border-radius:14px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:700;cursor:pointer" id="txDetail-del-lbl">🗑 Delete</button>
@@ -2630,6 +2638,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <option value="">— No supplier —</option>
       </select>
       <input type="text" id="modal-invoice-ref" placeholder="Invoice # or reference (optional)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:12px">
+      <!-- Receipt capture / upload (expense only) -->
+      <div id="receiptWrap" style="margin-bottom:12px">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:6px" id="receipt-lbl">Receipt (photo/PDF)</div>
+        <div style="display:flex;gap:8px">
+          <button type="button" onclick="document.getElementById('receiptCameraInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-cam-btn">📷 <span id="receipt-cam-lbl">Camera</span></button>
+          <button type="button" onclick="document.getElementById('receiptFileInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-file-btn">📎 <span id="receipt-file-lbl">Upload</span></button>
+        </div>
+        <input type="file" id="receiptCameraInput" accept="image/*" capture="environment" style="display:none" onchange="receiptFileChosen(this)"/>
+        <input type="file" id="receiptFileInput" accept="image/*,application/pdf" style="display:none" onchange="receiptFileChosen(this)"/>
+        <div id="receiptPreview" style="display:none;margin-top:8px;padding:8px 12px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text2);align-items:center;gap:8px"></div>
+        <div id="receiptOcrStatus" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(33,150,243,0.08);border-radius:10px;font-size:12px;color:var(--primary);line-height:1.5"></div>
+      </div>
     </div>
 
     <div style="margin:0 0 12px 0">
@@ -4754,6 +4774,7 @@ function closeModal() {
   if(supSel) supSel.value = '';
   var refInp = document.getElementById('modal-invoice-ref');
   if(refInp) refInp.value = '';
+  receiptClear();
   clearInvoice();
 }
 
@@ -5154,6 +5175,198 @@ function uvaExportExcel() {
   XLSX.writeFile(wb, 'UVA_' + key + '.xlsx');
 }
 
+// ────────────────────────────────────────
+// ── RECEIPTS: camera/upload + IndexedDB + local OCR (Tesseract.js) ──
+// ────────────────────────────────────────
+var RCPT_TXT = {
+  label:    {en:'Receipt — photo or PDF (optional)', ar:'فاتورة المصروف — صورة أو PDF (اختياري)', de:'Beleg — Foto oder PDF (optional)'},
+  camera:   {en:'Camera', ar:'كاميرا', de:'Kamera'},
+  upload:   {en:'Upload', ar:'رفع ملف', de:'Hochladen'},
+  reading:  {en:'Reading the receipt… amounts will be filled in automatically.', ar:'جاري قراءة الفاتورة… المبالغ هتتملأ تلقائيًا.', de:'Beleg wird gelesen… Beträge werden automatisch ausgefüllt.'},
+  found:    {en:'Detected — please verify:', ar:'اتقرا تلقائيًا — راجع الأرقام:', de:'Erkannt — bitte prüfen:'},
+  noRead:   {en:'Could not read the receipt automatically. It is attached — enter the amount manually.', ar:'معرفناش نقرا الفاتورة تلقائيًا. اترفقت بنجاح — اكتب المبلغ يدوي.', de:'Beleg konnte nicht automatisch gelesen werden. Er ist angehängt — Betrag bitte manuell eingeben.'},
+  attached: {en:'PDF attached. Enter the amount manually.', ar:'الـ PDF اترفق. اكتب المبلغ يدوي.', de:'PDF angehängt. Betrag bitte manuell eingeben.'},
+  view:     {en:'View receipt', ar:'عرض الفاتورة', de:'Beleg anzeigen'},
+  rowLbl:   {en:'RECEIPT', ar:'فاتورة المصروف', de:'BELEG'}
+};
+function rtx(k) { var lang = state.lang; return (RCPT_TXT[k] && (RCPT_TXT[k][lang] || RCPT_TXT[k].en)) || k; }
+
+function receiptDb() {
+  return new Promise(function(resolve, reject) {
+    if(window._receiptDbInst) { resolve(window._receiptDbInst); return; }
+    var req = indexedDB.open('smartac_receipts', 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('receipts')) db.createObjectStore('receipts', {keyPath:'id'});
+    };
+    req.onsuccess = function(e) { window._receiptDbInst = e.target.result; resolve(window._receiptDbInst); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+function receiptPut(rec) {
+  return receiptDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var t = db.transaction('receipts', 'readwrite');
+      t.objectStore('receipts').put(rec);
+      t.oncomplete = res; t.onerror = function(){ rej(t.error); };
+    });
+  });
+}
+function receiptGet(id) {
+  return receiptDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var r = db.transaction('receipts').objectStore('receipts').get(id);
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  });
+}
+function receiptDeleteRec(id) {
+  return receiptDb().then(function(db) {
+    return new Promise(function(res) {
+      var t = db.transaction('receipts', 'readwrite');
+      t.objectStore('receipts').delete(id);
+      t.oncomplete = res; t.onerror = res;
+    });
+  }).catch(function(){});
+}
+
+// Downscale photos before storing (IndexedDB is generous but phone photos are 5-12MB)
+function receiptCompress(file) {
+  return new Promise(function(resolve) {
+    if(file.type === 'application/pdf') { resolve(file); return; }
+    var img = new Image();
+    var url = URL.createObjectURL(file);
+    img.onload = function() {
+      var max = 1600, w = img.width, h = img.height;
+      if(Math.max(w, h) > max) { var k = max / Math.max(w, h); w = Math.round(w*k); h = Math.round(h*k); }
+      var c = document.createElement('canvas'); c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      c.toBlob(function(b) { URL.revokeObjectURL(url); resolve(b || file); }, 'image/jpeg', 0.82);
+    };
+    img.onerror = function() { URL.revokeObjectURL(url); resolve(file); };
+    img.src = url;
+  });
+}
+
+function receiptOcrStatus(msg, hide) {
+  var st = document.getElementById('receiptOcrStatus');
+  if(!st) return;
+  if(hide) { st.style.display = 'none'; return; }
+  st.style.display = 'block';
+  st.textContent = msg;
+}
+
+function receiptClear() {
+  state.pendingReceipt = null;
+  var pv = document.getElementById('receiptPreview');
+  if(pv) { pv.style.display = 'none'; pv.innerHTML = ''; }
+  receiptOcrStatus('', true);
+}
+
+function receiptFileChosen(input) {
+  var f = input.files && input.files[0];
+  input.value = '';
+  if(!f) return;
+  var isPdf = f.type === 'application/pdf';
+  receiptCompress(f).then(function(blob) {
+    state.pendingReceipt = {
+      blob: blob,
+      name: f.name || ('receipt-' + Date.now() + (isPdf ? '.pdf' : '.jpg')),
+      type: isPdf ? 'application/pdf' : 'image/jpeg'
+    };
+    var pv = document.getElementById('receiptPreview');
+    if(pv) {
+      pv.style.display = 'flex';
+      var thumb = '';
+      if(!isPdf) {
+        var tUrl = URL.createObjectURL(blob);
+        thumb = '<img src="' + tUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0"/>';
+      } else {
+        thumb = '<span style="font-size:20px">📄</span>';
+      }
+      pv.innerHTML = thumb
+        + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(state.pendingReceipt.name) + '</span>'
+        + '<button type="button" onclick="receiptClear()" style="border:none;background:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px">✕</button>';
+    }
+  });
+  if(isPdf) { receiptOcrStatus(rtx('attached')); return; }
+  receiptRunOcr(f); // OCR on the original (higher resolution = better accuracy)
+}
+
+function receiptLoadTesseract() {
+  return new Promise(function(resolve, reject) {
+    if(window.Tesseract) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js';
+    s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+// Heuristic extraction of Brutto + MwSt rate from OCR text (German/English receipts)
+function receiptParseOcr(text) {
+  var lines = (text || '').split(/\n+/);
+  function norm(s) {
+    s = s.replace(/[^\d.,]/g, '');
+    if(/,\d{2}$/.test(s)) s = s.replace(/\./g, '').replace(',', '.');   // 1.234,56 → 1234.56
+    else s = s.replace(/,/g, '');                                       // 1,234.56 → 1234.56
+    return parseFloat(s);
+  }
+  var amtRe = /\d{1,3}(?:[.,]\d{3})*[.,]\d{2}/g;
+  var bruttoKw = /(brutto|gesamt|total|summe|zu zahlen|endbetrag|zahlbetrag)/i;
+  var vatKw = /(mwst|ust|mehrwertsteuer|umsatzsteuer|vat|steuer)/i;
+  var brutto = null, rate = null, best = 0;
+  lines.forEach(function(ln) {
+    if(rate == null && vatKw.test(ln)) {
+      var rm = ln.match(/\b(20|13|10)\s*%/);
+      if(rm) rate = parseInt(rm[1], 10);
+    }
+    var ms = ln.match(amtRe);
+    if(ms) ms.forEach(function(m) {
+      var v = norm(m);
+      if(!isFinite(v) || v <= 0 || v > 1000000) return;
+      if(bruttoKw.test(ln) && (brutto == null || v > brutto)) brutto = v;
+      if(v > best) best = v;
+    });
+  });
+  if(rate == null) { var rm2 = (text||'').match(/\b(20|13|10)\s*%/); if(rm2) rate = parseInt(rm2[1], 10); }
+  return {brutto: brutto != null ? brutto : (best || null), rate: rate};
+}
+
+function receiptRunOcr(file) {
+  receiptOcrStatus(rtx('reading'));
+  receiptLoadTesseract().then(function() {
+    return Tesseract.recognize(file, 'deu+eng');
+  }).then(function(res) {
+    var p = receiptParseOcr(res && res.data ? res.data.text : '');
+    if(p.brutto) {
+      var amtInp = document.getElementById('amountInput');
+      if(amtInp) amtInp.value = p.brutto.toFixed(2);
+      if(p.rate != null) setModalVat(p.rate); else updateVatPreview();
+      var b = vatBreakdown(p.brutto, p.rate != null ? p.rate : (state.currentVat || 0));
+      receiptOcrStatus(rtx('found') + ' Brutto ' + fmt(b.brutto) + ' · Netto ' + fmt(b.netto) + ' · MwSt ' + (p.rate != null ? p.rate : state.currentVat) + '% = ' + fmt(b.steuer));
+    } else {
+      receiptOcrStatus(rtx('noRead'));
+    }
+  }).catch(function() {
+    receiptOcrStatus(rtx('noRead'));
+  });
+}
+
+function openReceiptViewer(rec) {
+  var url = URL.createObjectURL(rec.blob);
+  var ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px';
+  function close() { if(ov.parentNode) ov.parentNode.removeChild(ov); URL.revokeObjectURL(url); }
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  ov.innerHTML = (rec.type === 'application/pdf'
+      ? '<iframe src="' + url + '" style="width:100%;height:92vh;border:none;background:#fff;border-radius:12px"></iframe>'
+      : '<img src="' + url + '" style="max-width:100%;max-height:92vh;border-radius:12px"/>')
+    + '<button style="position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer">✕</button>';
+  ov.querySelector('button').onclick = close;
+  document.body.appendChild(ov);
+}
+
 function renderModal() {
   var typ = state.currentType;
   ['income','expense','debt'].forEach(function(x) {
@@ -5193,6 +5406,15 @@ function renderModal() {
   var vatLblEl = document.getElementById('modal-vat-lbl');
   if(vatLblEl) vatLblEl.textContent = {en:'VAT rate', ar:'نسبة الضريبة (MwSt.)', de:'MwSt.-Satz'}[state.lang] || 'VAT rate';
   updateVatPreview();
+
+  var rcptWrap = document.getElementById('receiptWrap');
+  if(rcptWrap) rcptWrap.style.display = typ==='expense' ? 'block' : 'none';
+  var rcptLbl = document.getElementById('receipt-lbl');
+  if(rcptLbl) rcptLbl.textContent = rtx('label');
+  var rcptCamLbl = document.getElementById('receipt-cam-lbl');
+  if(rcptCamLbl) rcptCamLbl.textContent = rtx('camera');
+  var rcptFileLbl = document.getElementById('receipt-file-lbl');
+  if(rcptFileLbl) rcptFileLbl.textContent = rtx('upload');
 
   // Date label: show "Due Date" for debt, hide for others
   var lang = state.lang;
@@ -5465,8 +5687,10 @@ function addTransaction() {
       var refInp = document.getElementById('modal-invoice-ref');
       invRef = refInp ? refInp.value.trim() : null;
     }
+    var newTxId = Date.now();
+    var hasReceipt = state.currentType === 'expense' && state.pendingReceipt;
     state.transactions.push({
-      id: Date.now(),
+      id: newTxId,
       name: name, amount: amount, type: state.currentType,
       category: state.currentCat, date: txDate,
       vatRate: state.currentVat != null ? state.currentVat : 20,
@@ -5478,7 +5702,20 @@ function addTransaction() {
       supplierId: supId,
       supplierName: supName,
       invoiceRef: invRef || null,
+      receiptId: hasReceipt ? newTxId : null,
+      receiptName: hasReceipt ? state.pendingReceipt.name : null,
     });
+    if(hasReceipt) {
+      receiptPut({
+        id: newTxId,
+        user: localStorage.getItem('smartac_user') || '',
+        name: state.pendingReceipt.name,
+        type: state.pendingReceipt.type,
+        blob: state.pendingReceipt.blob,
+        createdAt: new Date().toISOString()
+      }).catch(function(){});
+      state.pendingReceipt = null;
+    }
   }
   save();
   closeModal();
@@ -5855,6 +6092,22 @@ function showTxDetail(tx) {
     invRow.onclick = null;
   }
 
+  // Receipt attachment
+  var rcptRow = document.getElementById('txDetailReceiptRow');
+  if(rcptRow) {
+    document.getElementById('txDetail-receipt-lbl').textContent = rtx('rowLbl');
+    if(tx.receiptId) {
+      document.getElementById('txDetailReceipt').textContent = tx.receiptName || rtx('view');
+      rcptRow.style.display = 'flex';
+      rcptRow.onclick = function() {
+        receiptGet(tx.receiptId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+      };
+    } else {
+      rcptRow.style.display = 'none';
+      rcptRow.onclick = null;
+    }
+  }
+
   // Delete button
   var delBtn = document.getElementById('txDetailDelete');
   var delLbl = {en:'🗑 Delete', ar:'🗑 حذف', de:'🗑 Löschen'};
@@ -5863,6 +6116,7 @@ function showTxDetail(tx) {
     delBtn.onclick = function(){
       if(!uvaConfirmUnlock(tx.date)) return;
       state.transactions = state.transactions.filter(function(t){ return t.id !== tx.id; });
+      if(tx.receiptId) receiptDeleteRec(tx.receiptId);
       save(); renderHome(); closeTxDetail();
     };
   }
