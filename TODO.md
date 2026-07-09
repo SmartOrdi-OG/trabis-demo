@@ -36,12 +36,13 @@
 
 ### ج) UI & UX (مطلوب من الـ pilot)
 
-- [ ] تغيير الخلفية/watermark في الصفحات
-- [~] تحسين السلاسة وحركة الـ Modal (تثبيت على الموبايل)
+- ~~تغيير الخلفية/watermark في الصفحات~~ (اتلغت — القرار إن الـ watermark تفضل محذوفة)
+- [x] تحسين السلاسة وحركة الـ Modal (قفل تمرير الخلفية على الموبايل + السحب لتحت للإغلاق)
+- [x] حركة أنيميشن لعناصر الصفحة الرئيسية عند التحميل (staggered fade-up)
 - [x] أشكال متعددة للفواتير (Classic, Modern, Minimal, Transport)
 - [x] إعادة تصميم EPC QR Code للدفع البنكي في الفواتير
 - [x] Dashboard (Income/Expenses/Overdue/Debts/Net Income)
-- [~] إعادة تصميم Bottom Nav + More Menu + Sidebar
+- [x] إعادة تصميم Bottom Nav + More Menu + Sidebar
 - [x] صفحة Help
 - [x] إصلاح RTL الكامل للعربي (اتجاه، أسهم، أرقام LTR)
 
