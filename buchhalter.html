@@ -457,20 +457,28 @@ function wireUvaControls() {
 }
 
 // ── Transaktionen ──
-function renderTransactionsHtml() {
-  var txs = (buData.transactions||[]).slice().sort(function(a,b){ return (b.id||0)-(a.id||0); });
-  var h = '<div class="card"><div class="card-title">Alle Transaktionen (' + txs.length + ')</div>';
-  if(!txs.length) { h += '<div class="empty-msg">Keine Transaktionen</div></div>'; return h; }
-  h += '<table><tr><th>Datum</th><th>Beschreibung</th><th>Typ</th><th>Netto</th><th>MwSt.</th><th>Brutto</th><th>Beleg</th></tr>';
+function renderTxSection(txs, title) {
+  var h = '<div class="card"><div class="card-title">' + title + ' (' + txs.length + ')</div>';
+  if(!txs.length) { h += '<div class="empty-msg">Keine ' + title.toLowerCase() + '</div></div>'; return h; }
+  var totalNetto = 0, totalBrutto = 0;
+  h += '<table><tr><th>Datum</th><th>Beschreibung</th><th>Netto</th><th>MwSt.</th><th>Brutto</th><th>Beleg</th></tr>';
   txs.forEach(function(tx) {
     var b = vatBreakdownBu(tx.amount, tx.vatRate||0);
+    totalNetto += b.netto; totalBrutto += b.brutto;
     h += '<tr><td>' + fmtDateBu(tx.date) + '</td><td>' + escHtmlBu(tx.name) + '</td>'
-      + '<td><span class="badge ' + tx.type + '">' + (tx.type==='income'?'Einnahme':'Ausgabe') + '</span></td>'
       + '<td>' + fmtBu(b.netto) + '</td><td>' + (tx.vatRate||0) + '%</td><td>' + fmtBu(b.brutto) + '</td>'
       + '<td>' + (tx.receiptId ? '<a class="link-icon" onclick="viewReceipt(' + tx.receiptId + ')">Ansehen</a>' : '—') + '</td></tr>';
   });
+  h += '<tr style="font-weight:800"><td colspan="2">Summe</td><td>' + fmtBu(totalNetto) + '</td><td></td><td>' + fmtBu(totalBrutto) + '</td><td></td></tr>';
   h += '</table></div>';
   return h;
+}
+function renderTransactionsHtml() {
+  var txs = (buData.transactions||[]).slice().sort(function(a,b){ return (b.id||0)-(a.id||0); });
+  if(!txs.length) return '<div class="card"><div class="card-title">Alle Transaktionen (0)</div><div class="empty-msg">Keine Transaktionen</div></div>';
+  var income = txs.filter(function(tx){ return tx.type === 'income'; });
+  var expense = txs.filter(function(tx){ return tx.type === 'expense'; });
+  return renderTxSection(income, 'Einnahmen') + renderTxSection(expense, 'Ausgaben');
 }
 
 // ── Rechnungen ──
