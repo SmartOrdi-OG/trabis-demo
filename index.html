@@ -156,6 +156,11 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .currency-label{text-align:center;font-size:14px;color:var(--text3);margin-bottom:20px}
 .input-field{width:100%;max-width:100%;height:48px;box-sizing:border-box;padding:0 16px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;outline:none;transition:border-color 0.2s;margin-bottom:12px;background:var(--card2);color:var(--text)}
 textarea.input-field{height:auto;min-height:64px;padding:12px 16px;line-height:1.4}
+/* iOS Safari ignores width:100% on input[type=date]/[type=time] in normal flow and renders at
+   its own intrinsic content width, overflowing the card. Absolute-positioning it against a
+   sized relative wrapper forces it to honor the wrapper's box regardless of that intrinsic size. */
+.date-fix-wrap{position:relative;width:100%;min-width:0;flex:1;height:48px;margin-bottom:12px}
+.date-fix-wrap .input-field{position:absolute;inset:0;margin-bottom:0;width:100%;height:100%}
 .input-field:focus{border-color:var(--primary)}
 .category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 .cat-btn{padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:none;cursor:pointer;font-size:11px;text-align:center;transition:all 0.2s}
@@ -1324,7 +1329,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <option value="13">MwSt. / VAT: 13%</option>
         <option value="20">MwSt. / VAT: 20%</option>
       </select>
-      <input id="txEdit-date" type="date" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:16px;outline:none"/>
+      <div class="date-fix-wrap" style="height:46px;margin-bottom:16px"><input id="txEdit-date" type="date" style="position:absolute;inset:0;width:100%;height:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:0;outline:none"/></div>
       <button id="txEdit-save" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px">💾 Save Changes</button>
       <button onclick="toggleTxEdit(false)" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:14px;cursor:pointer" id="txEdit-cancel">Cancel</button>
     </div>
@@ -2155,13 +2160,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <button type="button" id="customModeRangeBtn" onclick="setCustomDateMode('range')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer">Date Range</button>
       </div>
       <div id="customSingleFields">
-        <input type="date" id="customDateSingle" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateSingle" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
       </div>
       <div id="customRangeFields" style="display:none">
         <label id="customFromLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">From</label>
-        <input type="date" id="customDateFrom" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateFrom" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
         <label id="customToLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">To</label>
-        <input type="date" id="customDateTo" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateTo" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
       </div>
       <div id="customDateError" style="display:none;color:var(--red);font-size:12px;margin-bottom:8px"></div>
       <button type="button" id="customApplyBtn" onclick="applyCustomDateFilter()" style="width:100%;padding:10px 0;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px">Apply</button>
@@ -2301,9 +2306,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- CUSTOM DATE RANGE (hidden by default) -->
   <div class="rpt-custom-range" id="rptCustomRange">
-    <input type="date" id="rptCustomStart" onchange="renderReports();renderChart()"/>
+    <div class="date-fix-wrap" style="height:36px;margin-bottom:0"><input type="date" id="rptCustomStart" onchange="renderReports();renderChart()" style="position:absolute;inset:0;width:100%;height:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;box-sizing:border-box"/></div>
     <span style="color:var(--text3);font-size:13px;flex-shrink:0">→</span>
-    <input type="date" id="rptCustomEnd" onchange="renderReports();renderChart()"/>
+    <div class="date-fix-wrap" style="height:36px;margin-bottom:0"><input type="date" id="rptCustomEnd" onchange="renderReports();renderChart()" style="position:absolute;inset:0;width:100%;height:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;box-sizing:border-box"/></div>
   </div>
 
   <!-- BIG CHART -->
@@ -2628,7 +2633,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div id="dateLabelWrap" style="display:none;margin-bottom:4px">
       <div id="dateLabelText" style="font-size:12px;font-weight:600;color:var(--text2);padding:0 4px">Due Date</div>
     </div>
-    <input class="input-field" id="dateInput" type="date" style="margin-bottom:8px"/>
+    <div class="date-fix-wrap"><input class="input-field" id="dateInput" type="date"/></div>
 
     <div id="catGrid" class="category-grid"></div>
 
@@ -3609,7 +3614,7 @@ function openAddEmployeeForm() {
   html += '<input class="input-field" id="ea-phone" type="tel" placeholder="' + emptx('phone') + '">';
   html += '<input class="input-field" id="ea-email" type="email" placeholder="' + emptx('email') + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label>';
-  html += '<input class="input-field" id="ea-startdate" type="date">';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="ea-startdate" type="date"></div>';
   html += '<div style="display:flex;gap:10px;margin-top:10px">';
   html += '<button id="empAddSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
   html += '<button id="empAddCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + emptx('cancel') + '</button>';
@@ -3710,8 +3715,8 @@ function renderEmployeeProfileCard(emp) {
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('email') + '</label><input id="epf-email" type="email" class="input-field" style="margin-bottom:0" value="' + escHtml(emp.email || '') + '"></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('address') + '</label><input id="epf-address" class="input-field" style="margin-bottom:0" value="' + escHtml(emp.address || '') + '"></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('nationality') + '</label><input id="epf-nationality" class="input-field" style="margin-bottom:0" value="' + escHtml(emp.nationality || '') + '"></div>';
-    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('birthDate') + '</label><input id="epf-birthdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.birthDate || '') + '"></div>';
-    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label><input id="epf-startdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.startDate || '') + '"></div>';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('birthDate') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input id="epf-birthdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.birthDate || '') + '"></div></div>';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input id="epf-startdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.startDate || '') + '"></div></div>';
     eh += '<div style="margin-bottom:14px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('salary') + '</label><input id="epf-salary" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:4px" value="' + (parseFloat(emp.salary) || 0) + '"><div style="font-size:11px;color:var(--text3)">' + emptx('salaryNote') + '</div></div>';
     eh += '<div style="display:flex;gap:10px">';
     eh += '<button id="epf-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
@@ -4123,7 +4128,7 @@ function assetFormOpen(vehicleId) {
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
   html += '<input id="fas-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetValue || '') + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
-  html += '<input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || '') + '">';
+  html += '<div class="date-fix-wrap"><input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || '') + '"></div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
   html += '<input id="fas-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" value="' + (v.assetDepreciationRate != null ? v.assetDepreciationRate : '12.5') + '">';
   html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px;line-height:1.5">' + fleettx('assetRateHint') + '</div>';
@@ -4311,7 +4316,7 @@ function fleetDocOpenNamePrompt(vehicleId, suggestedName) {
   html += '<div class="modal-title">' + fleettx('docSave') + '</div>';
   html += '<input class="input-field" id="fdn-name" placeholder="' + fleettx('docNamePh') + '" value="' + escHtml(defaultName) + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('docExpiry') + '</label>';
-  html += '<input class="input-field" id="fdn-expiry" type="date">';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="fdn-expiry" type="date"></div>';
   html += '<div style="display:flex;gap:10px;margin-top:10px">';
   html += '<button id="fdn-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fleettx('docSave') + '</button>';
   html += '<button id="fdn-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fleettx('docCancel') + '</button>';
@@ -4426,7 +4431,7 @@ function maintOpenForm(vehicleId, editId) {
   html += '<div class="modal-handle"></div>';
   html += '<div class="modal-title">' + (editing ? fleettx('maintEditTitle') : fleettx('maintAddTitle')) + '</div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('maintDate') + '</label>';
-  html += '<input class="input-field" id="maint-date" type="date" value="' + (editing ? editing.date : today()) + '">';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="maint-date" type="date" value="' + (editing ? editing.date : today()) + '"></div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('maintCategory') + '</label>';
   html += '<select id="maint-category" class="input-field">';
   FLEET_CATS.forEach(function(ck) { html += '<option value="' + ck + '"' + (editing && editing.category === ck ? ' selected' : '') + '>' + fleettx(ck) + '</option>'; });
@@ -4606,7 +4611,7 @@ function assetOpenForm(editId) {
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetPrice') + '</label>';
   html += '<input class="input-field" id="af-price" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" value="' + (editing ? editing.value : '') + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetDate') + '</label>';
-  html += '<input class="input-field" id="af-date" type="date" value="' + (editing ? editing.purchaseDate : today()) + '">';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="af-date" type="date" value="' + (editing ? editing.purchaseDate : today()) + '"></div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('assetRate') + '</label>';
   html += '<input class="input-field" id="af-rate" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" value="' + (editing ? editing.rate : '') + '">';
   html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">' + assetstx('rateHint') + '</div>';
@@ -5278,8 +5283,8 @@ function openAppointmentForm(date, editId) {
   html += '<div class="modal-title">' + fx('title') + '</div>';
   html += '<input class="input-field" id="appt-title" placeholder="' + fx('titleLbl') + ' *" value="' + (editing ? escHtml(editing.title) : '') + '">';
   html += '<div style="display:flex;gap:10px;margin-bottom:12px">';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('dateLbl') + '</label><input type="date" class="input-field" id="appt-date" style="margin-bottom:0" value="' + (editing ? editing.date : (date || today())) + '"></div>';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('timeLbl') + '</label><input type="time" class="input-field" id="appt-time" style="margin-bottom:0" value="' + (editing ? (editing.time || '') : '') + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('dateLbl') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input type="date" class="input-field" id="appt-date" style="margin-bottom:0" value="' + (editing ? editing.date : (date || today())) + '"></div></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fx('timeLbl') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input type="time" class="input-field" id="appt-time" style="margin-bottom:0" value="' + (editing ? (editing.time || '') : '') + '"></div></div>';
   html += '</div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:6px">' + fx('typeLbl') + '</label>';
   html += '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:14px" id="appt-type-grid">';
@@ -6615,7 +6620,7 @@ function empDocOpenNamePrompt(empId, suggestedName) {
   html += '<div class="modal-title">' + emptx('docSave') + '</div>';
   html += '<input class="input-field" id="edn-name" placeholder="' + emptx('docNamePh') + '" value="' + escHtml(defaultName) + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('docExpiry') + '</label>';
-  html += '<input class="input-field" id="edn-expiry" type="date">';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="edn-expiry" type="date"></div>';
   html += '<div style="display:flex;gap:10px;margin-top:10px">';
   html += '<button id="edn-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + emptx('docSave') + '</button>';
   html += '<button id="edn-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + emptx('docCancel') + '</button>';
@@ -6756,12 +6761,12 @@ function whOpenForm(empId, editId) {
   html += '<div class="modal-handle"></div>';
   html += '<div class="modal-title">' + (editing ? emptx('whEditTitle') : emptx('whAddTitle')) + '</div>';
   html += '<div style="display:flex;gap:10px">';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whFrom') + '</label><input class="input-field" id="wh-from" type="date" style="margin-bottom:0" value="' + (editing ? editing.fromDate : today()) + '"></div>';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whTo') + '</label><input class="input-field" id="wh-to" type="date" style="margin-bottom:0" value="' + (editing ? (editing.toDate || editing.fromDate) : today()) + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whFrom') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input class="input-field" id="wh-from" type="date" style="margin-bottom:0" value="' + (editing ? editing.fromDate : today()) + '"></div></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whTo') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input class="input-field" id="wh-to" type="date" style="margin-bottom:0" value="' + (editing ? (editing.toDate || editing.fromDate) : today()) + '"></div></div>';
   html += '</div>';
   html += '<div style="display:flex;gap:10px;margin-top:12px">';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whStart') + '</label><input class="input-field" id="wh-start" type="time" style="margin-bottom:0" oninput="whAutoCalcHours()" value="' + (editing ? (editing.start || '') : '') + '"></div>';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whEnd') + '</label><input class="input-field" id="wh-end" type="time" style="margin-bottom:0" oninput="whAutoCalcHours()" value="' + (editing ? (editing.end || '') : '') + '"></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whStart') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input class="input-field" id="wh-start" type="time" style="margin-bottom:0" oninput="whAutoCalcHours()" value="' + (editing ? (editing.start || '') : '') + '"></div></div>';
+  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whEnd') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input class="input-field" id="wh-end" type="time" style="margin-bottom:0" oninput="whAutoCalcHours()" value="' + (editing ? (editing.end || '') : '') + '"></div></div>';
   html += '</div>';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin:12px 0 4px">' + emptx('whBreak') + '</label>';
   html += '<input class="input-field" id="wh-break" type="number" min="0" step="5" oninput="whAutoCalcHours()" value="' + (editing ? (editing.breakMinutes || 0) : 0) + '">';
@@ -10103,10 +10108,10 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
 
   html += '<div style="display:flex;gap:10px;margin-bottom:12px">';
   html += '<div style="flex:1"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + itx('issueDateLbl') + '</label>';
-  html += '<input type="date" id="inv_issue" value="' + todayVal + '" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box"></div>';
+  html += '<div class="date-fix-wrap" style="height:40px;margin-bottom:0"><input type="date" id="inv_issue" value="' + todayVal + '" style="position:absolute;inset:0;width:100%;height:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box"></div></div>';
   if(type !== 'receipt') {
     html += '<div style="flex:1"><label style="font-size:13px;font-weight:600;display:block;margin-bottom:4px">' + itx('dueDateLbl') + '</label>';
-    html += '<input type="date" id="inv_due" style="width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box"></div>';
+    html += '<div class="date-fix-wrap" style="height:40px;margin-bottom:0"><input type="date" id="inv_due" style="position:absolute;inset:0;width:100%;height:100%;padding:10px;border-radius:10px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box"></div></div>';
   }
   html += '</div>';
 
@@ -14928,7 +14933,7 @@ function toggleSidebar() {
     </div>
     <input id="ed-person" placeholder="Person" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
     <input id="ed-amount" type="number" placeholder="Amount" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
-    <input id="ed-date" type="date" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
+    <div class="date-fix-wrap" style="height:44px;margin-bottom:10px"><input id="ed-date" type="date" style="position:absolute;inset:0;width:100%;height:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:0;outline:none"></div>
     <select id="ed-type" style="width:100%;padding:11px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
       <option value="owes-me" id="ed-opt-owes">Owes Me</option>
       <option value="i-owe" id="ed-opt-iowe">I Owe</option>
@@ -15086,11 +15091,11 @@ function toggleSidebar() {
         <button type="button" id="xlsModeRangeBtn" onclick="setExcelDateMode('range')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer">Date Range</button>
       </div>
       <div id="xlsSingleFields">
-        <input type="date" id="xlsDateSingle" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateSingle" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
       </div>
       <div id="xlsRangeFields" style="display:none">
-        <input type="date" id="xlsDateFrom" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
-        <input type="date" id="xlsDateTo" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateFrom" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateTo" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
       </div>
       <div id="xlsDateError" style="display:none;color:var(--red);font-size:12px;margin-bottom:8px"></div>
     </div>
