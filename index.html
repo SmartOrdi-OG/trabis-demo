@@ -2343,6 +2343,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </table>
     <div class="forecast-disclaimer" id="forecastDisclaimer"></div>
   </div>
+
+  <!-- UVA (Umsatzsteuervoranmeldung) -->
+  <div class="report-card" id="uvaCard" style="margin-top:16px;padding:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+      <div class="report-card-title" id="uva-title" style="margin-bottom:0">UVA</div>
+      <span id="uvaStatusBadge" style="font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px"></span>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px" id="uva-sub">Umsatzsteuervoranmeldung</div>
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <select id="uvaInterval" onchange="uvaIntervalChanged()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
+      <select id="uvaPeriod" onchange="renderUva()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
+    </div>
+    <div id="uvaTable" style="font-size:13px"></div>
+    <div style="display:flex;gap:8px;margin-top:14px">
+      <button onclick="uvaExportPDF()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">PDF</button>
+      <button onclick="uvaExportExcel()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">Excel</button>
+      <button onclick="uvaToggleFreigabe()" id="uvaFreigabeBtn" style="flex:1.4;padding:11px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Freigabe</button>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5" id="uva-disclaimer"></div>
+  </div>
 </div>
 </div>
 
@@ -3102,6 +3122,8 @@ function save() {
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
   localStorage.setItem(uk('tax'), JSON.stringify(state.tax));
+  localStorage.setItem(uk('uvaInterval'), state.uvaInterval || 'quarter');
+  localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
   localStorage.setItem(uk('theme'), state.theme);
   localStorage.setItem(uk('fixed_income'), JSON.stringify(state.fixedIncome||[]));
   localStorage.setItem(uk('issued_inv'), JSON.stringify(state.issuedInvoices||[]));
@@ -3141,6 +3163,8 @@ function loadUserData() {
   state.recurring = JSON.parse(localStorage.getItem(uk('recurring')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.tax = JSON.parse(localStorage.getItem(uk('tax')) || '{"name":"","rate":0,"type":"on_sales"}');
+  state.uvaInterval = localStorage.getItem(uk('uvaInterval')) || 'quarter';
+  state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
   state.theme = localStorage.getItem(uk('theme')) || 'light';
   state.fixedIncome = JSON.parse(localStorage.getItem(uk('fixed_income')) || '[]');
   state.issuedInvoices = JSON.parse(localStorage.getItem(uk('issued_inv')) || '[]');
@@ -3229,7 +3253,7 @@ function showNav(page) {
   document.getElementById('fab').style.display = page === 'home' ? 'flex' : 'none';
 
   if(page === 'home') { renderHome(); playHomeAnim(); }
-  if(page === 'reports') { renderReports(); renderChart(); }
+  if(page === 'reports') { renderReports(); renderChart(); uvaPopulatePeriods(); renderUva(); }
   updatePeriodBarVisibility(page);
   if(page === 'settings') renderSettings();
   if(page === 'debts') renderDebtsPage();
@@ -4857,6 +4881,279 @@ function updateVatPreview() {
     + '<span>' + lbl.steuer + ' ' + rate + '%: <b>' + fmt(b.steuer) + '</b></span>';
 }
 
+// ────────────────────────────────────────
+// ── UVA (Umsatzsteuervoranmeldung) + Freigabe ──
+// ────────────────────────────────────────
+var UVA_TXT = {
+  title:      {en:'UVA — VAT Return', ar:'UVA — الإقرار الضريبي', de:'UVA — Umsatzsteuervoranmeldung'},
+  sub:        {en:'Preparation for FinanzOnline', ar:'تحضير للتقديم على FinanzOnline', de:'Vorbereitung für FinanzOnline'},
+  monthly:    {en:'Monthly', ar:'شهري', de:'Monatlich'},
+  quarterly:  {en:'Quarterly', ar:'ربع سنوي', de:'Vierteljährlich'},
+  yearly:     {en:'Yearly', ar:'سنوي', de:'Jährlich'},
+  kz000:      {en:'KZ 000 — Total net revenue', ar:'KZ 000 — إجمالي الإيرادات (صافي)', de:'KZ 000 — Gesamtbetrag Bemessungsgrundlage'},
+  sales20:    {en:'KZ 022 — Sales 20%', ar:'KZ 022 — مبيعات 20%', de:'KZ 022 — Umsätze 20%'},
+  sales13:    {en:'KZ 006 — Sales 13%', ar:'KZ 006 — مبيعات 13%', de:'KZ 006 — Umsätze 13%'},
+  sales10:    {en:'KZ 029 — Sales 10%', ar:'KZ 029 — مبيعات 10%', de:'KZ 029 — Umsätze 10%'},
+  sales0:     {en:'Tax-free sales 0%', ar:'مبيعات معفاة 0%', de:'Steuerfreie Umsätze 0%'},
+  sumUst:     {en:'Total VAT (Umsatzsteuer)', ar:'إجمالي ضريبة المبيعات', de:'Summe Umsatzsteuer'},
+  vorsteuer:  {en:'KZ 060 — Input VAT (Vorsteuer)', ar:'KZ 060 — ضريبة المشتريات (Vorsteuer)', de:'KZ 060 — Vorsteuer'},
+  zahllast:   {en:'KZ 095 — Amount payable', ar:'KZ 095 — المستحق للدفع (Zahllast)', de:'KZ 095 — Zahllast'},
+  gutschrift: {en:'KZ 095 — Credit (Gutschrift)', ar:'KZ 095 — رصيد دائن (Gutschrift)', de:'KZ 095 — Gutschrift'},
+  netUst:     {en:'Net / VAT', ar:'الصافي / الضريبة', de:'Netto / USt'},
+  offen:      {en:'OPEN', ar:'مفتوحة', de:'OFFEN'},
+  freigegeben:{en:'APPROVED', ar:'معتمدة', de:'FREIGEGEBEN'},
+  freigabeBtn:{en:'Freigabe ✓', ar:'اعتماد Freigabe ✓', de:'Freigabe ✓'},
+  revokeBtn:  {en:'Revoke approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'},
+  confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'اعتماد الفترة دي؟ الأرقام هتعتبر نهائية وهتتعلم كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
+  confirmRev: {en:'Revoke the approval for this period?', ar:'إلغاء اعتماد الفترة دي؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
+  lockWarn:   {en:'⚠️ This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'⚠️ الفترة دي معتمدة (Freigabe). التعديل هيلغي الاعتماد. تكمل؟', de:'⚠️ Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
+  fgAt:       {en:'Approved on', ar:'اعتمدت في', de:'Freigegeben am'},
+  disclaimer: {en:'Preparation for the UVA — not tax advice. Official filing is done via FinanzOnline. PDF/Excel exports are in German for your accountant.',
+               ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
+               de:'Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.'}
+};
+function uvat(k) { var lang = state.lang; return (UVA_TXT[k] && (UVA_TXT[k][lang] || UVA_TXT[k].en)) || k; }
+
+function uvaKeyForDate(dateStr, interval) {
+  var y = dateStr.substring(0,4), m = parseInt(dateStr.substring(5,7), 10);
+  if(interval === 'month') return y + '-' + ('0'+m).slice(-2);
+  if(interval === 'quarter') return y + '-Q' + Math.ceil(m/3);
+  return y;
+}
+
+function uvaKeyLabel(key) {
+  if(/^\d{4}-Q\d$/.test(key)) return 'Q' + key.substring(6) + ' ' + key.substring(0,4);
+  if(/^\d{4}-\d{2}$/.test(key)) {
+    var mon = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+    return mon[parseInt(key.substring(5,7),10)-1] + ' ' + key.substring(0,4);
+  }
+  return key;
+}
+
+function uvaTxInPeriod(key) {
+  var interval = /^\d{4}-Q\d$/.test(key) ? 'quarter' : /^\d{4}-\d{2}$/.test(key) ? 'month' : 'year';
+  return (state.transactions || []).filter(function(tx) {
+    return tx && tx.date && (tx.type === 'income' || tx.type === 'expense')
+      && uvaKeyForDate(tx.date, interval) === key;
+  });
+}
+
+function computeUva(key) {
+  var res = {salesNetto:{0:0,10:0,13:0,20:0}, salesUst:{0:0,10:0,13:0,20:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
+  uvaTxInPeriod(key).forEach(function(tx) {
+    var r = tx.vatRate || 0;
+    if(r !== 10 && r !== 13 && r !== 20) r = 0;
+    var b = vatBreakdown(tx.amount, r);
+    if(tx.type === 'income') {
+      res.salesNetto[r] += b.netto;
+      res.salesUst[r] += b.steuer;
+    } else {
+      res.vorsteuer += b.steuer;
+    }
+  });
+  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20];
+  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20];
+  res.zahllast = res.sumUst - res.vorsteuer;
+  return res;
+}
+
+function uvaCurrentKey() {
+  var sel = document.getElementById('uvaPeriod');
+  return sel && sel.value ? sel.value : uvaKeyForDate(today(), state.uvaInterval || 'quarter');
+}
+
+function uvaIsFreigegeben(key) {
+  return !!(state.uvaFreigaben && state.uvaFreigaben[key]);
+}
+
+// A date is locked if it falls inside ANY approved period (month, quarter or year)
+function uvaDateLocked(dateStr) {
+  if(!state.uvaFreigaben || !dateStr) return false;
+  return ['month','quarter','year'].some(function(iv) {
+    return !!state.uvaFreigaben[uvaKeyForDate(dateStr, iv)];
+  });
+}
+
+// Confirm with the user, then revoke every Freigabe covering this date. Returns false = abort.
+function uvaConfirmUnlock(dateStr) {
+  if(!uvaDateLocked(dateStr)) return true;
+  if(!confirm(uvat('lockWarn'))) return false;
+  ['month','quarter','year'].forEach(function(iv) {
+    var k = uvaKeyForDate(dateStr, iv);
+    if(state.uvaFreigaben[k]) delete state.uvaFreigaben[k];
+  });
+  save();
+  return true;
+}
+
+function uvaIntervalChanged() {
+  var sel = document.getElementById('uvaInterval');
+  if(sel) { state.uvaInterval = sel.value; save(); }
+  uvaPopulatePeriods();
+  renderUva();
+}
+
+function uvaPopulatePeriods() {
+  var interval = state.uvaInterval || 'quarter';
+  var ivSel = document.getElementById('uvaInterval');
+  if(ivSel) {
+    ivSel.innerHTML = '<option value="month">' + uvat('monthly') + '</option>'
+      + '<option value="quarter">' + uvat('quarterly') + '</option>'
+      + '<option value="year">' + uvat('yearly') + '</option>';
+    ivSel.value = interval;
+  }
+  var keys = {};
+  keys[uvaKeyForDate(today(), interval)] = true;
+  (state.transactions || []).forEach(function(tx) {
+    if(tx && tx.date && (tx.type === 'income' || tx.type === 'expense')) keys[uvaKeyForDate(tx.date, interval)] = true;
+  });
+  var sorted = Object.keys(keys).sort().reverse();
+  var pSel = document.getElementById('uvaPeriod');
+  if(pSel) {
+    var prev = pSel.value;
+    pSel.innerHTML = sorted.map(function(k){ return '<option value="'+k+'">'+uvaKeyLabel(k)+'</option>'; }).join('');
+    pSel.value = sorted.indexOf(prev) >= 0 ? prev : sorted[0];
+  }
+}
+
+function renderUva() {
+  var tbl = document.getElementById('uvaTable');
+  if(!tbl) return;
+  var key = uvaCurrentKey();
+  var u = computeUva(key);
+  var titleEl = document.getElementById('uva-title');
+  if(titleEl) titleEl.textContent = uvat('title');
+  var subEl = document.getElementById('uva-sub');
+  if(subEl) subEl.textContent = uvat('sub');
+  var discEl = document.getElementById('uva-disclaimer');
+  if(discEl) discEl.textContent = uvat('disclaimer');
+
+  function row(label, val, opts) {
+    opts = opts || {};
+    return '<div style="display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);' + (opts.bold?'font-weight:700;':'') + '">'
+      + '<span style="color:' + (opts.bold?'var(--text)':'var(--text2)') + '">' + label + '</span>'
+      + '<span style="white-space:nowrap;direction:ltr;' + (opts.color?('color:'+opts.color+';'):'') + (opts.bold?'font-weight:700;':'') + '">' + val + '</span></div>';
+  }
+  var h = '';
+  h += row(uvat('kz000'), fmt(u.kz000));
+  h += row(uvat('sales20') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto[20]) + ' / ' + fmt(u.salesUst[20]));
+  h += row(uvat('sales13') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto[13]) + ' / ' + fmt(u.salesUst[13]));
+  h += row(uvat('sales10') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto[10]) + ' / ' + fmt(u.salesUst[10]));
+  h += row(uvat('sales0'), fmt(u.salesNetto[0]));
+  h += row(uvat('sumUst'), fmt(u.sumUst));
+  h += row(uvat('vorsteuer'), '− ' + fmt(u.vorsteuer));
+  var isCredit = u.zahllast < 0;
+  h += row(isCredit ? uvat('gutschrift') : uvat('zahllast'), fmt(Math.abs(u.zahllast)), {bold:true, color: isCredit ? 'var(--income)' : 'var(--expense)'});
+  tbl.innerHTML = h;
+
+  // Status badge + Freigabe button
+  var badge = document.getElementById('uvaStatusBadge');
+  var fgBtn = document.getElementById('uvaFreigabeBtn');
+  var fg = state.uvaFreigaben && state.uvaFreigaben[key];
+  if(badge) {
+    if(fg) {
+      var d = new Date(fg.at);
+      badge.textContent = '✓ ' + uvat('freigegeben') + ' · ' + d.toLocaleDateString('de-AT') ;
+      badge.style.background = 'rgba(34,197,94,0.12)';
+      badge.style.color = 'var(--income)';
+    } else {
+      badge.textContent = uvat('offen');
+      badge.style.background = 'rgba(234,179,8,0.15)';
+      badge.style.color = '#ca8a04';
+    }
+  }
+  if(fgBtn) {
+    fgBtn.textContent = fg ? uvat('revokeBtn') : uvat('freigabeBtn');
+    fgBtn.style.background = fg ? 'var(--bg)' : 'var(--primary)';
+    fgBtn.style.color = fg ? 'var(--text2)' : '#fff';
+    fgBtn.style.border = fg ? '1.5px solid var(--border)' : 'none';
+  }
+}
+
+function uvaToggleFreigabe() {
+  var key = uvaCurrentKey();
+  if(!state.uvaFreigaben) state.uvaFreigaben = {};
+  if(state.uvaFreigaben[key]) {
+    if(!confirm(uvat('confirmRev'))) return;
+    delete state.uvaFreigaben[key];
+  } else {
+    if(!confirm(uvat('confirmFg'))) return;
+    state.uvaFreigaben[key] = {at: new Date().toISOString()};
+  }
+  save();
+  renderUva();
+}
+
+// Exports are always in German — they are addressed to the Austrian accountant.
+function uvaExportRows(key) {
+  var u = computeUva(key);
+  var fg = state.uvaFreigaben && state.uvaFreigaben[key];
+  var f2 = function(n){ return n.toFixed(2); };
+  return {
+    u: u, fg: fg,
+    rows: [
+      ['Zeitraum', uvaKeyLabel(key)],
+      ['KZ 000 — Gesamtbetrag Bemessungsgrundlage (Netto)', f2(u.kz000)],
+      ['KZ 022 — Umsätze 20% (Netto)', f2(u.salesNetto[20])],
+      ['KZ 022 — Umsatzsteuer 20%', f2(u.salesUst[20])],
+      ['KZ 006 — Umsätze 13% (Netto)', f2(u.salesNetto[13])],
+      ['KZ 006 — Umsatzsteuer 13%', f2(u.salesUst[13])],
+      ['KZ 029 — Umsätze 10% (Netto)', f2(u.salesNetto[10])],
+      ['KZ 029 — Umsatzsteuer 10%', f2(u.salesUst[10])],
+      ['Steuerfreie Umsätze 0% (Netto)', f2(u.salesNetto[0])],
+      ['Summe Umsatzsteuer', f2(u.sumUst)],
+      ['KZ 060 — Vorsteuer', f2(u.vorsteuer)],
+      [(u.zahllast < 0 ? 'KZ 095 — Gutschrift' : 'KZ 095 — Zahllast'), f2(Math.abs(u.zahllast))],
+      ['Status', fg ? ('FREIGEGEBEN am ' + new Date(fg.at).toLocaleString('de-AT')) : 'ENTWURF (nicht freigegeben)']
+    ]
+  };
+}
+
+function uvaExportPDF() {
+  var key = uvaCurrentKey();
+  var data = uvaExportRows(key);
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) { alert('PDF library not available'); return; }
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('UVA — Umsatzsteuervoranmeldung', 14, y); y += 7;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text((state.businessName || '') + (state.bizTaxId ? ('  ·  UID: ' + state.bizTaxId) : ''), 14, y); y += 5;
+  doc.text('Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y); y += 8;
+  doc.setDrawColor(200);
+  data.rows.forEach(function(r, i) {
+    var last = i === data.rows.length - 1;
+    var zl = r[0].indexOf('KZ 095') === 0;
+    doc.setFont(undefined, (zl || last) ? 'bold' : 'normal');
+    doc.text(String(r[0]), 14, y);
+    doc.text(String(r[1]) + (i > 0 && !last ? ' EUR' : (last ? '' : '')), 196, y, {align:'right'});
+    y += 3; doc.line(14, y, 196, y); y += 6;
+  });
+  y += 4;
+  doc.setFontSize(8); doc.setFont(undefined, 'normal'); doc.setTextColor(120);
+  doc.text('Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.', 14, y);
+  doc.save('UVA_' + key + '.pdf');
+}
+
+function uvaExportExcel() {
+  var key = uvaCurrentKey();
+  if(typeof XLSX === 'undefined') {
+    var script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js';
+    script.onload = function() { uvaExportExcel(); };
+    document.head.appendChild(script);
+    return;
+  }
+  var data = uvaExportRows(key);
+  var header = [['UVA — Umsatzsteuervoranmeldung'], [(state.businessName || '') + (state.bizTaxId ? ('  UID: ' + state.bizTaxId) : '')], ['Erstellt am: ' + new Date().toLocaleString('de-AT')], []];
+  var ws = XLSX.utils.aoa_to_sheet(header.concat(data.rows));
+  ws['!cols'] = [{wch:52}, {wch:26}];
+  var wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'UVA');
+  XLSX.writeFile(wb, 'UVA_' + key + '.xlsx');
+}
+
 function renderModal() {
   var typ = state.currentType;
   ['income','expense','debt'].forEach(function(x) {
@@ -5093,6 +5390,9 @@ function addTransaction() {
 
   var dateEl = document.getElementById('dateInput');
   var txDate = (dateEl && dateEl.value) ? dateEl.value : today();
+
+  // Approved (freigegeben) UVA periods must not change silently
+  if(state.currentType !== 'debt' && !uvaConfirmUnlock(txDate)) return;
 
   var newDebtContactName = '';
   if(state.currentType === 'debt') {
@@ -5561,6 +5861,7 @@ function showTxDetail(tx) {
   if(delBtn) {
     delBtn.textContent = delLbl[lang]||delLbl.en;
     delBtn.onclick = function(){
+      if(!uvaConfirmUnlock(tx.date)) return;
       state.transactions = state.transactions.filter(function(t){ return t.id !== tx.id; });
       save(); renderHome(); closeTxDetail();
     };
@@ -5612,6 +5913,8 @@ function saveTxEdit() {
   var newAmt = amtEl ? parseFloat(amtEl.value)||_currentTx.amount : _currentTx.amount;
   var newDate = dateEl ? dateEl.value||_currentTx.date : _currentTx.date;
   if(!newName || newAmt <= 0) return;
+  if(!uvaConfirmUnlock(_currentTx.date)) return;
+  if(newDate !== _currentTx.date && !uvaConfirmUnlock(newDate)) return;
 
   var tx = state.transactions.find(function(t){ return t.id === _currentTx.id; });
   if(tx) {
