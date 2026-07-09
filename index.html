@@ -1316,7 +1316,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div id="txDetailEdit" style="display:none;padding:0 16px">
       <div style="font-size:13px;color:var(--text3);font-weight:600;margin-bottom:12px;text-align:center" id="txEdit-lbl">Edit Transaction</div>
       <input id="txEdit-name" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none" placeholder="Description"/>
-      <input id="txEdit-amount" type="number" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none" placeholder="Amount"/>
+      <input id="txEdit-amount" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none" placeholder="Amount"/>
       <select id="txEdit-vat" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
         <option value="0">MwSt. / VAT: 0%</option>
         <option value="10">MwSt. / VAT: 10%</option>
@@ -2584,7 +2584,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button class="type-btn" id="type-debt" onclick="setType('debt')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg><br/><span id="lbl-type-debt">Debt</span></button>
     </div>
 
-    <input class="amount-input" id="amountInput" type="number" placeholder="0.00" inputmode="decimal" oninput="updateVatPreview()"/>
+    <input class="amount-input" id="amountInput" type="text" placeholder="0.00" inputmode="decimal" oninput="sanitizeAmountField(this);updateVatPreview()"/>
     <div class="currency-label" id="currencyLabel">EUR €</div>
 
     <!-- VAT rate selector (income/expense only) -->
@@ -3034,6 +3034,35 @@ function fmt(n) {
     if(count % 3 === 0 && i !== 0) result = ',' + result;
   }
   return state.currency + result + '.' + decPart;
+}
+
+// Accepts both "30.5" and "30,5" (Austrian/German decimal comma), plus
+// thousands-separated input like "1.234,56" or "1,234.56".
+function parseAmount(str) {
+  if(str == null) return NaN;
+  var s = String(str).trim().replace(/[^0-9.,]/g, '');
+  if(!s) return NaN;
+  var lastComma = s.lastIndexOf(',');
+  var lastDot = s.lastIndexOf('.');
+  if(lastComma > -1 && lastDot > -1) {
+    s = lastComma > lastDot ? s.replace(/\./g, '').replace(',', '.') : s.replace(/,/g, '');
+  } else if(lastComma > -1) {
+    var decimals = s.length - lastComma - 1;
+    var onlyOneComma = s.indexOf(',') === lastComma;
+    s = (onlyOneComma && decimals >= 1 && decimals <= 2) ? s.replace(',', '.') : s.replace(/,/g, '');
+  }
+  return parseFloat(s);
+}
+
+// Light input mask: keep only digits and a single decimal separator (, or .)
+function sanitizeAmountField(el) {
+  var v = el.value;
+  var cleaned = v.replace(/[^0-9.,]/g, '');
+  var firstSep = cleaned.search(/[.,]/);
+  if(firstSep !== -1) {
+    cleaned = cleaned.slice(0, firstSep + 1) + cleaned.slice(firstSep + 1).replace(/[.,]/g, '');
+  }
+  if(cleaned !== v) el.value = cleaned;
 }
 function today() {
   var d = new Date();
@@ -4929,7 +4958,7 @@ function vatBreakdown(amount, rate) {
 function updateVatPreview() {
   var box = document.getElementById('vatPreview');
   if(!box) return;
-  var amount = parseFloat((document.getElementById('amountInput')||{}).value);
+  var amount = parseAmount((document.getElementById('amountInput')||{}).value);
   var rate = state.currentVat != null ? state.currentVat : 20;
   if(!amount || amount <= 0 || state.currentType === 'debt') { box.style.display = 'none'; return; }
   var b = vatBreakdown(amount, rate);
@@ -5926,7 +5955,7 @@ function addTransaction() {
     closeModal();
     return;
   }
-  var amount = parseFloat(document.getElementById('amountInput').value);
+  var amount = parseAmount(document.getElementById('amountInput').value);
   var name = document.getElementById('nameInput').value.trim() || state.currentCat;
   if(!amount || amount <= 0) { alert('Please enter a valid amount'); return; }
 
@@ -6484,7 +6513,7 @@ function saveTxEdit() {
   var amtEl = document.getElementById('txEdit-amount');
   var dateEl = document.getElementById('txEdit-date');
   var newName = nameEl ? nameEl.value.trim() : _currentTx.name;
-  var newAmt = amtEl ? parseFloat(amtEl.value)||_currentTx.amount : _currentTx.amount;
+  var newAmt = amtEl ? parseAmount(amtEl.value)||_currentTx.amount : _currentTx.amount;
   var newDate = dateEl ? dateEl.value||_currentTx.date : _currentTx.date;
   if(!newName || newAmt <= 0) return;
   if(!uvaConfirmUnlock(_currentTx.date)) return;
@@ -11276,6 +11305,9 @@ function obFinishLogin(user) {
   updateNotifBadge();
   applyLang();
   updateBusinessNameDisplay();
+  checkRecurringDue();
+  checkInvoicesDue();
+  checkAppointmentReminders();
   var overlay = document.getElementById('onboardingOverlay');
   if(overlay) overlay.style.display = 'none';
   renderHome();
