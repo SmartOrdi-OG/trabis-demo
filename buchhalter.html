@@ -535,7 +535,9 @@ function renderDownloadsHtml() {
   var h = '<div class="card"><div class="card-title">Berichte herunterladen</div>';
   h += '<button class="dl-btn" onclick="downloadUvaPdf()">⬇ UVA als PDF</button>';
   h += '<button class="dl-btn" onclick="downloadTransactionsCsv()">⬇ Transaktionen als CSV</button>';
-  h += '<div class="disclaimer">Weitere Berichte (Inventar, Anlagevermögen als PDF) kann Ihnen der Unternehmer direkt aus der Haupt-App senden.</div>';
+  h += '<button class="dl-btn" onclick="downloadAssetsPdf()">⬇ Anlagevermögen als PDF</button>';
+  if(buData.businessType === 'retail') h += '<button class="dl-btn" onclick="downloadInventoryPdf()">⬇ Lagerbestand als PDF</button>';
+  h += '<div class="disclaimer">Alle Berichte werden lokal aus den Daten im Browser des Unternehmers erzeugt.</div>';
   h += '</div>';
   return h;
 }
@@ -566,6 +568,87 @@ function downloadTransactionsCsv() {
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a'); a.href = url; a.download = 'Transaktionen.csv'; a.click();
   setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+}
+function downloadAssetsPdf() {
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
+  var vehicles = (buData.fleet||[]).filter(function(v){ return calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
+  var general = buData.assets || [];
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Anlagevermögen — ' + (buData.businessName||''), 14, y); y += 8;
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
+
+  doc.setFont(undefined,'bold'); doc.setFontSize(9);
+  doc.text('Name', 14, y); doc.text('Kaufpreis', 88, y, {align:'right'}); doc.text('Datum', 92, y);
+  doc.text('Satz', 150, y, {align:'right'}); doc.text('Buchwert', 175, y, {align:'right'}); doc.text('Mtl.', 196, y, {align:'right'});
+  y += 3; doc.line(14, y, 196, y); y += 5;
+  doc.setFont(undefined,'normal');
+
+  var totalValue = 0, totalMonthly = 0;
+  function row(name, price, date, rate, bookValue, monthly) {
+    doc.setFontSize(9);
+    doc.text(String(name).substring(0,26), 14, y);
+    doc.text(fmtBu(price), 88, y, {align:'right'});
+    doc.text(String(date||''), 92, y);
+    doc.text(rate + '%', 150, y, {align:'right'});
+    doc.text(fmtBu(bookValue), 175, y, {align:'right'});
+    doc.text(fmtBu(monthly), 196, y, {align:'right'});
+    y += 6;
+    if(y > 280) { doc.addPage(); y = 20; }
+  }
+  vehicles.forEach(function(v) {
+    var d = calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
+    row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate, d.bookValue, d.monthly);
+    totalValue += d.bookValue; totalMonthly += d.monthly;
+  });
+  general.forEach(function(a) {
+    var d = calcDepreciationBu(a.value, a.purchaseDate, a.rate);
+    if(d) { row(a.name, a.value, a.purchaseDate, a.rate, d.bookValue, d.monthly); totalValue += d.bookValue; totalMonthly += d.monthly; }
+  });
+
+  y += 2; doc.line(14, y, 196, y); y += 6;
+  doc.setFont(undefined,'bold');
+  doc.text('Summe', 14, y);
+  doc.text(fmtBu(totalValue), 175, y, {align:'right'});
+  doc.text(fmtBu(totalMonthly), 196, y, {align:'right'});
+  y += 12;
+  doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.setTextColor(120);
+  doc.text('Geschätzte lineare Abschreibung zu Planungszwecken — keine Steuerberatung.', 14, y, {maxWidth:182});
+  doc.save('Anlagevermoegen_' + todayBu() + '.pdf');
+}
+function downloadInventoryPdf() {
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
+  var products = buData.inventory || [];
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Lagerbestand — ' + (buData.businessName||''), 14, y); y += 8;
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
+
+  doc.setFont(undefined,'bold'); doc.setFontSize(9);
+  doc.text('Name', 14, y); doc.text('Menge', 100, y, {align:'right'}); doc.text('Verkaufspreis', 150, y, {align:'right'}); doc.text('Wert', 196, y, {align:'right'});
+  y += 3; doc.line(14, y, 196, y); y += 5;
+  doc.setFont(undefined,'normal');
+
+  var totalValue = 0;
+  products.forEach(function(p) {
+    var val = (parseFloat(p.purchasePrice)||0) * (parseFloat(p.quantity)||0);
+    totalValue += val;
+    doc.setFontSize(9);
+    doc.text(String(p.name).substring(0,40), 14, y);
+    doc.text(String(parseFloat(p.quantity)||0) + ' ' + (p.unit||''), 100, y, {align:'right'});
+    doc.text(fmtBu(p.sellPrice), 150, y, {align:'right'});
+    doc.text(fmtBu(val), 196, y, {align:'right'});
+    y += 6;
+    if(y > 280) { doc.addPage(); y = 20; }
+  });
+
+  y += 2; doc.line(14, y, 196, y); y += 6;
+  doc.setFont(undefined,'bold');
+  doc.text('Gesamtwert', 14, y);
+  doc.text(fmtBu(totalValue), 196, y, {align:'right'});
+  doc.save('Lagerbestand_' + todayBu() + '.pdf');
 }
 
 // ── read-only attachment viewers (same IndexedDB the main app writes to) ──
