@@ -418,9 +418,17 @@ function periodFilterTx(period) {
 
 // ── UVA ──
 function uvaPeriodsBu(interval) {
-  var keys = {}; keys[uvaKeyForDateBu(todayBu(), interval)] = true;
-  (buData.transactions||[]).forEach(function(tx){ if(tx&&tx.date&&(tx.type==='income'||tx.type==='expense')) keys[uvaKeyForDateBu(tx.date, interval)]=true; });
-  return Object.keys(keys).sort().reverse();
+  var years = {}; years[todayBu().substring(0,4)] = true;
+  (buData.transactions||[]).forEach(function(tx){ if(tx&&tx.date&&(tx.type==='income'||tx.type==='expense')) years[tx.date.substring(0,4)]=true; });
+  var yearNums = Object.keys(years).map(Number);
+  var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
+  var keys = [];
+  for(var y = minYear; y <= maxYear; y++) {
+    if(interval === 'month') { for(var m = 1; m <= 12; m++) keys.push(y + '-' + ('0'+m).slice(-2)); }
+    else if(interval === 'quarter') { for(var q = 1; q <= 4; q++) keys.push(y + '-Q' + q); }
+    else keys.push(String(y));
+  }
+  return keys.sort().reverse();
 }
 function renderUvaHtml() {
   if(!buUvaPeriod) buUvaPeriod = uvaKeyForDateBu(todayBu(), buUvaInterval);

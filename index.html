@@ -6209,6 +6209,23 @@ function uvaIntervalChanged() {
   renderUva();
 }
 
+function uvaAllPeriods(interval, transactions) {
+  var years = {};
+  years[today().substring(0,4)] = true;
+  (transactions || []).forEach(function(tx) {
+    if(tx && tx.date && (tx.type === 'income' || tx.type === 'expense')) years[tx.date.substring(0,4)] = true;
+  });
+  var yearNums = Object.keys(years).map(Number);
+  var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
+  var keys = [];
+  for(var y = minYear; y <= maxYear; y++) {
+    if(interval === 'month') { for(var m = 1; m <= 12; m++) keys.push(y + '-' + ('0'+m).slice(-2)); }
+    else if(interval === 'quarter') { for(var q = 1; q <= 4; q++) keys.push(y + '-Q' + q); }
+    else keys.push(String(y));
+  }
+  return keys.sort().reverse();
+}
+
 function uvaPopulatePeriods() {
   var interval = state.uvaInterval || 'quarter';
   var ivSel = document.getElementById('uvaInterval');
@@ -6218,17 +6235,13 @@ function uvaPopulatePeriods() {
       + '<option value="year">' + uvat('yearly') + '</option>';
     ivSel.value = interval;
   }
-  var keys = {};
-  keys[uvaKeyForDate(today(), interval)] = true;
-  (state.transactions || []).forEach(function(tx) {
-    if(tx && tx.date && (tx.type === 'income' || tx.type === 'expense')) keys[uvaKeyForDate(tx.date, interval)] = true;
-  });
-  var sorted = Object.keys(keys).sort().reverse();
+  var sorted = uvaAllPeriods(interval, state.transactions);
   var pSel = document.getElementById('uvaPeriod');
   if(pSel) {
     var prev = pSel.value;
     pSel.innerHTML = sorted.map(function(k){ return '<option value="'+k+'">'+uvaKeyLabel(k)+'</option>'; }).join('');
-    pSel.value = sorted.indexOf(prev) >= 0 ? prev : sorted[0];
+    var currentKey = uvaKeyForDate(today(), interval);
+    pSel.value = sorted.indexOf(prev) >= 0 ? prev : (sorted.indexOf(currentKey) >= 0 ? currentKey : sorted[0]);
   }
 }
 
