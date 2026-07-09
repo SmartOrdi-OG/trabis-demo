@@ -8545,7 +8545,8 @@ var SETTINGS_L = {
   profilePhone:     {en:'Phone Number', ar:'رقم الهاتف', de:'Telefonnummer'},
   profileCountry:   {en:'Country', ar:'الدولة', de:'Land'},
   bizTypeLbl:       {en:'Business Type', ar:'نوع النشاط', de:'Unternehmensart'},
-  bizTypeNote:      {en:'To change your business type, please create a new account', ar:'لتغيير نوع نشاطك، يرجى إنشاء حساب جديد', de:'Um Ihren Unternehmenstyp zu ändern, erstellen Sie bitte ein neues Konto'},
+  bizTypeNote:      {en:'Changing this shows/hides the matching tools (e.g. Fleet, Inventory). Your data is kept either way.', ar:'تغيير النوع بيظهر/يخفي الأدوات المرتبطة بيه (زي الأسطول أو المخزون). بياناتك بتفضل محفوظة في الحالتين.', de:'Diese Änderung zeigt/verbirgt die passenden Tools (z. B. Fuhrpark, Lagerbestand). Ihre Daten bleiben in jedem Fall erhalten.'},
+  bizTypeChangeConfirm: {en:'Change business type? Tools for the previous type stay hidden but your existing data is not deleted.', ar:'تأكيد تغيير نوع النشاط؟ أدوات النوع السابق هتتخفي بس بياناتها مش هتتمسح.', de:'Unternehmensart ändern? Tools der vorherigen Art werden ausgeblendet, Ihre Daten bleiben aber erhalten.'},
   bizTypeGeneral:      {en:'General / Freelancer', ar:'عام / فريلانسر', de:'Allgemein / Freelancer'},
   bizTypeTransport:    {en:'Transport / Logistics', ar:'نقل وخدمات', de:'Transport / Logistik'},
   bizTypeRetail:       {en:'Retail / Shop', ar:'محل / تجزئة', de:'Einzelhandel / Shop'},
@@ -8655,6 +8656,7 @@ function renderSettings() {
 
 var _profileInfoEditMode = false;
 var _pendingProfileSave = null;
+var _bizTypeEditMode = false;
 
 function renderAccountSection() {
   var card = document.getElementById('settings-account-card');
@@ -8684,8 +8686,27 @@ function renderAccountSection() {
       + bizField('profileCountryInput', stx('profileCountry'), acc.country)
       + _bizEditSaveCancelRow('profileSaveBtn', 'profileCancelBtn');
   }
+  var bizTypeOptions = ['general','transport','retail','restaurant','construction','medical'];
+  var bizTypeRow;
+  if(!_bizTypeEditMode) {
+    bizTypeRow = '<div style="margin-bottom:10px">'
+      + '<div style="font-size:12px;color:var(--text3);margin-bottom:4px;display:flex;align-items:center;justify-content:space-between">'
+      + '<span>' + stx('bizTypeLbl') + '</span>'
+      + '<button id="bizTypeChangeBtn" style="background:transparent;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;padding:0">' + stx('editBtn') + '</button>'
+      + '</div>'
+      + '<div style="font-size:14px;font-weight:700;color:var(--text)">' + escHtml(bizTypeLabel(state.businessType)) + '</div>'
+      + '</div>';
+  } else {
+    bizTypeRow = '<div style="margin-bottom:10px">'
+      + '<div style="font-size:12px;color:var(--text3);margin-bottom:6px">' + stx('bizTypeLbl') + '</div>'
+      + '<select id="bizTypeSelect" style="width:100%;padding:11px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;outline:none">'
+      + bizTypeOptions.map(function(v){ return '<option value="' + v + '"' + (v===state.businessType?' selected':'') + '>' + escHtml(bizTypeLabel(v)) + '</option>'; }).join('')
+      + '</select>'
+      + _bizEditSaveCancelRow('bizTypeSaveBtn', 'bizTypeCancelBtn')
+      + '</div>';
+  }
   profileHtml = profileHtml
-    + bizDisplayRow(stx('bizTypeLbl'), bizTypeLabel(state.businessType))
+    + bizTypeRow
     + '<div style="font-size:11px;color:var(--text3);margin:-6px 0 10px">' + stx('bizTypeNote') + '</div>';
 
   var previewHtml = '<div style="display:flex;flex-direction:column;align-items:center;gap:8px">'
@@ -8729,6 +8750,24 @@ function renderAccountSection() {
     };
     var profileCancelBtn = document.getElementById('profileCancelBtn');
     if(profileCancelBtn) profileCancelBtn.onclick = function(){ _profileInfoEditMode = false; renderAccountSection(); };
+  }
+
+  var bizTypeChangeBtn = document.getElementById('bizTypeChangeBtn');
+  if(bizTypeChangeBtn) bizTypeChangeBtn.onclick = function(){ _bizTypeEditMode = true; renderAccountSection(); };
+  if(_bizTypeEditMode) {
+    var bizTypeSaveBtn = document.getElementById('bizTypeSaveBtn');
+    if(bizTypeSaveBtn) bizTypeSaveBtn.onclick = function(){
+      var newType = (document.getElementById('bizTypeSelect')||{}).value;
+      if(!newType || newType === state.businessType) { _bizTypeEditMode = false; renderAccountSection(); return; }
+      if(!confirm(stx('bizTypeChangeConfirm'))) return;
+      state.businessType = newType;
+      save();
+      updateFleetNavVisibility();
+      _bizTypeEditMode = false;
+      renderAccountSection();
+    };
+    var bizTypeCancelBtn = document.getElementById('bizTypeCancelBtn');
+    if(bizTypeCancelBtn) bizTypeCancelBtn.onclick = function(){ _bizTypeEditMode = false; renderAccountSection(); };
   }
 
   var nameInput = document.getElementById('bizNameInput');
