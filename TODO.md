@@ -16,9 +16,9 @@
 
 ---
 
-## المرحلة 1.5 — Transport Module + Industry Profiles + VAT (جارية 🚧)
+## المرحلة 1.5 — Transport Module + Industry Profiles + VAT (مكتملة ✅)
 
-> الترتيب الحالي جوا المرحلة: UI → أشكال الفواتير → Industry Profiles → Kalender/Notizen → VAT (جاري) → Mitarbeiter (جزء 1 خلص، جاري) → Fleet → Assets
+> كل حاجة في نطاق المرحلة دي خلصت. الباقي (AI OCR، Barcode scanner، Restaurant/Construction/Medical) اتأجل عمدًا لـ v2.0 لأنه محتاج Backend أو قرار بايلوت الأول.
 
 ### أ) Industry Profiles (الأساس)
 
@@ -68,7 +68,7 @@
 - [x] صفحة Kalender مع إضافة موعد
 - [x] عرض المواعيد والتنبيهات مع Alarm (reminder)
 - [x] صفحة Notizen (ملاحظات حرة: نص + صور + PDF + تكات)
-- [~] تنبيهات تلقائية من Mitarbeiter والـ Fleet في Kalender
+- [x] تنبيهات تلقائية من Mitarbeiter والـ Fleet في Kalender — كل مستند بتاريخ انتهاء (موظف أو عربية) بيظهر أوتوماتيك كموعد في الكالندر + تنبيه قبل 30 يوم
 
 ### ز) Anlagevermögen (أصول الشركة)
 
