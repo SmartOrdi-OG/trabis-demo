@@ -30,6 +30,8 @@ input,select,button{font-family:inherit}
 .auth-btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
 .auth-btn:hover{opacity:0.92}
 .auth-error{color:var(--expense);font-size:12.5px;margin-bottom:10px;min-height:1px}
+.auth-back-link{display:block;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--primary);text-decoration:none}
+.auth-back-link:hover{text-decoration:underline}
 .auth-note{font-size:11px;color:var(--text3);margin-top:18px;line-height:1.6}
 
 .acct-list{list-style:none;padding:0;margin:0;text-align:left}
@@ -109,6 +111,7 @@ tr:last-child td{border-bottom:none}
       <button class="auth-pw-toggle" id="buPassToggle" onclick="buTogglePw()" type="button">Anzeigen</button>
     </div>
     <button class="auth-btn" onclick="buchhalterLogin()">Anmelden</button>
+    <a href="index.html" class="auth-back-link">← Zurück zum normalen Login</a>
     <div class="auth-note">Dieser Zugang ist schreibgeschützt — es können keine Daten geändert werden. Zugriff nur über denselben Browser, in dem die Geschäftsdaten erfasst wurden.</div>
   </div>
 </div>
