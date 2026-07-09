@@ -3439,6 +3439,17 @@ var EMP_L = {
   edit:       {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
   deleteBtn:  {en:'Delete Employee', ar:'حذف الموظف', de:'Mitarbeiter löschen'},
   confirmDelete: {en:'Delete this employee? This will stop the monthly salary auto-recording for this employee', ar:'حذف هذا الموظف؟ سيتوقف تسجيل الراتب الشهري التلقائي لهذا الموظف', de:'Diesen Mitarbeiter löschen? Die monatliche Gehaltserfassung wird gestoppt'},
+  docCamera:  {en:'📷 Camera', ar:'📷 كاميرا', de:'📷 Kamera'},
+  docUpload:  {en:'📎 Upload', ar:'📎 رفع ملف', de:'📎 Hochladen'},
+  docNoDocs:  {en:'No documents yet', ar:'لا توجد مستندات بعد', de:'Noch keine Dokumente'},
+  docNamePh:  {en:'Document name (e.g. Work Permit)', ar:'اسم المستند (مثال: تصريح عمل)', de:'Dokumentname (z.B. Arbeitserlaubnis)'},
+  docExpiry:  {en:'Expiry date (optional)', ar:'تاريخ الانتهاء (اختياري)', de:'Ablaufdatum (optional)'},
+  docSave:    {en:'Save Document', ar:'حفظ المستند', de:'Dokument speichern'},
+  docCancel:  {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  docExpiresOn: {en:'Expires', ar:'ينتهي في', de:'Läuft ab am'},
+  docExpired: {en:'Expired', ar:'منتهي', de:'Abgelaufen'},
+  docExpiresSoon: {en:'Expires soon', ar:'قريب الانتهاء', de:'Läuft bald ab'},
+  confirmDeleteDoc: {en:'Delete this document?', ar:'حذف هذا المستند؟', de:'Dieses Dokument löschen?'},
 };
 function emptx(k) { return (EMP_L[k] && EMP_L[k][state.lang]) || (EMP_L[k] && EMP_L[k].en) || k; }
 
@@ -3681,8 +3692,14 @@ function renderEmployeeProfile(id) {
   html += '<div id="empProfileCard" style="background:var(--card);border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)"></div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
-  html += '<div style="font-size:15px;font-weight:700;margin-bottom:6px">' + emptx('documents') + '</div>';
-  html += '<div style="font-size:13px;color:var(--text3)">' + emptx('comingSoon') + '</div>';
+  html += '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + emptx('documents') + '</div>';
+  html += '<div id="empDocList"></div>';
+  html += '<div style="display:flex;gap:8px;margin-top:10px">';
+  html += '<button onclick="document.getElementById(\'empDocCameraInput\').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + emptx('docCamera') + '</button>';
+  html += '<button onclick="document.getElementById(\'empDocFileInput\').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + emptx('docUpload') + '</button>';
+  html += '</div>';
+  html += '<input type="file" id="empDocCameraInput" accept="image/*" capture="environment" style="display:none" onchange="empDocFileChosen(this,' + id + ')">';
+  html += '<input type="file" id="empDocFileInput" accept="image/*,application/pdf" style="display:none" onchange="empDocFileChosen(this,' + id + ')">';
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
@@ -3702,6 +3719,7 @@ function renderEmployeeProfile(id) {
   document.body.appendChild(ov);
 
   renderEmployeeProfileCard(emp);
+  renderEmpDocsSection(emp);
 
   var backBtn = document.getElementById('empBackBtn');
   if(backBtn) backBtn.onclick = closeEmployeeProfile;
@@ -3722,6 +3740,7 @@ function renderEmployeeProfile(id) {
   var deleteBtn = document.getElementById('empDeleteBtn');
   if(deleteBtn) deleteBtn.onclick = function() {
     if(!confirm(emptx('confirmDelete'))) return;
+    (emp.documents || []).forEach(function(d){ empDocDeleteRec(d.id); });
     state.employees = state.employees.filter(function(x){ return x.id !== id; });
     save();
     var ovEl = document.getElementById('empProfileOverlay');
@@ -3844,12 +3863,18 @@ function generateAutoAppointments() {
   var list = [];
   var suffix = kaltx('docExpires');
   (state.employees || []).forEach(function(emp) {
+    var empName = emp.fullName || emp.name || '';
     if(emp.workPermitExpiry) {
-      list.push({id:'auto-emp-'+emp.id+'-workPermit', title:(emp.name||'')+suffix, date:String(emp.workPermitExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
+      list.push({id:'auto-emp-'+emp.id+'-workPermit', title:empName+suffix, date:String(emp.workPermitExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
     }
     if(emp.drivingLicenseExpiry) {
-      list.push({id:'auto-emp-'+emp.id+'-drivingLicense', title:(emp.name||'')+suffix, date:String(emp.drivingLicenseExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
+      list.push({id:'auto-emp-'+emp.id+'-drivingLicense', title:empName+suffix, date:String(emp.drivingLicenseExpiry).substring(0,10), time:'', type:'document', description:'', isAuto:true});
     }
+    (emp.documents || []).forEach(function(doc) {
+      if(doc.expiryDate) {
+        list.push({id:'auto-emp-'+emp.id+'-doc-'+doc.id, title:empName+' — '+(doc.name||'')+suffix, date:String(doc.expiryDate).substring(0,10), time:'', type:'document', description:'', isAuto:true});
+      }
+    });
   });
   if(state.fleet && state.fleet.length) {
     state.fleet.forEach(function(v) {
@@ -5351,6 +5376,173 @@ function receiptRunOcr(file) {
   }).catch(function() {
     receiptOcrStatus(rtx('noRead'));
   });
+}
+
+// ────────────────────────────────────────
+// ── EMPLOYEE DOCUMENTS: upload + naming + expiry alerts ──
+// ────────────────────────────────────────
+function empDocDb() {
+  return new Promise(function(resolve, reject) {
+    if(window._empDocDbInst) { resolve(window._empDocDbInst); return; }
+    var req = indexedDB.open('smartac_empdocs', 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('docs')) db.createObjectStore('docs', {keyPath:'id'});
+    };
+    req.onsuccess = function(e) { window._empDocDbInst = e.target.result; resolve(window._empDocDbInst); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+function empDocPut(rec) {
+  return empDocDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').put(rec);
+      t.oncomplete = res; t.onerror = function(){ rej(t.error); };
+    });
+  });
+}
+function empDocGet(id) {
+  return empDocDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var r = db.transaction('docs').objectStore('docs').get(id);
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  });
+}
+function empDocDeleteRec(id) {
+  return empDocDb().then(function(db) {
+    return new Promise(function(res) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').delete(id);
+      t.oncomplete = res; t.onerror = res;
+    });
+  }).catch(function(){});
+}
+
+var _empDocPendingFile = null; // {blob, type}
+
+function empDocFileChosen(input, empId) {
+  var f = input.files && input.files[0];
+  input.value = '';
+  if(!f) return;
+  var isPdf = f.type === 'application/pdf';
+  receiptCompress(f).then(function(blob) {
+    _empDocPendingFile = {blob: blob, type: isPdf ? 'application/pdf' : 'image/jpeg'};
+    empDocOpenNamePrompt(empId, f.name || '');
+  });
+}
+
+function empDocOpenNamePrompt(empId, suggestedName) {
+  var existing = document.getElementById('empDocNameOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+  if(!_empDocPendingFile) return;
+
+  var ov = document.createElement('div');
+  ov.id = 'empDocNameOverlay';
+  ov.className = 'modal-overlay open';
+  var defaultName = suggestedName.replace(/\.[^.]+$/, '');
+  var html = '';
+  html += '<div class="modal" id="empDocNameModal">';
+  html += '<button class="modal-close-btn" id="empDocNameCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + emptx('docSave') + '</div>';
+  html += '<input class="input-field" id="edn-name" placeholder="' + emptx('docNamePh') + '" value="' + escHtml(defaultName) + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('docExpiry') + '</label>';
+  html += '<input class="input-field" id="edn-expiry" type="date">';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="edn-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + emptx('docSave') + '</button>';
+  html += '<button id="edn-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + emptx('docCancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() {
+    _empDocPendingFile = null;
+    var o = document.getElementById('empDocNameOverlay');
+    if(o) o.parentNode.removeChild(o);
+  }
+  document.getElementById('empDocNameCloseBtn').onclick = close;
+  document.getElementById('edn-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('edn-saveBtn').onclick = function() {
+    var nameEl = document.getElementById('edn-name');
+    var name = nameEl.value.trim();
+    if(!name) { nameEl.focus(); return; }
+    var expiry = document.getElementById('edn-expiry').value || '';
+    empDocSave(empId, name, expiry);
+    close();
+  };
+}
+
+function empDocSave(empId, name, expiryDate) {
+  var emp = (state.employees || []).find(function(e){ return e.id === empId; });
+  if(!emp || !_empDocPendingFile) return;
+  var docId = Date.now();
+  var pending = _empDocPendingFile;
+  empDocPut({
+    id: docId,
+    empId: empId,
+    user: localStorage.getItem('smartac_user') || '',
+    name: name,
+    type: pending.type,
+    blob: pending.blob,
+    createdAt: new Date().toISOString()
+  }).then(function() {
+    if(!emp.documents) emp.documents = [];
+    emp.documents.push({id: docId, name: name, type: pending.type, expiryDate: expiryDate || '', createdAt: new Date().toISOString()});
+    save();
+    _empDocPendingFile = null;
+    renderEmpDocsSection(emp);
+    checkAppointmentReminders();
+  });
+}
+
+function empDocDelete(empId, docId) {
+  if(!confirm(emptx('confirmDeleteDoc'))) return;
+  var emp = (state.employees || []).find(function(e){ return e.id === empId; });
+  if(!emp) return;
+  emp.documents = (emp.documents || []).filter(function(d){ return d.id !== docId; });
+  save();
+  empDocDeleteRec(docId);
+  renderEmpDocsSection(emp);
+}
+
+function empDocView(docId) {
+  empDocGet(docId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+}
+
+function empDocExpiryBadge(expiryDate) {
+  if(!expiryDate) return '';
+  var days = Math.round((new Date(expiryDate + 'T00:00:00') - new Date(today() + 'T00:00:00')) / 86400000);
+  var label = emptx('docExpiresOn') + ' ' + formatDateDisplay(expiryDate);
+  var color = 'var(--text3)', bg = 'var(--bg)';
+  if(days < 0) { label = emptx('docExpired') + ' · ' + formatDateDisplay(expiryDate); color = '#ef4444'; bg = 'rgba(239,68,68,0.1)'; }
+  else if(days <= 30) { label = emptx('docExpiresSoon') + ' · ' + formatDateDisplay(expiryDate); color = '#ea580c'; bg = 'rgba(234,88,12,0.1)'; }
+  return '<span style="font-size:11px;font-weight:600;color:' + color + ';background:' + bg + ';padding:2px 8px;border-radius:8px;white-space:nowrap">' + label + '</span>';
+}
+
+function renderEmpDocsSection(emp) {
+  var wrap = document.getElementById('empDocList');
+  if(!wrap) return;
+  var docs = emp.documents || [];
+  if(!docs.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + emptx('docNoDocs') + '</div>';
+    return;
+  }
+  var h = '';
+  docs.forEach(function(doc) {
+    var isPdf = doc.type === 'application/pdf';
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:18px;flex-shrink:0">' + (isPdf ? svgIcon('fileText', 20) : svgIcon('paperclip', 20)) + '</span>';
+    h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="empDocView(' + doc.id + ')">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(doc.name) + '</div>';
+    if(doc.expiryDate) h += '<div style="margin-top:3px">' + empDocExpiryBadge(doc.expiryDate) + '</div>';
+    h += '</div>';
+    h += '<button onclick="empDocDelete(' + emp.id + ',' + doc.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 15) + '</button>';
+    h += '</div>';
+  });
+  wrap.innerHTML = h;
 }
 
 function openReceiptViewer(rec) {
@@ -11335,11 +11527,11 @@ function checkRecurringDue() {
 function checkAppointmentReminders() {
   var todayDate = new Date(today() + 'T00:00:00');
   var lang = state.lang || 'en';
-  (state.appointments || []).forEach(function(appt) {
-    if(!appt.date || !appt.reminderDays) return;
+  function processAppt(appt, reminderDays) {
+    if(!appt.date || !reminderDays) return;
     var apptDate = new Date(appt.date + 'T00:00:00');
     var daysUntil = Math.round((apptDate - todayDate) / 86400000);
-    if(daysUntil < 0 || daysUntil > appt.reminderDays) return;
+    if(daysUntil < 0 || daysUntil > reminderDays) return;
     var sourceId = 'appt-' + appt.id;
     var already = state.notifications.some(function(n){ return n.sourceId === sourceId; });
     if(already) return;
@@ -11354,7 +11546,10 @@ function checkAppointmentReminders() {
       msg = prefix + daysUntil + suffix + appt.title;
     }
     addNotification(msg, 'warning', sourceId);
-  });
+  }
+  (state.appointments || []).forEach(function(appt) { processAppt(appt, appt.reminderDays); });
+  // Document/vehicle expiry (auto-generated, not persisted) — fixed 30-day heads-up
+  generateAutoAppointments().forEach(function(appt) { processAppt(appt, 30); });
 }
 
 function checkInvoicesDue() {
