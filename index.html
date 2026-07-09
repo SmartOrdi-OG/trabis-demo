@@ -2989,6 +2989,7 @@ var state = {
   invoiceTemplate: 'classic',
   appointments: [],
   notes: [],
+  fleet: [],
 };
 
 var CURRENCIES = {
@@ -3171,6 +3172,7 @@ function save() {
   localStorage.setItem(uk('clients'), JSON.stringify(state.clients));
   localStorage.setItem(uk('suppliers'), JSON.stringify(state.suppliers));
   localStorage.setItem(uk('employees'), JSON.stringify(state.employees));
+  localStorage.setItem(uk('fleet'), JSON.stringify(state.fleet));
   localStorage.setItem(uk('recurring'), JSON.stringify(state.recurring));
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
@@ -3213,6 +3215,7 @@ function loadUserData() {
   state.clients = JSON.parse(localStorage.getItem(uk('clients')) || '[]');
   state.suppliers = JSON.parse(localStorage.getItem(uk('suppliers')) || '[]');
   state.employees = JSON.parse(localStorage.getItem(uk('employees')) || '[]');
+  state.fleet = JSON.parse(localStorage.getItem(uk('fleet')) || '[]');
   state.recurring = JSON.parse(localStorage.getItem(uk('recurring')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.tax = JSON.parse(localStorage.getItem(uk('tax')) || '{"name":"","rate":0,"type":"on_sales"}');
@@ -3317,7 +3320,7 @@ function showNav(page) {
   if(page === 'expenses') renderExpensesPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'help') renderHelpPage();
-  if(page === 'fleet') renderComingSoonPage('fleetPage', 'fleet');
+  if(page === 'fleet') renderFleetPage();
   if(page === 'assets') renderComingSoonPage('assetsPage', 'assets');
   if(page === 'kalender') renderKalenderPage();
   if(page === 'notizen') renderNotizenPage();
@@ -3803,6 +3806,570 @@ function renderEmployeeProfile(id) {
   };
 }
 
+// ── FLEET / FAHRZEUGE ──
+var FLEET_L = {
+  title:      {en:'Fleet', ar:'الأسطول', de:'Fuhrpark'},
+  add:        {en:'+ Add Vehicle', ar:'+ إضافة مركبة', de:'+ Fahrzeug hinzufügen'},
+  addTitle:   {en:'Add Vehicle', ar:'إضافة مركبة', de:'Fahrzeug hinzufügen'},
+  empty:      {en:'No vehicles yet', ar:'لا توجد مركبات بعد', de:'Noch keine Fahrzeuge'},
+  plate:      {en:'License Plate', ar:'رقم اللوحة', de:'Kennzeichen'},
+  name:       {en:'Name / Label', ar:'الاسم / التسمية', de:'Name / Bezeichnung'},
+  type:       {en:'Type / Model', ar:'النوع / الموديل', de:'Typ / Modell'},
+  year:       {en:'Year', ar:'سنة الصنع', de:'Baujahr'},
+  notes:      {en:'Notes', ar:'ملاحظات', de:'Notizen'},
+  notesPh:    {en:'Add notes...', ar:'أضف ملاحظات...', de:'Notizen hinzufügen...'},
+  documents:  {en:'Documents', ar:'المستندات', de:'Dokumente'},
+  maintenance:{en:'Maintenance & Expenses', ar:'الصيانة والمصاريف', de:'Wartung & Ausgaben'},
+  save:       {en:'Save', ar:'حفظ', de:'Speichern'},
+  cancel:     {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  back:       {en:'← Back', ar:'→ رجوع', de:'← Zurück'},
+  edit:       {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
+  deleteBtn:  {en:'Delete Vehicle', ar:'حذف المركبة', de:'Fahrzeug löschen'},
+  confirmDelete: {en:'Delete this vehicle? All its documents and maintenance records will be removed too.', ar:'حذف هذه المركبة؟ هيتم حذف كل مستنداتها وسجل الصيانة بتاعها كمان.', de:'Dieses Fahrzeug löschen? Alle Dokumente und Wartungseinträge werden ebenfalls gelöscht.'},
+  docCamera:  {en:'📷 Camera', ar:'📷 كاميرا', de:'📷 Kamera'},
+  docUpload:  {en:'📎 Upload', ar:'📎 رفع ملف', de:'📎 Hochladen'},
+  docNoDocs:  {en:'No documents yet', ar:'لا توجد مستندات بعد', de:'Noch keine Dokumente'},
+  docNamePh:  {en:'Document name (e.g. Pickerl, TÜV, Insurance)', ar:'اسم المستند (مثال: Pickerl، TÜV، تأمين)', de:'Dokumentname (z.B. Pickerl, TÜV, Versicherung)'},
+  docExpiry:  {en:'Expiry date (optional)', ar:'تاريخ الانتهاء (اختياري)', de:'Ablaufdatum (optional)'},
+  docSave:    {en:'Save Document', ar:'حفظ المستند', de:'Dokument speichern'},
+  docCancel:  {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  docExpiresOn: {en:'Expires', ar:'ينتهي في', de:'Läuft ab am'},
+  docExpired: {en:'Expired', ar:'منتهي', de:'Abgelaufen'},
+  docExpiresSoon: {en:'Expires soon', ar:'قريب الانتهاء', de:'Läuft bald ab'},
+  confirmDeleteDoc: {en:'Delete this document?', ar:'حذف هذا المستند؟', de:'Dieses Dokument löschen?'},
+  maintAdd:      {en:'+ Add Entry', ar:'+ إضافة تسجيل', de:'+ Eintrag hinzufügen'},
+  maintAddTitle: {en:'Add Maintenance / Expense', ar:'إضافة صيانة / مصروف', de:'Wartung / Ausgabe hinzufügen'},
+  maintEditTitle:{en:'Edit Entry', ar:'تعديل التسجيل', de:'Eintrag bearbeiten'},
+  maintDate:     {en:'Date', ar:'التاريخ', de:'Datum'},
+  maintDesc:     {en:'Description', ar:'الوصف', de:'Beschreibung'},
+  maintCost:     {en:'Cost', ar:'التكلفة', de:'Kosten'},
+  maintCategory: {en:'Category', ar:'الفئة', de:'Kategorie'},
+  maintNoEntries:{en:'No maintenance or expenses logged yet', ar:'لا توجد صيانة أو مصاريف مسجلة بعد', de:'Noch keine Wartung oder Ausgaben erfasst'},
+  maintTotal:    {en:'Total logged', ar:'الإجمالي المسجل', de:'Gesamt erfasst'},
+  maintConfirmDelete: {en:'Delete this entry?', ar:'حذف هذا التسجيل؟', de:'Diesen Eintrag löschen?'},
+  maintInvalid:  {en:'Enter a valid date and cost', ar:'ادخل تاريخ وتكلفة صحيحين', de:'Bitte gültiges Datum und gültige Kosten eingeben'},
+  catService: {en:'Service', ar:'صيانة دورية', de:'Service'},
+  catRepair:  {en:'Repair', ar:'إصلاح', de:'Reparatur'},
+  catFuel:    {en:'Fuel', ar:'وقود', de:'Treibstoff'},
+  catInsurance:{en:'Insurance', ar:'تأمين', de:'Versicherung'},
+  catOther:   {en:'Other', ar:'أخرى', de:'Sonstiges'},
+};
+function fleettx(k) { return (FLEET_L[k] && FLEET_L[k][state.lang]) || (FLEET_L[k] && FLEET_L[k].en) || k; }
+var FLEET_CATS = ['catService','catRepair','catFuel','catInsurance','catOther'];
+
+function renderFleetPage() {
+  var page = document.getElementById('fleetPage');
+  if(!page) return;
+
+  var h = '';
+  h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
+  h += '<div style="font-size:18px;font-weight:700">' + fleettx('title') + '</div>';
+  h += '<button id="fleetAddBtn" style="background:#16a34a;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + fleettx('add') + '</button>';
+  h += '</div></div>';
+
+  h += '<div id="fleetPageBody" style="padding:0 16px 120px">';
+  if(!state.fleet.length) {
+    h += '<div style="text-align:center;padding:60px 20px;color:var(--text3);font-size:14px">' + fleettx('empty') + '</div>';
+  } else {
+    state.fleet.forEach(function(v) {
+      var displayName = v.name || v.plate || '';
+      h += '<div class="emp-card" data-id="' + v.id + '" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:var(--shadow)">';
+      h += '<div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + svgIcon('truck', 22) + '</div>';
+      h += '<div style="flex:1;min-width:0">';
+      h += '<div style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(displayName) + '</div>';
+      h += '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + [v.plate, v.type, v.year].filter(Boolean).map(escHtml).join(' · ') + '</div>';
+      h += '</div>';
+      h += svgIcon('chevronRight', 18);
+      h += '</div>';
+    });
+  }
+  h += '</div>';
+
+  page.innerHTML = h;
+
+  var addBtn = document.getElementById('fleetAddBtn');
+  if(addBtn) addBtn.onclick = openAddVehicleForm;
+
+  var cards = page.querySelectorAll('.emp-card');
+  for(var ci = 0; ci < cards.length; ci++) {
+    (function(card) {
+      var id = parseInt(card.getAttribute('data-id'), 10);
+      card.onclick = function(){ renderVehicleProfile(id); };
+    })(cards[ci]);
+  }
+}
+
+function closeAddVehicleForm() {
+  var ov = document.getElementById('fleetAddOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+}
+
+function openAddVehicleForm() {
+  var existing = document.getElementById('fleetAddOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'fleetAddOverlay';
+  ov.className = 'modal-overlay open';
+
+  var html = '';
+  html += '<div class="modal" id="fleetAddModal">';
+  html += '<button class="modal-close-btn" id="fleetAddCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + fleettx('addTitle') + '</div>';
+  html += '<input class="input-field" id="fa-plate" placeholder="' + fleettx('plate') + ' *">';
+  html += '<input class="input-field" id="fa-name" placeholder="' + fleettx('name') + '">';
+  html += '<input class="input-field" id="fa-type" placeholder="' + fleettx('type') + '">';
+  html += '<input class="input-field" id="fa-year" type="number" min="1900" max="2100" placeholder="' + fleettx('year') + '">';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="fleetAddSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+  html += '<button id="fleetAddCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fleettx('cancel') + '</button>';
+  html += '</div>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  document.getElementById('fleetAddCloseBtn').onclick = closeAddVehicleForm;
+  document.getElementById('fleetAddCancelBtn').onclick = closeAddVehicleForm;
+  document.getElementById('fleetAddSaveBtn').onclick = saveNewVehicle;
+  ov.onclick = function(e) { if(e.target === ov) closeAddVehicleForm(); };
+}
+
+function saveNewVehicle() {
+  var plateEl = document.getElementById('fa-plate');
+  var plate = plateEl ? plateEl.value.trim() : '';
+  if(!plate) { if(plateEl) plateEl.focus(); return; }
+  var nameEl = document.getElementById('fa-name');
+  var typeEl = document.getElementById('fa-type');
+  var yearEl = document.getElementById('fa-year');
+
+  state.fleet.push({
+    id: Date.now(),
+    plate: plate,
+    name: (nameEl && nameEl.value.trim()) || '',
+    type: (typeEl && typeEl.value.trim()) || '',
+    year: (yearEl && yearEl.value.trim()) || '',
+    notes: '',
+    documents: [],
+    maintenance: [],
+  });
+  save();
+  closeAddVehicleForm();
+  renderFleetPage();
+}
+
+function fleetInfoRow(label, value) {
+  return '<div style="margin-bottom:12px"><div style="font-size:12px;color:var(--text3);margin-bottom:2px">' + label + '</div><div style="font-size:14px;color:var(--text)">' + (value ? escHtml(value) : '—') + '</div></div>';
+}
+
+var _fleetProfileId = null;
+var _fleetProfileEditMode = false;
+
+function closeVehicleProfile() {
+  var ov = document.getElementById('fleetProfileOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+  renderFleetPage();
+}
+
+function renderVehicleProfileCard(v) {
+  var card = document.getElementById('fleetProfileCard');
+  if(!card) return;
+  var displayName = v.name || v.plate || '';
+
+  if(!_fleetProfileEditMode) {
+    var html = '';
+    html += '<div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">';
+    html += '<div style="width:64px;height:64px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + svgIcon('truck', 28) + '</div>';
+    html += '<div><div style="font-size:18px;font-weight:700">' + escHtml(displayName) + '</div>';
+    html += '<div style="font-size:13px;color:var(--text3);margin-top:2px">' + escHtml(v.plate || '') + '</div></div>';
+    html += '</div>';
+    html += fleetInfoRow(fleettx('type'), v.type);
+    html += fleetInfoRow(fleettx('year'), v.year);
+    card.innerHTML = html;
+  } else {
+    var eh = '';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('plate') + '</label><input id="fpf-plate" class="input-field" style="margin-bottom:0" value="' + escHtml(v.plate || '') + '"></div>';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('name') + '</label><input id="fpf-name" class="input-field" style="margin-bottom:0" value="' + escHtml(v.name || '') + '"></div>';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('type') + '</label><input id="fpf-type" class="input-field" style="margin-bottom:0" value="' + escHtml(v.type || '') + '"></div>';
+    eh += '<div style="margin-bottom:14px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('year') + '</label><input id="fpf-year" type="number" min="1900" max="2100" class="input-field" style="margin-bottom:0" value="' + escHtml(v.year || '') + '"></div>';
+    eh += '<div style="display:flex;gap:10px">';
+    eh += '<button id="fpf-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+    eh += '<button id="fpf-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:10px;padding:11px;font-size:14px;cursor:pointer">' + fleettx('cancel') + '</button>';
+    eh += '</div>';
+    card.innerHTML = eh;
+
+    document.getElementById('fpf-saveBtn').onclick = function() {
+      var plateEl = document.getElementById('fpf-plate');
+      var newPlate = plateEl.value.trim();
+      if(!newPlate) { plateEl.focus(); return; }
+      v.plate = newPlate;
+      v.name = document.getElementById('fpf-name').value.trim();
+      v.type = document.getElementById('fpf-type').value.trim();
+      v.year = document.getElementById('fpf-year').value.trim();
+      save();
+      _fleetProfileEditMode = false;
+      renderVehicleProfileCard(v);
+      var titleEl = document.getElementById('fleetProfileTitle');
+      if(titleEl) titleEl.textContent = v.name || v.plate;
+    };
+    document.getElementById('fpf-cancelBtn').onclick = function() {
+      _fleetProfileEditMode = false;
+      renderVehicleProfileCard(v);
+    };
+  }
+}
+
+function renderVehicleProfile(id) {
+  var found = state.fleet.filter(function(v){ return v.id === id; });
+  if(!found.length) return;
+  var v = found[0];
+  _fleetProfileId = id;
+  _fleetProfileEditMode = false;
+
+  var existingOv = document.getElementById('fleetProfileOverlay');
+  if(existingOv) existingOv.parentNode.removeChild(existingOv);
+
+  var displayName = v.name || v.plate || '';
+
+  var ov = document.createElement('div');
+  ov.id = 'fleetProfileOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch';
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:10;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="fleetBackBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px">' + fleettx('back') + '</button>';
+  html += '<div id="fleetProfileTitle" style="flex:1;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(displayName) + '</div>';
+  html += '<button id="fleetEditBtn" style="background:none;border:none;color:var(--primary);font-size:14px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('edit') + '</button>';
+  html += '</div>';
+
+  html += '<div style="padding:16px">';
+  html += '<div id="fleetProfileCard" style="background:var(--card);border-radius:16px;padding:20px;margin-bottom:14px;box-shadow:var(--shadow)"></div>';
+
+  html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
+  html += '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + fleettx('documents') + '</div>';
+  html += '<div id="fleetDocList"></div>';
+  html += '<div style="display:flex;gap:8px;margin-top:10px">';
+  html += '<button onclick="document.getElementById(\'fleetDocCameraInput\').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + fleettx('docCamera') + '</button>';
+  html += '<button onclick="document.getElementById(\'fleetDocFileInput\').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + fleettx('docUpload') + '</button>';
+  html += '</div>';
+  html += '<input type="file" id="fleetDocCameraInput" accept="image/*" capture="environment" style="display:none" onchange="fleetDocFileChosen(this,' + id + ')">';
+  html += '<input type="file" id="fleetDocFileInput" accept="image/*,application/pdf" style="display:none" onchange="fleetDocFileChosen(this,' + id + ')">';
+  html += '</div>';
+
+  html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
+  html += '<div style="font-size:15px;font-weight:700">' + fleettx('maintenance') + '</div>';
+  html += '<button onclick="maintOpenForm(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('maintAdd') + '</button>';
+  html += '</div>';
+  html += '<div id="maintSummary" style="font-size:13px;color:var(--text3);margin-bottom:8px"></div>';
+  html += '<div id="maintList"></div>';
+  html += '</div>';
+
+  html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
+  html += '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + fleettx('notes') + '</div>';
+  html += '<textarea id="fleetNotesArea" placeholder="' + fleettx('notesPh') + '" rows="4" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box">' + escHtml(v.notes || '') + '</textarea>';
+  html += '</div>';
+
+  html += '<button id="fleetDeleteBtn" style="width:100%;background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer;margin-top:6px">' + svgIcon('trash', 15) + ' ' + fleettx('deleteBtn') + '</button>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  renderVehicleProfileCard(v);
+  renderFleetDocsSection(v);
+  renderMaintSection(v);
+
+  document.getElementById('fleetBackBtn').onclick = closeVehicleProfile;
+  document.getElementById('fleetEditBtn').onclick = function() {
+    _fleetProfileEditMode = true;
+    renderVehicleProfileCard(v);
+  };
+
+  var notesArea = document.getElementById('fleetNotesArea');
+  if(notesArea) {
+    notesArea.onblur = function() { v.notes = notesArea.value; save(); };
+  }
+
+  document.getElementById('fleetDeleteBtn').onclick = function() {
+    if(!confirm(fleettx('confirmDelete'))) return;
+    (v.documents || []).forEach(function(d){ fleetDocDeleteRec(d.id); });
+    state.fleet = state.fleet.filter(function(x){ return x.id !== id; });
+    save();
+    var ovEl = document.getElementById('fleetProfileOverlay');
+    if(ovEl) ovEl.parentNode.removeChild(ovEl);
+    renderFleetPage();
+  };
+}
+
+// ── Fleet documents (mirrors employee documents: local IndexedDB store, custom naming, optional expiry) ──
+function makeFileStore(dbName) {
+  var inst = null;
+  return function() {
+    return new Promise(function(resolve, reject) {
+      if(inst) { resolve(inst); return; }
+      var req = indexedDB.open(dbName, 1);
+      req.onupgradeneeded = function(e) {
+        var d = e.target.result;
+        if(!d.objectStoreNames.contains('files')) d.createObjectStore('files', {keyPath:'id'});
+      };
+      req.onsuccess = function(e) { inst = e.target.result; resolve(inst); };
+      req.onerror = function() { reject(req.error); };
+    });
+  };
+}
+var fleetDocDb = makeFileStore('smartac_fleetdocs');
+function fleetDocPut(rec) {
+  return fleetDocDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var t = db.transaction('files', 'readwrite');
+      t.objectStore('files').put(rec);
+      t.oncomplete = res; t.onerror = function(){ rej(t.error); };
+    });
+  });
+}
+function fleetDocGet(id) {
+  return fleetDocDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var r = db.transaction('files').objectStore('files').get(id);
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  });
+}
+function fleetDocDeleteRec(id) {
+  return fleetDocDb().then(function(db) {
+    return new Promise(function(res) {
+      var t = db.transaction('files', 'readwrite');
+      t.objectStore('files').delete(id);
+      t.oncomplete = res; t.onerror = res;
+    });
+  }).catch(function(){});
+}
+
+var _fleetDocPendingFile = null;
+
+function fleetDocFileChosen(input, vehicleId) {
+  var f = input.files && input.files[0];
+  input.value = '';
+  if(!f) return;
+  var isPdf = f.type === 'application/pdf';
+  receiptCompress(f).then(function(blob) {
+    _fleetDocPendingFile = {blob: blob, type: isPdf ? 'application/pdf' : 'image/jpeg'};
+    fleetDocOpenNamePrompt(vehicleId, f.name || '');
+  });
+}
+
+function fleetDocOpenNamePrompt(vehicleId, suggestedName) {
+  var existing = document.getElementById('fleetDocNameOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+  if(!_fleetDocPendingFile) return;
+
+  var ov = document.createElement('div');
+  ov.id = 'fleetDocNameOverlay';
+  ov.className = 'modal-overlay open';
+  ov.style.zIndex = '99999'; // above the full-screen vehicle profile overlay (z-index 9999)
+  var defaultName = suggestedName.replace(/\.[^.]+$/, '');
+  var html = '';
+  html += '<div class="modal" id="fleetDocNameModal">';
+  html += '<button class="modal-close-btn" id="fleetDocNameCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + fleettx('docSave') + '</div>';
+  html += '<input class="input-field" id="fdn-name" placeholder="' + fleettx('docNamePh') + '" value="' + escHtml(defaultName) + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('docExpiry') + '</label>';
+  html += '<input class="input-field" id="fdn-expiry" type="date">';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="fdn-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fleettx('docSave') + '</button>';
+  html += '<button id="fdn-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fleettx('docCancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() {
+    _fleetDocPendingFile = null;
+    var o = document.getElementById('fleetDocNameOverlay');
+    if(o) o.parentNode.removeChild(o);
+  }
+  document.getElementById('fleetDocNameCloseBtn').onclick = close;
+  document.getElementById('fdn-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('fdn-saveBtn').onclick = function() {
+    var nameEl = document.getElementById('fdn-name');
+    var name = nameEl.value.trim();
+    if(!name) { nameEl.focus(); return; }
+    var expiry = document.getElementById('fdn-expiry').value || '';
+    fleetDocSave(vehicleId, name, expiry);
+    close();
+  };
+}
+
+function fleetDocSave(vehicleId, name, expiryDate) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v || !_fleetDocPendingFile) return;
+  var docId = Date.now();
+  var pending = _fleetDocPendingFile;
+  fleetDocPut({
+    id: docId,
+    vehicleId: vehicleId,
+    user: localStorage.getItem('smartac_user') || '',
+    name: name,
+    type: pending.type,
+    blob: pending.blob,
+    createdAt: new Date().toISOString()
+  }).then(function() {
+    if(!v.documents) v.documents = [];
+    v.documents.push({id: docId, name: name, type: pending.type, expiryDate: expiryDate || '', createdAt: new Date().toISOString()});
+    save();
+    _fleetDocPendingFile = null;
+    renderFleetDocsSection(v);
+    checkAppointmentReminders();
+  });
+}
+
+function fleetDocDelete(vehicleId, docId) {
+  if(!confirm(fleettx('confirmDeleteDoc'))) return;
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  v.documents = (v.documents || []).filter(function(d){ return d.id !== docId; });
+  save();
+  fleetDocDeleteRec(docId);
+  renderFleetDocsSection(v);
+}
+
+function fleetDocView(docId) {
+  fleetDocGet(docId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+}
+
+function fleetDocExpiryBadge(expiryDate) {
+  if(!expiryDate) return '';
+  var days = Math.round((new Date(expiryDate + 'T00:00:00') - new Date(today() + 'T00:00:00')) / 86400000);
+  var label = fleettx('docExpiresOn') + ' ' + formatDateDisplay(expiryDate);
+  var color = 'var(--text3)', bg = 'var(--bg)';
+  if(days < 0) { label = fleettx('docExpired') + ' · ' + formatDateDisplay(expiryDate); color = '#ef4444'; bg = 'rgba(239,68,68,0.1)'; }
+  else if(days <= 30) { label = fleettx('docExpiresSoon') + ' · ' + formatDateDisplay(expiryDate); color = '#ea580c'; bg = 'rgba(234,88,12,0.1)'; }
+  return '<span style="font-size:11px;font-weight:600;color:' + color + ';background:' + bg + ';padding:2px 8px;border-radius:8px;white-space:nowrap">' + label + '</span>';
+}
+
+function renderFleetDocsSection(v) {
+  var wrap = document.getElementById('fleetDocList');
+  if(!wrap) return;
+  var docs = v.documents || [];
+  if(!docs.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + fleettx('docNoDocs') + '</div>';
+    return;
+  }
+  var h = '';
+  docs.forEach(function(doc) {
+    var isPdf = doc.type === 'application/pdf';
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:18px;flex-shrink:0">' + (isPdf ? svgIcon('fileText', 20) : svgIcon('paperclip', 20)) + '</span>';
+    h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="fleetDocView(' + doc.id + ')">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(doc.name) + '</div>';
+    if(doc.expiryDate) h += '<div style="margin-top:3px">' + fleetDocExpiryBadge(doc.expiryDate) + '</div>';
+    h += '</div>';
+    h += '<button onclick="fleetDocDelete(' + v.id + ',' + doc.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 15) + '</button>';
+    h += '</div>';
+  });
+  wrap.innerHTML = h;
+}
+
+// ── Fleet maintenance & expenses log (record-keeping only — not posted to transactions/UVA) ──
+function maintOpenForm(vehicleId, editId) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  var editing = editId != null ? (v.maintenance || []).find(function(m){ return m.id === editId; }) : null;
+
+  var existing = document.getElementById('maintFormOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'maintFormOverlay';
+  ov.className = 'modal-overlay open';
+  ov.style.zIndex = '99999'; // above the full-screen vehicle profile overlay (z-index 9999)
+  var html = '';
+  html += '<div class="modal" id="maintFormModal">';
+  html += '<button class="modal-close-btn" id="maintFormCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + (editing ? fleettx('maintEditTitle') : fleettx('maintAddTitle')) + '</div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('maintDate') + '</label>';
+  html += '<input class="input-field" id="maint-date" type="date" value="' + (editing ? editing.date : today()) + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('maintCategory') + '</label>';
+  html += '<select id="maint-category" class="input-field">';
+  FLEET_CATS.forEach(function(ck) { html += '<option value="' + ck + '"' + (editing && editing.category === ck ? ' selected' : '') + '>' + fleettx(ck) + '</option>'; });
+  html += '</select>';
+  html += '<input class="input-field" id="maint-desc" placeholder="' + fleettx('maintDesc') + '" value="' + (editing ? escHtml(editing.description || '') : '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('maintCost') + '</label>';
+  html += '<input class="input-field" id="maint-cost" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" value="' + (editing ? editing.cost : '') + '">';
+  html += '<div id="maint-error" style="display:none;color:#ef4444;font-size:12px;margin:-8px 0 12px"></div>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="maintFormSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + fleettx('save') + '</button>';
+  html += '<button id="maintFormCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + fleettx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('maintFormOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('maintFormCloseBtn').onclick = close;
+  document.getElementById('maintFormCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('maintFormSaveBtn').onclick = function() {
+    var date = document.getElementById('maint-date').value;
+    var category = document.getElementById('maint-category').value;
+    var description = document.getElementById('maint-desc').value.trim();
+    var cost = parseAmount(document.getElementById('maint-cost').value);
+    var errEl = document.getElementById('maint-error');
+    if(!date || !cost || cost < 0 || isNaN(cost)) { errEl.textContent = fleettx('maintInvalid'); errEl.style.display = 'block'; return; }
+    if(!v.maintenance) v.maintenance = [];
+    if(editing) {
+      editing.date = date; editing.category = category; editing.description = description; editing.cost = cost;
+    } else {
+      v.maintenance.push({id: Date.now(), date: date, category: category, description: description, cost: cost});
+    }
+    save();
+    close();
+    renderMaintSection(v);
+  };
+}
+
+function maintDelete(vehicleId, entryId) {
+  if(!confirm(fleettx('maintConfirmDelete'))) return;
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  v.maintenance = (v.maintenance || []).filter(function(m){ return m.id !== entryId; });
+  save();
+  renderMaintSection(v);
+}
+
+function renderMaintSection(v) {
+  var list = document.getElementById('maintList');
+  var summary = document.getElementById('maintSummary');
+  if(!list || !summary) return;
+  var entries = (v.maintenance || []).slice().sort(function(a,b){
+    return a.date < b.date ? 1 : (a.date > b.date ? -1 : b.id - a.id);
+  });
+
+  var total = entries.reduce(function(s,m){ return s + (parseFloat(m.cost) || 0); }, 0);
+  summary.textContent = fleettx('maintTotal') + ': ' + fmt(total);
+
+  if(!entries.length) {
+    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + fleettx('maintNoEntries') + '</div>';
+    return;
+  }
+  var h = '';
+  entries.forEach(function(m) {
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-size:14px;font-weight:600">' + formatDateDisplay(m.date) + ' <span style="color:var(--text3);font-weight:400">· ' + fleettx(m.category) + '</span></div>';
+    if(m.description) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(m.description) + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:14px;font-weight:700;color:var(--expense);white-space:nowrap">' + fmt(m.cost) + '</div>';
+    h += '<button onclick="maintOpenForm(' + v.id + ',' + m.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('pencil', 14) + '</button>';
+    h += '<button onclick="maintDelete(' + v.id + ',' + m.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 14) + '</button>';
+    h += '</div>';
+  });
+  list.innerHTML = h;
+}
+
 // ── HELP PAGE ──
 var HELP_L = {
   title: {en:'Help', ar:'مساعدة', de:'Hilfe'},
@@ -3932,9 +4499,15 @@ function generateAutoAppointments() {
   });
   if(state.fleet && state.fleet.length) {
     state.fleet.forEach(function(v) {
+      var vName = v.name || v.plate || '';
       ['pickerl','tuev','insurance'].forEach(function(field) {
         if(v[field]) {
-          list.push({id:'auto-veh-'+v.id+'-'+field, title:(v.name||v.plate||'')+suffix, date:String(v[field]).substring(0,10), time:'', type:'vehicle', description:'', isAuto:true});
+          list.push({id:'auto-veh-'+v.id+'-'+field, title:vName+suffix, date:String(v[field]).substring(0,10), time:'', type:'vehicle', description:'', isAuto:true});
+        }
+      });
+      (v.documents || []).forEach(function(doc) {
+        if(doc.expiryDate) {
+          list.push({id:'auto-veh-'+v.id+'-doc-'+doc.id, title:vName+' — '+(doc.name||'')+suffix, date:String(doc.expiryDate).substring(0,10), time:'', type:'vehicle', description:'', isAuto:true});
         }
       });
     });
@@ -11847,6 +12420,7 @@ function logout() {
   state.debts = [];
   state.clients = [];
   state.employees = [];
+  state.fleet = [];
   state.recurring = [];
   state.budgets = {};
   // Hide any open overlays
@@ -13498,7 +14072,7 @@ function cdConfirmDelete() {
     return;
   }
   // Correct — clear all data
-  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[];
+  state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[];
   state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
