@@ -2753,9 +2753,6 @@ var LANG = {
     selectLang: 'Select language',
     notifOn: "9 PM notification",
     amount: "Amount",
-    taxConfig: "Tax Configuration", taxName: "Tax Name", taxRate: "Tax Rate (%)", taxType: "Tax Type",
-    taxOnSales: "On Sales", taxOnProfit: "On Profit", taxBoth: "Both",
-    taxSave: "Save Tax Settings", taxLabel: "Tax",
     forecastTitle: "📈 Forecast", forecastIncome: "Expected Income", forecastProfit: "Expected Profit",
     next30: "Next 30 Days", nextMonth: "Next Month", nextQuarter: "Next Quarter", nextYear: "Next Year",
     forecastDisclaimer: "⚠️ Forecasts are estimates based on your historical data. Accuracy depends on data entered. The user is solely responsible for any decisions made based on these forecasts.",
@@ -2829,9 +2826,6 @@ var LANG = {
     selectLang: 'اختر اللغة',
     notifOn: "إشعار الساعة 9 مساءً",
     amount: "المبلغ",
-    taxConfig: "إعداد الضريبة", taxName: "اسم الضريبة", taxRate: "نسبة الضريبة (%)", taxType: "نوع الضريبة",
-    taxOnSales: "على المبيعات", taxOnProfit: "على الأرباح", taxBoth: "كلاهما",
-    taxSave: "حفظ إعدادات الضريبة", taxLabel: "الضريبة",
     forecastTitle: "📈 التوقعات", forecastIncome: "الدخل المتوقع", forecastProfit: "الربح المتوقع",
     next30: "الـ 30 يوم القادمة", nextMonth: "الشهر القادم", nextQuarter: "الربع القادم", nextYear: "السنة القادمة",
     forecastDisclaimer: "⚠️ التوقعات تقديرية بناءً على بياناتك التاريخية. الدقة تعتمد على البيانات المدخلة. المستخدم مسؤول مسؤولية كاملة عن أي قرارات تُتخذ بناءً على هذه التوقعات.",
@@ -2905,9 +2899,6 @@ var LANG = {
     selectLang: 'Sprache auswählen',
     notifOn: "Benachrichtigung um 21 Uhr",
     amount: "Betrag",
-    taxConfig: "Steuerkonfiguration", taxName: "Steuerbezeichnung", taxRate: "Steuersatz (%)", taxType: "Steuertyp",
-    taxOnSales: "Auf Umsatz", taxOnProfit: "Auf Gewinn", taxBoth: "Beides",
-    taxSave: "Steuereinstellungen speichern", taxLabel: "Steuer",
     forecastTitle: "📈 Prognose", forecastIncome: "Erwartete Einnahmen", forecastProfit: "Erwarteter Gewinn",
     next30: "Nächste 30 Tage", nextMonth: "Nächster Monat", nextQuarter: "Nächstes Quartal", nextYear: "Nächstes Jahr",
     forecastDisclaimer: "⚠️ Prognosen sind Schätzungen basierend auf Ihren historischen Daten. Die Genauigkeit hängt von den eingegebenen Daten ab. Der Benutzer trägt die alleinige Verantwortung für Entscheidungen auf Basis dieser Prognosen.",
@@ -2963,7 +2954,6 @@ var state = {
   employees: [],
   recurring: [],
   budgets: {},
-  tax: {name:'', rate:0, type:'on_sales'},
   theme: 'light',
   businessName: '',
   fixedIncome: [],
@@ -3178,7 +3168,6 @@ function save() {
   localStorage.setItem(uk('recurring'), JSON.stringify(state.recurring));
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
-  localStorage.setItem(uk('tax'), JSON.stringify(state.tax));
   localStorage.setItem(uk('uvaInterval'), state.uvaInterval || 'quarter');
   localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
   localStorage.setItem(uk('theme'), state.theme);
@@ -3222,7 +3211,6 @@ function loadUserData() {
   state.inventory = JSON.parse(localStorage.getItem(uk('inventory')) || '[]');
   state.recurring = JSON.parse(localStorage.getItem(uk('recurring')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
-  state.tax = JSON.parse(localStorage.getItem(uk('tax')) || '{"name":"","rate":0,"type":"on_sales"}');
   state.uvaInterval = localStorage.getItem(uk('uvaInterval')) || 'quarter';
   state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
   state.theme = localStorage.getItem(uk('theme')) || 'light';
@@ -7631,29 +7619,6 @@ function renderHome() {
   if(incomeAmtEl) incomeAmtEl.textContent = fmt(income);
   if(expenseAmtEl) expenseAmtEl.textContent = fmt(expense);
 
-  // Net Income / Total Tax cards (uses the same tax configuration as Fixed Costs > Tax Configuration)
-  var taxCfg = state.tax || {rate:0, type:'on_sales'};
-  var taxTotal = 0;
-  if(taxCfg.rate > 0) {
-    if(taxCfg.type === 'on_sales') taxTotal = income * taxCfg.rate / 100;
-    else if(taxCfg.type === 'on_profit') taxTotal = net * taxCfg.rate / 100;
-    else taxTotal = income * taxCfg.rate / 100 + net * taxCfg.rate / 100;
-    taxTotal = Math.max(0, taxTotal);
-  }
-  var nettoTotal = net - taxTotal;
-  var netIncomeLblEl = document.getElementById('netIncomeLbl');
-  var netIncomeSubEl = document.getElementById('netIncomeSub');
-  var totalTaxLblEl = document.getElementById('totalTaxLbl');
-  var totalTaxSubEl = document.getElementById('totalTaxSub');
-  var netIncomeAmtEl = document.getElementById('netIncomeAmt');
-  var totalTaxAmtEl = document.getElementById('totalTaxAmt');
-  if(netIncomeLblEl) netIncomeLblEl.textContent = {en:'Net Income', ar:'صافي الدخل', de:'Nettoeinkommen'}[state.lang] || 'Net Income';
-  if(netIncomeSubEl) netIncomeSubEl.textContent = {en:'After expenses & tax', ar:'بعد المصاريف والضريبة', de:'Nach Ausgaben & Steuer'}[state.lang] || 'After expenses & tax';
-  if(totalTaxLblEl) totalTaxLblEl.textContent = {en:'Total Tax', ar:'إجمالي الضريبة', de:'Gesamtsteuer'}[state.lang] || 'Total Tax';
-  if(totalTaxSubEl) totalTaxSubEl.textContent = {en:'Collected VAT', ar:'ضريبة محصلة', de:'Erhobene MwSt.'}[state.lang] || 'Collected VAT';
-  if(netIncomeAmtEl) netIncomeAmtEl.textContent = fmt(nettoTotal);
-  if(totalTaxAmtEl) totalTaxAmtEl.textContent = fmt(taxTotal);
-
   // Mobile Zoho-style summary cards: Receivables/Payables are a running
   // balance (unpaid invoices), not filtered to the selected period like
   // income/expense are.
@@ -8150,7 +8115,7 @@ function renderChart() {
   var titleEl = document.getElementById('rpt-chart-title');
   if(titleEl) titleEl.textContent = (titleMap[period]&&titleMap[period][lang]) || titleMap[period].en;
 
-  // Add fixed costs / salaries / tax to expense bars based on period
+  // Add fixed costs / salaries to expense bars based on period
   var fixedMonthlyChart = state.recurring.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0)
     + state.employees.reduce(function(s,e){return s+(parseFloat(e.salary)||0);},0);
   var fixedIncMonthlyChart = (state.fixedIncome||[]).reduce(function(s,fi){return s+(parseFloat(fi.amount)||0);},0);
@@ -8160,13 +8125,6 @@ function renderChart() {
     if(period==='month') { d.inc += fixedIncMonthlyChart / chartPeriodBars; d.exp += fixedMonthlyChart / chartPeriodBars; }
     else if(period==='year') { d.inc += fixedIncMonthlyChart; d.exp += fixedMonthlyChart; }
     else if(period==='quarter') { d.inc += fixedIncMonthlyChart; d.exp += fixedMonthlyChart; }
-    // Add tax to expense
-    var barNet = d.inc - d.exp;
-    var taxObj2 = state.tax || {rate:0, type:'on_sales'};
-    if(taxObj2.rate > 0) {
-      var taxBar = taxObj2.type==='on_sales' ? d.inc*(taxObj2.rate/100) : taxObj2.type==='on_profit' ? barNet*(taxObj2.rate/100) : d.inc*(taxObj2.rate/100)+barNet*(taxObj2.rate/100);
-      d.exp += Math.max(0, taxBar);
-    }
   });
   var maxVal = Math.max.apply(null, days.map(function(d){return Math.max(d.inc,d.exp);}).concat([1]));
   days.forEach(function(d) {
@@ -8337,15 +8295,11 @@ function renderReports() {
   var margin = income > 0 ? ((net/income)*100).toFixed(1) : (expense > 0 ? ((net/expense)*100).toFixed(1) : '0');
 
   var curLbl = getCurrencyLabel(state.currency);
-  var taxObj = state.tax || {name:'', rate:0, type:'on_sales'};
-  var taxAmt = getTaxAmount(income, net);
-  var taxName = taxObj.name || t('taxLabel');
   var rows2 = [
     [t('totalIncome'),    fmt(income),                          'var(--green)'],
     [t('totalExpenses'),  fmt(expense),                         'var(--red)'],
   ];
   if(fixedIncRpt > 0) rows2.push([{en:'Fixed Income',ar:'الدخل الثابت',de:'Festes Einkommen'}[state.lang]||'Fixed Income', fmt(fixedIncRpt), 'var(--accent)']);
-  if(taxAmt > 0) rows2.push([taxName, fmt(taxAmt), 'var(--orange)']);
   rows2.push([t('netProfit'), (net<0?'-':'')+fmt(Math.abs(net)), net>=0?'var(--green)':'var(--red)']);
   rows2.push([t('profitMargin'), margin+'%', 'var(--primary)']);
   rows2.push([t('transactions'), periodTxs.length, 'var(--text)']);
@@ -9306,7 +9260,7 @@ function exportBackup() {
     transactions: state.transactions, clients: state.clients, suppliers: state.suppliers,
     issuedInvoices: state.issuedInvoices, receipts: state.receipts, receivedInvoices: state.receivedInvoices,
     recurring: state.recurring, employees: state.employees, fixedIncome: state.fixedIncome, debts: state.debts,
-    budgets: state.budgets, tax: state.tax, currency: state.currency, lang: state.lang, theme: state.theme,
+    budgets: state.budgets, currency: state.currency, lang: state.lang, theme: state.theme,
     businessLogo: state.businessLogo, businessAddress: state.businessAddress, businessTaxId: state.businessTaxId,
     businessPhone: state.businessPhone, businessEmail: state.businessEmail, dateFormat: state.dateFormat,
     notifyRecurring: state.notifyRecurring, notifyInvoiceDue: state.notifyInvoiceDue,
@@ -9345,7 +9299,6 @@ function handleImportBackup(file) {
     state.fixedIncome = data.fixedIncome || [];
     state.debts = data.debts || [];
     state.budgets = data.budgets || {};
-    state.tax = data.tax || {name:'', rate:0, type:'on_sales'};
     state.currency = data.currency || state.currency;
     state.lang = data.lang || state.lang;
     state.theme = data.theme || state.theme;
@@ -11556,38 +11509,6 @@ function renderFixedPage() {
   h += '<button id="fp-add-rec" style="background:var(--bg);border:1.5px dashed var(--border);color:var(--primary);border-radius:12px;padding:10px;width:100%;font-size:13px;font-weight:600;cursor:pointer">'+tx('addRec')+'</button>';
   h += '</div>';
 
-  // ── TAX CONFIGURATION ──
-  var taxObj = state.tax || {name:'', rate:0, type:'on_sales'};
-  var taxL = {
-    title:   {en:'Tax Configuration', ar:'إعداد الضريبة', de:'Steuerkonfiguration'},
-    name:    {en:'Tax Name (e.g. VAT)', ar:'اسم الضريبة (مثال: ضريبة القيمة المضافة)', de:'Steuerbezeichnung (z.B. MwSt)'},
-    rate:    {en:'Tax Rate (%)', ar:'نسبة الضريبة (%)', de:'Steuersatz (%)'},
-    type:    {en:'Tax Type', ar:'نوع الضريبة', de:'Steuertyp'},
-    onSales: {en:'On Sales (applies to income)', ar:'على المبيعات (يطبق على الدخل)', de:'Auf Umsatz (gilt für Einnahmen)'},
-    onProfit:{en:'On Profit (applies to net profit)', ar:'على الأرباح (يطبق على صافي الربح)', de:'Auf Gewinn (gilt für Nettogewinn)'},
-    both:    {en:'Both', ar:'كلاهما', de:'Beides'},
-    save:    {en:'Save Tax Settings', ar:'حفظ إعدادات الضريبة', de:'Steuereinstellungen speichern'},
-    none:    {en:'Tax not configured (rate = 0 to hide)', ar:'الضريبة غير محددة (ضع 0 للإخفاء)', de:'Steuer nicht konfiguriert (0 = ausblenden)'},
-  };
-  function taxTx(k){ return (taxL[k]&&taxL[k][lang])||(taxL[k]&&taxL[k].en)||k; }
-  h += '<div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--border)">';
-  h += '<div style="font-size:17px;font-weight:700;margin-bottom:4px">'+svgIcon('fileText',17)+' '+taxTx('title')+'</div>';
-  if(taxObj.rate>0) h += '<div style="font-size:12px;color:var(--orange);font-weight:600;margin-bottom:12px">'+(taxObj.name||'Tax')+': '+taxObj.rate+'% ('+(taxObj.type==='on_sales'?taxTx('onSales').substring(0,20):taxObj.type==='on_profit'?taxTx('onProfit').substring(0,20):taxTx('both').substring(0,20))+')</div>';
-  else h += '<div style="font-size:12px;color:var(--text3);margin-bottom:12px">'+taxTx('none')+'</div>';
-  h += '<div style="background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow)">';
-  h += '<label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:4px">'+taxTx('name')+'</label>';
-  h += '<input id="tax-name-input" value="'+escHtml(taxObj.name||'')+'" placeholder="VAT / MwSt / ضريبة..." style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:10px;outline:none">';
-  h += '<label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:4px">'+taxTx('rate')+'</label>';
-  h += '<input id="tax-rate-input" type="number" min="0" max="100" value="'+(taxObj.rate||0)+'" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:10px;outline:none">';
-  h += '<label style="font-size:12px;color:var(--text3);font-weight:600;display:block;margin-bottom:4px">'+taxTx('type')+'</label>';
-  h += '<select id="tax-type-sel" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:12px;outline:none">';
-  h += '<option value="on_sales"'+(taxObj.type==='on_sales'?' selected':'')+'>'+taxTx('onSales')+'</option>';
-  h += '<option value="on_profit"'+(taxObj.type==='on_profit'?' selected':'')+'>'+taxTx('onProfit')+'</option>';
-  h += '<option value="both"'+(taxObj.type==='both'?' selected':'')+'>'+taxTx('both')+'</option>';
-  h += '</select>';
-  h += '<button id="fp-save-tax" style="width:100%;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer">'+taxTx('save')+'</button>';
-  h += '</div></div>';
-
   h += '</div>';
 
   page.innerHTML = h;
@@ -11609,8 +11530,6 @@ function renderFixedPage() {
     var btn = document.getElementById('fp-delrec_'+r.id);
     if(btn)(function(id){ btn.onclick=function(){ state.recurring=state.recurring.filter(function(x){return x.id!==id;}); save(); renderFixedPage(); }; })(r.id);
   });
-  var taxBtn = document.getElementById('fp-save-tax');
-  if(taxBtn) taxBtn.onclick = saveTaxConfig;
   // Fixed income events
   var addFiBtn = document.getElementById('fp-add-fi');
   if(addFiBtn) addFiBtn.onclick = function(){ document.getElementById('fp-fi-form').style.display='block'; };
@@ -13502,23 +13421,6 @@ function toggleTheme() {
 }
 
 // ═══════════════ TAX HELPERS ═══════════════
-function getTaxAmount(income, net) {
-  var tax = state.tax || {name:'', rate:0, type:'on_sales'};
-  var rate = parseFloat(tax.rate) || 0;
-  if(!rate) return 0;
-  if(tax.type === 'on_sales') return income * (rate / 100);
-  if(tax.type === 'on_profit') return net * (rate / 100);
-  if(tax.type === 'both') return income * (rate / 100) + net * (rate / 100);
-  return 0;
-}
-function saveTaxConfig() {
-  var name = (document.getElementById('tax-name-input') ? document.getElementById('tax-name-input').value : '').trim();
-  var rate = parseFloat(document.getElementById('tax-rate-input') ? document.getElementById('tax-rate-input').value : 0) || 0;
-  var type = document.getElementById('tax-type-sel') ? document.getElementById('tax-type-sel').value : 'on_sales';
-  state.tax = {name:name, rate:rate, type:type};
-  save();
-  renderFixedPage();
-}
 
 // ═══════════════ FORECAST ═══════════════
 function renderForecast() {
@@ -13627,8 +13529,6 @@ function doExportPDF() {
   income += fixedIncR;
   var expense = txExp + fixedCostsR;
   var net = income - expense;
-  var taxAmt = getTaxAmount(income, net);
-  var taxName = (state.tax||{}).name || 'Tax';
   var margin2 = income > 0 ? ((net/income)*100).toFixed(1)+'%' : '0%';
   var allInc = state.transactions.filter(function(t){return t&&t.type==='income';});
   var allExp = state.transactions.filter(function(t){return t&&t.type==='expense';});
@@ -13642,7 +13542,7 @@ function doExportPDF() {
     id:Date.now(), date:today(), period:period,
     businessName:state.businessName||'',
     username:localStorage.getItem('smartac_user')||'',
-    summary:{income:income,expenses:expense,tax:taxAmt,taxName:taxName,netProfit:net,profitMargin:margin2,transactions:txs.length},
+    summary:{income:income,expenses:expense,netProfit:net,profitMargin:margin2,transactions:txs.length},
     forecast:{
       next30days:{income:mAvgInc,   profit:mAvgInc-mAvgExp},
       nextMonth: {income:mAvgInc,   profit:mAvgInc-mAvgExp},
@@ -13665,9 +13565,6 @@ function doExport(action) {
   var income = txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
   var expense = txs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
   var net = income - expense;
-  var tax = state.tax || {};
-  var taxAmt = getTaxAmount(income, net);
-  var taxName = tax.name || t('taxLabel');
   var periodLabels = {day:{en:'Today',ar:'اليوم',de:'Heute'},week:{en:'This Week',ar:'هذا الأسبوع',de:'Diese Woche'},month:{en:'This Month',ar:'هذا الشهر',de:'Diesen Monat'},quarter:{en:'This Quarter',ar:'هذا الربع',de:'Dieses Quartal'},year:{en:'This Year',ar:'هذا العام',de:'Dieses Jahr'}};
   var periodLbl = (periodLabels[period]&&periodLabels[period][lang])||period;
   var biz = state.businessName || localStorage.getItem('smartac_user') || 'SmartAc';
@@ -13677,7 +13574,6 @@ function doExport(action) {
     + '💰 ' + t('totalIncome') + ': ' + fmt(income) + '\n'
     + '💸 ' + t('totalExpenses') + ': ' + fmt(expense) + '\n'
     + '📈 ' + t('netProfit') + ': ' + fmt(net) + '\n'
-    + (taxAmt ? '🧾 ' + taxName + ': ' + fmt(taxAmt) + '\n' : '')
     + 'Generated: ' + date;
   if(action === 'whatsapp') {
     document.getElementById('exportOverlay').classList.remove('open');
@@ -14634,7 +14530,6 @@ function generateReportPDF(r) {
   var netColor = net >= 0 ? [26,122,82] : [180,30,30];
   y = row2('Total Income',       _pdfFmt(s.income || 0),    y, [26,122,82]);
   y = row2('Total Expenses',     _pdfFmt(s.expenses || 0),  y, [180,30,30]);
-  if(s.tax) y = row2((s.taxName || 'Tax') + ' (Tax)',        _pdfFmt(s.tax),            y, [200,130,0]);
   y = row2('Net Profit',         _pdfFmt(net),               y, netColor);
   y = row2('Profit Margin',      s.profitMargin || '0%',     y);
   y = row2('Transactions',       String(s.transactions || 0),y);
