@@ -3513,7 +3513,7 @@ var EMP_L = {
   whNoEntries:{en:'No work hours logged yet', ar:'لا توجد ساعات عمل مسجلة بعد', de:'Noch keine Arbeitszeiten erfasst'},
   whThisMonth:{en:'This month', ar:'الشهر الحالي', de:'Diesen Monat'},
   whHoursShort:{en:'h', ar:'س', de:'Std'},
-  whConfirmDelete: {en:'Delete this work hours entry?', ar:'حذف تسجيل الساعات ده؟', de:'Diesen Arbeitszeiteintrag löschen?'},
+  whConfirmDelete: {en:'Delete this work hours entry?', ar:'هل تريد حذف هذا التسجيل؟', de:'Diesen Arbeitszeiteintrag löschen?'},
   whInvalid:  {en:'Enter a valid period and a total number of hours', ar:'ادخل فترة صحيحة وإجمالي عدد ساعات', de:'Bitte gültigen Zeitraum und Gesamtstunden eingeben'},
 };
 function emptx(k) { return (EMP_L[k] && EMP_L[k][state.lang]) || (EMP_L[k] && EMP_L[k].en) || k; }
@@ -3808,8 +3808,8 @@ function renderEmployeeProfile(id) {
   }
 
   var deleteBtn = document.getElementById('empDeleteBtn');
-  if(deleteBtn) deleteBtn.onclick = function() {
-    if(!confirm(emptx('confirmDelete'))) return;
+  if(deleteBtn) deleteBtn.onclick = async function() {
+    if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, emptx('confirmDelete')))) return;
     (emp.documents || []).forEach(function(d){ empDocDeleteRec(d.id); });
     state.employees = state.employees.filter(function(x){ return x.id !== id; });
     save();
@@ -4206,8 +4206,8 @@ function renderVehicleProfile(id) {
     notesArea.onblur = function() { v.notes = notesArea.value; save(); };
   }
 
-  document.getElementById('fleetDeleteBtn').onclick = function() {
-    if(!confirm(fleettx('confirmDelete'))) return;
+  document.getElementById('fleetDeleteBtn').onclick = async function() {
+    if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, fleettx('confirmDelete')))) return;
     (v.documents || []).forEach(function(d){ fleetDocDeleteRec(d.id); });
     state.fleet = state.fleet.filter(function(x){ return x.id !== id; });
     save();
@@ -4340,8 +4340,8 @@ function fleetDocSave(vehicleId, name, expiryDate) {
   });
 }
 
-function fleetDocDelete(vehicleId, docId) {
-  if(!confirm(fleettx('confirmDeleteDoc'))) return;
+async function fleetDocDelete(vehicleId, docId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, fleettx('confirmDeleteDoc')))) return;
   var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
   if(!v) return;
   v.documents = (v.documents || []).filter(function(d){ return d.id !== docId; });
@@ -4445,8 +4445,8 @@ function maintOpenForm(vehicleId, editId) {
   };
 }
 
-function maintDelete(vehicleId, entryId) {
-  if(!confirm(fleettx('maintConfirmDelete'))) return;
+async function maintDelete(vehicleId, entryId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, fleettx('maintConfirmDelete')))) return;
   var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
   if(!v) return;
   v.maintenance = (v.maintenance || []).filter(function(m){ return m.id !== entryId; });
@@ -4621,8 +4621,8 @@ function assetOpenForm(editId) {
   };
 }
 
-function assetDelete(id) {
-  if(!confirm(assetstx('confirmDelete'))) return;
+async function assetDelete(id) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, assetstx('confirmDelete')))) return;
   state.assets = (state.assets || []).filter(function(a){ return a.id !== id; });
   save();
   renderAssetsPage();
@@ -4630,7 +4630,7 @@ function assetDelete(id) {
 
 function assetsExportPDF() {
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
-  if(!JsPdf) { alert('PDF library not available'); return; }
+  if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
   var vehicles = (state.fleet || []).filter(function(v){ return calcDepreciation(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
   var generalAssets = state.assets || [];
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
@@ -4838,8 +4838,8 @@ function productOpenForm(editId) {
   };
 }
 
-function productDelete(id) {
-  if(!confirm(invtx('confirmDelete'))) return;
+async function productDelete(id) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, invtx('confirmDelete')))) return;
   state.inventory = (state.inventory || []).filter(function(p){ return p.id !== id; });
   save();
   renderInventoryPage();
@@ -4847,7 +4847,7 @@ function productDelete(id) {
 
 function inventoryExportPDF() {
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
-  if(!JsPdf) { alert('PDF library not available'); return; }
+  if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
   var products = state.inventory || [];
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
   var y = 20;
@@ -5205,8 +5205,8 @@ function kalChangeMonth(delta) {
   renderKalenderPage();
 }
 
-function deleteAppointment(id) {
-  if(!confirm(kaltx('confirmDelete'))) return;
+async function deleteAppointment(id) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, kaltx('confirmDelete')))) return;
   state.appointments = state.appointments.filter(function(a){ return a.id !== id; });
   save();
   renderKalenderPage();
@@ -5546,8 +5546,8 @@ function formatNoteDate(iso) {
   return formatDateDisplay(d.toISOString().substring(0, 10));
 }
 
-function deleteNote(id) {
-  if(!confirm(nztx('confirmDelete'))) return;
+async function deleteNote(id) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, nztx('confirmDelete')))) return;
   state.notes = state.notes.filter(function(n){ return n.id !== id; });
   save();
   renderNotizenPage();
@@ -6268,7 +6268,7 @@ var UVA_TXT = {
   revokeBtn:  {en:'Revoke approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'},
   confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'هل تريد اعتماد هذه الفترة؟ ستُعتبر الأرقام نهائية وستُصنَّف كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
   confirmRev: {en:'Revoke the approval for this period?', ar:'هل تريد إلغاء اعتماد هذه الفترة؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
-  lockWarn:   {en:'⚠️ This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'⚠️ الفترة دي معتمدة (Freigabe). التعديل هيلغي الاعتماد. تكمل؟', de:'⚠️ Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
+  lockWarn:   {en:'⚠️ This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'⚠️ هذه الفترة معتمدة بالفعل (Freigabe). التعديل سيؤدي إلى إلغاء الاعتماد. هل تريد المتابعة؟', de:'⚠️ Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
   fgAt:       {en:'Approved on', ar:'اعتمدت في', de:'Freigegeben am'},
   disclaimer: {en:'Preparation for the UVA — not tax advice. Official filing is done via FinanzOnline. PDF/Excel exports are in German for your accountant.',
                ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
@@ -6337,9 +6337,10 @@ function uvaDateLocked(dateStr) {
 }
 
 // Confirm with the user, then revoke every Freigabe covering this date. Returns false = abort.
-function uvaConfirmUnlock(dateStr) {
+async function uvaConfirmUnlock(dateStr) {
   if(!uvaDateLocked(dateStr)) return true;
-  if(!confirm(uvat('lockWarn'))) return false;
+  var unlockTitle = {en:'🔓 Unlock Period', ar:'🔓 فك القفل', de:'🔓 Zeitraum entsperren'};
+  if(!(await confirmAsync(unlockTitle[state.lang]||unlockTitle.en, uvat('lockWarn')))) return false;
   ['month','quarter','year'].forEach(function(iv) {
     var k = uvaKeyForDate(dateStr, iv);
     if(state.uvaFreigaben[k]) delete state.uvaFreigaben[k];
@@ -6445,14 +6446,16 @@ function renderUva() {
   }
 }
 
-function uvaToggleFreigabe() {
+async function uvaToggleFreigabe() {
   var key = uvaCurrentKey();
   if(!state.uvaFreigaben) state.uvaFreigaben = {};
   if(state.uvaFreigaben[key]) {
-    if(!confirm(uvat('confirmRev'))) return;
+    var revTitle = {en:'🔓 Revoke Approval', ar:'🔓 إلغاء الاعتماد', de:'🔓 Freigabe zurückziehen'};
+    if(!(await confirmAsync(revTitle[state.lang]||revTitle.en, uvat('confirmRev')))) return;
     delete state.uvaFreigaben[key];
   } else {
-    if(!confirm(uvat('confirmFg'))) return;
+    var fgTitle = {en:'✅ Approve Period', ar:'✅ اعتماد الفترة', de:'✅ Zeitraum freigeben'};
+    if(!(await confirmAsync(fgTitle[state.lang]||fgTitle.en, uvat('confirmFg')))) return;
     state.uvaFreigaben[key] = {at: new Date().toISOString()};
   }
   save();
@@ -6488,7 +6491,7 @@ function uvaExportPDF() {
   var key = uvaCurrentKey();
   var data = uvaExportRows(key);
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
-  if(!JsPdf) { alert('PDF library not available'); return; }
+  if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
   var y = 20;
   doc.setFontSize(16); doc.setFont(undefined, 'bold');
@@ -6828,8 +6831,8 @@ function empDocSave(empId, name, expiryDate) {
   });
 }
 
-function empDocDelete(empId, docId) {
-  if(!confirm(emptx('confirmDeleteDoc'))) return;
+async function empDocDelete(empId, docId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, emptx('confirmDeleteDoc')))) return;
   var emp = (state.employees || []).find(function(e){ return e.id === empId; });
   if(!emp) return;
   emp.documents = (emp.documents || []).filter(function(d){ return d.id !== docId; });
@@ -6972,8 +6975,8 @@ function whOpenForm(empId, editId) {
   };
 }
 
-function whDelete(empId, entryId) {
-  if(!confirm(emptx('whConfirmDelete'))) return;
+async function whDelete(empId, entryId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, emptx('whConfirmDelete')))) return;
   var emp = (state.employees || []).find(function(e){ return e.id === empId; });
   if(!emp) return;
   emp.workHours = (emp.workHours || []).filter(function(w){ return w.id !== entryId; });
@@ -7302,17 +7305,17 @@ function refreshDebtPersonDropdown() {
   }
 }
 
-function addTransaction() {
+async function addTransaction() {
   // Free-plan limit disabled until the real freemium system (Phase 4: Stripe + Upgrade Modal) is built
   var amount = parseAmount(document.getElementById('amountInput').value);
   var name = document.getElementById('nameInput').value.trim() || state.currentCat;
-  if(!amount || amount <= 0) { alert('Please enter a valid amount'); return; }
+  if(!amount || amount <= 0) { showToast('Please enter a valid amount', 'error'); return; }
 
   var dateEl = document.getElementById('dateInput');
   var txDate = (dateEl && dateEl.value) ? dateEl.value : today();
 
   // Approved (freigegeben) UVA periods must not change silently
-  if(state.currentType !== 'debt' && !uvaConfirmUnlock(txDate)) return;
+  if(state.currentType !== 'debt' && !(await uvaConfirmUnlock(txDate))) return;
 
   var newDebtContactName = '';
   if(state.currentType === 'debt') {
@@ -7806,8 +7809,8 @@ function showTxDetail(tx) {
   var delLbl = {en:'🗑 Delete', ar:'🗑 حذف', de:'🗑 Löschen'};
   if(delBtn) {
     delBtn.textContent = delLbl[lang]||delLbl.en;
-    delBtn.onclick = function(){
-      if(!uvaConfirmUnlock(tx.date)) return;
+    delBtn.onclick = async function(){
+      if(!(await uvaConfirmUnlock(tx.date))) return;
       state.transactions = state.transactions.filter(function(t){ return t.id !== tx.id; });
       if(tx.receiptId) receiptDeleteRec(tx.receiptId);
       save(); renderHome(); closeTxDetail();
@@ -7851,7 +7854,7 @@ function toggleTxEdit(show) {
   if(editBtn) editBtn.style.background = show ? 'rgba(59,91,219,0.2)' : 'rgba(59,91,219,0.1)';
 }
 
-function saveTxEdit() {
+async function saveTxEdit() {
   if(!_currentTx) return;
   var nameEl = document.getElementById('txEdit-name');
   var amtEl = document.getElementById('txEdit-amount');
@@ -7860,8 +7863,8 @@ function saveTxEdit() {
   var newAmt = amtEl ? parseAmount(amtEl.value)||_currentTx.amount : _currentTx.amount;
   var newDate = dateEl ? dateEl.value||_currentTx.date : _currentTx.date;
   if(!newName || newAmt <= 0) return;
-  if(!uvaConfirmUnlock(_currentTx.date)) return;
-  if(newDate !== _currentTx.date && !uvaConfirmUnlock(newDate)) return;
+  if(!(await uvaConfirmUnlock(_currentTx.date))) return;
+  if(newDate !== _currentTx.date && !(await uvaConfirmUnlock(newDate))) return;
 
   var tx = state.transactions.find(function(t){ return t.id === _currentTx.id; });
   if(tx) {
@@ -8331,7 +8334,7 @@ function shareReport() {
   var periodLabel = (periodLabels[state.period]&&periodLabels[state.period][lang])||'Period';
   var text = '📊 '+periodLabel+'\n\n💰 '+t('totalIncome')+': '+fmt(income)+'\n💸 '+t('totalExpenses')+': '+fmt(expense)+'\n📈 '+t('netProfit')+': '+fmt(income-expense)+'\n\nSent via SmartAc';
   if(navigator.share) navigator.share({text:text});
-  else { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text); alert(t('reportCopied')||'Report copied!'); }
+  else { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text); showToast(t('reportCopied')||'Report copied!', 'success'); }
 }
 
 // ── DEBTS PAGE ──
@@ -8678,7 +8681,7 @@ var SETTINGS_L = {
   profileCountry:   {en:'Country', ar:'الدولة', de:'Land'},
   bizTypeLbl:       {en:'Business Type', ar:'نوع النشاط', de:'Unternehmensart'},
   bizTypeNote:      {en:'Changing this shows/hides the matching tools (e.g. Fleet, Inventory). Your data is kept either way.', ar:'تغيير النوع بيظهر/يخفي الأدوات المرتبطة بيه (زي الأسطول أو المخزون). بياناتك بتفضل محفوظة في الحالتين.', de:'Diese Änderung zeigt/verbirgt die passenden Tools (z. B. Fuhrpark, Lagerbestand). Ihre Daten bleiben in jedem Fall erhalten.'},
-  bizTypeChangeConfirm: {en:'Change business type? Tools for the previous type stay hidden but your existing data is not deleted.', ar:'تأكيد تغيير نوع النشاط؟ أدوات النوع السابق هتتخفي بس بياناتها مش هتتمسح.', de:'Unternehmensart ändern? Tools der vorherigen Art werden ausgeblendet, Ihre Daten bleiben aber erhalten.'},
+  bizTypeChangeConfirm: {en:'Change business type? Tools for the previous type stay hidden but your existing data is not deleted.', ar:'هل تريد تغيير نوع النشاط؟ ستُخفى أدوات النوع السابق، لكن بياناته لن تُحذف.', de:'Unternehmensart ändern? Tools der vorherigen Art werden ausgeblendet, Ihre Daten bleiben aber erhalten.'},
   bizTypeGeneral:      {en:'General / Freelancer', ar:'عام / فريلانسر', de:'Allgemein / Freelancer'},
   bizTypeTransport:    {en:'Transport / Logistics', ar:'نقل وخدمات', de:'Transport / Logistik'},
   bizTypeRetail:       {en:'Retail / Shop', ar:'محل / تجزئة', de:'Einzelhandel / Shop'},
@@ -8887,10 +8890,11 @@ function renderAccountSection() {
   if(bizTypeChangeBtn) bizTypeChangeBtn.onclick = function(){ _bizTypeEditMode = true; renderAccountSection(); };
   if(_bizTypeEditMode) {
     var bizTypeSaveBtn = document.getElementById('bizTypeSaveBtn');
-    if(bizTypeSaveBtn) bizTypeSaveBtn.onclick = function(){
+    if(bizTypeSaveBtn) bizTypeSaveBtn.onclick = async function(){
       var newType = (document.getElementById('bizTypeSelect')||{}).value;
       if(!newType || newType === state.businessType) { _bizTypeEditMode = false; renderAccountSection(); return; }
-      if(!confirm(stx('bizTypeChangeConfirm'))) return;
+      var bizTypeTitle = {en:'⚠️ Change Business Type', ar:'⚠️ تغيير نوع النشاط', de:'⚠️ Unternehmensart ändern'};
+      if(!(await confirmAsync(bizTypeTitle[state.lang]||bizTypeTitle.en, stx('bizTypeChangeConfirm')))) return;
       state.businessType = newType;
       save();
       updateFleetNavVisibility();
@@ -9074,7 +9078,7 @@ function renderPlanSection() {
     + '<span style="background:var(--primary-light);color:var(--primary);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:14px">' + stx('freePlanBadge') + '</span>'
     + '<button id="upgradeProBtn" style="width:100%;padding:12px;border-radius:12px;border:none;background:#1a7fd4;color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + stx('upgradePro') + '</button>';
   var upBtn = document.getElementById('upgradeProBtn');
-  if(upBtn) upBtn.onclick = function(){ alert(stx('comingSoon')); };
+  if(upBtn) upBtn.onclick = function(){ showToast(stx('comingSoon'), 'info'); };
 }
 
 function renderAboutSection() {
@@ -9212,7 +9216,7 @@ function submitChangePassword() {
     localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
   }
   document.getElementById('changePwOverlay').classList.remove('open');
-  alert(lang==='ar' ? 'تم تغيير كلمة المرور بنجاح' : lang==='de' ? 'Passwort erfolgreich geändert' : 'Password changed successfully');
+  showToast(lang==='ar' ? 'تم تغيير كلمة المرور بنجاح' : lang==='de' ? 'Passwort erfolgreich geändert' : 'Password changed successfully', 'success');
 }
 
 var _verifyPwCallback = null;
@@ -9280,14 +9284,15 @@ function exportBackup() {
 function handleImportBackup(file) {
   if(!file) return;
   var reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     var data;
-    try { data = JSON.parse(e.target.result); } catch(err) { alert(stx('importInvalid')); return; }
+    try { data = JSON.parse(e.target.result); } catch(err) { showToast(stx('importInvalid'), 'error'); return; }
     var expectedKeys = ['transactions','clients','suppliers'];
     var hasExpected = false;
     for(var i=0;i<expectedKeys.length;i++) { if(Object.prototype.hasOwnProperty.call(data, expectedKeys[i])) { hasExpected = true; break; } }
-    if(!hasExpected) { alert(stx('importInvalid')); return; }
-    if(!confirm(stx('importConfirm'))) return;
+    if(!hasExpected) { showToast(stx('importInvalid'), 'error'); return; }
+    var importTitle = {en:'⚠️ Import Data', ar:'⚠️ استيراد البيانات', de:'⚠️ Daten importieren'};
+    if(!(await confirmAsync(importTitle[state.lang]||importTitle.en, stx('importConfirm')))) return;
     state.transactions = data.transactions || [];
     state.clients = data.clients || [];
     state.suppliers = data.suppliers || [];
@@ -9319,7 +9324,7 @@ function handleImportBackup(file) {
     applyLang();
     renderHome();
     renderSettings();
-    alert(stx('importSuccess'));
+    showToast(stx('importSuccess'), 'success');
   };
   reader.readAsText(file);
   document.getElementById('importBackupInput').value = '';
@@ -9384,7 +9389,7 @@ function requestNotifPermission(btn) {
     var msg = lang==='ar' ? 'الإشعارات غير مدعومة على هذا المتصفح.' :
               lang==='de' ? 'Benachrichtigungen werden in diesem Browser nicht unterstützt.' :
               'Notifications not supported on this browser.';
-    alert(msg);
+    showToast(msg, 'error');
     if(btn) btn.classList.remove('on');
     return;
   }
@@ -9399,7 +9404,7 @@ function requestNotifPermission(btn) {
         var msg = lang==='ar' ? 'الإشعارات محظورة. فعّلها من إعدادات المتصفح.' :
                   lang==='de' ? 'Benachrichtigungen blockiert. Bitte in den Browser-Einstellungen aktivieren.' :
                   'Notifications blocked. Enable them in browser settings.';
-        setTimeout(function(){ alert(msg); }, 100);
+        setTimeout(function(){ showToast(msg, 'warning'); }, 100);
       }
     }
   }
@@ -9577,14 +9582,14 @@ function showNotif() {
   var pending = state.debts.filter(function(d){return d.status!=='paid'&&daysAgo(d.date)>3;});
   var msgNoDebt = lang==='ar' ? 'لا ديون متأخرة! كل شيء على ما يرام ✅' : lang==='de' ? 'Keine überfälligen Schulden! Alles aktuell ✅' : 'No overdue debts! Everything is up to date ✅';
   if(!pending.length) {
-    safeNotify('SmartAc ✅', msgNoDebt, function(){ alert(msgNoDebt); });
+    safeNotify('SmartAc ✅', msgNoDebt, function(){ showToast(msgNoDebt, 'success'); });
   } else {
     var lines = pending.map(function(d){
       return '• '+d.person+': '+fmt(d.amount)+' ('+daysAgo(d.date)+' '+(lang==='ar'?'أيام':lang==='de'?'Tage':'days')+')';
     });
     var title = lang==='ar' ? '⚠️ ديون متأخرة' : lang==='de' ? '⚠️ Überfällige Schulden' : '⚠️ Overdue Debts';
     var body = lines.join('\n');
-    safeNotify('SmartAc - '+title, body, function(){ alert(title+'\n'+body); });
+    safeNotify('SmartAc - '+title, body, function(){ showToast(title+'\n'+body, 'warning'); });
   }
 }
 
@@ -9719,7 +9724,7 @@ function showToast(message, type) {
   var toast = document.createElement('div');
   toast.style.cssText = 'position:fixed;right:16px;bottom:80px;z-index:99999;background:var(--card);border-radius:14px;box-shadow:0 4px 20px rgba(0,0,0,0.15);padding:12px 16px;max-width:300px;border-left:4px solid ' + borderColor + ';transition:opacity 0.4s,transform 0.4s;opacity:1';
   var msgDiv = document.createElement('div');
-  msgDiv.style.cssText = 'font-size:13px;color:var(--text)';
+  msgDiv.style.cssText = 'font-size:13px;color:var(--text);white-space:pre-wrap';
   msgDiv.textContent = message;
   var timeDiv = document.createElement('div');
   timeDiv.style.cssText = 'font-size:11px;color:var(--text3);margin-top:4px';
@@ -9770,8 +9775,8 @@ function handleInvoice(input) {
   if (!file) return;
   var isImage = file.type.indexOf('image/') === 0;
   var isPdf = file.type === 'application/pdf' || file.type === 'application/octet-stream' || /\.pdf$/i.test(file.name || '');
-  if (!isImage && !isPdf) { alert('Only image or PDF files are allowed'); input.value=''; return; }
-  if (file.size > 5 * 1024 * 1024) { alert('Max file size is 5MB'); input.value=''; return; }
+  if (!isImage && !isPdf) { showToast('Only image or PDF files are allowed', 'error'); input.value=''; return; }
+  if (file.size > 5 * 1024 * 1024) { showToast('Max file size is 5MB', 'error'); input.value=''; return; }
   var reader = new FileReader();
   reader.onload = function(e) {
     state.pendingInvoice = e.target.result;
@@ -10031,18 +10036,18 @@ function renderInvoicesPage() {
   }
 }
 
-function deleteIssuedInvoice(idx) {
-  if(!confirm(itx('confirmDeleteInv'))) return;
+async function deleteIssuedInvoice(idx) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, itx('confirmDeleteInv')))) return;
   state.issuedInvoices.splice(idx,1);
   save(); renderInvoicesPage();
 }
-function deleteReceipt(idx) {
-  if(!confirm(itx('confirmDeleteRec'))) return;
+async function deleteReceipt(idx) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, itx('confirmDeleteRec')))) return;
   state.receipts.splice(idx,1);
   save(); renderInvoicesPage();
 }
-function deleteReceivedInvoice(idx) {
-  if(!confirm(itx('confirmDeleteInv'))) return;
+async function deleteReceivedInvoice(idx) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, itx('confirmDeleteInv')))) return;
   state.receivedInvoices.splice(idx,1);
   save(); renderInvoicesPage();
 }
@@ -11124,7 +11129,7 @@ function downloadInvoicePDF(inv, type) {
   }, 4000);
 
   if (typeof html2canvas === 'undefined' || typeof jspdf === 'undefined') {
-    alert('PDF library not loaded. Please check your internet connection.');
+    showToast('PDF library not loaded. Please check your internet connection.', 'error');
     return;
   }
 
@@ -11220,7 +11225,7 @@ function downloadInvoicePDF(inv, type) {
     pdf.save(filename);
   }).catch(function() {
     cleanup();
-    alert('Could not generate PDF. Please try again.');
+    showToast('Could not generate PDF. Please try again.', 'error');
   });
 }
 
@@ -14326,7 +14331,7 @@ function saveSupplier() {
   var nameEl = document.getElementById('sf-name');
   if(!nameEl) return;
   var name = nameEl.value.trim();
-  if(!name) { alert('Name is required'); return; }
+  if(!name) { showToast('Name is required', 'error'); return; }
   var getVal = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
   var today = new Date();
   var yyyy = today.getFullYear();
@@ -14461,7 +14466,7 @@ function _pdfFmt(n) {
 
 function generateReportPDF(r) {
   var jsPDF = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
-  if(!jsPDF) { alert('PDF library not loaded'); return; }
+  if(!jsPDF) { showToast('PDF library not loaded', 'error'); return; }
 
   var doc = new jsPDF({ orientation:'p', unit:'mm', format:'a4' });
   var pageW = doc.internal.pageSize.getWidth();
@@ -14618,6 +14623,12 @@ function generateReportPDF(r) {
 
 
 // ── GENERIC CONFIRM DIALOG ──
+var DELETE_CONFIRM_TITLE = {en:'🗑 Delete', ar:'🗑 حذف', de:'🗑 Löschen'};
+function confirmAsync(title, msg, okLabel, cancelLabel) {
+  return new Promise(function(resolve) {
+    showConfirm(title, msg, function(){ resolve(true); }, okLabel, cancelLabel, function(){ resolve(false); });
+  });
+}
 function showConfirm(title, msg, onOk, okLabel, cancelLabel, onCancel) {
   var lang = state.lang;
   var titleEl = document.getElementById('confirmTitle');
@@ -14750,7 +14761,7 @@ function cdConfirmDelete() {
   save();
   document.getElementById('clearDataOverlay').classList.remove('open');
   var okMsg = {en:'All data cleared.',ar:'تم مسح كل البيانات.',de:'Alle Daten gelöscht.'}[lang]||'All data cleared.';
-  alert(okMsg);
+  showToast(okMsg, 'success');
   renderHome(); showNav('home');
 }
 
@@ -14843,7 +14854,7 @@ function markDebtPaid(id) {
     }[lang]||'✅ Debt marked as paid';
     renderDebtsPage();
     renderHome();
-    setTimeout(function(){ alert(successMsg); }, 100);
+    setTimeout(function(){ showToast(successMsg, 'success'); }, 100);
   }, {en:'Confirm',ar:'تأكيد',de:'Bestätigen'}[lang]||'Confirm');
 }
 
