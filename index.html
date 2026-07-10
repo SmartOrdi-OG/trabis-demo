@@ -159,7 +159,7 @@ textarea.input-field{height:auto;min-height:64px;padding:12px 16px;line-height:1
 /* iOS Safari ignores width:100% on input[type=date]/[type=time] in normal flow and renders at
    its own intrinsic content width, overflowing the card. Absolute-positioning it against a
    sized relative wrapper forces it to honor the wrapper's box regardless of that intrinsic size. */
-.date-fix-wrap{position:relative;width:100%;min-width:0;flex:1;height:48px;margin-bottom:12px}
+.date-fix-wrap{position:relative;width:100%;min-width:0;flex:1;height:48px;margin-bottom:12px;overflow:hidden;border-radius:12px}
 .date-fix-wrap .input-field{position:absolute;inset:0;margin-bottom:0;width:100%;height:100%}
 .input-field:focus{border-color:var(--primary)}
 .category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
@@ -6266,8 +6266,8 @@ var UVA_TXT = {
   freigegeben:{en:'APPROVED', ar:'معتمدة', de:'FREIGEGEBEN'},
   freigabeBtn:{en:'Freigabe ✓', ar:'اعتماد Freigabe ✓', de:'Freigabe ✓'},
   revokeBtn:  {en:'Revoke approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'},
-  confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'اعتماد الفترة دي؟ الأرقام هتعتبر نهائية وهتتعلم كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
-  confirmRev: {en:'Revoke the approval for this period?', ar:'إلغاء اعتماد الفترة دي؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
+  confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'هل تريد اعتماد هذه الفترة؟ ستُعتبر الأرقام نهائية وستُصنَّف كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
+  confirmRev: {en:'Revoke the approval for this period?', ar:'هل تريد إلغاء اعتماد هذه الفترة؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
   lockWarn:   {en:'⚠️ This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'⚠️ الفترة دي معتمدة (Freigabe). التعديل هيلغي الاعتماد. تكمل؟', de:'⚠️ Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
   fgAt:       {en:'Approved on', ar:'اعتمدت في', de:'Freigegeben am'},
   disclaimer: {en:'Preparation for the UVA — not tax advice. Official filing is done via FinanzOnline. PDF/Excel exports are in German for your accountant.',
