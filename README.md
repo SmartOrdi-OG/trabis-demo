@@ -1,4 +1,4 @@
-# Smartac
+# SmartAc
 
 A business-tracking app for freelancers and small businesses in Austria — income/expense tracking, VAT (UVA) reporting, invoicing, and industry-specific modules (Transport/Fleet, Retail/Inventory), plus a read-only companion portal for accountants.
 

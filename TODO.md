@@ -1,4 +1,4 @@
-# Smartac — Project Roadmap (TODO)
+# SmartAc — Project Roadmap (TODO)
 
 > الحالة: `[x]` = خلص ✅ | `[~]` = جاري / ناقص ⚠️ | `[ ]` = لسه مبدأش ❌
 
