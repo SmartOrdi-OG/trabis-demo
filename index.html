@@ -2510,9 +2510,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></div>
     <div class="bnav-label" id="nav-home-lbl">Home</div>
   </div>
-  <div class="bnav-item" id="nav-clients" onclick="showNav('clients')">
-    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
-    <div class="bnav-label" id="nav-clients-lbl">Clients</div>
+  <div class="bnav-item" id="nav-reports" onclick="showNav('reports')">
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
+    <div class="bnav-label" id="nav-reports-lbl">Reports</div>
   </div>
   <div class="bnav-item" id="nav-invoices" onclick="showNav('invoices')">
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
@@ -3358,6 +3358,7 @@ var MORE_MENU_L = {
   manage: {en:'Manage', ar:'إدارة', de:'Verwalten'},
   tools: {en:'Tools', ar:'أدوات', de:'Werkzeuge'},
   support: {en:'Support & Settings', ar:'الدعم والإعدادات', de:'Support & Einstellungen'},
+  clients: {en:'Clients', ar:'العملاء', de:'Kunden'},
   reports: {en:'Reports', ar:'التقارير', de:'Berichte'},
   debts: {en:'Debts', ar:'الديون', de:'Schulden'},
   suppliers: {en:'Suppliers', ar:'الموردون', de:'Lieferanten'},
@@ -3383,7 +3384,7 @@ function openMoreMenu() {
 
   var h = '';
   h += moreMenuGroupTitleHtml(mtx('manage'));
-  h += moreMenuItemHtml('mm-reports', 'barChart', mtx('reports'));
+  h += moreMenuItemHtml('mm-clients', 'users', mtx('clients'));
   h += moreMenuItemHtml('mm-debts', 'handshake', mtx('debts'));
   h += moreMenuItemHtml('mm-suppliers', 'building', mtx('suppliers'));
   h += moreMenuItemHtml('mm-employees', 'users', mtx('employees'));
@@ -3405,8 +3406,8 @@ function openMoreMenu() {
 
   content.innerHTML = h;
 
-  var mmReports = document.getElementById('mm-reports');
-  if(mmReports) mmReports.onclick = function(){ showNav('reports'); };
+  var mmClients = document.getElementById('mm-clients');
+  if(mmClients) mmClients.onclick = function(){ showNav('clients'); };
   var mmDebts = document.getElementById('mm-debts');
   if(mmDebts) mmDebts.onclick = function(){ showNav('debts'); };
   var mmSuppliers = document.getElementById('mm-suppliers');
@@ -8614,8 +8615,8 @@ function applyLang() {
   var debtLbl = {en:'💸 Debtors (I owe)', ar:'💸 مدين (عليّ)', de:'💸 Schuldner'};
   if(debtTabOwes) debtTabOwes.textContent = credLbl[state.lang]||credLbl.en;
   if(debtTabIowe) debtTabIowe.textContent = debtLbl[state.lang]||debtLbl.en;
-  var cliNavLbl = document.getElementById('nav-clients-lbl');
-  if(cliNavLbl) cliNavLbl.textContent = {en:'Clients',ar:'العملاء',de:'Kunden'}[state.lang]||'Clients';
+  var rptNavLbl = document.getElementById('nav-reports-lbl');
+  if(rptNavLbl) rptNavLbl.textContent = {en:'Reports',ar:'التقارير',de:'Berichte'}[state.lang]||'Reports';
   var supNavLbl = document.getElementById('nav-suppliers-lbl');
   if(supNavLbl) supNavLbl.textContent = {en:'Suppliers',ar:'الموردون',de:'Lieferanten'}[state.lang]||'Suppliers';
   var fixNavLbl = document.getElementById('nav-fixed-lbl');
