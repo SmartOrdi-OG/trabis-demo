@@ -2372,10 +2372,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-account-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
-  <div id="settings-business-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
-
-  <div id="settings-bank-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
-
   <div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">
     <div id="lbl-prefs-title" style="font-weight:700;font-size:15px;margin-bottom:6px">App Preferences</div>
     <div class="settings-item">
@@ -2435,9 +2431,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
   </div>
 
-  <div id="settings-data-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
-
   <div id="settings-notif-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
+
+  <div id="settings-business-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
+
+  <div id="settings-bank-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
+
+  <div id="settings-data-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
   <div id="settings-plan-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
@@ -3343,6 +3343,13 @@ function moreMenuItemHtml(id, iconName, label) {
     + '</div>';
 }
 
+function moreMenuLogoutItemHtml() {
+  return '<div id="mm-logout" style="display:flex;align-items:center;gap:14px;padding:14px 16px;font-size:15px;color:#ef4444;background:rgba(239,68,68,0.06);border:1.5px solid #ef4444;border-radius:12px;margin-bottom:6px;cursor:pointer;font-weight:600">'
+    + '<span style="color:#ef4444;display:flex">' + svgIcon('logout', 20) + '</span>'
+    + '<span style="flex:1">' + stx('logoutBtn') + '</span>'
+    + '</div>';
+}
+
 function moreMenuGroupTitleHtml(label) {
   return '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;margin:18px 4px 8px">' + label + '</div>';
 }
@@ -3393,6 +3400,9 @@ function openMoreMenu() {
   h += moreMenuItemHtml('mm-settings', 'gear', mtx('settings'));
   h += moreMenuItemHtml('mm-help', 'helpCircle', mtx('help'));
 
+  h += '<div style="height:10px"></div>';
+  h += moreMenuLogoutItemHtml();
+
   content.innerHTML = h;
 
   var mmReports = document.getElementById('mm-reports');
@@ -3419,6 +3429,8 @@ function openMoreMenu() {
   if(mmSettings) mmSettings.onclick = function(){ showNav('settings'); };
   var mmHelp = document.getElementById('mm-help');
   if(mmHelp) mmHelp.onclick = function(){ showNav('help'); };
+  var mmLogout = document.getElementById('mm-logout');
+  if(mmLogout) mmLogout.onclick = function(){ closeMoreMenu(); logout(); };
 
   overlay.style.display = 'block';
 }
@@ -4884,16 +4896,35 @@ function inventoryExportPDF() {
 // ── HELP PAGE ──
 var HELP_L = {
   title: {en:'Help', ar:'مساعدة', de:'Hilfe'},
-  gettingStarted: {en:'Getting Started', ar:'البدء', de:'Erste Schritte'},
+  secBasics: {en:'Getting Started', ar:'البدء', de:'Erste Schritte'},
+  secTax: {en:'Tax & Reports', ar:'الضرائب والتقارير', de:'Steuer & Berichte'},
+  secTeam: {en:'Team & Assets', ar:'الفريق والأصول', de:'Team & Vermögenswerte'},
+  secCal: {en:'Calendar & Notes', ar:'التقويم والملاحظات', de:'Kalender & Notizen'},
+  secData: {en:'Data & Backup', ar:'البيانات والنسخ الاحتياطي', de:'Daten & Backup'},
+  secFaq: {en:'Frequently Asked Questions', ar:'الأسئلة الشائعة', de:'Häufig gestellte Fragen'},
+  support: {en:'Support', ar:'الدعم', de:'Support'},
+  about: {en:'About', ar:'حول', de:'Über'},
+
   addTx: {en:'How to add a transaction', ar:'كيفية إضافة معاملة', de:'Wie man eine Transaktion hinzufügt'},
   createInv: {en:'How to create an invoice', ar:'كيفية إنشاء فاتورة', de:'Wie man eine Rechnung erstellt'},
-  addClients: {en:'How to add clients &amp; suppliers', ar:'كيفية إضافة عملاء وموردين', de:'Wie man Kunden &amp; Lieferanten hinzufügt'},
-  support: {en:'Support', ar:'الدعم', de:'Support'},
+  addClients: {en:'How to add clients & suppliers', ar:'كيفية إضافة عملاء وموردين', de:'Wie man Kunden & Lieferanten hinzufügt'},
+  uva: {en:'Understanding the UVA report & Freigabe', ar:'فهم تقرير UVA ونظام الاعتماد', de:'Der UVA-Bericht & die Freigabe'},
+  exportReports: {en:'Export reports (PDF & Excel)', ar:'تصدير التقارير (PDF و Excel)', de:'Berichte exportieren (PDF & Excel)'},
+  accountantAccess: {en:'Give your accountant access', ar:'إعطاء المحاسب صلاحية دخول', de:'Zugang für Ihren Steuerberater'},
+  employees: {en:'Manage employees & work hours', ar:'إدارة الموظفين وساعات العمل', de:'Mitarbeiter & Arbeitszeiten verwalten'},
+  fleet: {en:'Track your fleet', ar:'تتبع الأسطول', de:'Fuhrpark verwalten'},
+  inventory: {en:'Manage inventory', ar:'إدارة المخزون', de:'Lagerbestand verwalten'},
+  assets: {en:'Track assets & depreciation', ar:'تتبع الأصول والإهلاك', de:'Vermögenswerte & Abschreibung'},
+  appointments: {en:'Appointments & reminders', ar:'المواعيد والتنبيهات', de:'Termine & Erinnerungen'},
+  notes: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
+  backup: {en:'Backup & restore your data', ar:'نسخ واسترجاع بياناتك', de:'Daten sichern & wiederherstellen'},
+  prefs: {en:'Change language, currency & business type', ar:'تغيير اللغة والعملة ونوع النشاط', de:'Sprache, Währung & Unternehmensart ändern'},
+
   feedback: {en:'Send Feedback', ar:'إرسال ملاحظات', de:'Feedback senden'},
   contact: {en:'Contact Support', ar:'التواصل مع الدعم', de:'Support kontaktieren'},
   privacy: {en:'Privacy Policy', ar:'سياسة الخصوصية', de:'Datenschutzrichtlinie'},
   terms: {en:'Terms of Use', ar:'شروط الاستخدام', de:'Nutzungsbedingungen'},
-  about: {en:'About', ar:'حول', de:'Über'},
+
   addTxSteps: {
     en:'1. Tap the + button (or a Quick Add card) on Home.\n2. Choose Income or Expense.\n3. Enter the amount, category and date.\n4. Save.',
     ar:'1. اضغط على زر + (أو بطاقة الإضافة السريعة) في الرئيسية.\n2. اختر دخل أو مصروف.\n3. أدخل المبلغ والفئة والتاريخ.\n4. احفظ.',
@@ -4908,9 +4939,95 @@ var HELP_L = {
     en:'1. Go to Clients or Suppliers.\n2. Tap + Add.\n3. Enter their details.\n4. Save.',
     ar:'1. اذهب إلى العملاء أو الموردين.\n2. اضغط على + إضافة.\n3. أدخل بياناتهم.\n4. احفظ.',
     de:'1. Gehen Sie zu Kunden oder Lieferanten.\n2. Tippen Sie auf + Hinzufügen.\n3. Geben Sie deren Daten ein.\n4. Speichern.'
-  }
+  },
+  uvaSteps: {
+    en:'1. Go to Reports and open the UVA card.\n2. Choose your reporting interval: monthly, quarterly or yearly.\n3. Pick the period to review — every period is listed, even ones with no transactions yet.\n4. Check the KZ figures (000, 022, 006, 029, 060, 095) against your transactions’ VAT rates.\n5. Once the numbers are final for that period, tap Freigabe to lock it — this blocks editing any transaction in that period unless you revoke the approval first.\n6. Export as PDF or Excel to send to your accountant.',
+    ar:'1. اذهب لـ التقارير وافتح كارت UVA.\n2. اختر فترة التقرير: شهري أو ربع سنوي أو سنوي.\n3. اختر الفترة اللي عايز تراجعها — كل الفترات ظاهرة حتى لو مفيهاش معاملات لسه.\n4. راجع أرقام الخانات (000, 022, 006, 029, 060, 095) بناءً على نسب الضريبة في معاملاتك.\n5. لما تتأكد إن الأرقام نهائية للفترة دي، اضغط Freigabe عشان تقفلها — ده بيمنع تعديل أي معاملة في الفترة دي من غير ما تلغي الاعتماد الأول.\n6. صدّر PDF أو Excel عشان تبعتها لمحاسبك.',
+    de:'1. Gehen Sie zu Berichte und öffnen Sie die UVA-Karte.\n2. Wählen Sie das Meldeintervall: monatlich, vierteljährlich oder jährlich.\n3. Wählen Sie den gewünschten Zeitraum — alle Zeiträume werden angezeigt, auch ohne Transaktionen.\n4. Prüfen Sie die Kennzahlen (000, 022, 006, 029, 060, 095) anhand der MwSt.-Sätze Ihrer Transaktionen.\n5. Sobald die Zahlen final sind, tippen Sie auf Freigabe, um den Zeitraum zu sperren — danach kann keine Transaktion in diesem Zeitraum geändert werden, ohne die Freigabe zuerst zu widerrufen.\n6. Exportieren Sie als PDF oder Excel für Ihren Steuerberater.'
+  },
+  exportReportsSteps: {
+    en:'1. Go to Reports.\n2. Choose a time period (Today, Week, Month, Year or Custom).\n3. Tap PDF for a printable summary, or Export to Excel for a detailed spreadsheet with separate sheets for transactions, clients and suppliers.',
+    ar:'1. اذهب لـ التقارير.\n2. اختر الفترة الزمنية (اليوم، الأسبوع، الشهر، السنة أو مخصص).\n3. اضغط PDF لملخص جاهز للطباعة، أو تصدير إلى Excel لملف تفصيلي فيه شيتات منفصلة للمعاملات والعملاء والموردين.',
+    de:'1. Gehen Sie zu Berichte.\n2. Wählen Sie einen Zeitraum (Heute, Woche, Monat, Jahr oder Benutzerdefiniert).\n3. Tippen Sie auf PDF für eine druckbare Zusammenfassung oder auf Nach Excel exportieren für eine detaillierte Tabelle mit separaten Blättern für Transaktionen, Kunden und Lieferanten.'
+  },
+  accountantAccessSteps: {
+    en:'1. On the login page, tap "Log in as Accountant".\n2. Your accountant signs in with the credentials you give them and picks your business from the list.\n3. They see a read-only, German-language view of your transactions, invoices, UVA, employees and assets — they cannot change anything.\n4. This only works from the same browser/device where you use SmartAc, since your data never leaves your device.',
+    ar:'1. من صفحة تسجيل الدخول، اضغط "تسجيل الدخول كمحاسب".\n2. المحاسب بيدخل ببيانات دخول تديله إياها، ويختار اسم بيزنسك من القائمة.\n3. هيشوف نسخة بالألماني قراءة فقط من معاملاتك وفواتيرك وتقرير UVA وموظفينك وأصولك — مش هيقدر يعدل أي حاجة.\n4. الميزة دي بتشتغل بس من نفس المتصفح/الجهاز اللي بتستخدم SmartAc عليه، لأن بياناتك مابتطلعش من جهازك خالص.',
+    de:'1. Tippen Sie auf der Anmeldeseite auf "Als Buchhalter anmelden".\n2. Ihr Steuerberater meldet sich mit den von Ihnen bereitgestellten Zugangsdaten an und wählt Ihr Unternehmen aus der Liste.\n3. Er sieht eine schreibgeschützte, deutschsprachige Ansicht Ihrer Transaktionen, Rechnungen, UVA, Mitarbeiter und Vermögenswerte — er kann nichts ändern.\n4. Dies funktioniert nur über denselben Browser/dasselbe Gerät, auf dem Sie SmartAc verwenden, da Ihre Daten Ihr Gerät nie verlassen.'
+  },
+  employeesSteps: {
+    en:'1. Go to Employees (from the More menu).\n2. Tap + Add Employee and enter their name, position and Brutto (gross) salary — SmartAc doesn’t calculate Netto, that’s your accountant’s job.\n3. Open an employee’s profile to upload documents (contract, ID, visa) with expiry dates — you’ll get a reminder 30 days before they expire.\n4. Use "Work Hours" on their profile to log hours per period — either a total, or a start/end time with a break.',
+    ar:'1. اذهب لـ الموظفين (من قائمة المزيد).\n2. اضغط + إضافة موظف وأدخل اسمه ووظيفته والمرتب Brutto (الإجمالي) — SmartAc مش بيحسب Netto، ده شغل محاسبك.\n3. افتح بروفايل الموظف عشان ترفع مستندات (عقد، هوية، فيزا) بتاريخ انتهاء — هتوصلك تذكرة قبل الانتهاء بـ 30 يوم.\n4. استخدم "ساعات العمل" في بروفايله عشان تسجل الساعات لكل فترة — إما إجمالي، أو وقت بداية/نهاية مع استراحة.',
+    de:'1. Gehen Sie zu Mitarbeiter (im Menü Mehr).\n2. Tippen Sie auf + Mitarbeiter hinzufügen und geben Sie Name, Position und Bruttogehalt ein — SmartAc berechnet kein Netto, das ist Aufgabe Ihres Steuerberaters.\n3. Öffnen Sie das Profil eines Mitarbeiters, um Dokumente (Vertrag, Ausweis, Visum) mit Ablaufdatum hochzuladen — Sie erhalten 30 Tage vorher eine Erinnerung.\n4. Nutzen Sie "Arbeitszeiten" im Profil, um Stunden pro Zeitraum zu erfassen — entweder gesamt, oder mit Start-/Endzeit und Pause.'
+  },
+  fleetSteps: {
+    en:'1. Go to Fleet (visible for Transport businesses).\n2. Tap + Add Vehicle and enter the plate number, name and type.\n3. Open a vehicle’s profile to upload documents (Pickerl, insurance) with expiry dates, log maintenance costs, and link a purchase price/date to calculate its depreciation automatically.',
+    ar:'1. اذهب لـ الأسطول (بتظهر لأصحاب نشاط النقل).\n2. اضغط + إضافة عربية وأدخل رقم اللوحة والاسم والنوع.\n3. افتح بروفايل العربية عشان ترفع مستندات (بيكرل، تأمين) بتاريخ انتهاء، وتسجل تكاليف الصيانة، وتربط سعر وتاريخ الشراء عشان يتحسب الإهلاك أوتوماتيك.',
+    de:'1. Gehen Sie zu Fuhrpark (sichtbar für Transportunternehmen).\n2. Tippen Sie auf + Fahrzeug hinzufügen und geben Sie Kennzeichen, Name und Typ ein.\n3. Öffnen Sie das Fahrzeugprofil, um Dokumente (Pickerl, Versicherung) mit Ablaufdatum hochzuladen, Wartungskosten zu erfassen und Kaufpreis/-datum zu verknüpfen, damit die Abschreibung automatisch berechnet wird.'
+  },
+  inventorySteps: {
+    en:'1. Go to Inventory (visible for Retail businesses).\n2. Tap + Add Product and enter its name, purchase/sell price, quantity and a low-stock threshold.\n3. When you record an income or expense, you can link it to a product and quantity — stock adjusts automatically, and you’ll get an alert when it runs low.',
+    ar:'1. اذهب لـ المخزون (بتظهر لأصحاب نشاط التجزئة).\n2. اضغط + إضافة منتج وأدخل اسمه وسعر الشراء/البيع والكمية وحد التنبيه لنفاد المخزون.\n3. لما تسجل دخل أو مصروف، تقدر تربطه بمنتج وكمية — المخزون بيتحدث أوتوماتيك، وهتوصلك تنبيه لو المخزون قرب يخلص.',
+    de:'1. Gehen Sie zu Lagerbestand (sichtbar für Einzelhandelsunternehmen).\n2. Tippen Sie auf + Produkt hinzufügen und geben Sie Name, Einkaufs-/Verkaufspreis, Menge und eine Mindestbestandsgrenze ein.\n3. Beim Erfassen einer Einnahme oder Ausgabe können Sie ein Produkt und eine Menge verknüpfen — der Bestand wird automatisch angepasst, und Sie erhalten eine Warnung bei niedrigem Bestand.'
+  },
+  assetsSteps: {
+    en:'1. Go to Assets (from the More menu) — available to all business types.\n2. Tap + Add Asset for equipment, furniture etc., or link a vehicle’s purchase price/date/rate from its Fleet profile — it appears here automatically.\n3. SmartAc calculates the monthly depreciation and current book value for each asset using straight-line depreciation.',
+    ar:'1. اذهب لـ الأصول (من قائمة المزيد) — متاحة لكل أنواع النشاط.\n2. اضغط + إضافة أصل للمعدات أو الأثاث... إلخ، أو اربط سعر/تاريخ/نسبة شراء عربية من بروفايلها في الأسطول — هتظهر هنا أوتوماتيك.\n3. SmartAc بيحسب الإهلاك الشهري والقيمة الدفترية الحالية لكل أصل باستخدام طريقة القسط الثابت.',
+    de:'1. Gehen Sie zu Vermögenswerte (im Menü Mehr) — verfügbar für alle Unternehmensarten.\n2. Tippen Sie auf + Vermögenswert hinzufügen für Ausstattung, Möbel usw., oder verknüpfen Sie Kaufpreis/-datum/-satz eines Fahrzeugs über sein Fuhrpark-Profil — es erscheint dann automatisch hier.\n3. SmartAc berechnet die monatliche Abschreibung und den aktuellen Buchwert für jeden Vermögenswert linear.'
+  },
+  appointmentsSteps: {
+    en:'1. Go to Calendar (from the More menu).\n2. Tap + Appointment, enter a title, date, time and type, and set a reminder.\n3. Document expiry dates for employees and vehicles appear here automatically with a 30-day advance reminder — no need to add them manually.',
+    ar:'1. اذهب لـ التقويم (من قائمة المزيد).\n2. اضغط + موعد، وأدخل العنوان والتاريخ والوقت والنوع، واختر تذكير.\n3. تواريخ انتهاء مستندات الموظفين والعربيات بتظهر هنا أوتوماتيك مع تذكير قبل 30 يوم — مش محتاج تضيفها يدوي.',
+    de:'1. Gehen Sie zu Kalender (im Menü Mehr).\n2. Tippen Sie auf + Termin, geben Sie Titel, Datum, Uhrzeit und Typ ein und stellen Sie eine Erinnerung ein.\n3. Ablaufdaten von Mitarbeiter- und Fahrzeugdokumenten erscheinen hier automatisch mit einer Erinnerung 30 Tage im Voraus — keine manuelle Eingabe nötig.'
+  },
+  notesSteps: {
+    en:'1. Go to Notes (from the More menu).\n2. Tap + to create a note with text, an image, a PDF, or checklist items.\n3. Notes are private to your account and stay on this device, just like the rest of your data.',
+    ar:'1. اذهب لـ الملاحظات (من قائمة المزيد).\n2. اضغط + عشان تعمل ملاحظة فيها نص أو صورة أو PDF أو عناصر تشيك ليست.\n3. الملاحظات خاصة بحسابك وفاضلة على الجهاز ده بس، زي باقي بياناتك.',
+    de:'1. Gehen Sie zu Notizen (im Menü Mehr).\n2. Tippen Sie auf +, um eine Notiz mit Text, Bild, PDF oder Checklistenpunkten zu erstellen.\n3. Notizen sind privat für Ihr Konto und bleiben auf diesem Gerät, wie der Rest Ihrer Daten.'
+  },
+  backupSteps: {
+    en:'1. Go to Settings → Data Management.\n2. Tap Export Backup to save a JSON file with all your data — keep it somewhere safe.\n3. On a new device or after clearing your browser, use Import Backup to restore everything from that file.\n4. Since SmartAc stores data only on this device, doing regular backups is the only way to protect against data loss.',
+    ar:'1. اذهب لـ الإعدادات ← إدارة البيانات.\n2. اضغط تصدير نسخة احتياطية عشان تحفظ ملف JSON فيه كل بياناتك — احفظه في مكان آمن.\n3. على جهاز جديد أو بعد مسح بيانات المتصفح، استخدم استيراد نسخة احتياطية عشان ترجع كل حاجة من الملف ده.\n4. بما إن SmartAc بيخزن البيانات على الجهاز بس، عمل نسخ احتياطي بانتظام هو الطريقة الوحيدة إنك متفقدش بياناتك.',
+    de:'1. Gehen Sie zu Einstellungen → Datenverwaltung.\n2. Tippen Sie auf Backup exportieren, um eine JSON-Datei mit all Ihren Daten zu speichern — bewahren Sie sie sicher auf.\n3. Nutzen Sie auf einem neuen Gerät oder nach dem Löschen der Browserdaten Backup importieren, um alles aus dieser Datei wiederherzustellen.\n4. Da SmartAc Daten nur auf diesem Gerät speichert, sind regelmäßige Backups der einzige Schutz vor Datenverlust.'
+  },
+  prefsSteps: {
+    en:'1. Go to Settings.\n2. Under App Preferences, change your language, currency, dark/light theme or date format at any time.\n3. Under Account, you can change your Business Type (e.g. General to Transport) to show or hide Fleet/Inventory — your existing data is never deleted when you switch.',
+    ar:'1. اذهب لـ الإعدادات.\n2. تحت تفضيلات التطبيق، غيّر اللغة أو العملة أو الوضع الداكن/الفاتح أو شكل التاريخ في أي وقت.\n3. تحت الحساب، تقدر تغيّر نوع نشاطك (مثلاً من عام لنقل) عشان يظهر أو يختفي الأسطول/المخزون — بياناتك الموجودة مابتتمسحش أبداً لما تغيّر.',
+    de:'1. Gehen Sie zu Einstellungen.\n2. Ändern Sie unter App-Einstellungen jederzeit Sprache, Währung, Dunkel-/Hellmodus oder Datumsformat.\n3. Unter Konto können Sie Ihre Unternehmensart ändern (z. B. von Allgemein zu Transport), um Fuhrpark/Lagerbestand ein- oder auszublenden — Ihre bestehenden Daten werden beim Wechsel nie gelöscht.'
+  },
+
+  faq1q: {en:'Is my data stored online?', ar:'هل بياناتي مخزنة أونلاين؟', de:'Werden meine Daten online gespeichert?'},
+  faq1a: {en:'No. Everything you enter — transactions, invoices, employees — stays only in this browser on this device. SmartAc has no server and never uploads your data anywhere.', ar:'لأ. كل حاجة بتدخلها — معاملات، فواتير، موظفين — بتفضل بس في المتصفح ده على الجهاز ده. SmartAc مالوش سيرفر وأبداً مابيرفعش بياناتك لأي مكان.', de:'Nein. Alles, was Sie eingeben — Transaktionen, Rechnungen, Mitarbeiter — bleibt ausschließlich in diesem Browser auf diesem Gerät. SmartAc hat keinen Server und lädt Ihre Daten niemals hoch.'},
+  faq2q: {en:'Can my accountant change my data?', ar:'المحاسب يقدر يعدل بياناتي؟', de:'Kann mein Steuerberater meine Daten ändern?'},
+  faq2a: {en:'No. The accountant portal is completely read-only — there is no save function in that file at all. They can view and download reports, but can never edit, add or delete anything.', ar:'لأ. واجهة المحاسب قراءة فقط بالكامل — مفيش أي دالة حفظ في الملف ده خالص. يقدر يشوف ويحمّل التقارير بس، وأبداً مايقدرش يعدل أو يضيف أو يمسح حاجة.', de:'Nein. Das Buchhalter-Portal ist vollständig schreibgeschützt — es gibt in dieser Datei überhaupt keine Speicherfunktion. Er kann Berichte ansehen und herunterladen, aber nie etwas bearbeiten, hinzufügen oder löschen.'},
+  faq3q: {en:'What happens if I change my business type?', ar:'هيحصل إيه لو غيرت نوع نشاطي؟', de:'Was passiert, wenn ich meine Unternehmensart ändere?'},
+  faq3a: {en:'Switching business type (e.g. General to Transport) only shows or hides the matching tools like Fleet or Inventory. None of your existing data is ever deleted when you switch.', ar:'تغيير نوع النشاط (مثلاً من عام لنقل) بيظهر أو يخفي بس الأدوات المرتبطة زي الأسطول أو المخزون. بياناتك الموجودة مابتتمسحش أبداً لما تغيّر.', de:'Der Wechsel der Unternehmensart (z. B. von Allgemein zu Transport) zeigt oder verbirgt nur die passenden Tools wie Fuhrpark oder Lagerbestand. Keine Ihrer bestehenden Daten wird beim Wechsel gelöscht.'},
+  faq4q: {en:'What happens if I clear my browser data?', ar:'هيحصل إيه لو مسحت بيانات المتصفح؟', de:'Was passiert, wenn ich meine Browserdaten lösche?'},
+  faq4a: {en:'Since everything is stored locally, clearing your browser’s site data or history will permanently delete your SmartAc data too. Export a backup regularly (Settings → Data Management) so you can restore it if this happens.', ar:'بما إن كل حاجة متخزنة محليًا، مسح بيانات الموقع أو الهيستوري من المتصفح هيمسح بيانات SmartAc كمان نهائيًا. اعمل نسخة احتياطية بانتظام (الإعدادات ← إدارة البيانات) عشان تقدر ترجعها لو حصل كده.', de:'Da alles lokal gespeichert wird, löscht das Löschen der Website-Daten oder des Verlaufs Ihres Browsers auch Ihre SmartAc-Daten dauerhaft. Exportieren Sie regelmäßig ein Backup (Einstellungen → Datenverwaltung), um es wiederherstellen zu können.'},
+  faq5q: {en:'Can I use SmartAc on more than one device?', ar:'أقدر أستخدم SmartAc على أكتر من جهاز؟', de:'Kann ich SmartAc auf mehreren Geräten verwenden?'},
+  faq5a: {en:'Not automatically — your data lives only on the device/browser you entered it on. To move to a new device, export a backup on the old one and import it on the new one.', ar:'مش أوتوماتيك — بياناتك موجودة بس على الجهاز/المتصفح اللي دخلتها بيه. عشان تنقل لجهاز جديد، صدّر نسخة احتياطية من القديم واستوردها في الجديد.', de:'Nicht automatisch — Ihre Daten existieren nur auf dem Gerät/Browser, auf dem Sie sie eingegeben haben. Um zu einem neuen Gerät zu wechseln, exportieren Sie ein Backup auf dem alten und importieren Sie es auf dem neuen.'}
 };
 function htx(k) { return (HELP_L[k] && HELP_L[k][state.lang]) || (HELP_L[k] && HELP_L[k].en) || k; }
+
+function helpStepsHtml(text) {
+  var lines = String(text).split('\n').filter(function(l){ return l.trim(); });
+  var cs = 'background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06)';
+  var h = '<div style="' + cs + '">';
+  lines.forEach(function(line) {
+    var m = line.match(/^(\d+)\.\s*(.*)$/);
+    var num = m ? m[1] : '•';
+    var txt = m ? m[2] : line;
+    h += '<div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start">'
+      + '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1a7fd4;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">' + num + '</div>'
+      + '<div style="flex:1;font-size:14px;color:#475569;line-height:1.7;padding-top:2px">' + txt + '</div>'
+      + '</div>';
+  });
+  h += '</div>';
+  return h;
+}
+function openHelpDetail(titleKey, stepsKey) {
+  openLegalOverlay(htx(titleKey), htx('secBasics'), helpStepsHtml(htx(stepsKey)));
+}
 
 function renderHelpPage() {
   var page = document.getElementById('helpPage');
@@ -4925,14 +5042,47 @@ function renderHelpPage() {
   function helpSectionTitle(label) {
     return '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:16px 16px 4px">' + label + '</div>';
   }
+  function faqRow(qKey, aKey) {
+    return '<div class="help-faq-item" style="border-bottom:1px solid var(--border)">'
+      + '<div class="help-faq-q" data-a="help-faq-a-' + qKey + '" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer">'
+      + '<span>' + htx(qKey) + '</span>'
+      + '<span class="help-faq-chevron" style="transition:transform 0.2s;display:flex">' + svgIcon('chevronRight', 16) + '</span>'
+      + '</div>'
+      + '<div id="help-faq-a-' + qKey + '" style="display:none;padding:0 16px 16px;font-size:13px;color:var(--text2);line-height:1.6">' + htx(aKey) + '</div>'
+      + '</div>';
+  }
 
   var h = '<div style="padding-bottom:120px">';
   h += '<div style="padding:16px 16px 0;font-size:18px;font-weight:700">' + htx('title') + '</div>';
 
-  h += helpSectionTitle(htx('gettingStarted'));
+  h += helpSectionTitle(htx('secBasics'));
   h += helpRow('help-add-tx', htx('addTx'));
   h += helpRow('help-create-inv', htx('createInv'));
   h += helpRow('help-add-clients', htx('addClients'));
+
+  h += helpSectionTitle(htx('secTax'));
+  h += helpRow('help-uva', htx('uva'));
+  h += helpRow('help-export', htx('exportReports'));
+  h += helpRow('help-accountant', htx('accountantAccess'));
+
+  h += helpSectionTitle(htx('secTeam'));
+  h += helpRow('help-employees', htx('employees'));
+  if(state.businessType === 'transport') h += helpRow('help-fleet', htx('fleet'));
+  if(state.businessType === 'retail') h += helpRow('help-inventory', htx('inventory'));
+  h += helpRow('help-assets', htx('assets'));
+
+  h += helpSectionTitle(htx('secCal'));
+  h += helpRow('help-appointments', htx('appointments'));
+  h += helpRow('help-notes', htx('notes'));
+
+  h += helpSectionTitle(htx('secData'));
+  h += helpRow('help-backup', htx('backup'));
+  h += helpRow('help-prefs', htx('prefs'));
+
+  h += helpSectionTitle(htx('secFaq'));
+  h += '<div style="background:var(--card);border-radius:12px;overflow:hidden">'
+    + faqRow('faq1q', 'faq1a') + faqRow('faq2q', 'faq2a') + faqRow('faq3q', 'faq3a') + faqRow('faq4q', 'faq4a') + faqRow('faq5q', 'faq5a')
+    + '</div>';
 
   h += helpSectionTitle(htx('support'));
   h += helpRow('help-feedback', htx('feedback'));
@@ -4948,11 +5098,44 @@ function renderHelpPage() {
   page.innerHTML = h;
 
   var addTxBtn = document.getElementById('help-add-tx');
-  if(addTxBtn) addTxBtn.onclick = function(){ alert(htx('addTxSteps')); };
+  if(addTxBtn) addTxBtn.onclick = function(){ openHelpDetail('addTx', 'addTxSteps'); };
   var createInvBtn = document.getElementById('help-create-inv');
-  if(createInvBtn) createInvBtn.onclick = function(){ alert(htx('createInvSteps')); };
+  if(createInvBtn) createInvBtn.onclick = function(){ openHelpDetail('createInv', 'createInvSteps'); };
   var addClientsBtn = document.getElementById('help-add-clients');
-  if(addClientsBtn) addClientsBtn.onclick = function(){ alert(htx('addClientsSteps')); };
+  if(addClientsBtn) addClientsBtn.onclick = function(){ openHelpDetail('addClients', 'addClientsSteps'); };
+  var uvaBtn = document.getElementById('help-uva');
+  if(uvaBtn) uvaBtn.onclick = function(){ openHelpDetail('uva', 'uvaSteps'); };
+  var exportBtn = document.getElementById('help-export');
+  if(exportBtn) exportBtn.onclick = function(){ openHelpDetail('exportReports', 'exportReportsSteps'); };
+  var accountantBtn = document.getElementById('help-accountant');
+  if(accountantBtn) accountantBtn.onclick = function(){ openHelpDetail('accountantAccess', 'accountantAccessSteps'); };
+  var employeesBtn = document.getElementById('help-employees');
+  if(employeesBtn) employeesBtn.onclick = function(){ openHelpDetail('employees', 'employeesSteps'); };
+  var fleetBtn = document.getElementById('help-fleet');
+  if(fleetBtn) fleetBtn.onclick = function(){ openHelpDetail('fleet', 'fleetSteps'); };
+  var inventoryBtn = document.getElementById('help-inventory');
+  if(inventoryBtn) inventoryBtn.onclick = function(){ openHelpDetail('inventory', 'inventorySteps'); };
+  var assetsBtn = document.getElementById('help-assets');
+  if(assetsBtn) assetsBtn.onclick = function(){ openHelpDetail('assets', 'assetsSteps'); };
+  var appointmentsBtn = document.getElementById('help-appointments');
+  if(appointmentsBtn) appointmentsBtn.onclick = function(){ openHelpDetail('appointments', 'appointmentsSteps'); };
+  var notesBtn = document.getElementById('help-notes');
+  if(notesBtn) notesBtn.onclick = function(){ openHelpDetail('notes', 'notesSteps'); };
+  var backupBtn = document.getElementById('help-backup');
+  if(backupBtn) backupBtn.onclick = function(){ openHelpDetail('backup', 'backupSteps'); };
+  var prefsBtn = document.getElementById('help-prefs');
+  if(prefsBtn) prefsBtn.onclick = function(){ openHelpDetail('prefs', 'prefsSteps'); };
+
+  page.querySelectorAll('.help-faq-q').forEach(function(row) {
+    row.onclick = function() {
+      var aEl = document.getElementById(row.getAttribute('data-a'));
+      var chevron = row.querySelector('.help-faq-chevron');
+      if(!aEl) return;
+      var open = aEl.style.display === 'block';
+      aEl.style.display = open ? 'none' : 'block';
+      if(chevron) chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(90deg)';
+    };
+  });
 
   var feedbackBtn = document.getElementById('help-feedback');
   if(feedbackBtn) feedbackBtn.onclick = function(){ window.location.href = 'mailto:team@smartordi.eu'; };
@@ -8726,8 +8909,7 @@ function renderAccountSection() {
     + '</div>'
     + '</div>'
     + '<button id="changePwBtn" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;margin-bottom:10px">' + svgIcon('lock', 15) + ' ' + stx('changePw') + '</button>'
-    + '<div style="font-size:12px;color:var(--text3);margin-bottom:8px">' + stx('hello') + '<strong>' + escHtml(user) + '</strong></div>'
-    + '<button id="logoutBtnSettings" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('logout', 15) + ' ' + stx('logoutBtn') + '</button>';
+    + '<div style="font-size:12px;color:var(--text3)">' + stx('hello') + '<strong>' + escHtml(user) + '</strong></div>';
 
   var editBtn = document.getElementById('profileEditBtn');
   if(editBtn) editBtn.onclick = function(){ _profileInfoEditMode = true; renderAccountSection(); };
@@ -8776,8 +8958,6 @@ function renderAccountSection() {
   if(removeBtn) removeBtn.onclick = removeLogo;
   var changePwBtn = document.getElementById('changePwBtn');
   if(changePwBtn) changePwBtn.onclick = openChangePassword;
-  var logoutBtn = document.getElementById('logoutBtnSettings');
-  if(logoutBtn) logoutBtn.onclick = logout;
 }
 
 var _bizInfoEditMode = false;
