@@ -11734,6 +11734,8 @@ function renderFixedPage() {
     save:     {en:'Save', ar:'حفظ', de:'Speichern'},
     total:    {en:'Total/mo', ar:'الإجمالي/شهر', de:'Gesamt/Mo'},
     empty:    {en:'None added yet.', ar:'لم يتم الإضافة بعد.', de:'Noch nichts hinzugefügt.'},
+    category: {en:'Category', ar:'القسم', de:'Kategorie'},
+    vatRate:  {en:'VAT % (leave 0 if none)', ar:'نسبة الضريبة % (سيبها 0 لو مفيش)', de:'MwSt % (0 falls keine)'},
   };
   function tx(k){ return (L[k]&&L[k][lang])||(L[k]&&L[k].en)||k; }
 
@@ -11750,6 +11752,8 @@ function renderFixedPage() {
     save:    {en:'Save', ar:'حفظ', de:'Speichern'},
     total:   {en:'Total fixed income/mo', ar:'إجمالي الدخل الثابت/شهر', de:'Gesamt Einkommen/Mo'},
     empty:   {en:'No fixed income added yet.', ar:'لم يتم إضافة دخل ثابت بعد.', de:'Noch kein festes Einkommen.'},
+    category: {en:'Category', ar:'القسم', de:'Kategorie'},
+    vatRate:  {en:'VAT % (leave 0 if none)', ar:'نسبة الضريبة % (سيبها 0 لو مفيش)', de:'MwSt % (0 falls keine)'},
     types:   {
       rental:      {en:'Rental Income',    ar:'دخل إيجار',           de:'Mieteinnahmen'},
       retainer:    {en:'Service Retainer', ar:'عقد خدمة',            de:'Dienstleistungsvertrag'},
@@ -11774,7 +11778,7 @@ function renderFixedPage() {
     h += '<div style="font-size:24px">'+svgIcon('money',24)+'</div>';
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+escHtml(fi.name)+'</div>';
     if(fi.source) h += '<div style="font-size:11px;color:var(--text3)">'+escHtml(fi.source)+'</div>';
-    h += '<div style="font-size:11px;color:var(--text3)">'+fiTypeTx(fi.type||'other')+' · '+fiTx('day')+' '+fi.day+'</div>';
+    h += '<div style="font-size:11px;color:var(--text3)">'+fiTypeTx(fi.type||'other')+' · '+fiTx('day')+' '+fi.day+' · '+tc(fi.category||'Other')+(parseFloat(fi.vatRate)>0?' · '+fi.vatRate+'% VAT':'')+'</div>';
     h += '<div style="font-size:12px;color:var(--income);font-weight:600">+'+fmt(parseFloat(fi.amount)||0)+'/mo</div></div>';
     h += '<button id="fp-delfi_'+fi.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">'+svgIcon('x',12)+'</button>';
     h += '</div>';
@@ -11791,6 +11795,10 @@ function renderFixedPage() {
   h += '</select>';
   h += '<input id="fp-fi-source" placeholder="'+fiTx('source')+'" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
   h += '<input id="fp-fi-amount" placeholder="'+fiTx('amount')+'" type="number" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
+  h += '<select id="fp-fi-cat" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
+  CATS.income.forEach(function(c){ h += '<option value="'+c+'">'+tc(c)+'</option>'; });
+  h += '</select>';
+  h += '<input id="fp-fi-vat" placeholder="'+fiTx('vatRate')+'" type="number" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
   h += '<input id="fp-fi-day" placeholder="'+fiTx('day')+'" type="number" min="1" max="31" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:10px;outline:none">';
   h += '<button id="fp-save-fi" style="width:100%;background:var(--income);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer">'+fiTx('save')+'</button>';
   h += '</div>';
@@ -11810,7 +11818,7 @@ function renderFixedPage() {
     h += '<div style="background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px'+(urgent?';border:1.5px solid var(--expense)':'')+'">';
     h += '<div style="font-size:24px">'+svgIcon('refreshCw',24)+'</div>';
     h += '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+r.name+'</div>';
-    h += '<div style="font-size:11px;color:var(--text3)">'+tx('day')+': '+r.day+(urgent?' '+svgIcon('warning',11):'')+' </div>';
+    h += '<div style="font-size:11px;color:var(--text3)">'+tx('day')+': '+r.day+(urgent?' '+svgIcon('warning',11):'')+' · '+tc(r.category||'Other')+(parseFloat(r.vatRate)>0?' · '+r.vatRate+'% VAT':'')+'</div>';
     h += '<div style="font-size:12px;color:var(--expense);font-weight:600">-'+fmt(parseFloat(r.amount)||0)+'/mo</div></div>';
     h += '<button id="fp-delrec_'+r.id+'" style="background:rgba(239,68,68,0.1);color:#ef4444;border:none;border-radius:8px;padding:7px 10px;font-size:12px;cursor:pointer">'+svgIcon('x',12)+'</button>';
     h += '</div>';
@@ -11821,6 +11829,10 @@ function renderFixedPage() {
   h += '<div id="fp-rec-form" style="display:none;background:var(--card);border-radius:14px;padding:14px;margin-bottom:8px;box-shadow:var(--shadow)">';
   h += '<input id="fp-rec-name" placeholder="'+tx('desc')+'" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
   h += '<input id="fp-rec-amount" placeholder="'+tx('amount')+'" type="number" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
+  h += '<select id="fp-rec-cat" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
+  CATS.expense.forEach(function(c){ h += '<option value="'+c+'">'+tc(c)+'</option>'; });
+  h += '</select>';
+  h += '<input id="fp-rec-vat" placeholder="'+tx('vatRate')+'" type="number" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:7px;outline:none">';
   h += '<input id="fp-rec-day" placeholder="'+tx('day')+' (1-31)" type="number" min="1" max="31" style="width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box;margin-bottom:10px;outline:none">';
   h += '<button id="fp-save-rec" style="width:100%;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:10px;font-size:13px;font-weight:600;cursor:pointer">'+tx('save')+'</button>';
   h += '</div>';
@@ -11839,7 +11851,7 @@ function renderFixedPage() {
     var name = (document.getElementById('fp-rec-name').value||'').trim();
     var amount = parseFloat(document.getElementById('fp-rec-amount').value)||0;
     if(!name||!amount) return;
-    state.recurring.push({id:Date.now(), name:name, amount:amount, day:parseInt(document.getElementById('fp-rec-day').value)||1, lastRecorded:null});
+    state.recurring.push({id:Date.now(), name:name, amount:amount, category:document.getElementById('fp-rec-cat').value||'Other', vatRate:parseFloat(document.getElementById('fp-rec-vat').value)||0, day:parseInt(document.getElementById('fp-rec-day').value)||1, lastRecorded:null});
     save(); renderFixedPage();
   };
 
@@ -11862,6 +11874,8 @@ function renderFixedPage() {
       type:document.getElementById('fp-fi-type').value||'other',
       source:(document.getElementById('fp-fi-source').value||'').trim(),
       amount:amount,
+      category:document.getElementById('fp-fi-cat').value||'Other',
+      vatRate:parseFloat(document.getElementById('fp-fi-vat').value)||0,
       day:parseInt(document.getElementById('fp-fi-day').value)||1,
       lastRecorded:null
     });
@@ -13289,7 +13303,8 @@ function checkRecurringDue() {
         type: 'expense',
         name: name,
         amount: parseFloat(item.amount) || 0,
-        category: 'recurring',
+        vatRate: parseFloat(item.vatRate) || 0,
+        category: item.category || 'Other',
         date: dateStr
       });
       item.lastRecorded = curMonth;
@@ -13305,7 +13320,8 @@ function checkRecurringDue() {
         type: 'income',
         name: item.name || '',
         amount: parseFloat(item.amount) || 0,
-        category: 'fixed-income',
+        vatRate: parseFloat(item.vatRate) || 0,
+        category: item.category || 'Other',
         date: dateStr
       });
       item.lastRecorded = curMonth;
