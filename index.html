@@ -6567,6 +6567,7 @@ var UVA_TXT = {
   sales13:    {en:'KZ 006 — Sales 13%', ar:'KZ 006 — مبيعات 13%', de:'KZ 006 — Umsätze 13%'},
   sales10:    {en:'KZ 029 — Sales 10%', ar:'KZ 029 — مبيعات 10%', de:'KZ 029 — Umsätze 10%'},
   sales0:     {en:'Tax-free sales 0%', ar:'مبيعات معفاة 0%', de:'Steuerfreie Umsätze 0%'},
+  salesOther: {en:'Sales at other rates', ar:'مبيعات بنسب أخرى', de:'Umsätze zu sonstigen Sätzen'},
   sumUst:     {en:'Total VAT (Umsatzsteuer)', ar:'إجمالي ضريبة المبيعات', de:'Summe Umsatzsteuer'},
   vorsteuer:  {en:'KZ 060 — Input VAT (Vorsteuer)', ar:'KZ 060 — ضريبة المشتريات (Vorsteuer)', de:'KZ 060 — Vorsteuer'},
   zahllast:   {en:'KZ 095 — Amount payable', ar:'KZ 095 — المستحق للدفع (Zahllast)', de:'KZ 095 — Zahllast'},
@@ -6611,20 +6612,22 @@ function uvaTxInPeriod(key) {
 }
 
 function computeUva(key) {
-  var res = {salesNetto:{0:0,10:0,13:0,20:0}, salesUst:{0:0,10:0,13:0,20:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
+  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
   uvaTxInPeriod(key).forEach(function(tx) {
     var r = tx.vatRate || 0;
-    if(r !== 10 && r !== 13 && r !== 20) r = 0;
     var b = vatBreakdown(tx.amount, r);
     if(tx.type === 'income') {
-      res.salesNetto[r] += b.netto;
-      res.salesUst[r] += b.steuer;
+      var bucket = (r === 0 || r === 10 || r === 13 || r === 20) ? r : 'other';
+      res.salesNetto[bucket] += b.netto;
+      res.salesUst[bucket] += b.steuer;
     } else {
+      // Vorsteuer (KZ 060) is a single lump total on the official UVA form —
+      // it is never broken down by rate, so the real rate is always used here.
       res.vorsteuer += b.steuer;
     }
   });
-  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20];
-  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20];
+  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20] + res.salesNetto.other;
+  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20] + res.salesUst.other;
   res.zahllast = res.sumUst - res.vorsteuer;
   return res;
 }
@@ -6726,6 +6729,9 @@ function renderUva() {
   h += row(uvat('sales13') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto[13]) + ' / ' + fmt(u.salesUst[13]));
   h += row(uvat('sales10') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto[10]) + ' / ' + fmt(u.salesUst[10]));
   h += row(uvat('sales0'), fmt(u.salesNetto[0]));
+  if(u.salesNetto.other || u.salesUst.other) {
+    h += row(uvat('salesOther') + ' <span style="color:var(--text3)">(' + uvat('netUst') + ')</span>', fmt(u.salesNetto.other) + ' / ' + fmt(u.salesUst.other));
+  }
   h += row(uvat('sumUst'), fmt(u.sumUst));
   h += row(uvat('vorsteuer'), '− ' + fmt(u.vorsteuer));
   var isCredit = u.zahllast < 0;
@@ -6789,11 +6795,15 @@ function uvaExportRows(key) {
       ['KZ 029 — Umsätze 10% (Netto)', f2(u.salesNetto[10])],
       ['KZ 029 — Umsatzsteuer 10%', f2(u.salesUst[10])],
       ['Steuerfreie Umsätze 0% (Netto)', f2(u.salesNetto[0])],
+    ].concat((u.salesNetto.other || u.salesUst.other) ? [
+      ['Umsätze zu sonstigen Sätzen (Netto)', f2(u.salesNetto.other)],
+      ['Umsatzsteuer zu sonstigen Sätzen', f2(u.salesUst.other)],
+    ] : []).concat([
       ['Summe Umsatzsteuer', f2(u.sumUst)],
       ['KZ 060 — Vorsteuer', f2(u.vorsteuer)],
       [(u.zahllast < 0 ? 'KZ 095 — Gutschrift' : 'KZ 095 — Zahllast'), f2(Math.abs(u.zahllast))],
       ['Status', fg ? ('FREIGEGEBEN am ' + new Date(fg.at).toLocaleString('de-AT')) : 'ENTWURF (nicht freigegeben)']
-    ]
+    ])
   };
 }
 
@@ -6824,6 +6834,8 @@ function uvaExportPDF() {
   doc.save('UVA_' + key + '.pdf');
 }
 
+// Comprehensive accountant export: UVA summary + full transaction list + fixed
+// costs/income + assets/installments, all in one workbook, one sheet each.
 function uvaExportExcel() {
   var key = uvaCurrentKey();
   if(typeof XLSX === 'undefined') {
@@ -6833,13 +6845,63 @@ function uvaExportExcel() {
     document.head.appendChild(script);
     return;
   }
-  var data = uvaExportRows(key);
-  var header = [['UVA — Umsatzsteuervoranmeldung'], [(state.businessName || '') + (state.bizTaxId ? ('  UID: ' + state.bizTaxId) : '')], ['Erstellt am: ' + new Date().toLocaleString('de-AT')], []];
-  var ws = XLSX.utils.aoa_to_sheet(header.concat(data.rows));
-  ws['!cols'] = [{wch:52}, {wch:26}];
+  var f2 = function(n){ return (parseFloat(n)||0).toFixed(2); };
   var wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'UVA');
-  XLSX.writeFile(wb, 'UVA_' + key + '.xlsx');
+  var bizLine = (state.businessName || '') + (state.bizTaxId ? ('  UID: ' + state.bizTaxId) : '');
+  var dateLine = 'Erstellt am: ' + new Date().toLocaleString('de-AT');
+
+  // ── Sheet 1: UVA summary ──
+  var data = uvaExportRows(key);
+  var uvaHeader = [['UVA — Umsatzsteuervoranmeldung'], [bizLine], [dateLine], []];
+  var wsUva = XLSX.utils.aoa_to_sheet(uvaHeader.concat(data.rows));
+  wsUva['!cols'] = [{wch:52}, {wch:26}];
+  XLSX.utils.book_append_sheet(wb, wsUva, 'UVA');
+
+  // ── Sheet 2: Transaktionen (all tx in the selected period) ──
+  var txHeader = [['Transaktionen — ' + uvaKeyLabel(key)], [bizLine], [dateLine], [],
+    ['Datum', 'Beschreibung', 'Typ', 'Kategorie', 'Netto', 'MwSt %', 'Steuer', 'Brutto']];
+  var txRows = uvaTxInPeriod(key).sort(function(a,b){ return (a.date||'').localeCompare(b.date||''); }).map(function(tx) {
+    var b = vatBreakdown(tx.amount, tx.vatRate || 0);
+    return [tx.date || '', tx.name || '', tx.type === 'income' ? 'Einnahme' : 'Ausgabe', tx.category || '', f2(b.netto), tx.vatRate || 0, f2(b.steuer), f2(b.brutto)];
+  });
+  var wsTx = XLSX.utils.aoa_to_sheet(txHeader.concat(txRows));
+  wsTx['!cols'] = [{wch:12},{wch:30},{wch:10},{wch:14},{wch:12},{wch:9},{wch:12},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsTx, 'Transaktionen');
+
+  // ── Sheet 3: Fixkosten & festes Einkommen ──
+  var fxHeader = [['Fixkosten & festes Einkommen'], [bizLine], [dateLine], [],
+    ['Name', 'Typ', 'Kategorie', 'MwSt %', 'Betrag / Monat', 'Tag']];
+  var fxRows = (state.recurring || []).map(function(r) {
+    return [r.name || '', 'Ausgabe', r.category || 'Other', parseFloat(r.vatRate)||0, f2(r.amount), r.day || ''];
+  }).concat((state.fixedIncome || []).map(function(fi) {
+    return [fi.name || '', 'Einnahme', fi.category || 'Other', parseFloat(fi.vatRate)||0, f2(fi.amount), fi.day || ''];
+  })).concat((state.employees || []).map(function(e) {
+    return [(e.name || '') + ' (Gehalt)', 'Ausgabe', 'Salary', 0, f2(e.salary), ''];
+  }));
+  var wsFx = XLSX.utils.aoa_to_sheet(fxHeader.concat(fxRows));
+  wsFx['!cols'] = [{wch:26},{wch:10},{wch:14},{wch:9},{wch:15},{wch:6}];
+  XLSX.utils.book_append_sheet(wb, wsFx, 'Fixkosten');
+
+  // ── Sheet 4: Anlagevermögen & Ausschreibung ──
+  var asHeader = [['Anlagevermögen & Ausschreibung'], [bizLine], [dateLine], [],
+    ['Name', 'Art', 'Kaufpreis (Netto)', 'MwSt %', 'Datum', 'Rest (Ausschr.)', 'Fortschritt']];
+  function instFor(id) { return id ? (state.installments || []).find(function(i){ return i.id === id; }) : null; }
+  var asRows = (state.fleet || []).filter(function(v){ return v.acqType && v.acqType !== 'rentOnly'; }).map(function(v) {
+    var inst = instFor(v.installmentId);
+    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : '';
+    var progress = inst ? (inst.monthsPosted + '/' + inst.totalMonths) : '';
+    return [v.name || v.plate, 'Fahrzeug', f2(v.assetValue), v.assetVatRate || 0, v.assetPurchaseDate || '', remaining === '' ? '' : f2(remaining), progress];
+  }).concat((state.assets || []).map(function(a) {
+    var inst = instFor(a.installmentId);
+    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : '';
+    var progress = inst ? (inst.monthsPosted + '/' + inst.totalMonths) : '';
+    return [a.name, 'Sonstiges', f2(a.value), a.vatRate || 0, a.purchaseDate || '', remaining === '' ? '' : f2(remaining), progress];
+  }));
+  var wsAs = XLSX.utils.aoa_to_sheet(asHeader.concat(asRows));
+  wsAs['!cols'] = [{wch:26},{wch:12},{wch:16},{wch:9},{wch:12},{wch:14},{wch:12}];
+  XLSX.utils.book_append_sheet(wb, wsAs, 'Anlagevermögen');
+
+  XLSX.writeFile(wb, 'SmartAc_Bericht_' + key + '.xlsx');
 }
 
 // ────────────────────────────────────────

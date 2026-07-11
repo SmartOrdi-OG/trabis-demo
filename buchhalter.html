@@ -264,6 +264,9 @@ function loadAccountData(user) {
     receivedInvoices: readJSON(user, 'received_inv', []),
     uvaFreigaben: readJSON(user, 'uvaFreigaben', {}),
     bizTaxId: readStr(user, 'bizTaxId', ''),
+    recurring: readJSON(user, 'recurring', []),
+    fixedIncome: readJSON(user, 'fixed_income', []),
+    installments: readJSON(user, 'installments', []),
   };
 }
 
@@ -304,18 +307,22 @@ function uvaKeyLabelBu(key) {
   return key;
 }
 function computeUvaBu(key, interval) {
-  var res = {salesNetto:{0:0,10:0,13:0,20:0}, salesUst:{0:0,10:0,13:0,20:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
+  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
   (buData.transactions || []).filter(function(tx) {
     return tx && tx.date && (tx.type === 'income' || tx.type === 'expense') && uvaKeyForDateBu(tx.date, interval) === key;
   }).forEach(function(tx) {
     var r = tx.vatRate || 0;
-    if(r !== 10 && r !== 13 && r !== 20) r = 0;
     var b = vatBreakdownBu(tx.amount, r);
-    if(tx.type === 'income') { res.salesNetto[r] += b.netto; res.salesUst[r] += b.steuer; }
-    else { res.vorsteuer += b.steuer; }
+    if(tx.type === 'income') {
+      var bucket = (r === 0 || r === 10 || r === 13 || r === 20) ? r : 'other';
+      res.salesNetto[bucket] += b.netto; res.salesUst[bucket] += b.steuer;
+    } else {
+      // Vorsteuer (KZ 060) is a single lump total on the official UVA form — no rate breakdown.
+      res.vorsteuer += b.steuer;
+    }
   });
-  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20];
-  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20];
+  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20] + res.salesNetto.other;
+  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20] + res.salesUst.other;
   res.zahllast = res.sumUst - res.vorsteuer;
   return res;
 }
@@ -401,6 +408,33 @@ function renderOverviewHtml() {
     h += '</table>';
   }
   h += '</div>';
+
+  var recurring = buData.recurring || [];
+  var fixedIncome = buData.fixedIncome || [];
+  h += '<div class="card"><div class="card-title">Fixkosten &amp; festes Einkommen</div>';
+  if(!recurring.length && !fixedIncome.length) h += '<div class="empty-msg">Keine Fixkosten erfasst</div>';
+  else {
+    h += '<table><tr><th>Name</th><th>Typ</th><th>Kategorie</th><th>MwSt %</th><th>Betrag/Mo</th></tr>';
+    recurring.forEach(function(r) {
+      h += '<tr><td>' + escHtmlBu(r.name) + '</td><td>Ausgabe</td><td>' + escHtmlBu(r.category||'Other') + '</td><td>' + (parseFloat(r.vatRate)||0) + '%</td><td>' + fmtBu(r.amount) + '</td></tr>';
+    });
+    fixedIncome.forEach(function(fi) {
+      h += '<tr><td>' + escHtmlBu(fi.name) + '</td><td>Einnahme</td><td>' + escHtmlBu(fi.category||'Other') + '</td><td>' + (parseFloat(fi.vatRate)||0) + '%</td><td>' + fmtBu(fi.amount) + '</td></tr>';
+    });
+    h += '</table>';
+  }
+  h += '</div>';
+
+  var installments = (buData.installments || []).filter(function(i){ return i.status === 'active'; });
+  if(installments.length) {
+    h += '<div class="card"><div class="card-title">Laufende Ausschreibungen (Ratenzahlung)</div>';
+    h += '<table><tr><th>Name</th><th>Gesamt (Netto)</th><th>Rest</th><th>Fortschritt</th></tr>';
+    installments.forEach(function(i) {
+      var remaining = Math.max(0, i.totalNetto - i.monthlyNetto * i.monthsPosted);
+      h += '<tr><td>' + escHtmlBu(i.name||'') + '</td><td>' + fmtBu(i.totalNetto) + '</td><td>' + fmtBu(remaining) + '</td><td>' + i.monthsPosted + '/' + i.totalMonths + '</td></tr>';
+    });
+    h += '</table></div>';
+  }
   return h;
 }
 function periodFilterTx(period) {
@@ -451,6 +485,7 @@ function renderUvaHtml() {
   h += row('KZ 006 — Umsätze 13% (Netto / USt)', fmtBu(u.salesNetto[13]) + ' / ' + fmtBu(u.salesUst[13]));
   h += row('KZ 029 — Umsätze 10% (Netto / USt)', fmtBu(u.salesNetto[10]) + ' / ' + fmtBu(u.salesUst[10]));
   h += row('Steuerfreie Umsätze 0%', fmtBu(u.salesNetto[0]));
+  if(u.salesNetto.other || u.salesUst.other) h += row('Umsätze zu sonstigen Sätzen (Netto / USt)', fmtBu(u.salesNetto.other) + ' / ' + fmtBu(u.salesUst.other));
   h += row('Summe Umsatzsteuer', fmtBu(u.sumUst));
   h += row('KZ 060 — Vorsteuer', '− ' + fmtBu(u.vorsteuer));
   var isCredit = u.zahllast < 0;
@@ -545,26 +580,24 @@ function renderEmployeesHtml() {
 }
 
 // ── Anlagevermögen ──
+function instForBu(id) { return id ? (buData.installments || []).find(function(i){ return i.id === id; }) : null; }
 function renderAssetsHtml() {
-  var vehicles = (buData.fleet||[]).filter(function(v){ return calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
+  var vehicles = (buData.fleet||[]).filter(function(v){ return v.acqType && v.acqType !== 'rentOnly'; });
   var general = buData.assets || [];
-  var totalValue = 0, totalMonthly = 0;
-  var h = '<div class="card"><div class="card-title">Anlagevermögen &amp; Abschreibung</div>';
-  h += '<table><tr><th>Name</th><th>Kaufpreis</th><th>Datum</th><th>Satz</th><th>Buchwert</th><th>Mtl.</th></tr>';
-  vehicles.forEach(function(v) {
-    var d = calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
-    totalValue += d.bookValue; totalMonthly += d.monthly;
-    h += '<tr><td>' + escHtmlBu(v.name||v.plate) + ' (Fahrzeug)</td><td>' + fmtBu(v.assetValue) + '</td><td>' + fmtDateBu(v.assetPurchaseDate) + '</td><td>' + v.assetDepreciationRate + '%</td><td>' + fmtBu(d.bookValue) + '</td><td>' + fmtBu(d.monthly) + '</td></tr>';
-  });
-  general.forEach(function(a) {
-    var d = calcDepreciationBu(a.value, a.purchaseDate, a.rate);
-    if(!d) return;
-    totalValue += d.bookValue; totalMonthly += d.monthly;
-    h += '<tr><td>' + escHtmlBu(a.name) + '</td><td>' + fmtBu(a.value) + '</td><td>' + fmtDateBu(a.purchaseDate) + '</td><td>' + a.rate + '%</td><td>' + fmtBu(d.bookValue) + '</td><td>' + fmtBu(d.monthly) + '</td></tr>';
-  });
+  var totalValue = 0;
+  var h = '<div class="card"><div class="card-title">Anlagevermögen &amp; Ausschreibung</div>';
+  h += '<table><tr><th>Name</th><th>Kaufpreis (Netto)</th><th>Datum</th><th>MwSt.</th><th>Rest (Ausschr.)</th><th>Fortschritt</th></tr>';
+  function row(name, price, date, vat, inst) {
+    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
+    var progress = inst ? (inst.monthsPosted + '/' + inst.totalMonths) : '—';
+    totalValue += (parseFloat(price)||0);
+    h += '<tr><td>' + escHtmlBu(name) + '</td><td>' + fmtBu(price) + '</td><td>' + fmtDateBu(date) + '</td><td>' + (vat||0) + '%</td><td>' + (remaining != null ? fmtBu(remaining) : '—') + '</td><td>' + progress + '</td></tr>';
+  }
+  vehicles.forEach(function(v) { row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetVatRate, instForBu(v.installmentId)); });
+  general.forEach(function(a) { row(a.name, a.value, a.purchaseDate, a.vatRate, instForBu(a.installmentId)); });
   if(!vehicles.length && !general.length) h += '<tr><td colspan="6" style="text-align:center;color:var(--text3)">Keine Anlagegüter erfasst</td></tr>';
-  h += '<tr style="font-weight:800"><td colspan="4">Summe</td><td>' + fmtBu(totalValue) + '</td><td>' + fmtBu(totalMonthly) + '</td></tr>';
-  h += '</table><div class="disclaimer">Geschätzte lineare Abschreibung zu Planungszwecken — keine Steuerberatung.</div></div>';
+  h += '<tr style="font-weight:800"><td colspan="1">Summe</td><td>' + fmtBu(totalValue) + '</td><td colspan="4"></td></tr>';
+  h += '</table><div class="disclaimer">Für Planungszwecke — keine Steuerberatung.</div></div>';
   return h;
 }
 
@@ -610,7 +643,7 @@ function downloadTransactionsCsv() {
 function downloadAssetsPdf() {
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
   if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var vehicles = (buData.fleet||[]).filter(function(v){ return calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate); });
+  var vehicles = (buData.fleet||[]).filter(function(v){ return v.acqType && v.acqType !== 'rentOnly'; });
   var general = buData.assets || [];
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
   var y = 20;
@@ -618,41 +651,42 @@ function downloadAssetsPdf() {
   doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
 
   doc.setFont(undefined,'bold'); doc.setFontSize(9);
-  doc.text('Name', 14, y); doc.text('Kaufpreis', 88, y, {align:'right'}); doc.text('Datum', 92, y);
-  doc.text('Satz', 150, y, {align:'right'}); doc.text('Buchwert', 175, y, {align:'right'}); doc.text('Mtl.', 196, y, {align:'right'});
+  doc.text('Name', 14, y); doc.text('Kaufpreis (Netto)', 100, y, {align:'right'}); doc.text('Datum', 104, y);
+  doc.text('MwSt.', 155, y, {align:'right'}); doc.text('Rest (Ausschr.)', 196, y, {align:'right'});
   y += 3; doc.line(14, y, 196, y); y += 5;
   doc.setFont(undefined,'normal');
 
-  var totalValue = 0, totalMonthly = 0;
-  function row(name, price, date, rate, bookValue, monthly) {
+  var totalValue = 0;
+  function row(name, price, date, vat, remaining) {
     doc.setFontSize(9);
-    doc.text(String(name).substring(0,26), 14, y);
-    doc.text(fmtBu(price), 88, y, {align:'right'});
-    doc.text(String(date||''), 92, y);
-    doc.text(rate + '%', 150, y, {align:'right'});
-    doc.text(fmtBu(bookValue), 175, y, {align:'right'});
-    doc.text(fmtBu(monthly), 196, y, {align:'right'});
+    doc.text(String(name).substring(0,30), 14, y);
+    doc.text(fmtBu(price), 100, y, {align:'right'});
+    doc.text(String(date||''), 104, y);
+    doc.text((vat||0) + '%', 155, y, {align:'right'});
+    doc.text(remaining != null ? fmtBu(remaining) : '—', 196, y, {align:'right'});
     y += 6;
     if(y > 280) { doc.addPage(); y = 20; }
   }
   vehicles.forEach(function(v) {
-    var d = calcDepreciationBu(v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate);
-    row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetDepreciationRate, d.bookValue, d.monthly);
-    totalValue += d.bookValue; totalMonthly += d.monthly;
+    var inst = instForBu(v.installmentId);
+    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
+    row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetVatRate, remaining);
+    totalValue += (v.assetValue || 0);
   });
   general.forEach(function(a) {
-    var d = calcDepreciationBu(a.value, a.purchaseDate, a.rate);
-    if(d) { row(a.name, a.value, a.purchaseDate, a.rate, d.bookValue, d.monthly); totalValue += d.bookValue; totalMonthly += d.monthly; }
+    var inst = instForBu(a.installmentId);
+    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
+    row(a.name, a.value, a.purchaseDate, a.vatRate, remaining);
+    totalValue += (a.value || 0);
   });
 
   y += 2; doc.line(14, y, 196, y); y += 6;
   doc.setFont(undefined,'bold');
   doc.text('Summe', 14, y);
-  doc.text(fmtBu(totalValue), 175, y, {align:'right'});
-  doc.text(fmtBu(totalMonthly), 196, y, {align:'right'});
+  doc.text(fmtBu(totalValue), 100, y, {align:'right'});
   y += 12;
   doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.setTextColor(120);
-  doc.text('Geschätzte lineare Abschreibung zu Planungszwecken — keine Steuerberatung.', 14, y, {maxWidth:182});
+  doc.text('Für Planungszwecke — keine Steuerberatung.', 14, y, {maxWidth:182});
   doc.save('Anlagevermoegen_' + todayBu() + '.pdf');
 }
 function downloadInventoryPdf() {
