@@ -2312,21 +2312,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <div id="reportRows"></div>
   </div>
-  <!-- FORECAST CARD -->
-  <div class="forecast-card" id="forecastCard">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="forecast-title">📈 Forecast</div>
-    <table class="forecast-table">
-      <thead>
-        <tr>
-          <th id="fct-period-hdr">Period</th>
-          <th id="fct-income-hdr">Expected Income</th>
-          <th id="fct-profit-hdr">Expected Profit</th>
-        </tr>
-      </thead>
-      <tbody id="forecastRows"></tbody>
-    </table>
-    <div class="forecast-disclaimer" id="forecastDisclaimer"></div>
-  </div>
 
   <!-- UVA (Umsatzsteuervoranmeldung) -->
   <div class="report-card" id="uvaCard" style="margin-top:16px;padding:16px">
@@ -2346,6 +2331,22 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button onclick="uvaToggleFreigabe()" id="uvaFreigabeBtn" style="flex:1.4;padding:11px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Freigabe</button>
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5" id="uva-disclaimer"></div>
+  </div>
+
+  <!-- FORECAST CARD (deprioritized: shown at the end of the page) -->
+  <div class="forecast-card" id="forecastCard" style="margin-top:16px">
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="forecast-title">📈 Forecast</div>
+    <table class="forecast-table">
+      <thead>
+        <tr>
+          <th id="fct-period-hdr">Period</th>
+          <th id="fct-income-hdr">Expected Income</th>
+          <th id="fct-profit-hdr">Expected Profit</th>
+        </tr>
+      </thead>
+      <tbody id="forecastRows"></tbody>
+    </table>
+    <div class="forecast-disclaimer" id="forecastDisclaimer"></div>
   </div>
 </div>
 </div>
@@ -6845,8 +6846,33 @@ function uvaExportPDF() {
   doc.save('UVA_' + key + '.pdf');
 }
 
-// Comprehensive accountant export: UVA summary + full transaction list + fixed
-// costs/income + assets/installments, all in one workbook, one sheet each.
+// Returns the months covered by a UVA period key ('YYYY-MM'/'YYYY-Qn'/'YYYY'),
+// each with its own transactions — used to build one Excel sheet per month.
+function uvaMonthsInPeriod(key) {
+  var year = key.substring(0,4);
+  var deMonths = KAL_MONTH_NAMES.de;
+  var monthNums;
+  if(/^\d{4}-Q\d$/.test(key)) {
+    var q = parseInt(key.substring(6),10);
+    monthNums = [q*3-2, q*3-1, q*3];
+  } else if(/^\d{4}-\d{2}$/.test(key)) {
+    monthNums = [parseInt(key.substring(5,7),10)];
+  } else {
+    monthNums = [1,2,3,4,5,6,7,8,9,10,11,12];
+  }
+  return monthNums.map(function(mn) {
+    var monthKey = year + '-' + pad2(mn);
+    var txs = (state.transactions || []).filter(function(tx) {
+      return tx && tx.date && (tx.type === 'income' || tx.type === 'expense') && tx.date.substring(0,7) === monthKey;
+    });
+    return {num: mn, name: deMonths[mn-1], txs: txs};
+  });
+}
+
+// Accountant export in the classic Austrian Einnahmen-Ausgaben-Rechnung (EAR)
+// format: an Übersicht sheet plus one sheet per month covered by the selected
+// UVA period, each with a Netto/MwSt/Brutto summary and a dynamic transaction
+// table — followed by Fixkosten and Anlagevermögen sheets for extra context.
 function uvaExportExcel() {
   var key = uvaCurrentKey();
   if(typeof XLSX === 'undefined') {
@@ -6860,26 +6886,73 @@ function uvaExportExcel() {
   var wb = XLSX.utils.book_new();
   var bizLine = (state.businessName || '') + (state.bizTaxId ? ('  UID: ' + state.bizTaxId) : '');
   var dateLine = 'Erstellt am: ' + new Date().toLocaleString('de-AT');
+  var deMonths = KAL_MONTH_NAMES.de;
+  var months = uvaMonthsInPeriod(key); // [{num, name, txs}] — only the months covered by the selected period
 
-  // ── Sheet 1: UVA summary ──
-  var data = uvaExportRows(key);
-  var uvaHeader = [['UVA — Umsatzsteuervoranmeldung'], [bizLine], [dateLine], []];
-  var wsUva = XLSX.utils.aoa_to_sheet(uvaHeader.concat(data.rows));
-  wsUva['!cols'] = [{wch:52}, {wch:26}];
-  XLSX.utils.book_append_sheet(wb, wsUva, 'UVA');
+  // Sums a list of transactions of a given type into {netto, vat, brutto}
+  function sumTx(txs, type) {
+    var netto = 0, vat = 0;
+    txs.filter(function(tx){ return tx.type === type; }).forEach(function(tx) {
+      var b = vatBreakdown(tx.amount, tx.vatRate || 0);
+      netto += b.netto; vat += b.steuer;
+    });
+    return {netto: netto, vat: vat, brutto: netto + vat};
+  }
 
-  // ── Sheet 2: Transaktionen (all tx in the selected period) ──
-  var txHeader = [['Transaktionen — ' + uvaKeyLabel(key)], [bizLine], [dateLine], [],
-    ['Datum', 'Beschreibung', 'Typ', 'Kategorie', 'Netto', 'MwSt %', 'Steuer', 'Brutto']];
-  var txRows = uvaTxInPeriod(key).sort(function(a,b){ return (a.date||'').localeCompare(b.date||''); }).map(function(tx) {
-    var b = vatBreakdown(tx.amount, tx.vatRate || 0);
-    return [tx.date || '', tx.name || '', tx.type === 'income' ? 'Einnahme' : 'Ausgabe', tx.category || '', f2(b.netto), tx.vatRate || 0, f2(b.steuer), f2(b.brutto)];
+  // ── Sheet 1: Übersicht (yearly/period summary + per-month breakdown) ──
+  var allTxInPeriod = months.reduce(function(acc, m){ return acc.concat(m.txs); }, []);
+  var incTotal = sumTx(allTxInPeriod, 'income');
+  var expTotal = sumTx(allTxInPeriod, 'expense');
+  var uebRows = [
+    ['ÜBERSICHT'],
+    ['Einnahmen-Ausgaben-Rechnung — ' + uvaKeyLabel(key)],
+    [bizLine], [dateLine], [],
+    ['', 'Netto', 'MwSt.', 'Brutto'],
+    ['Einnahmen', f2(incTotal.netto), f2(incTotal.vat), f2(incTotal.brutto)],
+    ['Ausgaben', f2(expTotal.netto), f2(expTotal.vat), f2(expTotal.brutto)],
+    ['Überschuss / Defizit', f2(incTotal.netto - expTotal.netto), f2(incTotal.vat - expTotal.vat), f2(incTotal.brutto - expTotal.brutto)],
+    [],
+    ['Monatsübersicht', 'Einnahmen Netto', 'Einnahmen MwSt.', 'Einnahmen Brutto', 'Ausgaben Netto', 'Ausgaben MwSt.', 'Ausgaben Brutto'],
+  ];
+  months.forEach(function(m) {
+    var mi = sumTx(m.txs, 'income'), me = sumTx(m.txs, 'expense');
+    uebRows.push([m.name, f2(mi.netto), f2(mi.vat), f2(mi.brutto), f2(me.netto), f2(me.vat), f2(me.brutto)]);
   });
-  var wsTx = XLSX.utils.aoa_to_sheet(txHeader.concat(txRows));
-  wsTx['!cols'] = [{wch:12},{wch:30},{wch:10},{wch:14},{wch:12},{wch:9},{wch:12},{wch:12}];
-  XLSX.utils.book_append_sheet(wb, wsTx, 'Transaktionen');
+  var wsUeb = XLSX.utils.aoa_to_sheet(uebRows);
+  wsUeb['!cols'] = [{wch:22},{wch:15},{wch:13},{wch:15},{wch:15},{wch:13},{wch:15}];
+  XLSX.utils.book_append_sheet(wb, wsUeb, 'Übersicht');
 
-  // ── Sheet 3: Fixkosten & festes Einkommen ──
+  // ── One sheet per month covered by the selected period ──
+  months.forEach(function(m) {
+    var mi = sumTx(m.txs, 'income'), me = sumTx(m.txs, 'expense');
+    var sorted = m.txs.slice().sort(function(a,b){ return (a.date||'').localeCompare(b.date||''); });
+    var rows = [
+      ['Einnahmen-Ausgaben-Rechnung'],
+      [m.name + ' ' + key.substring(0,4)],
+      [],
+      ['', 'Netto', 'MwSt.', 'Brutto'],
+      ['Summe der Einnahmen:', f2(mi.netto), f2(mi.vat), f2(mi.brutto)],
+      ['Summe der Ausgaben:', f2(me.netto), f2(me.vat), f2(me.brutto)],
+      ['Überschuss / Defizit:', f2(mi.netto - me.netto), f2(mi.vat - me.vat), f2(mi.brutto - me.brutto)],
+      [],
+      ['', '', 'Einnahmen', '', '', 'Ausgaben', ''],
+      ['Datum', 'Beschreibung', 'Netto', 'MwSt.', 'Summe', 'Netto', 'MwSt.', 'Summe'],
+    ];
+    sorted.forEach(function(tx) {
+      var b = vatBreakdown(tx.amount, tx.vatRate || 0);
+      if(tx.type === 'income') {
+        rows.push([tx.date || '', tx.name || '', f2(b.netto), f2(b.steuer), f2(b.brutto), '', '', '']);
+      } else {
+        rows.push([tx.date || '', tx.name || '', '', '', '', f2(b.netto), f2(b.steuer), f2(b.brutto)]);
+      }
+    });
+    rows.push(['', 'Summe', f2(mi.netto), f2(mi.vat), f2(mi.brutto), f2(me.netto), f2(me.vat), f2(me.brutto)]);
+    var wsM = XLSX.utils.aoa_to_sheet(rows);
+    wsM['!cols'] = [{wch:12},{wch:28},{wch:12},{wch:10},{wch:12},{wch:12},{wch:10},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, wsM, m.name);
+  });
+
+  // ── Fixkosten & festes Einkommen ──
   var fxHeader = [['Fixkosten & festes Einkommen'], [bizLine], [dateLine], [],
     ['Name', 'Typ', 'Kategorie', 'MwSt %', 'Betrag / Monat', 'Tag']];
   var fxRows = (state.recurring || []).map(function(r) {
@@ -6893,7 +6966,7 @@ function uvaExportExcel() {
   wsFx['!cols'] = [{wch:26},{wch:10},{wch:14},{wch:9},{wch:15},{wch:6}];
   XLSX.utils.book_append_sheet(wb, wsFx, 'Fixkosten');
 
-  // ── Sheet 4: Anlagevermögen & Ausschreibung ──
+  // ── Anlagevermögen & Ausschreibung ──
   var asHeader = [['Anlagevermögen & Ausschreibung'], [bizLine], [dateLine], [],
     ['Name', 'Art', 'Kaufpreis (Netto)', 'MwSt %', 'Datum', 'Rest (Ausschr.)', 'Fortschritt']];
   function instFor(id) { return id ? (state.installments || []).find(function(i){ return i.id === id; }) : null; }
@@ -6912,7 +6985,7 @@ function uvaExportExcel() {
   wsAs['!cols'] = [{wch:26},{wch:12},{wch:16},{wch:9},{wch:12},{wch:14},{wch:12}];
   XLSX.utils.book_append_sheet(wb, wsAs, 'Anlagevermögen');
 
-  XLSX.writeFile(wb, 'SmartAc_Bericht_' + key + '.xlsx');
+  XLSX.writeFile(wb, 'Einnahmen-Ausgaben-Rechnung_' + key + '.xlsx');
 }
 
 // ────────────────────────────────────────
@@ -8733,41 +8806,23 @@ function updateRptPeriodPills() {
 // ── REPORTS ──
 function renderReports() {
   var periodTxs = getReportFiltered();
-  var income = periodTxs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
-  var txExp = periodTxs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
   var rp = state.reportPeriod || 'month';
-  var fixedCosts = 0;
-  var fixedIncRpt = 0;
-  if(rp==='month') {
-    fixedCosts = state.recurring.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0)
-               + state.employees.reduce(function(s,e){return s+(parseFloat(e.salary)||0);},0);
-    fixedIncRpt = (state.fixedIncome||[]).reduce(function(s,fi){return s+(parseFloat(fi.amount)||0);},0);
-  } else if(rp==='quarter') {
-    fixedCosts = (state.recurring.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0)
-               + state.employees.reduce(function(s,e){return s+(parseFloat(e.salary)||0);},0)) * 3;
-    fixedIncRpt = (state.fixedIncome||[]).reduce(function(s,fi){return s+(parseFloat(fi.amount)||0);},0) * 3;
-  } else if(rp==='year') {
-    fixedCosts = (state.recurring.reduce(function(s,r){return s+(parseFloat(r.amount)||0);},0)
-               + state.employees.reduce(function(s,e){return s+(parseFloat(e.salary)||0);},0)) * 12;
-    fixedIncRpt = (state.fixedIncome||[]).reduce(function(s,fi){return s+(parseFloat(fi.amount)||0);},0) * 12;
-  }
-  income += fixedIncRpt;
-  var expense = txExp + fixedCosts;
-  var net = income - expense;
-  var margin = income > 0 ? ((net/income)*100).toFixed(1) : (expense > 0 ? ((net/expense)*100).toFixed(1) : '0');
+  var ni = calculateNetIncome(periodTxs);
 
   var curLbl = getCurrencyLabel(state.currency);
+  var vatSubLbl = {en:'Net', ar:'صافي', de:'Netto'}[state.lang]||'Net';
+  var vatSubLbl2 = {en:'VAT', ar:'ضريبة', de:'MwSt'}[state.lang]||'VAT';
+  function vatSub(netto, vat) {
+    return '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + vatSubLbl + ': ' + fmt(netto) + ' · ' + vatSubLbl2 + ': ' + fmt(vat) + '</div>';
+  }
   var rows2 = [
-    [t('totalIncome'),    fmt(income),                          'var(--green)'],
-    [t('totalExpenses'),  fmt(expense),                         'var(--red)'],
+    [t('totalIncome'),    fmt(ni.totalIncome),   'var(--green)', vatSub(ni.incomeNetto, ni.incomeVat)],
+    [t('totalExpenses'),  fmt(ni.totalExpenses), 'var(--red)',   vatSub(ni.expenseNetto, ni.expenseVat)],
   ];
-  if(fixedIncRpt > 0) rows2.push([{en:'Fixed Income',ar:'الدخل الثابت',de:'Festes Einkommen'}[state.lang]||'Fixed Income', fmt(fixedIncRpt), 'var(--accent)']);
-  rows2.push([t('netProfit'), (net<0?'-':'')+fmt(Math.abs(net)), net>=0?'var(--green)':'var(--red)']);
-  rows2.push([t('profitMargin'), margin+'%', 'var(--primary)']);
-  rows2.push([t('transactions'), periodTxs.length, 'var(--text)']);
-  rows2.push([{en:'Currency',ar:'العملة',de:'Währung'}[state.lang]||'Currency', curLbl, 'var(--text2)']);
+  rows2.push([t('transactions'), periodTxs.length, 'var(--text)', '']);
+  rows2.push([{en:'Currency',ar:'العملة',de:'Währung'}[state.lang]||'Currency', curLbl, 'var(--text2)', '']);
   document.getElementById('reportRows').innerHTML = rows2.map(function(r){
-    return '<div class="report-row"><span class="report-row-label">'+r[0]+'</span><span class="report-row-val" style="color:'+r[2]+'">'+r[1]+'</span></div>';
+    return '<div class="report-row" style="align-items:flex-start"><span class="report-row-label">'+r[0]+r[3]+'</span><span class="report-row-val" style="color:'+r[2]+'">'+r[1]+'</span></div>';
   }).join('');
 
   var periodTitleMap = {
