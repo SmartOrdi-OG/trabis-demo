@@ -6582,6 +6582,7 @@ var UVA_TXT = {
   salesOther: {en:'Sales at other rates', ar:'مبيعات بنسب أخرى', de:'Umsätze zu sonstigen Sätzen'},
   sumUst:     {en:'Total VAT (Umsatzsteuer)', ar:'إجمالي ضريبة المبيعات', de:'Summe Umsatzsteuer'},
   vorsteuer:  {en:'KZ 060 — Input VAT (Vorsteuer)', ar:'KZ 060 — ضريبة المشتريات (Vorsteuer)', de:'KZ 060 — Vorsteuer'},
+  vorsteuerByRate: {en:'Breakdown by rate (for your reference — not an official form field)', ar:'تفصيل حسب النسبة (للتوضيح فقط — مش جزء من الفورم الرسمي)', de:'Aufschlüsselung nach Sätzen (nur informativ — kein offizielles Formularfeld)'},
   zahllast:   {en:'KZ 095 — Amount payable', ar:'KZ 095 — المستحق للدفع (Zahllast)', de:'KZ 095 — Zahllast'},
   gutschrift: {en:'KZ 095 — Credit (Gutschrift)', ar:'KZ 095 — رصيد دائن (Gutschrift)', de:'KZ 095 — Gutschrift'},
   netUst:     {en:'Net / VAT', ar:'الصافي / الضريبة', de:'Netto / USt'},
@@ -6624,7 +6625,7 @@ function uvaTxInPeriod(key) {
 }
 
 function computeUva(key) {
-  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
+  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0, vorsteuerByRate:{}};
   uvaTxInPeriod(key).forEach(function(tx) {
     var r = tx.vatRate || 0;
     var b = vatBreakdown(tx.amount, r);
@@ -6636,6 +6637,10 @@ function computeUva(key) {
       // Vorsteuer (KZ 060) is a single lump total on the official UVA form —
       // it is never broken down by rate, so the real rate is always used here.
       res.vorsteuer += b.steuer;
+      // Informational-only breakdown by rate, for the business owner's own
+      // reference — not part of the official form, so it's kept separate.
+      var rk = String(r);
+      res.vorsteuerByRate[rk] = (res.vorsteuerByRate[rk] || 0) + b.steuer;
     }
   });
   res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20] + res.salesNetto.other;
@@ -6746,6 +6751,16 @@ function renderUva() {
   }
   h += row(uvat('sumUst'), fmt(u.sumUst));
   h += row(uvat('vorsteuer'), '− ' + fmt(u.vorsteuer));
+  var vsRateKeys = Object.keys(u.vorsteuerByRate || {}).sort(function(a,b){ return parseFloat(b) - parseFloat(a); });
+  if(vsRateKeys.length) {
+    h += '<div style="padding:2px 0 10px 14px;border-bottom:1px solid var(--border)">';
+    h += '<div style="font-size:11px;color:var(--text3);margin-bottom:4px">' + uvat('vorsteuerByRate') + '</div>';
+    vsRateKeys.forEach(function(rk) {
+      h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:2px 0">'
+        + '<span>' + rk + '%</span><span style="direction:ltr">− ' + fmt(u.vorsteuerByRate[rk]) + '</span></div>';
+    });
+    h += '</div>';
+  }
   var isCredit = u.zahllast < 0;
   h += row(isCredit ? uvat('gutschrift') : uvat('zahllast'), fmt(Math.abs(u.zahllast)), {bold:true, color: isCredit ? 'var(--income)' : 'var(--expense)'});
   tbl.innerHTML = h;
