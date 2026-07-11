@@ -101,9 +101,9 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);cursor:pointer;transition:all 0.2s}
 .tx-item:active{transform:scale(0.99)}
 .tx-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.tx-icon.income{background:var(--green-light)}
-.tx-icon.expense{background:var(--red-light)}
-.tx-icon.debt{background:var(--orange-light)}
+.tx-icon.income{background:var(--green-light);color:var(--income)}
+.tx-icon.expense{background:var(--red-light);color:var(--expense)}
+.tx-icon.debt{background:var(--orange-light);color:var(--orange)}
 .tx-info{flex:1}
 .tx-name{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px}
 .tx-meta{font-size:11px;color:var(--text3)}
@@ -351,9 +351,9 @@ textarea.input-field{height:auto;min-height:64px;padding:12px 16px;line-height:1
   box-shadow:0 4px 12px rgba(59,130,246,0.2);
 }
 .ob-lang-btn.sel::after {
-  content:'✓';position:absolute;top:8px;right:10px;color:#fff;font-size:10px;
-  font-weight:900;background:var(--primary);border-radius:50%;width:18px;height:18px;
-  line-height:18px;text-align:center;display:block;
+  content:'';position:absolute;top:8px;right:10px;
+  background:var(--primary) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") no-repeat center;
+  background-size:10px 10px;border-radius:50%;width:18px;height:18px;display:block;
 }
 .ob-lang-flag { font-size:30px;display:inline;margin:0; }
 .ob-lang-name { font-size:14px;font-weight:700;color:var(--text); }
@@ -1243,7 +1243,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- PWA INSTALL BANNER -->
 <div id="pwaInstallBanner">
-  <div class="pwa-text">📲 Install SmartAc for the best experience</div>
+  <div class="pwa-text"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;flex-shrink:0"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Install SmartAc for the best experience</div>
   <button class="pwa-install-btn" onclick="pwaInstall()">Install</button>
   <button class="pwa-dismiss-btn" onclick="pwaDismiss()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
 </div>
@@ -1257,7 +1257,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 16px 12px">
-      <button onclick="closeTxDetail()" style="background:var(--bg);border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer">←</button>
+      <button onclick="closeTxDetail()" style="background:var(--bg);border:none;border-radius:50%;width:36px;height:36px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg></button>
       <div id="txDetailTitle" style="font-size:15px;font-weight:700;flex:1;text-align:center;padding:0 8px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></div>
       <button id="txDetailEditBtn" style="background:rgba(59,91,219,0.1);border:none;border-radius:50%;width:36px;height:36px;font-size:16px;cursor:pointer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg></button>
     </div>
@@ -1312,7 +1312,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           </div>
         </div>
         <!-- Delete button -->
-        <button id="txDetailDelete" style="width:100%;margin-top:16px;padding:14px;border-radius:14px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:700;cursor:pointer" id="txDetail-del-lbl">🗑 Delete</button>
+        <button id="txDetailDelete" style="width:100%;margin-top:16px;padding:14px;border-radius:14px;border:1.5px solid #ef4444;background:rgba(239,68,68,0.06);color:#ef4444;font-size:14px;font-weight:700;cursor:pointer" id="txDetail-del-lbl"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg> Delete</button>
       </div>
     </div>
 
@@ -1323,7 +1323,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <input id="txEdit-amount" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none" placeholder="Amount"/>
       <input type="number" id="txEdit-vat" inputmode="decimal" min="0" max="100" step="0.1" placeholder="MwSt. / VAT %" style="width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:10px;outline:none">
       <div class="date-fix-wrap" style="height:46px;margin-bottom:16px"><input id="txEdit-date" type="date" style="position:absolute;inset:0;width:100%;height:100%;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:0;outline:none"/></div>
-      <button id="txEdit-save" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px">💾 Save Changes</button>
+      <button id="txEdit-save" style="width:100%;padding:14px;border-radius:14px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="20 6 9 17 4 12"/></svg> Save Changes</button>
       <button onclick="toggleTxEdit(false)" style="width:100%;padding:12px;border-radius:14px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:14px;cursor:pointer" id="txEdit-cancel">Cancel</button>
     </div>
   </div>
@@ -1379,7 +1379,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
         <!-- VIEW: login form -->
         <div id="lp-view-login" style="display:none">
-          <button class="lp-back-btn" onclick="lpShowDefault()">← <span id="lp-back-lbl1">Back</span></button>
+          <button class="lp-back-btn" onclick="lpShowDefault()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> <span id="lp-back-lbl1">Back</span></button>
           <div class="lp-heading" id="lp-login-heading">Sign In</div>
           <div class="lp-sub" id="lp-login-sub">Sign in to your account</div>
           <div class="lp-error" id="lp-login-error"></div>
@@ -1398,7 +1398,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
         <!-- VIEW: register form (full professional) -->
         <div id="lp-view-register" style="display:none">
-          <button class="lp-back-btn" onclick="lpShowDefault()">← <span id="lp-back-lbl2">Back</span></button>
+          <button class="lp-back-btn" onclick="lpShowDefault()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> <span id="lp-back-lbl2">Back</span></button>
           <div class="lp-heading" id="lp-reg-heading">Create Account</div>
           <div class="lp-sub" id="lp-reg-sub">Join thousands of businesses</div>
           <div style="font-size:11px;color:var(--text3);margin:-12px 0 16px" id="lp-reg-required-note">Fields marked with <span style="color:#ef4444;font-weight:700">*</span> are required. You must also agree to the Privacy Policy and Terms of Use to create an account.</div>
@@ -1651,7 +1651,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
               </div>
             </div>
           </div>
-          <button class="lp-btn" id="lp-langsel-continue" onclick="lpFinishRegister()">Continue →</button>
+          <button class="lp-btn" id="lp-langsel-continue" onclick="lpFinishRegister()">Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
         </div>
 
       </div>
@@ -1713,7 +1713,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <span class="ob-lang-name">Deutsch</span>
         </div>
       </div>
-      <button class="ob-btn" onclick="obNext(2)" id="ob-lang-next">Continue →</button>
+      <button class="ob-btn" onclick="obNext(2)" id="ob-lang-next">Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
 
     <!-- Step 0: Login / Register -->
@@ -1747,7 +1747,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <!-- REGISTER VIEW -->
       <div id="ob-register-view" style="display:none">
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-          <button onclick="showLogin()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text3)">←</button>
+          <button onclick="showLogin()" style="background:none;border:none;cursor:pointer;font-size:20px;color:var(--text3);display:flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg></button>
           <div>
             <div class="ob-step-title" id="ob-reg-title" style="margin-bottom:0">Create Account</div>
             <div class="ob-step-sub" id="ob-reg-sub" style="margin-bottom:0">Fill in your details</div>
@@ -1955,7 +1955,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div class="ob-cur-btn" id="obcur-SAR" onclick="selectObCur('SAR','﷼')"><div class="ob-cur-symbol">﷼</div><div class="ob-cur-name">SAR</div></div>
         <div class="ob-cur-btn" id="obcur-AED" onclick="selectObCur('AED','د.إ')"><div class="ob-cur-symbol">د.إ</div><div class="ob-cur-name">AED</div></div>
       </div>
-      <button class="ob-btn" onclick="obNext(3)" id="ob-cur-next">Continue →</button>
+      <button class="ob-btn" onclick="obNext(3)" id="ob-cur-next">Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
 
     <!-- Step 3: Business Type -->
@@ -1988,7 +1988,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <span id="obbiz-medical-lbl">Medical / Clinic</span>
         </div>
       </div>
-      <button class="ob-btn" onclick="obBizNext()" id="ob-biz-next" disabled>Continue →</button>
+      <button class="ob-btn" onclick="obBizNext()" id="ob-biz-next" disabled>Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
     </div>
 
     <!-- Step 4: Employees -->
@@ -2001,7 +2001,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <input id="ob-emp-salary" placeholder="Salary" type="number" style="width:100px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
       </div>
       <button class="ob-btn secondary" onclick="obAddEmployee()" id="ob-emp-add" style="margin-bottom:16px">+ Add Employee</button>
-      <button class="ob-btn" onclick="obNext(5)" id="ob-emp-next">Continue →</button>
+      <button class="ob-btn" onclick="obNext(5)" id="ob-emp-next">Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
       <button class="ob-btn secondary" onclick="obNext(5)" id="ob-emp-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
     </div>
 
@@ -2015,7 +2015,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <input id="ob-rec-amount" placeholder="Amount" type="number" style="width:100px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
       </div>
       <button class="ob-btn secondary" onclick="obAddRecurring()" id="ob-rec-add" style="margin-bottom:16px">+ Add Expense</button>
-      <button class="ob-btn" onclick="obFinish()" id="ob-cur-next2">Get Started 🚀</button>
+      <button class="ob-btn" onclick="obFinish()" id="ob-cur-next2">Get Started</button>
       <button class="ob-btn secondary" onclick="obFinish()" id="ob-rec-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
     </div>
 
@@ -2230,7 +2230,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- DAILY SUMMARY (live — updates with every transaction) -->
   <div class="daily-msg" id="dailySummaryCard">
-    <div class="daily-msg-title" id="dailyMsgTitle">📊 Daily Summary</div>
+    <div class="daily-msg-title" id="dailyMsgTitle">Daily Summary</div>
     <div class="daily-msg-text" id="dailyMsgText"></div>
   </div>
 
@@ -2241,7 +2241,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="section">
     <div class="section-hdr">
       <div class="section-title">Recent Transactions</div>
-      <div class="see-all" onclick="showNav('reports')">See all →</div>
+      <div class="see-all" onclick="showNav('reports')">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
     <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>
     <div class="tx-list" id="txList">
@@ -2271,7 +2271,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <!-- CUSTOM DATE RANGE (hidden by default) -->
   <div class="rpt-custom-range" id="rptCustomRange">
     <div class="date-fix-wrap" style="height:36px;margin-bottom:0"><input type="date" id="rptCustomStart" onchange="renderReports();renderChart()" style="position:absolute;inset:0;width:100%;height:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;box-sizing:border-box"/></div>
-    <span style="color:var(--text3);font-size:13px;flex-shrink:0">→</span>
+    <span style="color:var(--text3);font-size:13px;flex-shrink:0"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></span>
     <div class="date-fix-wrap" style="height:36px;margin-bottom:0"><input type="date" id="rptCustomEnd" onchange="renderReports();renderChart()" style="position:absolute;inset:0;width:100%;height:100%;padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;box-sizing:border-box"/></div>
   </div>
 
@@ -2335,7 +2335,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- FORECAST CARD (deprioritized: shown at the end of the page) -->
   <div class="forecast-card" id="forecastCard" style="margin-top:16px">
-    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="forecast-title">📈 Forecast</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px" id="forecast-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg> Forecast</div>
     <table class="forecast-table">
       <thead>
         <tr>
@@ -2626,8 +2626,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div id="receiptWrap" style="margin-bottom:12px">
         <div style="font-size:13px;color:var(--text2);margin-bottom:6px" id="receipt-lbl">Receipt (photo/PDF)</div>
         <div style="display:flex;gap:8px">
-          <button type="button" onclick="document.getElementById('receiptCameraInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-cam-btn">📷 <span id="receipt-cam-lbl">Camera</span></button>
-          <button type="button" onclick="document.getElementById('receiptFileInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-file-btn">📎 <span id="receipt-file-lbl">Upload</span></button>
+          <button type="button" onclick="document.getElementById('receiptCameraInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-cam-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> <span id="receipt-cam-lbl">Camera</span></button>
+          <button type="button" onclick="document.getElementById('receiptFileInput').click()" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer" id="receipt-file-btn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> <span id="receipt-file-lbl">Upload</span></button>
         </div>
         <input type="file" id="receiptCameraInput" accept="image/*" capture="environment" style="display:none" onchange="receiptFileChosen(this)"/>
         <input type="file" id="receiptFileInput" accept="image/*,application/pdf" style="display:none" onchange="receiptFileChosen(this)"/>
@@ -2701,9 +2701,9 @@ var LANG = {
     quickAdd: "Quick Add",
     addIncome: "Add Income", addExpense: "Add Expense", addDebt: "Add Debt",
     last7: "Last 7 Days",
-    dailyTitle: "📊 Daily Summary",
+    dailyTitle: "Daily Summary",
     dailyEmpty: "Add your first transaction to see your daily summary here.",
-    recent: "Recent Transactions", seeAll: "See all →",
+    recent: "Recent Transactions", seeAll: "See all",
     searchTx: "Search transactions...",
     outstanding: "Outstanding Debts",
     description: "Description (e.g. Coffee sales)",
@@ -2716,7 +2716,7 @@ var LANG = {
     thisMonth: "This Month", topCategories: "Top Categories",
     totalIncome: "Total Income", totalExpenses: "Total Expenses",
     netProfit: "Net Profit", profitMargin: "Profit Margin",
-    transactions: "Transactions", share: "📤 Share",
+    transactions: "Transactions", share: "Share",
     owesMe: "Owes Me", iOwe: "I Owe",
     markPaid: "Mark Paid", noDebts: "No debts recorded.\nTap + to add a debt.",
     overdue: "Overdue", active: "Active",
@@ -2726,7 +2726,7 @@ var LANG = {
     clearConfirm: "Clear all data? This cannot be undone.",
     cleared: "All data cleared.",
     reportCopied: "Report copied to clipboard!",
-    noOverdue: "No overdue debts! Everything is up to date ✅",
+    noOverdue: "No overdue debts! Everything is up to date",
     days: "days", daysAgoStr: "days ago", todayStr: "Today",
     pending: "pending debt", pendingPlural: "pending debts",
     selectCurrency: "Select your currency",
@@ -2739,12 +2739,12 @@ var LANG = {
     selectLang: 'Select language',
     notifOn: "9 PM notification",
     amount: "Amount",
-    forecastTitle: "📈 Forecast", forecastIncome: "Expected Income", forecastProfit: "Expected Profit",
+    forecastTitle: "Forecast", forecastIncome: "Expected Income", forecastProfit: "Expected Profit",
     next30: "Next 30 Days", nextMonth: "Next Month", nextQuarter: "Next Quarter", nextYear: "Next Year",
-    forecastDisclaimer: "⚠️ Forecasts are estimates based on your historical data. Accuracy depends on data entered. The user is solely responsible for any decisions made based on these forecasts.",
+    forecastDisclaimer: "Forecasts are estimates based on your historical data. Accuracy depends on data entered. The user is solely responsible for any decisions made based on these forecasts.",
     bizName: "Business Name", bizNamePh: "Business / Shop / Company name",
-    exportReport: "📄 Export Report", exportPeriod: "Period", exportContent: "Content",
-    exportPrint: "🖨️ Print", exportEmail: "📧 Email", exportWhatsApp: "💬 WhatsApp",
+    exportReport: "Export Report", exportPeriod: "Period", exportContent: "Content",
+    exportPrint: "Print", exportEmail: "Email", exportWhatsApp: "WhatsApp",
     exportSummary: "Summary", exportTx: "Transactions", exportDebts: "Debts",
     exportForecast: "Forecast", exportTax: "Tax", exportCancel: "Cancel",
     darkMode: "Dark Mode", lightMode: "Light Mode", switchTheme: "Switch theme",
@@ -2756,7 +2756,7 @@ var LANG = {
     clientCountry: "Country", clientStats: "Statistics", clientTxHistory: "Transaction History",
     clientDebtHistory: "Debt History", clientTotalTx: "Total Transactions", clientTotalPaid: "Total Paid",
     clientOutstanding: "Outstanding", clientLastTx: "Last Transaction", clientProfile: "Client Profile",
-    clientBack: "← Back", clientCall: "📞 Call", clientEmailBtn: "✉️ Email", clientWhatsApp: "💬 WhatsApp",
+    clientBack: "Back", clientCall: "Call", clientEmailBtn: "Email", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
       Fuel:"Fuel", Vehicle:"Vehicle", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
@@ -2775,9 +2775,9 @@ var LANG = {
     quickAdd: "إضافة سريعة",
     addIncome: "إضافة دخل", addExpense: "إضافة مصروف", addDebt: "إضافة دين",
     last7: "آخر 7 أيام",
-    dailyTitle: "📊 ملخص اليوم",
+    dailyTitle: "ملخص اليوم",
     dailyEmpty: "أضف أول معاملة لترى ملخص يومك هنا.",
-    recent: "آخر المعاملات", seeAll: "عرض الكل →",
+    recent: "آخر المعاملات", seeAll: "عرض الكل",
     searchTx: "بحث في المعاملات...",
     outstanding: "الديون المعلقة",
     description: "الوصف (مثال: مبيعات قهوة)",
@@ -2790,7 +2790,7 @@ var LANG = {
     thisMonth: "هذا الشهر", topCategories: "أعلى الفئات",
     totalIncome: "إجمالي الدخل", totalExpenses: "إجمالي المصاريف",
     netProfit: "صافي الربح", profitMargin: "هامش الربح",
-    transactions: "معاملات", share: "📤 مشاركة",
+    transactions: "معاملات", share: "مشاركة",
     owesMe: "مدين لي", iOwe: "أنا مدين",
     markPaid: "تم السداد", noDebts: "لا ديون مسجلة.\nاضغط + لإضافة دين.",
     overdue: "متأخر", active: "نشط",
@@ -2799,7 +2799,7 @@ var LANG = {
     clearConfirm: "مسح كل البيانات؟ لا يمكن التراجع.",
     cleared: "تم مسح كل البيانات.",
     reportCopied: "تم نسخ التقرير!",
-    noOverdue: "لا ديون متأخرة! كل شيء على ما يرام ✅",
+    noOverdue: "لا ديون متأخرة! كل شيء على ما يرام",
     days: "أيام", daysAgoStr: "أيام مضت", todayStr: "اليوم",
     pending: "دين معلق", pendingPlural: "ديون معلقة",
     selectCurrency: "اختر العملة",
@@ -2812,12 +2812,12 @@ var LANG = {
     selectLang: 'اختر اللغة',
     notifOn: "إشعار الساعة 9 مساءً",
     amount: "المبلغ",
-    forecastTitle: "📈 التوقعات", forecastIncome: "الدخل المتوقع", forecastProfit: "الربح المتوقع",
+    forecastTitle: "التوقعات", forecastIncome: "الدخل المتوقع", forecastProfit: "الربح المتوقع",
     next30: "الـ 30 يوم القادمة", nextMonth: "الشهر القادم", nextQuarter: "الربع القادم", nextYear: "السنة القادمة",
-    forecastDisclaimer: "⚠️ التوقعات تقديرية بناءً على بياناتك التاريخية. الدقة تعتمد على البيانات المدخلة. المستخدم مسؤول مسؤولية كاملة عن أي قرارات تُتخذ بناءً على هذه التوقعات.",
+    forecastDisclaimer: "التوقعات تقديرية بناءً على بياناتك التاريخية. الدقة تعتمد على البيانات المدخلة. المستخدم مسؤول مسؤولية كاملة عن أي قرارات تُتخذ بناءً على هذه التوقعات.",
     bizName: "اسم المشروع", bizNamePh: "اسم المشروع / المحل / الشركة",
-    exportReport: "📄 تصدير التقرير", exportPeriod: "الفترة", exportContent: "المحتوى",
-    exportPrint: "🖨️ طباعة", exportEmail: "📧 إيميل", exportWhatsApp: "💬 واتساب",
+    exportReport: "تصدير التقرير", exportPeriod: "الفترة", exportContent: "المحتوى",
+    exportPrint: "طباعة", exportEmail: "إيميل", exportWhatsApp: "واتساب",
     exportSummary: "الملخص", exportTx: "المعاملات", exportDebts: "الديون",
     exportForecast: "التوقعات", exportTax: "الضريبة", exportCancel: "إلغاء",
     darkMode: "الوضع الداكن", lightMode: "الوضع الفاتح", switchTheme: "تغيير المظهر",
@@ -2829,7 +2829,7 @@ var LANG = {
     clientCountry: "الدولة", clientStats: "إحصائيات", clientTxHistory: "تاريخ المعاملات",
     clientDebtHistory: "تاريخ الديون", clientTotalTx: "إجمالي المعاملات", clientTotalPaid: "إجمالي المدفوع",
     clientOutstanding: "المستحق", clientLastTx: "آخر معاملة", clientProfile: "ملف العميل",
-    clientBack: "→ رجوع", clientCall: "📞 اتصال", clientEmailBtn: "✉️ إيميل", clientWhatsApp: "💬 واتساب",
+    clientBack: "رجوع", clientCall: "اتصال", clientEmailBtn: "إيميل", clientWhatsApp: "واتساب",
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
       Fuel:"وقود", Vehicle:"عربية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
@@ -2848,9 +2848,9 @@ var LANG = {
     quickAdd: "Schnell hinzufügen",
     addIncome: "Einnahme hinzufügen", addExpense: "Ausgabe hinzufügen", addDebt: "Schuld hinzufügen",
     last7: "Letzte 7 Tage",
-    dailyTitle: "📊 Tageszusammenfassung",
+    dailyTitle: "Tageszusammenfassung",
     dailyEmpty: "Füge deine erste Transaktion hinzu um die Zusammenfassung zu sehen.",
-    recent: "Letzte Transaktionen", seeAll: "Alle anzeigen →",
+    recent: "Letzte Transaktionen", seeAll: "Alle anzeigen",
     searchTx: "Transaktionen suchen...",
     outstanding: "Offene Schulden",
     description: "Beschreibung (z.B. Kaffeeverkauf)",
@@ -2863,7 +2863,7 @@ var LANG = {
     thisMonth: "Diesen Monat", topCategories: "Top-Kategorien",
     totalIncome: "Gesamteinnahmen", totalExpenses: "Gesamtausgaben",
     netProfit: "Nettogewinn", profitMargin: "Gewinnmarge",
-    transactions: "Transaktionen", share: "📤 Teilen",
+    transactions: "Transaktionen", share: "Teilen",
     owesMe: "Schuldet mir", iOwe: "Ich schulde",
     markPaid: "Als bezahlt markieren", noDebts: "Keine Schulden eingetragen.\nTippe + um eine Schuld hinzuzufügen.",
     overdue: "Überfällig", active: "Aktiv",
@@ -2872,7 +2872,7 @@ var LANG = {
     clearConfirm: "Alle Daten löschen? Dies kann nicht rückgängig gemacht werden.",
     cleared: "Alle Daten wurden gelöscht.",
     reportCopied: "Bericht in Zwischenablage kopiert!",
-    noOverdue: "Keine überfälligen Schulden! Alles ist aktuell ✅",
+    noOverdue: "Keine überfälligen Schulden! Alles ist aktuell",
     days: "Tage", daysAgoStr: "Tage her", todayStr: "Heute",
     pending: "offene Schuld", pendingPlural: "offene Schulden",
     selectCurrency: "Währung auswählen",
@@ -2885,12 +2885,12 @@ var LANG = {
     selectLang: 'Sprache auswählen',
     notifOn: "Benachrichtigung um 21 Uhr",
     amount: "Betrag",
-    forecastTitle: "📈 Prognose", forecastIncome: "Erwartete Einnahmen", forecastProfit: "Erwarteter Gewinn",
+    forecastTitle: "Prognose", forecastIncome: "Erwartete Einnahmen", forecastProfit: "Erwarteter Gewinn",
     next30: "Nächste 30 Tage", nextMonth: "Nächster Monat", nextQuarter: "Nächstes Quartal", nextYear: "Nächstes Jahr",
-    forecastDisclaimer: "⚠️ Prognosen sind Schätzungen basierend auf Ihren historischen Daten. Die Genauigkeit hängt von den eingegebenen Daten ab. Der Benutzer trägt die alleinige Verantwortung für Entscheidungen auf Basis dieser Prognosen.",
+    forecastDisclaimer: "Prognosen sind Schätzungen basierend auf Ihren historischen Daten. Die Genauigkeit hängt von den eingegebenen Daten ab. Der Benutzer trägt die alleinige Verantwortung für Entscheidungen auf Basis dieser Prognosen.",
     bizName: "Unternehmensname", bizNamePh: "Geschäfts- / Firmenname",
-    exportReport: "📄 Bericht exportieren", exportPeriod: "Zeitraum", exportContent: "Inhalt",
-    exportPrint: "🖨️ Drucken", exportEmail: "📧 E-Mail", exportWhatsApp: "💬 WhatsApp",
+    exportReport: "Bericht exportieren", exportPeriod: "Zeitraum", exportContent: "Inhalt",
+    exportPrint: "Drucken", exportEmail: "E-Mail", exportWhatsApp: "WhatsApp",
     exportSummary: "Zusammenfassung", exportTx: "Transaktionen", exportDebts: "Schulden",
     exportForecast: "Prognose", exportTax: "Steuer", exportCancel: "Abbrechen",
     darkMode: "Dunkelmodus", lightMode: "Hellmodus", switchTheme: "Design wechseln",
@@ -2902,7 +2902,7 @@ var LANG = {
     clientCountry: "Land", clientStats: "Statistiken", clientTxHistory: "Transaktionsverlauf",
     clientDebtHistory: "Schuldenverlauf", clientTotalTx: "Transaktionen gesamt", clientTotalPaid: "Bezahlt gesamt",
     clientOutstanding: "Ausstehend", clientLastTx: "Letzte Transaktion", clientProfile: "Kundenprofil",
-    clientBack: "← Zurück", clientCall: "📞 Anrufen", clientEmailBtn: "✉️ E-Mail", clientWhatsApp: "💬 WhatsApp",
+    clientBack: "Zurück", clientCall: "Anrufen", clientEmailBtn: "E-Mail", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
       Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
@@ -2989,12 +2989,6 @@ var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
   expense: ['Fuel','Supplies','Rent','Salary','Utilities','Marketing','Other'],
   debt: ['Customer','Supplier','Other'],
-};
-
-var ICONS = {
-  Sales:'🛒', Service:'🔧', Rent:'🏠', Investment:'📈', Other:'📌',
-  Fuel:'⛽', Supplies:'📦', Salary:'👤', Utilities:'💡', Marketing:'📣',
-  Customer:'👤', Supplier:'🏭',
 };
 
 // ── HELPERS ──
@@ -3141,6 +3135,10 @@ function svgIcon(name, size) {
   var body = SVG_ICON_PATHS[name] || '';
   var classAttr = (name === 'chevronLeft' || name === 'chevronRight') ? ' class="ico-chevron"' : '';
   return '<svg xmlns="http://www.w3.org/2000/svg" width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-3px;flex-shrink:0"' + classAttr + '>' + body + '</svg>';
+}
+function txIconSvg(tx, size) {
+  var key = CAT_ICON_KEYS[tx.category] || 'pin';
+  return svgIcon(key, size || 18);
 }
 function save() {
   var txKey = uk('tx');
@@ -3442,7 +3440,7 @@ function renderExpensesPage() {
   expenses.slice().reverse().forEach(function(tx) {
     var item = document.createElement('div');
     item.className = 'tx-item';
-    item.innerHTML = '<div class="tx-icon expense">' + (tx.icon||'📌') + '</div>'
+    item.innerHTML = '<div class="tx-icon expense">' + txIconSvg(tx) + '</div>'
       + '<div class="tx-info"><div class="tx-name">' + tx.name + '</div>'
       + '<div class="tx-meta">' + tc(tx.category) + ' · ' + formatDateDisplay(tx.date) + '</div></div>'
       + '<div style="text-align:right"><div class="tx-amount expense">-' + fmt(tx.amount) + '</div></div>';
@@ -3474,12 +3472,12 @@ var EMP_L = {
   comingSoon: {en:'Coming in this update', ar:'قريباً في هذا التحديث', de:'Kommt in diesem Update'},
   save:       {en:'Save', ar:'حفظ', de:'Speichern'},
   cancel:     {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
-  back:       {en:'← Back', ar:'→ رجوع', de:'← Zurück'},
+  back:       {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Back', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="9 18 15 12 9 6"/></svg> رجوع', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Zurück'},
   edit:       {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
   deleteBtn:  {en:'Delete Employee', ar:'حذف الموظف', de:'Mitarbeiter löschen'},
   confirmDelete: {en:'Delete this employee? This will stop the monthly salary auto-recording for this employee', ar:'حذف هذا الموظف؟ سيتوقف تسجيل الراتب الشهري التلقائي لهذا الموظف', de:'Diesen Mitarbeiter löschen? Die monatliche Gehaltserfassung wird gestoppt'},
-  docCamera:  {en:'📷 Camera', ar:'📷 كاميرا', de:'📷 Kamera'},
-  docUpload:  {en:'📎 Upload', ar:'📎 رفع ملف', de:'📎 Hochladen'},
+  docCamera:  {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Camera', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> كاميرا', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Kamera'},
+  docUpload:  {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Upload', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> رفع ملف', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Hochladen'},
   docNoDocs:  {en:'No documents yet', ar:'لا توجد مستندات بعد', de:'Noch keine Dokumente'},
   docNamePh:  {en:'Document name (e.g. Work Permit)', ar:'اسم المستند (مثال: تصريح عمل)', de:'Dokumentname (z.B. Arbeitserlaubnis)'},
   docExpiry:  {en:'Expiry date (optional)', ar:'تاريخ الانتهاء (اختياري)', de:'Ablaufdatum (optional)'},
@@ -3836,12 +3834,12 @@ var FLEET_L = {
   maintenance:{en:'Maintenance & Expenses', ar:'الصيانة والمصاريف', de:'Wartung & Ausgaben'},
   save:       {en:'Save', ar:'حفظ', de:'Speichern'},
   cancel:     {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
-  back:       {en:'← Back', ar:'→ رجوع', de:'← Zurück'},
+  back:       {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Back', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="9 18 15 12 9 6"/></svg> رجوع', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Zurück'},
   edit:       {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
   deleteBtn:  {en:'Delete Vehicle', ar:'حذف المركبة', de:'Fahrzeug löschen'},
   confirmDelete: {en:'Delete this vehicle? All its documents and maintenance records will be removed too.', ar:'حذف هذه المركبة؟ هيتم حذف كل مستنداتها وسجل الصيانة بتاعها كمان.', de:'Dieses Fahrzeug löschen? Alle Dokumente und Wartungseinträge werden ebenfalls gelöscht.'},
-  docCamera:  {en:'📷 Camera', ar:'📷 كاميرا', de:'📷 Kamera'},
-  docUpload:  {en:'📎 Upload', ar:'📎 رفع ملف', de:'📎 Hochladen'},
+  docCamera:  {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Camera', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> كاميرا', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg> Kamera'},
+  docUpload:  {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Upload', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> رفع ملف', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg> Hochladen'},
   docNoDocs:  {en:'No documents yet', ar:'لا توجد مستندات بعد', de:'Noch keine Dokumente'},
   docNamePh:  {en:'Document name (e.g. Pickerl, TÜV, Insurance)', ar:'اسم المستند (مثال: Pickerl، TÜV، تأمين)', de:'Dokumentname (z.B. Pickerl, TÜV, Versicherung)'},
   docExpiry:  {en:'Expiry date (optional)', ar:'تاريخ الانتهاء (اختياري)', de:'Ablaufdatum (optional)'},
@@ -5851,7 +5849,7 @@ var _noteEditorPdfs = [];
 var _noteEditorLinks = [];
 
 var NOTE_ED_L = {
-  back:        {en:'← Back', ar:'→ رجوع', de:'← Zurück'},
+  back:        {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Back', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="9 18 15 12 9 6"/></svg> رجوع', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Zurück'},
   save:        {en:'Save', ar:'حفظ', de:'Speichern'},
   titlePh:     {en:'Title...', ar:'العنوان...', de:'Titel...'},
   contentPh:   {en:'Write a note...', ar:'اكتب ملاحظة...', de:'Notiz schreiben...'},
@@ -6279,9 +6277,9 @@ function renderCustomDateActiveBar() {
   if(!labelEl) return;
   if(state.customDateFilter) {
     if(state.customDateFilter.mode === 'single') {
-      labelEl.textContent = '📅 ' + formatCustomDateLabel(state.customDateFilter.date);
+      labelEl.innerHTML = svgIcon('calendar',13) + ' ' + escHtml(formatCustomDateLabel(state.customDateFilter.date));
     } else {
-      labelEl.textContent = '📅 ' + formatCustomDateLabel(state.customDateFilter.from) + ' – ' + formatCustomDateLabel(state.customDateFilter.to);
+      labelEl.innerHTML = svgIcon('calendar',13) + ' ' + escHtml(formatCustomDateLabel(state.customDateFilter.from) + ' – ' + formatCustomDateLabel(state.customDateFilter.to));
     }
   }
   var mainPageEl = document.getElementById('mainPage');
@@ -6588,11 +6586,11 @@ var UVA_TXT = {
   netUst:     {en:'Net / VAT', ar:'الصافي / الضريبة', de:'Netto / USt'},
   offen:      {en:'OPEN', ar:'مفتوحة', de:'OFFEN'},
   freigegeben:{en:'APPROVED', ar:'معتمدة', de:'FREIGEGEBEN'},
-  freigabeBtn:{en:'Freigabe ✓', ar:'اعتماد Freigabe ✓', de:'Freigabe ✓'},
+  freigabeBtn:{en:'Freigabe', ar:'اعتماد Freigabe', de:'Freigabe'},
   revokeBtn:  {en:'Revoke approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'},
   confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'هل تريد اعتماد هذه الفترة؟ ستُعتبر الأرقام نهائية وستُصنَّف كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
   confirmRev: {en:'Revoke the approval for this period?', ar:'هل تريد إلغاء اعتماد هذه الفترة؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
-  lockWarn:   {en:'⚠️ This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'⚠️ هذه الفترة معتمدة بالفعل (Freigabe). التعديل سيؤدي إلى إلغاء الاعتماد. هل تريد المتابعة؟', de:'⚠️ Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
+  lockWarn:   {en:'This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'هذه الفترة معتمدة بالفعل (Freigabe). التعديل سيؤدي إلى إلغاء الاعتماد. هل تريد المتابعة؟', de:'Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
   fgAt:       {en:'Approved on', ar:'اعتمدت في', de:'Freigegeben am'},
   disclaimer: {en:'Preparation for the UVA — not tax advice. Official filing is done via FinanzOnline. PDF/Excel exports are in German for your accountant.',
                ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
@@ -6669,7 +6667,7 @@ function uvaDateLocked(dateStr) {
 // Confirm with the user, then revoke every Freigabe covering this date. Returns false = abort.
 async function uvaConfirmUnlock(dateStr) {
   if(!uvaDateLocked(dateStr)) return true;
-  var unlockTitle = {en:'🔓 Unlock Period', ar:'🔓 فك القفل', de:'🔓 Zeitraum entsperren'};
+  var unlockTitle = {en:'Unlock Period', ar:'فك القفل', de:'Zeitraum entsperren'};
   if(!(await confirmAsync(unlockTitle[state.lang]||unlockTitle.en, uvat('lockWarn')))) return false;
   ['month','quarter','year'].forEach(function(iv) {
     var k = uvaKeyForDate(dateStr, iv);
@@ -6772,7 +6770,7 @@ function renderUva() {
   if(badge) {
     if(fg) {
       var d = new Date(fg.at);
-      badge.textContent = '✓ ' + uvat('freigegeben') + ' · ' + d.toLocaleDateString('de-AT') ;
+      badge.innerHTML = svgIcon('check',11) + ' ' + escHtml(uvat('freigegeben')) + ' · ' + escHtml(d.toLocaleDateString('de-AT'));
       badge.style.background = 'rgba(34,197,94,0.12)';
       badge.style.color = 'var(--income)';
     } else {
@@ -6782,7 +6780,7 @@ function renderUva() {
     }
   }
   if(fgBtn) {
-    fgBtn.textContent = fg ? uvat('revokeBtn') : uvat('freigabeBtn');
+    fgBtn.innerHTML = fg ? escHtml(uvat('revokeBtn')) : (svgIcon('check',13) + ' ' + escHtml(uvat('freigabeBtn')));
     fgBtn.style.background = fg ? 'var(--bg)' : 'var(--primary)';
     fgBtn.style.color = fg ? 'var(--text2)' : '#fff';
     fgBtn.style.border = fg ? '1.5px solid var(--border)' : 'none';
@@ -6793,11 +6791,11 @@ async function uvaToggleFreigabe() {
   var key = uvaCurrentKey();
   if(!state.uvaFreigaben) state.uvaFreigaben = {};
   if(state.uvaFreigaben[key]) {
-    var revTitle = {en:'🔓 Revoke Approval', ar:'🔓 إلغاء الاعتماد', de:'🔓 Freigabe zurückziehen'};
+    var revTitle = {en:'Revoke Approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'};
     if(!(await confirmAsync(revTitle[state.lang]||revTitle.en, uvat('confirmRev')))) return;
     delete state.uvaFreigaben[key];
   } else {
-    var fgTitle = {en:'✅ Approve Period', ar:'✅ اعتماد الفترة', de:'✅ Zeitraum freigeben'};
+    var fgTitle = {en:'Approve Period', ar:'اعتماد الفترة', de:'Zeitraum freigeben'};
     if(!(await confirmAsync(fgTitle[state.lang]||fgTitle.en, uvat('confirmFg')))) return;
     state.uvaFreigaben[key] = {at: new Date().toISOString()};
   }
@@ -7110,11 +7108,11 @@ function receiptFileChosen(input) {
         var tUrl = URL.createObjectURL(blob);
         thumb = '<img src="' + tUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px;flex-shrink:0"/>';
       } else {
-        thumb = '<span style="font-size:20px">📄</span>';
+        thumb = '<span style="font-size:20px;color:var(--text2)">' + svgIcon('fileText',20) + '</span>';
       }
       pv.innerHTML = thumb
         + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(state.pendingReceipt.name) + '</span>'
-        + '<button type="button" onclick="receiptClear()" style="border:none;background:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px">✕</button>';
+        + '<button type="button" onclick="receiptClear()" style="border:none;background:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px">' + svgIcon('x',14) + '</button>';
     }
   });
   if(isPdf) { receiptOcrStatus(rtx('attached')); return; }
@@ -7539,7 +7537,7 @@ function renderWorkHoursSection(emp) {
     });
 
   var monthTotal = entries.reduce(function(s,w){ return s + whComputeHours(w); }, 0);
-  summary.textContent = emptx('whMonthTotal') + ': ' + monthTotal.toFixed(1) + ' ' + emptx('whHoursShort');
+  summary.textContent = emptx('whMonthTotal') + ': ' + whFmtHM(monthTotal);
 
   var prevBtn = document.getElementById('whPrevMonthBtn');
   if(prevBtn) prevBtn.onclick = function(){ whShiftMonth(-1); };
@@ -7564,7 +7562,7 @@ function renderWorkHoursSection(emp) {
     h += '<div style="font-size:14px;font-weight:600">' + periodLabel + timeLabel + '</div>';
     if(w.note) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(w.note) + '</div>';
     h += '</div>';
-    h += '<div style="font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap">' + hrs.toFixed(1) + ' ' + emptx('whHoursShort') + '</div>';
+    h += '<div style="font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap">' + whFmtHM(hrs) + '</div>';
     h += '<button onclick="whOpenMonthSheet(' + emp.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('pencil', 14) + '</button>';
     h += '<button onclick="whDelete(' + emp.id + ',' + w.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 14) + '</button>';
     h += '</div>';
@@ -7574,6 +7572,13 @@ function renderWorkHoursSection(emp) {
 
 // Renders a bordered monthly grid PDF matching the printed Austrian
 // Arbeitszeit sheet exactly: one row per calendar day + signature line.
+function whFmtHM(decimalHours) {
+  var totalMin = Math.round((decimalHours||0) * 60);
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  return h + ':' + pad2(m);
+}
+
 function whExportPDF(empId) {
   var emp = (state.employees || []).find(function(e){ return e.id === empId; });
   if(!emp) return;
@@ -7584,7 +7589,7 @@ function whExportPDF(empId) {
   var empName = emp.fullName || emp.name || '';
 
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  var cols = [14, 50, 100, 128, 152, 172, 196]; // 6 column boundaries
+  var cols = [14, 46, 90, 118, 146, 170, 196]; // 6 column boundaries
   var headers = ['Datum','Fahrer','Startzeit','Endzeit','Pause (min)','Gesamtstunden'];
   var rowH = 6.6;
   var y = 16;
@@ -7596,15 +7601,19 @@ function whExportPDF(empId) {
   doc.text(whAtMonthLabel(monthKey), cols[0]+2, y+rowH-2);
   y += rowH;
 
-  doc.setFillColor(240,240,240);
-  doc.setFontSize(9);
+  // NOTE: jsPDF's text() reuses the same internal fill-color state as
+  // rect(...,'F'/'FD'), so it must be re-asserted before every filled rect —
+  // otherwise every cell after the first one renders solid black.
+  doc.setFontSize(8);
   for(var i = 0; i < 6; i++) {
+    doc.setFillColor(240,240,240);
     doc.rect(cols[i], y, cols[i+1]-cols[i], rowH, 'FD');
+    doc.setTextColor(0);
     doc.text(headers[i], cols[i]+2, y+rowH-2);
   }
   y += rowH;
 
-  doc.setFont(undefined, 'normal'); doc.setFontSize(9);
+  doc.setFont(undefined, 'normal'); doc.setFontSize(9); doc.setTextColor(0);
   var total = 0;
   days.forEach(function(day) {
     var entry = whDayEntry(emp, day);
@@ -7615,11 +7624,11 @@ function whExportPDF(empId) {
       entry && entry.start ? entry.start : '',
       entry && entry.end ? entry.end : '',
       entry && entry.breakMinutes != null ? String(entry.breakMinutes) : '',
-      entry ? hrs.toFixed(2) : ''
+      entry ? whFmtHM(hrs) : ''
     ];
     for(var c = 0; c < 6; c++) {
       doc.rect(cols[c], y, cols[c+1]-cols[c], rowH);
-      doc.text(String(values[c]).substring(0, c===1?24:12), cols[c]+2, y+rowH-2);
+      doc.text(String(values[c]).substring(0, c===1?22:12), cols[c]+2, y+rowH-2);
     }
     y += rowH;
     if(y > 280) { doc.addPage(); y = 16; }
@@ -7629,12 +7638,12 @@ function whExportPDF(empId) {
   doc.setDrawColor(0);
   doc.line(14, y, 74, y);
   y += 5;
-  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
   doc.text('Unterschrift Fahrer', 14, y);
 
   y += 10;
   doc.setFontSize(8); doc.setTextColor(120);
-  doc.text('Gesamtstunden Monat: ' + total.toFixed(1) + ' h  ·  Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y);
+  doc.text('Gesamtstunden Monat: ' + whFmtHM(total) + '  ·  Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y);
 
   doc.save('Arbeitszeit_' + empName.replace(/\s+/g,'_') + '_' + monthKey + '.pdf');
 }
@@ -7648,7 +7657,7 @@ function openReceiptViewer(rec) {
   ov.innerHTML = (rec.type === 'application/pdf'
       ? '<iframe src="' + url + '" style="width:100%;height:92vh;border:none;background:#fff;border-radius:12px"></iframe>'
       : '<img src="' + url + '" style="max-width:100%;max-height:92vh;border-radius:12px"/>')
-    + '<button style="position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer">✕</button>';
+    + '<button style="position:absolute;top:14px;right:14px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer">' + svgIcon('x',16) + '</button>';
   ov.querySelector('button').onclick = close;
   document.body.appendChild(ov);
 }
@@ -7706,12 +7715,12 @@ function renderModal() {
   var lang = state.lang;
   var dateLabelWrap = document.getElementById('dateLabelWrap');
   var dateLabelText = document.getElementById('dateLabelText');
-  var dueDateLabels = {en:'📅 Due Date', ar:'📅 تاريخ الاستحقاق', de:'📅 Fälligkeitsdatum'};
-  var txDateLabels  = {en:'📅 Date', ar:'📅 التاريخ', de:'📅 Datum'};
+  var dueDateLabels = {en:'Due Date', ar:'تاريخ الاستحقاق', de:'Fälligkeitsdatum'};
+  var txDateLabels  = {en:'Date', ar:'التاريخ', de:'Datum'};
   if(dateLabelWrap) dateLabelWrap.style.display = 'block';
-  if(dateLabelText) dateLabelText.textContent = typ==='debt'
+  if(dateLabelText) dateLabelText.innerHTML = svgIcon('calendar',12) + ' ' + escHtml(typ==='debt'
     ? (dueDateLabels[lang]||dueDateLabels.en)
-    : (txDateLabels[lang]||txDateLabels.en);
+    : (txDateLabels[lang]||txDateLabels.en));
 
   // Translate debt direction buttons
   var lang = state.lang;
@@ -8019,7 +8028,6 @@ async function addTransaction() {
       name: name, amount: amount, type: state.currentType,
       category: state.currentCat, date: txDate,
       vatRate: state.currentVat != null ? state.currentVat : 20,
-      icon: ICONS[state.currentCat] || '📌',
       invoice: state.pendingInvoice || null,
       invoiceName: state.pendingInvoiceName || null,
       clientId: cliId,
@@ -8137,7 +8145,7 @@ function renderBudgetDashboard(income, expense) {
   var h = '<div style="background:var(--card);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)">';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
   h += '<div style="font-size:14px;font-weight:700">'+svgIcon('barChart',14)+' '+tx('budget')+'</div>';
-  h += '<button onclick="goSettings()" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer">'+tx('edit')+' →</button>';
+  h += '<button onclick="goSettings()" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer">'+tx('edit')+' '+svgIcon('chevronRight',12)+'</button>';
   h += '</div>';
   h += bar(tx('income'), income, budInc, 'var(--income)');
   h += bar(tx('expense'), expense, budExp, 'var(--primary)');
@@ -8290,8 +8298,8 @@ function renderHome() {
   if(secTitles[0]) secTitles[0].textContent = t('recent');
   if(secTitles[1]) secTitles[1].textContent = t('outstanding');
   var seeAlls = document.querySelectorAll('.see-all');
-  if(seeAlls[0]) seeAlls[0].textContent = t('seeAll');
-  if(seeAlls[1]) seeAlls[1].textContent = t('seeAll');
+  if(seeAlls[0]) seeAlls[0].innerHTML = escHtml(t('seeAll')) + ' ' + svgIcon('chevronRight',12);
+  if(seeAlls[1]) seeAlls[1].innerHTML = escHtml(t('seeAll')) + ' ' + svgIcon('chevronRight',12);
   var txSearchEl = document.getElementById('txSearchInput');
   if(txSearchEl) txSearchEl.placeholder = t('searchTx');
 
@@ -8354,7 +8362,7 @@ function showTxDetail(tx) {
   var typeLabels = {income:{en:'Income',ar:'دخل',de:'Einnahmen'}, expense:{en:'Expense',ar:'مصروف',de:'Ausgabe'}};
   var tl = (typeLabels[tx.type]&&typeLabels[tx.type][lang]) || tx.type;
   var typeEl = document.getElementById('txDetailType');
-  if(typeEl) { typeEl.textContent = (tx.icon||'📌') + '  ' + tl; typeEl.style.color = tx.type==='income'?'var(--income)':'var(--expense)'; }
+  if(typeEl) { typeEl.innerHTML = txIconSvg(tx) + '  ' + escHtml(tl); typeEl.style.color = tx.type==='income'?'var(--income)':'var(--expense)'; }
 
   // Date
   var dateLbl = {en:'DATE', ar:'التاريخ', de:'DATUM'};
@@ -8364,7 +8372,7 @@ function showTxDetail(tx) {
   // Category
   var catLbl = {en:'CATEGORY', ar:'الفئة', de:'KATEGORIE'};
   document.getElementById('txDetail-cat-lbl').textContent = catLbl[lang]||'CATEGORY';
-  document.getElementById('txDetailCat').textContent = (tx.icon||'') + ' ' + tc(tx.category||'');
+  document.getElementById('txDetailCat').innerHTML = txIconSvg(tx) + ' ' + escHtml(tc(tx.category||''));
 
   // VAT breakdown (Brutto/Netto/Steuer)
   var vatRow = document.getElementById('txDetailVatRow');
@@ -8423,9 +8431,9 @@ function showTxDetail(tx) {
 
   // Delete button
   var delBtn = document.getElementById('txDetailDelete');
-  var delLbl = {en:'🗑 Delete', ar:'🗑 حذف', de:'🗑 Löschen'};
+  var delLbl = {en:'Delete', ar:'حذف', de:'Löschen'};
   if(delBtn) {
-    delBtn.textContent = delLbl[lang]||delLbl.en;
+    delBtn.innerHTML = svgIcon('trash',14) + ' ' + escHtml(delLbl[lang]||delLbl.en);
     delBtn.onclick = async function(){
       if(!(await uvaConfirmUnlock(tx.date))) return;
       state.transactions = state.transactions.filter(function(t){ return t.id !== tx.id; });
@@ -8440,13 +8448,13 @@ function showTxDetail(tx) {
 
   // Edit labels
   var editLbl = {en:'Edit Transaction', ar:'تعديل المعاملة', de:'Transaktion bearbeiten'};
-  var saveLbl = {en:'💾 Save Changes', ar:'💾 حفظ التعديلات', de:'💾 Änderungen speichern'};
+  var saveLbl = {en:'Save Changes', ar:'حفظ التعديلات', de:'Änderungen speichern'};
   var cancelLbl = {en:'Cancel', ar:'إلغاء', de:'Abbrechen'};
   var editLblEl = document.getElementById('txEdit-lbl');
   var saveBtnEl = document.getElementById('txEdit-save');
   var cancelBtnEl = document.getElementById('txEdit-cancel');
   if(editLblEl) editLblEl.textContent = editLbl[lang]||editLbl.en;
-  if(saveBtnEl) { saveBtnEl.textContent = saveLbl[lang]||saveLbl.en; saveBtnEl.onclick = saveTxEdit; }
+  if(saveBtnEl) { saveBtnEl.innerHTML = svgIcon('check',15) + ' ' + escHtml(saveLbl[lang]||saveLbl.en); saveBtnEl.onclick = saveTxEdit; }
   if(cancelBtnEl) cancelBtnEl.textContent = cancelLbl[lang]||cancelLbl.en;
 
   // Pre-fill edit inputs
@@ -8521,7 +8529,7 @@ function renderTxList(txs, showAll) {
     } else if(tx.supplierName) {
       tagHtml = '<div style="font-size:11px;font-weight:600;color:var(--expense);margin-top:2px">'+tx.supplierName+'</div>';
     }
-    item.innerHTML = '<div class="tx-icon '+tx.type+'">'+(tx.icon||'📌')+'</div>'
+    item.innerHTML = '<div class="tx-icon '+tx.type+'">'+txIconSvg(tx)+'</div>'
       +'<div class="tx-info"><div class="tx-name">'+tx.name+'</div>'
       +'<div class="tx-meta">'+tc(tx.category)+' · '+formatDateDisplay(tx.date)+'</div>'
       +tagHtml+'</div>'
@@ -8807,17 +8815,21 @@ function renderHomeChart() {
 
 function renderDailySummary(income, expense, net) {
   var msgEl = document.getElementById('dailyMsgText');
+  var card = document.getElementById('dailySummaryCard');
   if(!msgEl) return;
   var titleEl = document.getElementById('dailyMsgTitle');
-  if(titleEl) titleEl.textContent = t('dailyTitle') || '📊 Daily Summary';
+  if(titleEl) titleEl.innerHTML = svgIcon('barChart', 15) + ' ' + escHtml(t('dailyTitle') || 'Daily Summary');
   var pendingDebts = state.debts.filter(function(d){return d.status!=='paid';});
   var lateDebts = pendingDebts.filter(function(d){return daysAgo(d.date)>3;});
   var totalOwed = pendingDebts.reduce(function(s,d){return s+d.amount;},0);
 
+  // No transactions yet — nothing useful to summarize, so hide the card
+  // entirely instead of showing an "add your first transaction" nudge.
   if(income===0 && expense===0) {
-    msgEl.innerHTML = t('dailyEmpty');
+    if(card) card.style.display = 'none';
     return;
   }
+  if(card) card.style.display = '';
 
   var incLbl = t('income')||'income';
   var expLbl = t('expense')||'expenses';
@@ -8827,7 +8839,7 @@ function renderDailySummary(income, expense, net) {
   var overdueLbl = {en:'overdue', ar:'متأخر', de:'überfällig'};
   var lang = state.lang;
   if(totalOwed > 0) msg += ' · <span class="daily-msg-warn">'+pendingDebts.length+' '+(pendLbl[lang]||pendLbl.en)+' ('+fmt(totalOwed)+')</span>';
-  if(lateDebts.length) msg += ' · <span style="color:#f87171">⚠️ '+lateDebts.length+' '+(overdueLbl[lang]||overdueLbl.en)+'</span>';
+  if(lateDebts.length) msg += ' · <span style="color:#f87171">'+svgIcon('warning',12)+' '+lateDebts.length+' '+(overdueLbl[lang]||overdueLbl.en)+'</span>';
   msgEl.innerHTML = msg;
 }
 
@@ -8931,7 +8943,7 @@ function shareReport() {
   var periodLabels = {today:{en:'Today',ar:'اليوم',de:'Heute'},week:{en:'This Week',ar:'هذا الأسبوع',de:'Diese Woche'},month:{en:'This Month',ar:'هذا الشهر',de:'Diesen Monat'},year:{en:'This Year',ar:'هذا العام',de:'Dieses Jahr'}};
   var lang = state.lang;
   var periodLabel = (periodLabels[state.period]&&periodLabels[state.period][lang])||'Period';
-  var text = '📊 '+periodLabel+'\n\n💰 '+t('totalIncome')+': '+fmt(income)+'\n💸 '+t('totalExpenses')+': '+fmt(expense)+'\n📈 '+t('netProfit')+': '+fmt(income-expense)+'\n\nSent via SmartAc';
+  var text = periodLabel+'\n\n'+t('totalIncome')+': '+fmt(income)+'\n'+t('totalExpenses')+': '+fmt(expense)+'\n'+t('netProfit')+': '+fmt(income-expense)+'\n\nSent via SmartAc';
   if(navigator.share) navigator.share({text:text});
   else { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text); showToast(t('reportCopied')||'Report copied!', 'success'); }
 }
@@ -9121,7 +9133,7 @@ function applyLang() {
     if(tabs[i]) tabs[i].textContent = t(p);
   });
   var customBtnEl = document.getElementById('customPeriodBtn');
-  if(customBtnEl) customBtnEl.textContent = '📅 ' + t('custom');
+  if(customBtnEl) customBtnEl.innerHTML = svgIcon('calendar',12) + ' ' + escHtml(t('custom'));
   var modeSingleBtn = document.getElementById('customModeSingleBtn');
   if(modeSingleBtn) modeSingleBtn.textContent = t('singleDay');
   var modeRangeBtn = document.getElementById('customModeRangeBtn');
@@ -9167,10 +9179,10 @@ function applyLang() {
   // Update debt tabs labels
   var debtTabOwes = document.getElementById('debt-tab-owes');
   var debtTabIowe = document.getElementById('debt-tab-iowe');
-  var credLbl = {en:'💰 Creditors (owed to me)', ar:'💰 دائن (لي)', de:'💰 Gläubiger'};
-  var debtLbl = {en:'💸 Debtors (I owe)', ar:'💸 مدين (عليّ)', de:'💸 Schuldner'};
-  if(debtTabOwes) debtTabOwes.textContent = credLbl[state.lang]||credLbl.en;
-  if(debtTabIowe) debtTabIowe.textContent = debtLbl[state.lang]||debtLbl.en;
+  var credLbl = {en:'Creditors (owed to me)', ar:'دائن (لي)', de:'Gläubiger'};
+  var debtLbl = {en:'Debtors (I owe)', ar:'مدين (عليّ)', de:'Schuldner'};
+  if(debtTabOwes) debtTabOwes.innerHTML = svgIcon('money',12) + ' ' + escHtml(credLbl[state.lang]||credLbl.en);
+  if(debtTabIowe) debtTabIowe.innerHTML = svgIcon('money',12) + ' ' + escHtml(debtLbl[state.lang]||debtLbl.en);
   var rptNavLbl = document.getElementById('nav-reports-lbl');
   if(rptNavLbl) rptNavLbl.textContent = {en:'Reports',ar:'التقارير',de:'Berichte'}[state.lang]||'Reports';
   var supNavLbl = document.getElementById('nav-suppliers-lbl');
@@ -9492,7 +9504,7 @@ function renderAccountSection() {
     if(bizTypeSaveBtn) bizTypeSaveBtn.onclick = async function(){
       var newType = (document.getElementById('bizTypeSelect')||{}).value;
       if(!newType || newType === state.businessType) { _bizTypeEditMode = false; renderAccountSection(); return; }
-      var bizTypeTitle = {en:'⚠️ Change Business Type', ar:'⚠️ تغيير نوع النشاط', de:'⚠️ Unternehmensart ändern'};
+      var bizTypeTitle = {en:'Change Business Type', ar:'تغيير نوع النشاط', de:'Unternehmensart ändern'};
       if(!(await confirmAsync(bizTypeTitle[state.lang]||bizTypeTitle.en, stx('bizTypeChangeConfirm')))) return;
       state.businessType = newType;
       save();
@@ -9890,7 +9902,7 @@ function handleImportBackup(file) {
     var hasExpected = false;
     for(var i=0;i<expectedKeys.length;i++) { if(Object.prototype.hasOwnProperty.call(data, expectedKeys[i])) { hasExpected = true; break; } }
     if(!hasExpected) { showToast(stx('importInvalid'), 'error'); return; }
-    var importTitle = {en:'⚠️ Import Data', ar:'⚠️ استيراد البيانات', de:'⚠️ Daten importieren'};
+    var importTitle = {en:'Import Data', ar:'استيراد البيانات', de:'Daten importieren'};
     if(!(await confirmAsync(importTitle[state.lang]||importTitle.en, stx('importConfirm')))) return;
     state.transactions = data.transactions || [];
     state.clients = data.clients || [];
@@ -10054,11 +10066,11 @@ function fireNightlySummary() {
   var net = income - expense;
   var overdueDebts = state.debts.filter(function(d){return d.status!=='paid' && daysAgo(d.date)>3;});
   var bodyLines = {
-    en: 'Income: '+fmt(income)+' | Expenses: '+fmt(expense)+' | Net: '+fmt(net) + (overdueDebts.length ? ' | ⚠️ '+overdueDebts.length+' overdue debt(s)' : ''),
-    ar: 'الدخل: '+fmt(income)+' | المصاريف: '+fmt(expense)+' | الصافي: '+fmt(net) + (overdueDebts.length ? ' | ⚠️ '+overdueDebts.length+' دين متأخر' : ''),
-    de: 'Einnahmen: '+fmt(income)+' | Ausgaben: '+fmt(expense)+' | Netto: '+fmt(net) + (overdueDebts.length ? ' | ⚠️ '+overdueDebts.length+' überfällige Schulden' : ''),
+    en: 'Income: '+fmt(income)+' | Expenses: '+fmt(expense)+' | Net: '+fmt(net) + (overdueDebts.length ? ' | '+overdueDebts.length+' overdue debt(s)' : ''),
+    ar: 'الدخل: '+fmt(income)+' | المصاريف: '+fmt(expense)+' | الصافي: '+fmt(net) + (overdueDebts.length ? ' | '+overdueDebts.length+' دين متأخر' : ''),
+    de: 'Einnahmen: '+fmt(income)+' | Ausgaben: '+fmt(expense)+' | Netto: '+fmt(net) + (overdueDebts.length ? ' | '+overdueDebts.length+' überfällige Schulden' : ''),
   };
-  var titles = {en:'📊 SmartAc Daily Summary', ar:'📊 ملخص اليوم - SmartAc', de:'📊 SmartAc Tageszusammenfassung'};
+  var titles = {en:'SmartAc Daily Summary', ar:'ملخص اليوم - SmartAc', de:'SmartAc Tageszusammenfassung'};
   safeNotify(titles[lang]||titles.en, bodyLines[lang]||bodyLines.en, null);
 }
 
@@ -10180,14 +10192,14 @@ function exportData() {
 function showNotif() {
   var lang = state.lang;
   var pending = state.debts.filter(function(d){return d.status!=='paid'&&daysAgo(d.date)>3;});
-  var msgNoDebt = lang==='ar' ? 'لا ديون متأخرة! كل شيء على ما يرام ✅' : lang==='de' ? 'Keine überfälligen Schulden! Alles aktuell ✅' : 'No overdue debts! Everything is up to date ✅';
+  var msgNoDebt = lang==='ar' ? 'لا ديون متأخرة! كل شيء على ما يرام' : lang==='de' ? 'Keine überfälligen Schulden! Alles aktuell' : 'No overdue debts! Everything is up to date';
   if(!pending.length) {
-    safeNotify('SmartAc ✅', msgNoDebt, function(){ showToast(msgNoDebt, 'success'); });
+    safeNotify('SmartAc', msgNoDebt, function(){ showToast(msgNoDebt, 'success'); });
   } else {
     var lines = pending.map(function(d){
       return '• '+d.person+': '+fmt(d.amount)+' ('+daysAgo(d.date)+' '+(lang==='ar'?'أيام':lang==='de'?'Tage':'days')+')';
     });
-    var title = lang==='ar' ? '⚠️ ديون متأخرة' : lang==='de' ? '⚠️ Überfällige Schulden' : '⚠️ Overdue Debts';
+    var title = lang==='ar' ? 'ديون متأخرة' : lang==='de' ? 'Überfällige Schulden' : 'Overdue Debts';
     var body = lines.join('\n');
     safeNotify('SmartAc - '+title, body, function(){ showToast(title+'\n'+body, 'warning'); });
   }
@@ -10417,7 +10429,7 @@ function openInvoice(dataUrl, name) {
   title.style.cssText = "color:#fff;font-size:13px;flex:1;opacity:0.8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap";
   title.textContent = name || "Invoice";
   var closeBtn = document.createElement("button");
-  closeBtn.textContent = "✕";
+  closeBtn.innerHTML = svgIcon('x',16);
   closeBtn.style.cssText = "background:rgba(255,255,255,0.15);border:none;color:#fff;font-size:20px;width:36px;height:36px;border-radius:50%;cursor:pointer;flex-shrink:0;margin-left:12px";
   closeBtn.onclick = closeIvOverlay;
   header.appendChild(title);
@@ -10678,7 +10690,6 @@ function handleInvoicePaid(inv) {
       type: 'income',
       category: cat,
       date: today(),
-      icon: ICONS[cat] || '📌',
       invoice: null,
       invoiceName: null,
       clientId: inv.clientId || null,
@@ -10737,7 +10748,6 @@ function handleReceivedInvoicePaid(inv) {
     type: 'expense',
     category: 'supplier',
     date: today(),
-    icon: '📄',
     supplierId: inv.supplierId || null,
     supplierName: inv.supplierName || null,
     invoiceRef: inv.supplierInvNum || inv.number || null,
@@ -11903,7 +11913,7 @@ function onInvoiceShareClientChange() {
   if(!c) { info.textContent = ''; return; }
   var noEmailLbl = {en:'no email',ar:'لا يوجد بريد',de:'keine E-Mail'}[lang]||'no email';
   var noPhoneLbl = {en:'no phone',ar:'لا يوجد هاتف',de:'kein Telefon'}[lang]||'no phone';
-  info.textContent = '✉️ ' + (c.email || noEmailLbl) + '   📱 ' + (c.phone || noPhoneLbl);
+  info.innerHTML = svgIcon('mail',12) + ' ' + escHtml(c.email || noEmailLbl) + '   ' + svgIcon('phone',12) + ' ' + escHtml(c.phone || noPhoneLbl);
 }
 
 function setInvoiceShareMode(mode) {
@@ -11931,9 +11941,9 @@ function setInvoiceShareMode(mode) {
 function updateInvoiceShareTexts() {
   var lang = state.lang;
   var typeTitleMap = {
-    issued:   {en:'📤 Share Invoice',  ar:'📤 إرسال الفاتورة',  de:'📤 Rechnung teilen'},
-    receipt:  {en:'📤 Share Receipt',  ar:'📤 إرسال الإيصال',   de:'📤 Beleg teilen'},
-    received: {en:'📤 Share Document', ar:'📤 إرسال المستند',  de:'📤 Dokument teilen'},
+    issued:   {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Invoice',  ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> إرسال الفاتورة',  de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Rechnung teilen'},
+    receipt:  {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Receipt',  ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> إرسال الإيصال',   de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Beleg teilen'},
+    received: {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Document', ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> إرسال المستند',  de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Dokument teilen'},
   };
   var titleObj = typeTitleMap[_shareInvoiceType] || typeTitleMap.issued;
   var elMap = {
@@ -11941,11 +11951,11 @@ function updateInvoiceShareTexts() {
     'ivsh-subtitle': {en:'Choose how to send this document',ar:'اختر طريقة إرسال هذا المستند',de:'Wählen Sie, wie dieses Dokument gesendet werden soll'}[lang]||'Choose how to send this document',
     'ivshModeClientBtn': {en:'Choose Client',ar:'اختر عميل',de:'Kunde wählen'}[lang]||'Choose Client',
     'ivshModeCustomBtn': {en:'Custom',ar:'مخصص',de:'Benutzerdefiniert'}[lang]||'Custom',
-    'ivsh-btn-email': {en:'📧 Email',ar:'📧 إيميل',de:'📧 E-Mail'}[lang]||'📧 Email',
-    'ivsh-btn-wa': {en:'💬 WhatsApp',ar:'💬 واتساب',de:'💬 WhatsApp'}[lang]||'💬 WhatsApp',
+    'ivsh-btn-email': {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email',ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> إيميل',de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> E-Mail'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email',
+    'ivsh-btn-wa': {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp',ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> واتساب',de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp',
     'ivsh-btn-cancel': {en:'Cancel',ar:'إلغاء',de:'Abbrechen'}[lang]||'Cancel',
   };
-  Object.keys(elMap).forEach(function(id){ var el = document.getElementById(id); if(el) el.textContent = elMap[id]; });
+  Object.keys(elMap).forEach(function(id){ var el = document.getElementById(id); if(el) el.innerHTML = elMap[id]; });
   var emailInput = document.getElementById('ivshCustomEmail');
   if(emailInput) emailInput.placeholder = {en:'Email address',ar:'البريد الإلكتروني',de:'E-Mail-Adresse'}[lang]||'Email address';
   var phoneInput = document.getElementById('ivshCustomPhone');
@@ -12556,7 +12566,7 @@ var LP_TEXT = {
     loginH:'Welcome Back', loginS:'Sign in to your account',
     regH:'Create Account', regS:'Join thousands of businesses',
     langselH:'Choose Language', langselS:'You can change this anytime',
-    back:'Back', continueBtn:'Continue →',
+    back:'Back', continueBtn:'Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>',
     or:'or', username:'Username', password:'Password',
     errUser:'Please enter a username', errPass:'Password must be at least 4 characters',
     errWrong:'Incorrect username or password', errExists:'Username already taken',
@@ -12586,7 +12596,7 @@ var LP_TEXT = {
     loginH:'مرحباً بعودتك', loginS:'سجّل دخولك',
     regH:'إنشاء حساب', regS:'انضم لآلاف الشركات',
     langselH:'اختر اللغة', langselS:'يمكنك تغييرها في أي وقت',
-    back:'رجوع', continueBtn:'متابعة →',
+    back:'رجوع', continueBtn:'متابعة <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>',
     or:'أو', username:'اسم المستخدم', password:'كلمة المرور',
     errUser:'أدخل اسم المستخدم', errPass:'كلمة المرور 4 أحرف على الأقل',
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة', errExists:'اسم المستخدم مستخدم بالفعل',
@@ -12616,7 +12626,7 @@ var LP_TEXT = {
     loginH:'Willkommen zurück', loginS:'In Ihr Konto einloggen',
     regH:'Konto erstellen', regS:'Tausenden Unternehmen beitreten',
     langselH:'Sprache wählen', langselS:'Jederzeit änderbar',
-    back:'Zurück', continueBtn:'Weiter →',
+    back:'Zurück', continueBtn:'Weiter <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>',
     or:'oder', username:'Benutzername', password:'Passwort',
     errUser:'Bitte Benutzernamen eingeben', errPass:'Passwort mind. 4 Zeichen',
     errWrong:'Falscher Benutzername oder Passwort', errExists:'Benutzername bereits vergeben',
@@ -12650,7 +12660,7 @@ function lpUpdateText() {
     'lp-langsel-continue':l.continueBtn,
     'lp-version':l.version,
   };
-  Object.keys(ids).forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=ids[id]; });
+  Object.keys(ids).forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=ids[id]; });
   // Login fields
   var uEl=document.getElementById('lp-username'); if(uEl) uEl.placeholder=l.username;
   var pEl=document.getElementById('lp-password'); if(pEl) pEl.placeholder=l.password;
@@ -12951,12 +12961,12 @@ function lpCheckPwMatch() {
   if(!confirm){lbl.textContent='';return;}
   var match = pass===confirm;
   var msgs = {
-    en:['✗ Passwords do not match','✓ Passwords match'],
-    ar:['✗ كلمتا المرور غير متطابقتين','✓ كلمتا المرور متطابقتان'],
-    de:['✗ Passwörter stimmen nicht überein','✓ Passwörter stimmen überein'],
+    en:['Passwords do not match','Passwords match'],
+    ar:['كلمتا المرور غير متطابقتين','كلمتا المرور متطابقتان'],
+    de:['Passwörter stimmen nicht überein','Passwörter stimmen überein'],
   };
   var m = msgs[lpLang]||msgs.en;
-  lbl.textContent = match?m[1]:m[0];
+  lbl.innerHTML = (match?svgIcon('check',12):svgIcon('x',12)) + ' ' + escHtml(match?m[1]:m[0]);
   lbl.style.color = match?'#16a34a':'#ef4444';
 }
 
@@ -13008,7 +13018,7 @@ var OB_TEXT = {
     userPlaceholder:'Username', passPlaceholder:'Password',
     login:'Sign In', or:'or', register:'Create Account',
     curTitle:'Choose Currency', curSub:'Select your main currency',
-    finish:'Get Started 🚀', cont:'Continue →', skip:'Skip',
+    finish:'Get Started', cont:'Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>', skip:'Skip',
     bizTitle:'What type of business do you have?', bizSub:'This helps us show the right features for your business',
     bizGeneral:'General / Freelancer', bizTransport:'Transport / Logistics', bizRetail:'Retail / Shop',
     bizRestaurant:'Restaurant / Café', bizConstruction:'Construction', bizMedical:'Medical / Clinic',
@@ -13018,7 +13028,7 @@ var OB_TEXT = {
     errPass:'Password must be at least 4 characters',
     errWrong:'Incorrect username or password',
     errExists:'Username already exists',
-    helloUser:'Hello,', logout:'🚪 Logout',
+    helloUser:'Hello,', logout:'Logout',
   },
   ar: {
     tagline:'نظام تتبع الأعمال',
@@ -13028,7 +13038,7 @@ var OB_TEXT = {
     userPlaceholder:'اسم المستخدم', passPlaceholder:'كلمة المرور',
     login:'تسجيل الدخول', or:'أو', register:'إنشاء حساب',
     curTitle:'اختر العملة', curSub:'اختر عملتك الرئيسية',
-    finish:'ابدأ الآن 🚀', cont:'التالي →', skip:'تخطي',
+    finish:'ابدأ الآن', cont:'التالي <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>', skip:'تخطي',
     bizTitle:'ما نوع نشاطك التجاري؟', bizSub:'هذا يساعدنا في عرض الميزات المناسبة لنشاطك',
     bizGeneral:'عام / فريلانسر', bizTransport:'نقل وخدمات', bizRetail:'محل / تجزئة',
     bizRestaurant:'مطعم / كافيه', bizConstruction:'مقاولات', bizMedical:'طبي / عيادة',
@@ -13038,7 +13048,7 @@ var OB_TEXT = {
     errPass:'كلمة المرور يجب أن تكون 4 أحرف على الأقل',
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة',
     errExists:'اسم المستخدم موجود بالفعل',
-    helloUser:'مرحباً،', logout:'🚪 تسجيل الخروج',
+    helloUser:'مرحباً،', logout:'تسجيل الخروج',
   },
   de: {
     tagline:'Geschäfts-Tracking-System',
@@ -13048,7 +13058,7 @@ var OB_TEXT = {
     userPlaceholder:'Benutzername', passPlaceholder:'Passwort',
     login:'Anmelden', or:'oder', register:'Konto erstellen',
     curTitle:'Währung wählen', curSub:'Wählen Sie Ihre Hauptwährung',
-    finish:'Loslegen 🚀', cont:'Weiter →', skip:'Überspringen',
+    finish:'Loslegen', cont:'Weiter <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg>', skip:'Überspringen',
     bizTitle:'Was für ein Unternehmen haben Sie?', bizSub:'Dies hilft uns, die richtigen Funktionen anzuzeigen',
     bizGeneral:'Allgemein / Freelancer', bizTransport:'Transport / Logistik', bizRetail:'Einzelhandel / Shop',
     bizRestaurant:'Restaurant / Café', bizConstruction:'Bau / Handwerk', bizMedical:'Medizin / Klinik',
@@ -13058,7 +13068,7 @@ var OB_TEXT = {
     errPass:'Passwort mind. 4 Zeichen',
     errWrong:'Falscher Benutzername oder Passwort',
     errExists:'Benutzername bereits vergeben',
-    helloUser:'Hallo,', logout:'🚪 Abmelden',
+    helloUser:'Hallo,', logout:'Abmelden',
   }
 };
 
@@ -13157,7 +13167,7 @@ function updateObText() {
   });
   Object.keys(map).forEach(function(id){
     var el = document.getElementById(id);
-    if(el) el.textContent = t_ob(map[id]);
+    if(el) el.innerHTML = t_ob(map[id]);
   });
   var uEl = document.getElementById('ob-username');
   var pEl = document.getElementById('ob-password');
@@ -13511,9 +13521,9 @@ function showInAppNotifications() {
       var dLeft = Math.ceil(msLeft/86400000);
       var isIOwe = d.type==='i-owe';
       var dayStr = {en:dLeft+(dLeft===1?' day':' days'),ar:dLeft+' أيام',de:dLeft+(dLeft===1?' Tag':' Tagen')};
-      soonLines.en.push((isIOwe?'💸 YOU owe '+d.person+' '+fmt(d.amount):'💰 '+d.person+' owes YOU '+fmt(d.amount))+' — due in '+dayStr.en);
-      soonLines.ar.push((isIOwe?'💸 أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):'💰 '+d.person+' مدين لك بـ '+fmt(d.amount))+' — خلال '+dayStr.ar);
-      soonLines.de.push((isIOwe?'💸 SIE schulden '+d.person+' '+fmt(d.amount):'💰 '+d.person+' schuldet IHNEN '+fmt(d.amount))+' — in '+dayStr.de);
+      soonLines.en.push((isIOwe?'YOU owe '+d.person+' '+fmt(d.amount):d.person+' owes YOU '+fmt(d.amount))+' — due in '+dayStr.en);
+      soonLines.ar.push((isIOwe?'أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):d.person+' مدين لك بـ '+fmt(d.amount))+' — خلال '+dayStr.ar);
+      soonLines.de.push((isIOwe?'SIE schulden '+d.person+' '+fmt(d.amount):d.person+' schuldet IHNEN '+fmt(d.amount))+' — in '+dayStr.de);
     });
     var soonMsg = (soonLines[lang]||soonLines.en).join('; ');
     addNotification(soonMsg, 'warning');
@@ -13530,9 +13540,9 @@ function showInAppNotifications() {
       var days = daysAgo(d.date);
       var isIOwe = d.type==='i-owe';
       var dStr = {en:days+(days===1?' day':' days'),ar:days+' أيام',de:days+(days===1?' Tag':'e')};
-      ovLines.en.push((isIOwe?'💸 YOU owe '+d.person+' '+fmt(d.amount):'💰 '+d.person+' owes YOU '+fmt(d.amount))+' — '+dStr.en+' overdue');
-      ovLines.ar.push((isIOwe?'💸 أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):'💰 '+d.person+' مدين لك بـ '+fmt(d.amount))+' — متأخر '+dStr.ar);
-      ovLines.de.push((isIOwe?'💸 SIE schulden '+d.person+' '+fmt(d.amount):'💰 '+d.person+' schuldet IHNEN '+fmt(d.amount))+' — '+dStr.de+' überfällig');
+      ovLines.en.push((isIOwe?'YOU owe '+d.person+' '+fmt(d.amount):d.person+' owes YOU '+fmt(d.amount))+' — '+dStr.en+' overdue');
+      ovLines.ar.push((isIOwe?'أنت مدين لـ '+d.person+' بـ '+fmt(d.amount):d.person+' مدين لك بـ '+fmt(d.amount))+' — متأخر '+dStr.ar);
+      ovLines.de.push((isIOwe?'SIE schulden '+d.person+' '+fmt(d.amount):d.person+' schuldet IHNEN '+fmt(d.amount))+' — '+dStr.de+' überfällig');
     });
     var overdueMsg = (ovLines[lang]||ovLines.en).join('; ');
     addNotification(overdueMsg, 'error');
@@ -14089,7 +14099,7 @@ function renderForecast() {
   var fctPeriod = document.getElementById('fct-period-hdr');
   var fctInc = document.getElementById('fct-income-hdr');
   var fctProfit = document.getElementById('fct-profit-hdr');
-  if(fctTitle) fctTitle.textContent = t('forecastTitle');
+  if(fctTitle) fctTitle.innerHTML = svgIcon('trendingUp', 15) + ' ' + escHtml(t('forecastTitle'));
   if(fctPeriod) fctPeriod.textContent = {en:'Period',ar:'الفترة',de:'Zeitraum'}[lang]||'Period';
   if(fctInc) fctInc.textContent = t('forecastIncome');
   if(fctProfit) fctProfit.textContent = t('forecastProfit');
@@ -14147,11 +14157,11 @@ function openExportDialog() {
   var lang = state.lang;
   // translate
   var elMap = {
-    'exp-title':    {en:'📄 Export Report',ar:'📄 تصدير التقرير',de:'📄 Bericht exportieren'}[lang]||'📄 Export Report',
-    'exp-btn-pdf':  {en:'📑 Download PDF', ar:'📑 تنزيل PDF',    de:'📑 PDF herunterladen'}[lang]||'📑 Download PDF',
-    'exp-btn-print':{en:'🖨️ Print',        ar:'🖨️ طباعة',        de:'🖨️ Drucken'}[lang]||'🖨️ Print',
-    'exp-btn-email':{en:'📧 Email',        ar:'📧 إيميل',        de:'📧 E-Mail'}[lang]||'📧 Email',
-    'exp-btn-wa':   {en:'💬 WhatsApp',     ar:'💬 واتساب',       de:'💬 WhatsApp'}[lang]||'💬 WhatsApp',
+    'exp-title':    {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export Report',ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> تصدير التقرير',de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Bericht exportieren'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export Report',
+    'exp-btn-pdf':  {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Download PDF', ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> تنزيل PDF',    de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> PDF herunterladen'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Download PDF',
+    'exp-btn-print':{en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Print',        ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> طباعة',        de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Drucken'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Print',
+    'exp-btn-email':{en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email',        ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> إيميل',        de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> E-Mail'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email',
+    'exp-btn-wa':   {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp',     ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> واتساب',       de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp',
     'exp-btn-cancel':{en:'Cancel',         ar:'إلغاء',           de:'Abbrechen'}[lang]||'Cancel',
     'exp-opt-day':  {en:'Daily',    ar:'يومي',     de:'Täglich'}[lang]||'Daily',
     'exp-opt-week': {en:'Weekly',   ar:'أسبوعي',   de:'Wöchentlich'}[lang]||'Weekly',
@@ -14159,7 +14169,7 @@ function openExportDialog() {
     'exp-opt-quarter':{en:'Quarterly',ar:'ربع سنوي',de:'Vierteljährlich'}[lang]||'Quarterly',
     'exp-opt-year': {en:'Yearly',   ar:'سنوي',     de:'Jährlich'}[lang]||'Yearly',
   };
-  Object.entries(elMap).forEach(function(e){ var el=document.getElementById(e[0]); if(el) el.textContent=e[1]; });
+  Object.entries(elMap).forEach(function(e){ var el=document.getElementById(e[0]); if(el) el.innerHTML=e[1]; });
   document.getElementById('exportOverlay').classList.add('open');
 }
 function doExportPDF() {
@@ -14224,11 +14234,11 @@ function doExport(action) {
   var periodLbl = (periodLabels[period]&&periodLabels[period][lang])||period;
   var biz = state.businessName || localStorage.getItem('smartac_user') || 'SmartAc';
   var date = new Date().toLocaleDateString();
-  var reportText = '📊 *SmartAc Report — ' + biz + '*\n'
+  var reportText = '*SmartAc Report — ' + biz + '*\n'
     + 'Period: ' + periodLbl + '\n'
-    + '💰 ' + t('totalIncome') + ': ' + fmt(income) + '\n'
-    + '💸 ' + t('totalExpenses') + ': ' + fmt(expense) + '\n'
-    + '📈 ' + t('netProfit') + ': ' + fmt(net) + '\n'
+    + t('totalIncome') + ': ' + fmt(income) + '\n'
+    + t('totalExpenses') + ': ' + fmt(expense) + '\n'
+    + t('netProfit') + ': ' + fmt(net) + '\n'
     + 'Generated: ' + date;
   if(action === 'whatsapp') {
     document.getElementById('exportOverlay').classList.remove('open');
@@ -14259,7 +14269,7 @@ state.excelExportPeriod = 'today';
 function updateExcelExportTexts() {
   var lang = state.lang;
   var elMap = {
-    'xls-title':    {en:'📊 Export to Excel', ar:'📊 تصدير إلى إكسل', de:'📊 Nach Excel exportieren'}[lang]||'📊 Export to Excel',
+    'xls-title':    {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel', ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> تصدير إلى إكسل', de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Nach Excel exportieren'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel',
     'xls-subtitle': {en:'Select the period to export', ar:'اختر الفترة المراد تصديرها', de:'Wählen Sie den zu exportierenden Zeitraum'}[lang]||'Select the period to export',
     'xls-opt-today':  {en:'Today', ar:'اليوم', de:'Heute'}[lang]||'Today',
     'xls-opt-week':   {en:'This Week', ar:'هذا الأسبوع', de:'Diese Woche'}[lang]||'This Week',
@@ -14272,7 +14282,7 @@ function updateExcelExportTexts() {
     'xls-btn-download': {en:'Download', ar:'تنزيل', de:'Herunterladen'}[lang]||'Download',
     'xls-btn-cancel': {en:'Cancel', ar:'إلغاء', de:'Abbrechen'}[lang]||'Cancel',
   };
-  Object.keys(elMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.textContent=elMap[id]; });
+  Object.keys(elMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=elMap[id]; });
 }
 
 function openExcelExportModal() {
@@ -14729,7 +14739,7 @@ function renderClientProfile(clientId) {
   var outstanding = clientDebts.filter(function(d){return d.status!=='paid';}).reduce(function(s,d){return s+d.amount;},0);
   var lastTx = clientTxs.sort(function(a,b){return b.date>a.date?1:-1;})[0];
   var h = '<div class="cp-header" dir="'+(isRTL?'rtl':'ltr')+'">';
-  h += '<button class="cp-back" onclick="document.getElementById(\'clientProfileOverlay\').classList.remove(\'open\')">'+(isRTL?'رجوع →':'← Back')+'</button>';
+  h += '<button class="cp-back" onclick="document.getElementById(\'clientProfileOverlay\').classList.remove(\'open\')">'+(isRTL?('رجوع '+svgIcon('chevronRight',13)):(svgIcon('chevronLeft',13)+' Back'))+'</button>';
   h += '<div style="text-align:center;padding-top:16px">';
   h += '<div class="cp-avatar">'+client.name.charAt(0).toUpperCase()+'</div>';
   h += '<div style="font-size:20px;font-weight:700">'+client.name+'</div>';
@@ -15033,7 +15043,7 @@ function renderSupplierProfile(supplierId) {
   var isRTL = lang === 'ar';
   var dir = isRTL ? 'rtl' : 'ltr';
   var LP = {
-    back:        {en:'&#8592; Back',                                    ar:'&#8592; رجوع',                                       de:'&#8592; Zurück'},
+    back:        {en:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Back', ar:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="9 18 15 12 9 6"/></svg> رجوع', de:'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><polyline points="15 18 9 12 15 6"/></svg> Zurück'},
     notes:       {en:'Notes',                                           ar:'ملاحظات',                                            de:'Notizen'},
     since:       {en:'Since:',                                          ar:'منذ:',                                               de:'Seit:'},
     txHistory:   {en:'Transaction History',                             ar:'تاريخ المعاملات',                                    de:'Transaktionsverlauf'},
@@ -15273,7 +15283,7 @@ function generateReportPDF(r) {
 
 
 // ── GENERIC CONFIRM DIALOG ──
-var DELETE_CONFIRM_TITLE = {en:'🗑 Delete', ar:'🗑 حذف', de:'🗑 Löschen'};
+var DELETE_CONFIRM_TITLE = {en:'Delete', ar:'حذف', de:'Löschen'};
 function confirmAsync(title, msg, okLabel, cancelLabel) {
   return new Promise(function(resolve) {
     showConfirm(title, msg, function(){ resolve(true); }, okLabel, cancelLabel, function(){ resolve(false); });
@@ -15460,7 +15470,7 @@ function deleteDebt(id) {
     ar:'حذف دين '+d.person+' ('+fmt(d.amount)+')؟ لا يمكن التراجع.',
     de:'Schuld für '+d.person+' ('+fmt(d.amount)+') löschen? Nicht rückgängig machbar.'
   };
-  var titles = {en:'🗑 Delete Debt',ar:'🗑 حذف الدين',de:'🗑 Schuld löschen'};
+  var titles = {en:'Delete Debt',ar:'حذف الدين',de:'Schuld löschen'};
   showConfirm(titles[lang]||titles.en, msgs[lang]||msgs.en, function(){
     state.debts = state.debts.filter(function(x){return x.id!==id;});
     save(); renderDebtsPage();
@@ -15477,7 +15487,7 @@ function markDebtPaid(id) {
     ar:"تحديد دين "+d.person+" بمبلغ "+fmt(d.amount)+" كمدفوع؟",
     de:d.person+"s Schuld von "+fmt(d.amount)+" als bezahlt markieren?"
   };
-  var titles = {en:'✅ Mark as Paid',ar:'✅ تحديد كمدفوع',de:'✅ Als bezahlt markieren'};
+  var titles = {en:'Mark as Paid',ar:'تحديد كمدفوع',de:'Als bezahlt markieren'};
   showConfirm(titles[lang]||titles.en, msgs[lang]||msgs.en, function(){
     d.status = 'paid';
     // Record payment as transaction
@@ -15493,15 +15503,14 @@ function markDebtPaid(id) {
       type: txType,
       category: 'Other',
       date: today(),
-      icon: isOwesMe ? '✅' : '✅',
       invoice: null, invoiceName: null
     });
     save();
     var successMsg = {
-      en:'✅ Debt marked as paid and recorded in transactions',
-      ar:'✅ تم تحديد الدين كمدفوع وتسجيله في المعاملات',
-      de:'✅ Schuld als bezahlt markiert und in Transaktionen erfasst'
-    }[lang]||'✅ Debt marked as paid';
+      en:'Debt marked as paid and recorded in transactions',
+      ar:'تم تحديد الدين كمدفوع وتسجيله في المعاملات',
+      de:'Schuld als bezahlt markiert und in Transaktionen erfasst'
+    }[lang]||'Debt marked as paid';
     renderDebtsPage();
     renderHome();
     setTimeout(function(){ showToast(successMsg, 'success'); }, 100);
@@ -15542,7 +15551,7 @@ function toggleSidebar() {
 <!-- EXPORT DIALOG -->
 <div class="export-overlay" id="exportOverlay">
   <div class="export-sheet">
-    <h3 id="exp-title">📄 Export Report</h3>
+    <h3 id="exp-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Export Report</h3>
     <select class="export-period-sel" id="exp-period-sel">
       <option value="day"     id="exp-opt-day">Daily</option>
       <option value="week"    id="exp-opt-week">Weekly</option>
@@ -15551,10 +15560,10 @@ function toggleSidebar() {
       <option value="year"    id="exp-opt-year">Yearly</option>
     </select>
     <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
-      <button onclick="doExportPDF()" style="width:100%;padding:13px;border:none;background:var(--primary);color:#fff;border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-pdf">📑 Download PDF</button>
-      <button onclick="doExport('print')" style="width:100%;padding:13px;border:none;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-print">🖨️ Print</button>
-      <button onclick="doExport('email')" style="width:100%;padding:13px;border:none;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-email">📧 Email</button>
-      <button onclick="doExport('whatsapp')" style="width:100%;padding:13px;border:none;background:#25d366;color:#fff;border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-wa">💬 WhatsApp</button>
+      <button onclick="doExportPDF()" style="width:100%;padding:13px;border:none;background:var(--primary);color:#fff;border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-pdf"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> Download PDF</button>
+      <button onclick="doExport('print')" style="width:100%;padding:13px;border:none;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-print"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Print</button>
+      <button onclick="doExport('email')" style="width:100%;padding:13px;border:none;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-email"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</button>
+      <button onclick="doExport('whatsapp')" style="width:100%;padding:13px;border:none;background:#25d366;color:#fff;border-radius:14px;cursor:pointer;font-size:14px;font-weight:600" id="exp-btn-wa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp</button>
       <button onclick="document.getElementById('exportOverlay').classList.remove('open')" style="width:100%;padding:11px;border:none;background:transparent;color:var(--text3);border-radius:12px;cursor:pointer;font-size:14px" id="exp-btn-cancel">Cancel</button>
     </div>
   </div>
@@ -15731,7 +15740,7 @@ function toggleSidebar() {
 <!-- EXCEL EXPORT MODAL -->
 <div id="invShareModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
   <div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto;box-sizing:border-box">
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="ivsh-title">📤 Share Invoice</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="ivsh-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Invoice</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:16px" id="ivsh-subtitle">Choose how to send this document</div>
     <div style="display:flex;gap:0;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:14px">
       <button type="button" id="ivshModeClientBtn" onclick="setInvoiceShareMode('client')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)">Choose Client</button>
@@ -15747,8 +15756,8 @@ function toggleSidebar() {
     </div>
     <div id="ivshError" style="display:none;color:#dc2626;font-size:12px;margin-bottom:8px"></div>
     <div style="display:flex;gap:10px;margin-top:8px">
-      <button type="button" onclick="sendInvoiceShare('email')" style="flex:1;padding:12px;border:none;background:#1a7fd4;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-email">📧 Email</button>
-      <button type="button" onclick="sendInvoiceShare('whatsapp')" style="flex:1;padding:12px;border:none;background:#25d366;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-wa">💬 WhatsApp</button>
+      <button type="button" onclick="sendInvoiceShare('email')" style="flex:1;padding:12px;border:none;background:#1a7fd4;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-email"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</button>
+      <button type="button" onclick="sendInvoiceShare('whatsapp')" style="flex:1;padding:12px;border:none;background:#25d366;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-wa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp</button>
     </div>
     <div style="margin-top:8px">
       <button type="button" onclick="closeInvoiceShareModal()" style="width:100%;padding:11px;border:none;background:transparent;color:var(--text3);border-radius:12px;cursor:pointer;font-size:14px" id="ivsh-btn-cancel">Cancel</button>
@@ -15758,7 +15767,7 @@ function toggleSidebar() {
 
 <div id="excelExportModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
   <div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto;box-sizing:border-box">
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="xls-title">📊 Export to Excel</div>
+    <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="xls-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:16px" id="xls-subtitle">Select the period to export</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="xlsPeriodPills">
       <button type="button" class="xls-period-pill active" data-xls-period="today" onclick="setExcelExportPeriod('today',this)" id="xls-opt-today">Today</button>
