@@ -2183,13 +2183,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div style="font-size:16px;font-weight:700" id="dashSaldoAmt">€0</div>
       </div>
     </div>
-    <div style="padding:10px 16px 0">
-      <div id="dashNetCard" style="background:var(--card);border-left:4px solid var(--green);border-radius:16px;padding:16px">
-        <div style="font-size:12px;color:var(--text3)" id="dashNetLbl">Net Income</div>
-        <div class="net-amount" style="font-size:24px;font-weight:700;margin:4px 0" id="dashNetAmt">€0</div>
-        <div style="font-size:11px;color:var(--text3)" id="dashNetSub">Income − Expenses − Tax due</div>
-      </div>
-    </div>
   </div>
 
   <!-- QUICK ADD (desktop / tablet) -->
@@ -2765,7 +2758,7 @@ var LANG = {
     clientBack: "← Back", clientCall: "📞 Call", clientEmailBtn: "✉️ Email", clientWhatsApp: "💬 WhatsApp",
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
-      Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
+      Fuel:"Fuel", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
       Customer:"Customer", Supplier:"Supplier",
     }
   },
@@ -2838,7 +2831,7 @@ var LANG = {
     clientBack: "→ رجوع", clientCall: "📞 اتصال", clientEmailBtn: "✉️ إيميل", clientWhatsApp: "💬 واتساب",
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
-      Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
+      Fuel:"وقود", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
       Customer:"عميل", Supplier:"مورد",
     }
   },
@@ -2911,7 +2904,7 @@ var LANG = {
     clientBack: "← Zurück", clientCall: "📞 Anrufen", clientEmailBtn: "✉️ E-Mail", clientWhatsApp: "💬 WhatsApp",
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
-      Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
+      Fuel:"Kraftstoff", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
       Customer:"Kunde", Supplier:"Lieferant",
     }
   }
@@ -2992,13 +2985,13 @@ function getCurrencyLabel(sym) {
 
 var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
-  expense: ['Supplies','Rent','Salary','Utilities','Marketing','Other'],
+  expense: ['Fuel','Supplies','Rent','Salary','Utilities','Marketing','Other'],
   debt: ['Customer','Supplier','Other'],
 };
 
 var ICONS = {
   Sales:'🛒', Service:'🔧', Rent:'🏠', Investment:'📈', Other:'📌',
-  Supplies:'📦', Salary:'👤', Utilities:'💡', Marketing:'📣',
+  Fuel:'⛽', Supplies:'📦', Salary:'👤', Utilities:'💡', Marketing:'📣',
   Customer:'👤', Supplier:'🏭',
 };
 
@@ -3121,6 +3114,7 @@ var SVG_ICON_PATHS = {
   shoppingCart: '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>',
   home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
   pin: '<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>',
+  droplet: '<path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>',
   packageIcon: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
   lightbulb: '<path d="M9 18h6"/><path d="M10 22h4"/><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"/>',
   megaphone: '<path d="M3 11l18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/>',
@@ -3137,7 +3131,7 @@ var SVG_ICON_PATHS = {
 };
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
-  Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
+  Fuel:'droplet', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
   Customer:'user', Supplier:'building',
 };
 function svgIcon(name, size) {
@@ -6242,15 +6236,6 @@ function updateVatPreview() {
 // ── Home dashboard: Expenses/Income drill-down (Netto/VAT per item, for the selected period) ──
 function openVatBreakdown(type) {
   var txs = getFiltered().filter(function(t){ return t.type === type; });
-  var rows = txs.map(function(tx) {
-    var vb = vatBreakdown(tx.amount, tx.vatRate || 0);
-    return {name: tx.name || tx.category || '', netto: vb.netto, steuer: vb.steuer, brutto: vb.brutto, date: tx.date};
-  }).sort(function(a,b){ return b.brutto - a.brutto; });
-
-  var totalNetto = rows.reduce(function(s,r){ return s+r.netto; }, 0);
-  var totalSteuer = rows.reduce(function(s,r){ return s+r.steuer; }, 0);
-  var totalBrutto = rows.reduce(function(s,r){ return s+r.brutto; }, 0);
-
   var lang = state.lang;
   var L = {
     incomeTitle:  {en:'Income Breakdown', ar:'تفاصيل الدخل', de:'Einnahmen im Detail'},
@@ -6258,9 +6243,28 @@ function openVatBreakdown(type) {
     netto: {en:'Net', ar:'الصافي', de:'Netto'},
     vat:   {en:'VAT', ar:'الضريبة', de:'MwSt.'},
     total: {en:'Total', ar:'الإجمالي', de:'Brutto'},
+    category: {en:'Category', ar:'القسم', de:'Kategorie'},
     empty: {en:'No transactions in this period.', ar:'لا معاملات في هذه الفترة.', de:'Keine Transaktionen in diesem Zeitraum.'}
   };
   function ltx(k){ return (L[k]&&L[k][lang])||(L[k]&&L[k].en)||k; }
+
+  // Group by category (same category the user already picks when adding the transaction)
+  var groups = {};
+  var groupOrder = [];
+  txs.forEach(function(tx) {
+    var cat = tx.category || 'Other';
+    if(!groups[cat]) { groups[cat] = {items: [], netto: 0, steuer: 0, brutto: 0}; groupOrder.push(cat); }
+    var vb = vatBreakdown(tx.amount, tx.vatRate || 0);
+    groups[cat].items.push({name: tx.name || cat, netto: vb.netto, steuer: vb.steuer, brutto: vb.brutto, date: tx.date});
+    groups[cat].netto += vb.netto;
+    groups[cat].steuer += vb.steuer;
+    groups[cat].brutto += vb.brutto;
+  });
+  groupOrder.sort(function(a,b){ return groups[b].brutto - groups[a].brutto; });
+  groupOrder.forEach(function(cat){ groups[cat].items.sort(function(a,b){ return b.brutto - a.brutto; }); });
+
+  var totalNetto = 0, totalSteuer = 0, totalBrutto = 0;
+  groupOrder.forEach(function(cat){ totalNetto += groups[cat].netto; totalSteuer += groups[cat].steuer; totalBrutto += groups[cat].brutto; });
 
   var subtitle = state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period);
 
@@ -6271,26 +6275,52 @@ function openVatBreakdown(type) {
   h += '<div style="display:flex;justify-content:space-between;font-size:13px;color:#64748b;padding-top:8px;border-top:1px solid #f1f5f9"><span>' + ltx('total') + '</span><span style="font-weight:700;color:#1e293b">' + fmt(totalBrutto) + '</span></div>';
   h += '</div>';
 
-  if(!rows.length) {
+  if(!groupOrder.length) {
     h += '<div style="text-align:center;color:#94a3b8;font-size:14px;padding:24px 0">' + ltx('empty') + '</div>';
   } else {
     h += '<div style="background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,0.06)">';
-    rows.forEach(function(r, i) {
-      h += '<div style="padding:14px 16px' + (i < rows.length-1 ? ';border-bottom:1px solid #f1f5f9' : '') + '">';
-      h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px">';
-      h += '<span style="font-size:14px;font-weight:600;color:#1e293b">' + escHtml(r.name) + '</span>';
-      h += '<span style="font-size:14px;font-weight:700;color:#1e293b;flex-shrink:0">' + fmt(r.brutto) + '</span>';
+    h += '<div style="display:flex;align-items:center;padding:10px 16px;background:#f8fafc;font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.3px">';
+    h += '<span style="flex:1.8">' + ltx('category') + '</span><span style="flex:1;text-align:right">' + ltx('netto') + '</span><span style="flex:1;text-align:right">' + ltx('vat') + '</span>';
+    h += '</div>';
+    groupOrder.forEach(function(cat, gi) {
+      var g = groups[cat];
+      var gid = 'vatcat_' + type + '_' + gi;
+      h += '<div class="vatcat-row" data-target="' + gid + '" style="display:flex;align-items:center;padding:12px 16px;cursor:pointer;border-top:1px solid #f1f5f9;gap:6px">';
+      h += '<span style="flex-shrink:0;display:flex;transition:transform 0.2s" class="vatcat-chevron">' + svgIcon('chevronRight', 14) + '</span>';
+      h += '<span style="flex:1.8;display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:#1e293b;min-width:0">' + svgIcon(CAT_ICON_KEYS[cat]||'pin', 15) + ' <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(tc(cat)) + '</span></span>';
+      h += '<span style="flex:1;text-align:right;font-size:13px;color:#1e293b">' + fmt(g.netto) + '</span>';
+      h += '<span style="flex:1;text-align:right;font-size:13px;color:#1e293b">' + fmt(g.steuer) + '</span>';
       h += '</div>';
-      h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:#94a3b8">';
-      h += '<span>' + formatDateDisplay(r.date) + '</span>';
-      h += '<span>' + ltx('netto') + ' ' + fmt(r.netto) + ' · ' + ltx('vat') + ' ' + fmt(r.steuer) + '</span>';
-      h += '</div></div>';
+      h += '<div id="' + gid + '" style="display:none;background:#f8fafc">';
+      g.items.forEach(function(it, ii) {
+        h += '<div style="padding:10px 16px 10px 40px' + (ii < g.items.length-1 ? ';border-bottom:1px solid #eef2f7' : '') + '">';
+        h += '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">';
+        h += '<span style="font-size:13px;color:#334155">' + escHtml(it.name) + '</span>';
+        h += '<span style="font-size:13px;font-weight:600;color:#1e293b;flex-shrink:0">' + fmt(it.brutto) + '</span>';
+        h += '</div>';
+        h += '<div style="display:flex;justify-content:space-between;font-size:11px;color:#94a3b8">';
+        h += '<span>' + formatDateDisplay(it.date) + '</span>';
+        h += '<span>' + ltx('netto') + ' ' + fmt(it.netto) + ' · ' + ltx('vat') + ' ' + fmt(it.steuer) + '</span>';
+        h += '</div></div>';
+      });
+      h += '</div>';
     });
     h += '</div>';
   }
 
   var title = type === 'income' ? ltx('incomeTitle') : ltx('expenseTitle');
   openLegalOverlay(title, subtitle, h);
+
+  document.querySelectorAll('.vatcat-row').forEach(function(row) {
+    row.onclick = function() {
+      var target = document.getElementById(row.getAttribute('data-target'));
+      var chevron = row.querySelector('.vatcat-chevron');
+      if(!target) return;
+      var open = target.style.display === 'block';
+      target.style.display = open ? 'none' : 'block';
+      if(chevron) chevron.style.transform = open ? 'rotate(0deg)' : 'rotate(90deg)';
+    };
+  });
 }
 
 // ────────────────────────────────────────
@@ -7645,22 +7675,6 @@ function renderHome() {
       dashSaldoLblEl.textContent = saldoLbl[state.lang] || saldoLbl.en;
     }
   }
-  var dashNetAmtEl = document.getElementById('dashNetAmt');
-  var dashNetCardEl = document.getElementById('dashNetCard');
-  var dashNetColor = netCalc.netIncome >= 0 ? 'var(--green)' : '#dc2626';
-  if(dashNetAmtEl) {
-    dashNetAmtEl.textContent = (netCalc.netIncome < 0 ? '-' : '') + fmt(Math.abs(netCalc.netIncome));
-    dashNetAmtEl.style.color = dashNetColor;
-  }
-  if(dashNetCardEl) {
-    if(state.lang === 'ar') {
-      dashNetCardEl.style.borderLeft = 'none';
-      dashNetCardEl.style.borderRight = '4px solid ' + dashNetColor;
-    } else {
-      dashNetCardEl.style.borderRight = 'none';
-      dashNetCardEl.style.borderLeft = '4px solid ' + dashNetColor;
-    }
-  }
 
   var income = txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+t.amount;},0);
   var txExpense = txs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
@@ -8573,10 +8587,6 @@ function applyLang() {
   if(dashIncomeNettoLbl) dashIncomeNettoLbl.textContent = {en:'Net', ar:'الصافي', de:'Netto'}[state.lang] || 'Net';
   var dashIncomeVatLbl = document.getElementById('dashIncomeVatLbl');
   if(dashIncomeVatLbl) dashIncomeVatLbl.textContent = {en:'VAT', ar:'الضريبة', de:'MwSt.'}[state.lang] || 'VAT';
-  var dashNetLbl = document.getElementById('dashNetLbl');
-  if(dashNetLbl) dashNetLbl.textContent = {en:'Net Income', ar:'صافي الدخل', de:'Nettoeinkommen'}[state.lang] || 'Net Income';
-  var dashNetSub = document.getElementById('dashNetSub');
-  if(dashNetSub) dashNetSub.textContent = {en:'Income − Expenses − Tax due', ar:'الدخل − المصروفات − الضريبة المستحقة', de:'Einnahmen − Ausgaben − Fällige Steuer'}[state.lang] || 'Income − Expenses − Tax due';
 
   // Update mobile Quick Add card labels
   var mqaIncomeLbl = document.getElementById('mqa-lbl-income');
