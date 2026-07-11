@@ -3504,6 +3504,9 @@ var EMP_L = {
   whHoursShort:{en:'h', ar:'س', de:'Std'},
   whConfirmDelete: {en:'Delete this work hours entry?', ar:'هل تريد حذف هذا التسجيل؟', de:'Diesen Arbeitszeiteintrag löschen?'},
   whInvalid:  {en:'Enter a valid period and a total number of hours', ar:'ادخل فترة صحيحة وإجمالي عدد ساعات', de:'Bitte gültigen Zeitraum und Gesamtstunden eingeben'},
+  whExportPdf: {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
+  whNoEntriesMonth: {en:'No work hours logged this month', ar:'لا توجد ساعات عمل مسجلة هذا الشهر', de:'Keine Arbeitszeiten in diesem Monat erfasst'},
+  whMonthTotal: {en:'Total this month', ar:'إجمالي الشهر', de:'Gesamt diesen Monat'},
 };
 function emptx(k) { return (EMP_L[k] && EMP_L[k][state.lang]) || (EMP_L[k] && EMP_L[k].en) || k; }
 
@@ -3638,6 +3641,7 @@ function empInfoRow(label, value) {
 
 var _empProfileId = null;
 var _empProfileEditMode = false;
+var _whViewMonth = null;
 
 function closeEmployeeProfile() {
   var ov = document.getElementById('empProfileOverlay');
@@ -3725,6 +3729,7 @@ function renderEmployeeProfile(id) {
   var emp = found[0];
   _empProfileId = id;
   _empProfileEditMode = false;
+  _whViewMonth = today().substring(0,7);
 
   var existingOv = document.getElementById('empProfileOverlay');
   if(existingOv) existingOv.parentNode.removeChild(existingOv);
@@ -3757,12 +3762,18 @@ function renderEmployeeProfile(id) {
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
-  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
   html += '<div style="font-size:15px;font-weight:700">' + emptx('workHours') + '</div>';
   html += '<button onclick="whOpenForm(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + emptx('whAdd') + '</button>';
   html += '</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">';
+  html += '<button id="whPrevMonthBtn" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;color:var(--text2);cursor:pointer;flex-shrink:0">' + svgIcon('chevronLeft', 14) + '</button>';
+  html += '<div id="whMonthLabel" style="font-size:14px;font-weight:700;flex:1;text-align:center"></div>';
+  html += '<button id="whNextMonthBtn" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;color:var(--text2);cursor:pointer;flex-shrink:0">' + svgIcon('chevronRight', 14) + '</button>';
+  html += '</div>';
   html += '<div id="whSummary" style="font-size:13px;color:var(--text3);margin-bottom:8px"></div>';
   html += '<div id="whList"></div>';
+  html += '<button id="whExportBtn" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('download', 13) + ' ' + emptx('whExportPdf') + '</button>';
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
@@ -7358,22 +7369,46 @@ async function whDelete(empId, entryId) {
 
 function whEntryDate(w) { return w.fromDate || w.date || ''; }
 
+function whMonthLabelText(monthKey) {
+  var parts = monthKey.split('-');
+  var monthNames = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+  return monthNames[parseInt(parts[1],10)-1] + ' ' + parts[0];
+}
+
+function whShiftMonth(delta) {
+  var parts = _whViewMonth.split('-');
+  var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1 + delta, 1);
+  _whViewMonth = d.getFullYear() + '-' + pad2(d.getMonth()+1);
+  var emp = (state.employees || []).find(function(e){ return e.id === _empProfileId; });
+  if(emp) renderWorkHoursSection(emp);
+}
+
 function renderWorkHoursSection(emp) {
   var list = document.getElementById('whList');
   var summary = document.getElementById('whSummary');
+  var monthLabelEl = document.getElementById('whMonthLabel');
   if(!list || !summary) return;
-  var entries = (emp.workHours || []).slice().sort(function(a,b){
-    var da = whEntryDate(a), db = whEntryDate(b);
-    return da < db ? 1 : (da > db ? -1 : b.id - a.id);
-  });
+  if(!_whViewMonth) _whViewMonth = today().substring(0,7);
+  if(monthLabelEl) monthLabelEl.textContent = whMonthLabelText(_whViewMonth);
 
-  var curMonth = today().substring(0,7);
-  var monthTotal = entries.filter(function(w){ return whEntryDate(w).substring(0,7) === curMonth; })
-    .reduce(function(s,w){ return s + whComputeHours(w); }, 0);
-  summary.textContent = emptx('whThisMonth') + ': ' + monthTotal.toFixed(1) + ' ' + emptx('whHoursShort');
+  var entries = (emp.workHours || []).filter(function(w){ return whEntryDate(w).substring(0,7) === _whViewMonth; })
+    .sort(function(a,b){
+      var da = whEntryDate(a), db = whEntryDate(b);
+      return da < db ? 1 : (da > db ? -1 : b.id - a.id);
+    });
+
+  var monthTotal = entries.reduce(function(s,w){ return s + whComputeHours(w); }, 0);
+  summary.textContent = emptx('whMonthTotal') + ': ' + monthTotal.toFixed(1) + ' ' + emptx('whHoursShort');
+
+  var prevBtn = document.getElementById('whPrevMonthBtn');
+  if(prevBtn) prevBtn.onclick = function(){ whShiftMonth(-1); };
+  var nextBtn = document.getElementById('whNextMonthBtn');
+  if(nextBtn) nextBtn.onclick = function(){ whShiftMonth(1); };
+  var exportBtn = document.getElementById('whExportBtn');
+  if(exportBtn) exportBtn.onclick = function(){ whExportPDF(emp.id); };
 
   if(!entries.length) {
-    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + emptx('whNoEntries') + '</div>';
+    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + emptx('whNoEntriesMonth') + '</div>';
     return;
   }
   var h = '';
@@ -7394,6 +7429,56 @@ function renderWorkHoursSection(emp) {
     h += '</div>';
   });
   list.innerHTML = h;
+}
+
+function whExportPDF(empId) {
+  var emp = (state.employees || []).find(function(e){ return e.id === empId; });
+  if(!emp) return;
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
+  var monthKey = _whViewMonth || today().substring(0,7);
+  var entries = (emp.workHours || []).filter(function(w){ return whEntryDate(w).substring(0,7) === monthKey; })
+    .sort(function(a,b){ return whEntryDate(a) < whEntryDate(b) ? -1 : 1; });
+
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var y = 20;
+  doc.setFontSize(16); doc.setFont(undefined, 'bold');
+  doc.text('Arbeitszeitnachweis — ' + (emp.fullName || emp.name || ''), 14, y); y += 7;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal');
+  doc.text((state.businessName || '') + ' · ' + whMonthLabelText(monthKey), 14, y); y += 10;
+
+  doc.setFont(undefined, 'bold'); doc.setFontSize(9);
+  doc.text('Datum', 14, y); doc.text('Beginn', 60, y); doc.text('Ende', 85, y);
+  doc.text('Pause', 110, y); doc.text('Stunden', 145, y, {align:'right'}); doc.text('Notiz', 155, y);
+  y += 3; doc.line(14, y, 196, y); y += 5;
+  doc.setFont(undefined, 'normal');
+
+  var total = 0;
+  entries.forEach(function(w) {
+    var hrs = whComputeHours(w);
+    total += hrs;
+    doc.setFontSize(9);
+    var from = whEntryDate(w), to = w.toDate || from;
+    var dateStr = (to && to !== from) ? (from + ' – ' + to) : from;
+    doc.text(dateStr, 14, y);
+    doc.text(w.start || '—', 60, y);
+    doc.text(w.end || '—', 85, y);
+    doc.text(w.breakMinutes ? (w.breakMinutes + ' min') : '—', 110, y);
+    doc.text(hrs.toFixed(1), 145, y, {align:'right'});
+    doc.text(String(w.note || '').substring(0,20), 155, y);
+    y += 6;
+    if(y > 280) { doc.addPage(); y = 20; }
+  });
+  if(!entries.length) { doc.setFontSize(9); doc.text('—', 14, y); y += 6; }
+
+  y += 2; doc.line(14, y, 196, y); y += 6;
+  doc.setFont(undefined, 'bold');
+  doc.text('Gesamt', 14, y);
+  doc.text(total.toFixed(1) + ' h', 145, y, {align:'right'});
+  y += 12;
+  doc.setFontSize(8); doc.setFont(undefined, 'normal'); doc.setTextColor(120);
+  doc.text('Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y);
+  doc.save('Arbeitszeit_' + (emp.fullName || emp.name || 'Mitarbeiter').replace(/\s+/g,'_') + '_' + monthKey + '.pdf');
 }
 
 function openReceiptViewer(rec) {
