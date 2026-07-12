@@ -9880,6 +9880,9 @@ function exportBackup() {
     businessPhone: state.businessPhone, businessEmail: state.businessEmail, dateFormat: state.dateFormat,
     notifyRecurring: state.notifyRecurring, notifyInvoiceDue: state.notifyInvoiceDue,
     bankName: state.bankName, bankIban: state.bankIban, bankBic: state.bankBic, bankAccountHolder: state.bankAccountHolder,
+    fleet: state.fleet, assets: state.assets, inventory: state.inventory,
+    businessName: state.businessName, businessType: state.businessType, bizTaxId: state.businessTaxId,
+    uvaFreigaben: state.uvaFreigaben,
   };
   var blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   var url = URL.createObjectURL(blob);
@@ -9931,9 +9934,23 @@ function handleImportBackup(file) {
     state.bankIban = data.bankIban || '';
     state.bankBic = data.bankBic || '';
     state.bankAccountHolder = data.bankAccountHolder || '';
+    state.fleet = data.fleet || [];
+    state.assets = data.assets || [];
+    state.inventory = data.inventory || [];
+    state.businessType = data.businessType || 'general';
+    state.uvaFreigaben = data.uvaFreigaben || {};
+    if(data.businessName) {
+      var _impUser = localStorage.getItem('smartac_session') || '';
+      if(_impUser) {
+        var _impAccs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+        if(_impAccs[_impUser]) { _impAccs[_impUser].businessName = data.businessName; localStorage.setItem('smartac_accounts', JSON.stringify(_impAccs)); }
+        state.businessName = data.businessName;
+      }
+    }
     save();
     applyTheme();
     applyLang();
+    updateFleetNavVisibility();
     renderHome();
     renderSettings();
     showToast(stx('importSuccess'), 'success');

@@ -92,7 +92,7 @@ tr:last-child td{border-bottom:none}
 
 #viewerOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:9999;align-items:center;justify-content:center;padding:16px}
 #viewerOverlay.open{display:flex}
-#viewerClose{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer}
+#viewerClose{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #viewerDownload{position:absolute;top:16px;right:64px;height:38px;padding:0 16px;border-radius:19px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
 </style>
 </head>
@@ -111,7 +111,7 @@ tr:last-child td{border-bottom:none}
       <button class="auth-pw-toggle" id="buPassToggle" onclick="buTogglePw()" type="button">Anzeigen</button>
     </div>
     <button class="auth-btn" onclick="buchhalterLogin()">Anmelden</button>
-    <a href="index.html" class="auth-back-link">← Zurück zum normalen Login</a>
+    <a href="index.html" class="auth-back-link" style="display:inline-flex;align-items:center;gap:4px;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Zurück zum normalen Login</a>
     <div class="auth-note">Dieser Zugang ist schreibgeschützt — es können keine Daten geändert werden. Zugriff nur über denselben Browser, in dem die Geschäftsdaten erfasst wurden.</div>
   </div>
 </div>
@@ -147,8 +147,8 @@ tr:last-child td{border-bottom:none}
 </div>
 
 <div id="viewerOverlay" onclick="if(event.target===this)closeViewer()">
-  <button id="viewerDownload" onclick="downloadAttachment()" style="display:none">⬇ Herunterladen</button>
-  <button id="viewerClose" onclick="closeViewer()">✕</button>
+  <button id="viewerDownload" onclick="downloadAttachment()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Herunterladen</button>
+  <button id="viewerClose" onclick="closeViewer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   <div id="viewerContent"></div>
 </div>
 
@@ -280,6 +280,16 @@ function formatLastUpdate(data) {
 }
 
 function escHtmlBu(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+var SVG_ICON_PATHS_BU = {
+  chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
+  check: '<polyline points="20 6 9 17 4 12"/>',
+  download: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>',
+  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+};
+function svgIconBu(name, size) {
+  size = size || 16;
+  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">' + SVG_ICON_PATHS_BU[name] + '</svg>';
+}
 function fmtBu(n) {
   var v = parseFloat(n) || 0;
   return buData.currency + v.toLocaleString('de-AT', {minimumFractionDigits:2, maximumFractionDigits:2});
@@ -307,7 +317,7 @@ function uvaKeyLabelBu(key) {
   return key;
 }
 function computeUvaBu(key, interval) {
-  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0};
+  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0, vorsteuerByRate:{}};
   (buData.transactions || []).filter(function(tx) {
     return tx && tx.date && (tx.type === 'income' || tx.type === 'expense') && uvaKeyForDateBu(tx.date, interval) === key;
   }).forEach(function(tx) {
@@ -319,6 +329,8 @@ function computeUvaBu(key, interval) {
     } else {
       // Vorsteuer (KZ 060) is a single lump total on the official UVA form — no rate breakdown.
       res.vorsteuer += b.steuer;
+      var rk = String(r);
+      res.vorsteuerByRate[rk] = (res.vorsteuerByRate[rk] || 0) + b.steuer;
     }
   });
   res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20] + res.salesNetto.other;
@@ -350,6 +362,12 @@ function whComputeHoursBu(entry) {
     return Math.max(0, (endMin - startMin - (parseFloat(entry.breakMinutes)||0)) / 60);
   }
   return 0;
+}
+function whFmtHMBu(decimalHours) {
+  var totalMin = Math.round((decimalHours||0) * 60);
+  var h = Math.floor(totalMin / 60);
+  var m = totalMin % 60;
+  return h + ':' + (m < 10 ? '0' : '') + m;
 }
 
 // ── tabs / navigation ──
@@ -472,7 +490,7 @@ function renderUvaHtml() {
   var h = '<div class="card">';
   h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">';
   h += '<div class="card-title" style="margin-bottom:0">Umsatzsteuervoranmeldung</div>';
-  h += '<span class="badge ' + (fg?'freigegeben':'offen') + '">' + (fg ? ('✓ Freigegeben · ' + new Date(fg.at).toLocaleDateString('de-AT')) : 'Offen') + '</span>';
+  h += '<span class="badge ' + (fg?'freigegeben':'offen') + '" style="display:inline-flex;align-items:center;gap:4px">' + (fg ? (svgIconBu('check',11) + ' Freigegeben · ' + new Date(fg.at).toLocaleDateString('de-AT')) : 'Offen') + '</span>';
   h += '</div>';
   h += '<div class="pills">';
   h += '<span class="pill"><select id="uvaIntervalSel"><option value="month"' + (buUvaInterval==='month'?' selected':'') + '>Monatlich</option><option value="quarter"' + (buUvaInterval==='quarter'?' selected':'') + '>Vierteljährlich</option><option value="year"' + (buUvaInterval==='year'?' selected':'') + '>Jährlich</option></select></span>';
@@ -491,6 +509,16 @@ function renderUvaHtml() {
   var isCredit = u.zahllast < 0;
   h += row(isCredit ? 'KZ 095 — Gutschrift' : 'KZ 095 — Zahllast', fmtBu(Math.abs(u.zahllast)), true);
   h += '</table>';
+  var vsRateKeys = Object.keys(u.vorsteuerByRate || {}).sort(function(a,b){ return parseFloat(b) - parseFloat(a); });
+  if(vsRateKeys.length) {
+    h += '<div style="padding:8px 0 2px 14px">';
+    h += '<div style="font-size:11px;color:var(--text3);margin-bottom:4px">Aufschlüsselung Vorsteuer nach Sätzen (nur informativ — kein offizielles Formularfeld)</div>';
+    vsRateKeys.forEach(function(rk) {
+      h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:2px 0">'
+        + '<span>' + rk + '%</span><span style="direction:ltr">− ' + fmtBu(u.vorsteuerByRate[rk]) + '</span></div>';
+    });
+    h += '</div>';
+  }
   h += '<div class="disclaimer">Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.</div>';
   h += '</div>';
   return h;
@@ -571,7 +599,7 @@ function renderEmployeesHtml() {
       var hrs = (e.workHours||[]).filter(function(w){ return (w.fromDate||w.date||'').substring(0,7)===curMonth; })
         .reduce(function(s,w){return s+whComputeHoursBu(w);},0);
       var docLinks = (e.documents||[]).map(function(d){ return '<a class="link-icon" onclick="viewEmpDoc(' + d.id + ')">' + escHtmlBu(d.name) + '</a>'; }).join(', ');
-      h += '<tr><td>' + escHtmlBu(e.fullName||e.name) + '</td><td>' + escHtmlBu(e.position||'—') + '</td><td>' + fmtBu(e.salary) + '</td><td>' + hrs.toFixed(1) + ' h</td>'
+      h += '<tr><td>' + escHtmlBu(e.fullName||e.name) + '</td><td>' + escHtmlBu(e.position||'—') + '</td><td>' + fmtBu(e.salary) + '</td><td>' + whFmtHMBu(hrs) + '</td>'
         + '<td>' + (docLinks || '—') + '</td></tr>';
     });
     h += '</table></div>';
@@ -604,10 +632,10 @@ function renderAssetsHtml() {
 // ── Downloads ──
 function renderDownloadsHtml() {
   var h = '<div class="card"><div class="card-title">Berichte herunterladen</div>';
-  h += '<button class="dl-btn" onclick="downloadUvaPdf()">⬇ UVA als PDF</button>';
-  h += '<button class="dl-btn" onclick="downloadTransactionsCsv()">⬇ Transaktionen als CSV</button>';
-  h += '<button class="dl-btn" onclick="downloadAssetsPdf()">⬇ Anlagevermögen als PDF</button>';
-  if(buData.businessType === 'retail') h += '<button class="dl-btn" onclick="downloadInventoryPdf()">⬇ Lagerbestand als PDF</button>';
+  h += '<button class="dl-btn" onclick="downloadUvaPdf()">' + svgIconBu('download',14) + ' UVA als PDF</button>';
+  h += '<button class="dl-btn" onclick="downloadTransactionsCsv()">' + svgIconBu('download',14) + ' Transaktionen als CSV</button>';
+  h += '<button class="dl-btn" onclick="downloadAssetsPdf()">' + svgIconBu('download',14) + ' Anlagevermögen als PDF</button>';
+  if(buData.businessType === 'retail') h += '<button class="dl-btn" onclick="downloadInventoryPdf()">' + svgIconBu('download',14) + ' Lagerbestand als PDF</button>';
   h += '<div class="disclaimer">Alle Berichte werden lokal aus den Daten im Browser des Unternehmers erzeugt.</div>';
   h += '</div>';
   return h;
