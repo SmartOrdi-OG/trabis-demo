@@ -161,6 +161,12 @@ textarea.input-field{height:auto;min-height:64px;padding:12px 16px;line-height:1
    sized relative wrapper forces it to honor the wrapper's box regardless of that intrinsic size. */
 .date-fix-wrap{position:relative;width:100%;min-width:0;flex:1;height:48px;margin-bottom:12px;overflow:hidden;border-radius:12px}
 .date-fix-wrap .input-field{position:absolute;inset:0;margin-bottom:0;width:100%;height:100%}
+/* Without color-scheme, iOS/Safari draws the native date control (text + calendar
+   icon) using its own light-mode chrome regardless of our custom background, which
+   shows through as a mismatched box-within-a-box. Setting color-scheme lets it match
+   our theme, and centering the value text keeps every date field looking consistent. */
+.date-fix-wrap input[type="date"]{-webkit-appearance:none;appearance:none;color-scheme:light;text-align:center;text-align-last:center}
+html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .input-field:focus{border-color:var(--primary)}
 .category-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px}
 .cat-btn{padding:10px 4px;border-radius:10px;border:1.5px solid var(--border);background:none;cursor:pointer;font-size:11px;text-align:center;transition:all 0.2s}
@@ -2242,7 +2248,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="section">
     <div class="section-hdr">
       <div class="section-title">Recent Transactions</div>
-      <div class="see-all" onclick="showNav('reports')">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
+      <div class="see-all" onclick="openAllTxPage()">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
     <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>
     <div class="tx-list" id="txList">
@@ -8558,6 +8564,25 @@ function renderTxList(txs, showAll) {
   });
 }
 
+// Matches a transaction's name/category, plus every date form a user might type
+// (raw ISO, the app's configured display format, and the month name/year in the
+// current UI language) so searching "12.07" or "July"/"يوليو"/"Juli" finds it too.
+function txSearchBlob(tx) {
+  var d = String(tx.date || '').substring(0,10);
+  var parts = d.split('-');
+  var monthName = '';
+  if(parts.length === 3) {
+    var names = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+    var mi = parseInt(parts[1],10) - 1;
+    if(names[mi]) monthName = names[mi];
+  }
+  return [
+    tx.name || '', tc(tx.category) || '', tx.category || '',
+    d, formatDateDisplay(tx.date), monthName, parts[0] || '',
+    tx.clientName || '', tx.supplierName || ''
+  ].join(' ').toLowerCase();
+}
+
 function filterTransactions(query) {
   var q = (query || '').toLowerCase();
   if(!q) {
@@ -8565,15 +8590,69 @@ function filterTransactions(query) {
     return;
   }
   var filtered = state.transactions.filter(function(tx) {
-    if((tx.name||'').toLowerCase().indexOf(q) !== -1) return true;
-    if((tc(tx.category)||'').toLowerCase().indexOf(q) !== -1) return true;
-    if((tx.category||'').toLowerCase().indexOf(q) !== -1) return true;
-    if((tx.date||'').toLowerCase().indexOf(q) !== -1) return true;
-    if(tx.clientName && tx.clientName.toLowerCase().indexOf(q) !== -1) return true;
-    if(tx.supplierName && tx.supplierName.toLowerCase().indexOf(q) !== -1) return true;
-    return false;
+    return txSearchBlob(tx).indexOf(q) !== -1;
   });
   renderTxList(filtered, true);
+}
+
+// ── ALL TRANSACTIONS (period-filtered, reached from Home's "See all") ──
+function openAllTxPage() {
+  var existing = document.getElementById('allTxOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var lang = state.lang;
+  var titleLbl = {en:'All Transactions', ar:'كل المعاملات', de:'Alle Transaktionen'}[lang] || 'All Transactions';
+  var backLbl = lang === 'ar'
+    ? (svgIcon('chevronRight',14) + ' رجوع')
+    : (svgIcon('chevronLeft',14) + ' ' + (lang === 'de' ? 'Zurück' : 'Back'));
+
+  var ov = document.createElement('div');
+  ov.id = 'allTxOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch';
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:10;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="allTxBackBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:4px">' + backLbl + '</button>';
+  html += '<div style="flex:1;font-size:16px;font-weight:700">' + titleLbl + '</div>';
+  html += '</div>';
+  html += '<div style="padding:16px">';
+  html += '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period)) + '</div>';
+  html += '<input type="text" id="allTxSearchInput" placeholder="' + escHtml(t('searchTx')) + '" oninput="filterAllTx(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>';
+  html += '<div id="allTxList"></div>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+  document.getElementById('allTxBackBtn').onclick = function() { ov.parentNode.removeChild(ov); };
+  renderAllTxList(getFiltered());
+}
+
+function renderAllTxList(txs) {
+  var list = document.getElementById('allTxList');
+  if(!list) return;
+  var sorted = txs.slice().reverse();
+  if(!sorted.length) {
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">' + t('noTx').split('\n')[0] + '</div>';
+    return;
+  }
+  list.innerHTML = '';
+  sorted.forEach(function(tx) {
+    var item = document.createElement('div');
+    item.className = 'tx-item';
+    item.innerHTML = '<div class="tx-icon ' + tx.type + '">' + txIconSvg(tx) + '</div>'
+      + '<div class="tx-info"><div class="tx-name">' + escHtml(tx.name) + '</div>'
+      + '<div class="tx-meta">' + tc(tx.category) + ' · ' + formatDateDisplay(tx.date) + '</div></div>'
+      + '<div style="text-align:right"><div class="tx-amount ' + tx.type + '">' + (tx.type === 'income' ? '+' : '-') + fmt(tx.amount) + '</div></div>';
+    item.onclick = function(){ showTxDetail(tx); };
+    list.appendChild(item);
+  });
+}
+
+function filterAllTx(query) {
+  var q = (query || '').toLowerCase();
+  var base = getFiltered();
+  if(!q) { renderAllTxList(base); return; }
+  renderAllTxList(base.filter(function(tx) { return txSearchBlob(tx).indexOf(q) !== -1; }));
 }
 
 function renderDebtPreview() {
