@@ -700,8 +700,6 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 .rpt-period-pills{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .rpt-period-pill{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap}
 .rpt-period-pill.active{background:var(--primary);border-color:var(--primary);color:#fff}
-.xls-period-pill{padding:6px 13px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.2s;white-space:nowrap}
-.xls-period-pill.active{background:#1a7fd4;border-color:#1a7fd4;color:#fff}
 .rpt-custom-range{display:none;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap}
 .rpt-custom-range input[type=date]{padding:8px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;flex:1;min-width:130px}
 .rpt-custom-range input[type=date]:focus{border-color:var(--primary)}
@@ -2305,7 +2303,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div style="display:flex;gap:8px;align-items:center">
         <button class="share-btn" onclick="shareReport()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> <span id="rpt-share-lbl">Share</span></button>
         <button class="share-btn rpt-pdf-btn" onclick="openExportDialog()" style="background:var(--primary);color:#fff;border:none;box-shadow:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg> <span id="rpt-pdf-lbl">PDF</span></button>
-        <button class="share-btn rpt-excel-btn" onclick="openExcelExportModal()" style="background:#2E9E6B;color:#fff;border:none;box-shadow:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> <span id="rpt-excel-lbl">Export to Excel</span></button>
       </div>
     </div>
     <!-- Print header (visible only in print) -->
@@ -2717,7 +2714,7 @@ var LANG = {
     personName: "Person name (for debts)",
     currency: "Currency", dailySummary: "Daily Summary",
     debtReminders: "Debt Reminders", alertAfter: "Alert after 3 days",
-    exportExcel: "Export to Excel", downloadAll: "Download all transactions",
+    downloadAll: "Download all transactions",
     clearData: "Clear All Data", cannotUndo: "Cannot be undone",
     general: "General", data: "Data",
     thisMonth: "This Month", topCategories: "Top Categories",
@@ -2791,7 +2788,7 @@ var LANG = {
     personName: "اسم الشخص (للديون)",
     currency: "العملة", dailySummary: "ملخص يومي",
     debtReminders: "تذكير الديون", alertAfter: "تنبيه بعد 3 أيام",
-    exportExcel: "تصدير إلى Excel", downloadAll: "تحميل كل المعاملات",
+    downloadAll: "تحميل كل المعاملات",
     clearData: "مسح كل البيانات", cannotUndo: "لا يمكن التراجع",
     general: "عام", data: "البيانات",
     thisMonth: "هذا الشهر", topCategories: "أعلى الفئات",
@@ -2864,7 +2861,7 @@ var LANG = {
     personName: "Name der Person (für Schulden)",
     currency: "Währung", dailySummary: "Tageszusammenfassung",
     debtReminders: "Schulden-Erinnerungen", alertAfter: "Alarm nach 3 Tagen",
-    exportExcel: "Als Excel exportieren", downloadAll: "Alle Transaktionen herunterladen",
+    downloadAll: "Alle Transaktionen herunterladen",
     clearData: "Alle Daten löschen", cannotUndo: "Kann nicht rückgängig gemacht werden",
     general: "Allgemein", data: "Daten",
     thisMonth: "Diesen Monat", topCategories: "Top-Kategorien",
@@ -5168,9 +5165,9 @@ var HELP_L = {
     de:'1. Gehen Sie zu Berichte und öffnen Sie die UVA-Karte.\n2. Wählen Sie das Meldeintervall: monatlich, vierteljährlich oder jährlich.\n3. Wählen Sie den gewünschten Zeitraum — alle Zeiträume werden angezeigt, auch ohne Transaktionen.\n4. Prüfen Sie die Kennzahlen (000, 022, 006, 029, 060, 095) anhand der MwSt.-Sätze Ihrer Transaktionen.\n5. Sobald die Zahlen final sind, tippen Sie auf Freigabe, um den Zeitraum zu sperren — danach kann keine Transaktion in diesem Zeitraum geändert werden, ohne die Freigabe zuerst zu widerrufen.\n6. Exportieren Sie als PDF oder Excel für Ihren Steuerberater.'
   },
   exportReportsSteps: {
-    en:'1. Go to Reports.\n2. Choose a time period (Today, Week, Month, Year or Custom).\n3. Tap PDF for a printable summary, or Export to Excel for a detailed spreadsheet with separate sheets for transactions, clients and suppliers.',
-    ar:'1. اذهب لـ التقارير.\n2. اختر الفترة الزمنية (اليوم، الأسبوع، الشهر، السنة أو مخصص).\n3. اضغط PDF لملخص جاهز للطباعة، أو تصدير إلى Excel لملف تفصيلي فيه شيتات منفصلة للمعاملات والعملاء والموردين.',
-    de:'1. Gehen Sie zu Berichte.\n2. Wählen Sie einen Zeitraum (Heute, Woche, Monat, Jahr oder Benutzerdefiniert).\n3. Tippen Sie auf PDF für eine druckbare Zusammenfassung oder auf Nach Excel exportieren für eine detaillierte Tabelle mit separaten Blättern für Transaktionen, Kunden und Lieferanten.'
+    en:'1. Go to Reports.\n2. Choose a time period (Today, Week, Month, Year or Custom).\n3. Tap PDF for a printable summary.',
+    ar:'1. اذهب لـ التقارير.\n2. اختر الفترة الزمنية (اليوم، الأسبوع، الشهر، السنة أو مخصص).\n3. اضغط PDF لملخص جاهز للطباعة.',
+    de:'1. Gehen Sie zu Berichte.\n2. Wählen Sie einen Zeitraum (Heute, Woche, Monat, Jahr oder Benutzerdefiniert).\n3. Tippen Sie auf PDF für eine druckbare Zusammenfassung.'
   },
   accountantAccessSteps: {
     en:'1. On the login page, tap "Log in as Accountant".\n2. Your accountant signs in with the credentials you give them and picks your business from the list.\n3. They see a read-only, German-language view of your transactions, invoices, UVA, employees and assets — they cannot change anything.\n4. This only works from the same browser/device where you use SmartAc, since your data never leaves your device.',
@@ -8990,8 +8987,6 @@ function updateRptPeriodPills() {
   if(pdfLbl) pdfLbl.textContent = {en:'PDF',ar:'PDF',de:'PDF'}[state.lang]||'PDF';
   var shareLbl = document.getElementById('rpt-share-lbl');
   if(shareLbl) shareLbl.textContent = {en:'Share',ar:'مشاركة',de:'Teilen'}[state.lang]||'Share';
-  var excelLbl = document.getElementById('rpt-excel-lbl');
-  if(excelLbl) excelLbl.textContent = {en:'Export to Excel',ar:'تصدير إلى إكسل',de:'Nach Excel exportieren'}[state.lang]||'Export to Excel';
 }
 
 // ── REPORTS ──
@@ -14381,403 +14376,6 @@ function doExport(action) {
   state.reportPeriod = prevPeriod;
 }
 
-// ═══════════════ EXCEL EXPORT ═══════════════
-state.excelExportPeriod = 'today';
-
-function updateExcelExportTexts() {
-  var lang = state.lang;
-  var elMap = {
-    'xls-title':    {en:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel', ar:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> تصدير إلى إكسل', de:'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Nach Excel exportieren'}[lang]||'<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel',
-    'xls-subtitle': {en:'Select the period to export', ar:'اختر الفترة المراد تصديرها', de:'Wählen Sie den zu exportierenden Zeitraum'}[lang]||'Select the period to export',
-    'xls-opt-today':  {en:'Today', ar:'اليوم', de:'Heute'}[lang]||'Today',
-    'xls-opt-week':   {en:'This Week', ar:'هذا الأسبوع', de:'Diese Woche'}[lang]||'This Week',
-    'xls-opt-month':  {en:'This Month', ar:'هذا الشهر', de:'Diesen Monat'}[lang]||'This Month',
-    'xls-opt-year':   {en:'This Year', ar:'هذا العام', de:'Dieses Jahr'}[lang]||'This Year',
-    'xls-opt-custom': {en:'Custom Date', ar:'تاريخ مخصص', de:'Benutzerdefiniertes Datum'}[lang]||'Custom Date',
-    'xlsModeSingleBtn': {en:'Single Day', ar:'يوم واحد', de:'Einzelner Tag'}[lang]||'Single Day',
-    'xlsModeRangeBtn':  {en:'Date Range', ar:'نطاق تاريخ', de:'Datumsbereich'}[lang]||'Date Range',
-    'xls-btn-export': {en:'Export', ar:'تصدير', de:'Exportieren'}[lang]||'Export',
-    'xls-btn-download': {en:'Download', ar:'تنزيل', de:'Herunterladen'}[lang]||'Download',
-    'xls-btn-cancel': {en:'Cancel', ar:'إلغاء', de:'Abbrechen'}[lang]||'Cancel',
-  };
-  Object.keys(elMap).forEach(function(id){ var el=document.getElementById(id); if(el) el.innerHTML=elMap[id]; });
-}
-
-function openExcelExportModal() {
-  updateExcelExportTexts();
-  var modal = document.getElementById('excelExportModal');
-  if(modal) modal.style.display = 'flex';
-}
-
-function closeExcelExportModal() {
-  var modal = document.getElementById('excelExportModal');
-  if(modal) modal.style.display = 'none';
-  var err = document.getElementById('xlsDateError');
-  if(err) err.style.display = 'none';
-}
-
-function setExcelExportPeriod(period, btn) {
-  state.excelExportPeriod = period;
-  document.querySelectorAll('.xls-period-pill').forEach(function(b){ b.classList.remove('active'); });
-  if(btn) btn.classList.add('active');
-  var customFields = document.getElementById('xlsCustomFields');
-  if(customFields) customFields.style.display = period === 'custom' ? 'block' : 'none';
-}
-
-function setExcelDateMode(mode) {
-  var singleBtn = document.getElementById('xlsModeSingleBtn');
-  var rangeBtn = document.getElementById('xlsModeRangeBtn');
-  var singleFields = document.getElementById('xlsSingleFields');
-  var rangeFields = document.getElementById('xlsRangeFields');
-  if(mode === 'single') {
-    if(singleBtn) { singleBtn.style.background = 'var(--card)'; singleBtn.style.color = 'var(--primary)'; singleBtn.style.boxShadow = 'var(--shadow)'; }
-    if(rangeBtn) { rangeBtn.style.background = 'none'; rangeBtn.style.color = 'var(--text3)'; rangeBtn.style.boxShadow = 'none'; }
-    if(singleFields) singleFields.style.display = 'block';
-    if(rangeFields) rangeFields.style.display = 'none';
-  } else {
-    if(rangeBtn) { rangeBtn.style.background = 'var(--card)'; rangeBtn.style.color = 'var(--primary)'; rangeBtn.style.boxShadow = 'var(--shadow)'; }
-    if(singleBtn) { singleBtn.style.background = 'none'; singleBtn.style.color = 'var(--text3)'; singleBtn.style.boxShadow = 'none'; }
-    if(rangeFields) rangeFields.style.display = 'block';
-    if(singleFields) singleFields.style.display = 'none';
-  }
-  var customFields = document.getElementById('xlsCustomFields');
-  if(customFields) customFields.setAttribute('data-mode', mode);
-}
-
-function confirmExcelExport(forceDownload) {
-  var period = state.excelExportPeriod || 'today';
-  var customRange = null;
-  if(period === 'custom') {
-    var customFields = document.getElementById('xlsCustomFields');
-    var mode = (customFields && customFields.getAttribute('data-mode')) || 'single';
-    var err = document.getElementById('xlsDateError');
-    if(mode === 'single') {
-      var dateEl = document.getElementById('xlsDateSingle');
-      var dateVal = dateEl ? dateEl.value : '';
-      if(!dateVal) {
-        if(err) { err.textContent = t('fillDate'); err.style.display = 'block'; }
-        return;
-      }
-      customRange = {mode:'single', date:dateVal};
-    } else {
-      var fromEl = document.getElementById('xlsDateFrom');
-      var toEl = document.getElementById('xlsDateTo');
-      var fromVal = fromEl ? fromEl.value : '';
-      var toVal = toEl ? toEl.value : '';
-      if(!fromVal || !toVal) {
-        if(err) { err.textContent = t('fillDate'); err.style.display = 'block'; }
-        return;
-      }
-      customRange = {mode:'range', from:fromVal, to:toVal};
-    }
-    if(err) err.style.display = 'none';
-  }
-  closeExcelExportModal();
-  exportToExcel(period, customRange, forceDownload);
-}
-
-function getExcelDateRange(period, customRange) {
-  var now = new Date();
-  var y = now.getFullYear();
-  var m = now.getMonth();
-  if(period === 'today') {
-    var d0 = today();
-    return {from:d0, to:d0, label:{en:'Today',ar:'اليوم',de:'Heute'}[state.lang]||'Today'};
-  }
-  if(period === 'week') {
-    var dow = now.getDay();
-    var diffToMonday = (dow === 0) ? 6 : dow - 1;
-    var monday = new Date(now);
-    monday.setDate(now.getDate() - diffToMonday);
-    var sunday = new Date(monday);
-    sunday.setDate(monday.getDate() + 6);
-    var fromStr = monday.getFullYear() + '-' + pad2(monday.getMonth()+1) + '-' + pad2(monday.getDate());
-    var toStr = sunday.getFullYear() + '-' + pad2(sunday.getMonth()+1) + '-' + pad2(sunday.getDate());
-    return {from:fromStr, to:toStr, label:({en:'This Week',ar:'هذا الأسبوع',de:'Diese Woche'}[state.lang]||'This Week') + ' (' + fromStr + ' - ' + toStr + ')'};
-  }
-  if(period === 'month') {
-    var lastDay = new Date(y, m+1, 0).getDate();
-    var fromStr2 = y + '-' + pad2(m+1) + '-01';
-    var toStr2 = y + '-' + pad2(m+1) + '-' + pad2(lastDay);
-    return {from:fromStr2, to:toStr2, label:({en:'This Month',ar:'هذا الشهر',de:'Diesen Monat'}[state.lang]||'This Month') + ' (' + fromStr2 + ' - ' + toStr2 + ')'};
-  }
-  if(period === 'year') {
-    var fromStr3 = y + '-01-01';
-    var toStr3 = y + '-12-31';
-    return {from:fromStr3, to:toStr3, label:({en:'This Year',ar:'هذا العام',de:'Dieses Jahr'}[state.lang]||'This Year') + ' (' + y + ')'};
-  }
-  if(period === 'custom' && customRange) {
-    if(customRange.mode === 'single') {
-      return {from:customRange.date, to:customRange.date, label:customRange.date};
-    }
-    return {from:customRange.from, to:customRange.to, label:customRange.from + ' - ' + customRange.to};
-  }
-  var d1 = today();
-  return {from:d1, to:d1, label:d1};
-}
-
-function exportToExcel(period, customRange, forceDownload) {
-  var range = getExcelDateRange(period, customRange);
-  var filtered = (state.transactions || []).filter(function(tx){
-    return tx && tx.date && tx.date >= range.from && tx.date <= range.to;
-  });
-  generateExcelFile(period, range.label, filtered, forceDownload);
-}
-
-function buildExcelHeaderRows(sheetName, periodLabel) {
-  var biz = state.businessName || 'SmartAc';
-  var periodLine = (state.lang === 'ar' ? 'فترة التصدير: ' : state.lang === 'de' ? 'Exportzeitraum: ' : 'Export Period: ') + periodLabel;
-  return [[biz], [periodLine], []];
-}
-
-function styleExcelCell(ws, addr, opts) {
-  if(!ws[addr]) return;
-  var style = {};
-  if(opts.bold || opts.italic || opts.fill || opts.color || opts.fontSize) {
-    style.font = {};
-    if(opts.bold) style.font.bold = true;
-    if(opts.italic) style.font.italic = true;
-    if(opts.color) style.font.color = {rgb:opts.color};
-    if(opts.fontSize) style.font.sz = opts.fontSize;
-  }
-  if(opts.fill) style.fill = {fgColor:{rgb:opts.fill}};
-  if(opts.border) {
-    style.border = {
-      top:{style:'thin',color:{rgb:'CCCCCC'}},
-      bottom:{style:'thin',color:{rgb:'CCCCCC'}},
-      left:{style:'thin',color:{rgb:'CCCCCC'}},
-      right:{style:'thin',color:{rgb:'CCCCCC'}}
-    };
-  }
-  style.alignment = {horizontal:'center', vertical:'center'};
-  ws[addr].s = style;
-}
-
-function styleExcelTitleRows(ws) {
-  ws['!merges'] = ws['!merges'] || [];
-  ws['!merges'].push({s:{r:0,c:0}, e:{r:0,c:5}});
-  ws['!merges'].push({s:{r:1,c:0}, e:{r:1,c:5}});
-  styleExcelCell(ws, 'A1', {bold:true, fontSize:36});
-  styleExcelCell(ws, 'A2', {italic:true, fontSize:24, color:'888888'});
-}
-
-function setExcelRowHeight(ws, rowIdx, hpt) {
-  ws['!rows'] = ws['!rows'] || [];
-  ws['!rows'][rowIdx - 1] = {hpt: hpt};
-}
-
-function setExcelRowHeights(ws, totalRowCount, headerRowIdx, totalRowIdx) {
-  var rows = ws['!rows'] || [];
-  rows[0] = {hpt:50};
-  rows[1] = {hpt:34};
-  rows[2] = {hpt:14};
-  for(var i = 4; i <= totalRowCount; i++) {
-    if(i === headerRowIdx) rows[i-1] = {hpt:38};
-    else if(i === totalRowIdx) rows[i-1] = {hpt:38};
-    else rows[i-1] = {hpt:34};
-  }
-  ws['!rows'] = rows;
-}
-
-function generateExcelFile(period, dateRangeLabel, filteredTransactions, forceDownload) {
-  if(typeof XLSX === 'undefined') {
-    var script = document.createElement('script');
-    script.src = 'https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js';
-    script.onload = function() { generateExcelFile(period, dateRangeLabel, filteredTransactions, forceDownload); };
-    document.head.appendChild(script);
-    return;
-  }
-
-  var lang = state.lang;
-  var biz = state.businessName || 'SmartAc';
-
-  // ── SHEET 1: SUMMARY ──
-  var income = filteredTransactions.filter(function(t){ return t.type === 'income'; }).reduce(function(s,t){ return s + (t.amount||0); }, 0);
-  var expenses = filteredTransactions.filter(function(t){ return t.type === 'expense'; }).reduce(function(s,t){ return s + (t.amount||0); }, 0);
-  var netProfit = income - expenses;
-  var totalDebts = (state.debts || []).filter(function(d){ return d.status !== 'paid'; }).reduce(function(s,d){ return s + (d.amount||0); }, 0);
-  var L = {
-    totalIncome:{en:'Total Income',ar:'إجمالي الدخل',de:'Gesamteinnahmen'},
-    totalExpenses:{en:'Total Expenses',ar:'إجمالي المصروفات',de:'Gesamtausgaben'},
-    netProfit:{en:'Net Profit',ar:'صافي الربح',de:'Nettogewinn'},
-    totalDebts:{en:'Total Debts',ar:'إجمالي الديون',de:'Gesamtschulden'},
-    txCount:{en:'Number of Transactions',ar:'عدد العمليات',de:'Anzahl der Transaktionen'},
-  };
-  var summaryRows = buildExcelHeaderRows('Summary', dateRangeLabel);
-  summaryRows.push([(L.totalIncome[lang]||L.totalIncome.en), '€' + income.toFixed(2)]);
-  summaryRows.push([(L.totalExpenses[lang]||L.totalExpenses.en), '€' + expenses.toFixed(2)]);
-  summaryRows.push([(L.netProfit[lang]||L.netProfit.en), '€' + netProfit.toFixed(2)]);
-  summaryRows.push([(L.totalDebts[lang]||L.totalDebts.en), '€' + totalDebts.toFixed(2)]);
-  summaryRows.push([(L.txCount[lang]||L.txCount.en), filteredTransactions.length]);
-  var wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
-  styleExcelTitleRows(wsSummary);
-  for(var sr = 4; sr <= 8; sr++) {
-    styleExcelCell(wsSummary, 'A' + sr, {bold:true, fill:'EEEEEE', border:true, fontSize:24});
-    styleExcelCell(wsSummary, 'B' + sr, {border:true, fontSize:24});
-  }
-  wsSummary['!cols'] = [{wch:42},{wch:30}];
-  setExcelRowHeights(wsSummary, 8, 0, 0);
-
-  // ── SHEET 2: TRANSACTIONS ──
-  var txHeaderLabels = {
-    date:{en:'Date',ar:'التاريخ',de:'Datum'},
-    type:{en:'Type',ar:'النوع',de:'Typ'},
-    description:{en:'Description',ar:'الوصف',de:'Beschreibung'},
-    amount:{en:'Amount',ar:'المبلغ',de:'Betrag'},
-    category:{en:'Category',ar:'الفئة',de:'Kategorie'},
-    party:{en:'Client/Supplier',ar:'العميل/المورد',de:'Kunde/Lieferant'},
-  };
-  var txRows = buildExcelHeaderRows('Transactions', dateRangeLabel);
-  var txHeaderRow = [
-    (txHeaderLabels.date[lang]||txHeaderLabels.date.en),
-    (txHeaderLabels.type[lang]||txHeaderLabels.type.en),
-    (txHeaderLabels.description[lang]||txHeaderLabels.description.en),
-    (txHeaderLabels.amount[lang]||txHeaderLabels.amount.en),
-    (txHeaderLabels.category[lang]||txHeaderLabels.category.en),
-    (txHeaderLabels.party[lang]||txHeaderLabels.party.en)
-  ];
-  txRows.push(txHeaderRow);
-  var sortedTx = filteredTransactions.slice().sort(function(a,b){ return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-  var txTotal = 0;
-  sortedTx.forEach(function(tx){
-    var typeLabel = tx.type === 'income' ? (t('income')||'Income') : (t('expense')||'Expense');
-    var party = tx.clientName || tx.supplierName || '';
-    var signedAmount = tx.type === 'expense' ? -(tx.amount||0) : (tx.amount||0);
-    txTotal += signedAmount;
-    txRows.push([
-      (tx.date||'').substring(0,10),
-      typeLabel,
-      tx.name || '',
-      '€' + (tx.amount||0).toFixed(2),
-      tx.category || '',
-      party
-    ]);
-  });
-  var totalLabel = {en:'TOTAL',ar:'الإجمالي',de:'GESAMT'}[lang]||'TOTAL';
-  var txTotalRowIdx = txRows.length;
-  txRows.push([totalLabel, '', '', '€' + txTotal.toFixed(2), '', '']);
-  var wsTx = XLSX.utils.aoa_to_sheet(txRows);
-  styleExcelTitleRows(wsTx);
-  var txHeaderRowIdx = 4;
-  ['A','B','C','D','E','F'].forEach(function(col){
-    styleExcelCell(wsTx, col + txHeaderRowIdx, {bold:true, fill:'2E9E6B', color:'FFFFFF', border:true, fontSize:26});
-  });
-  for(var tr = txHeaderRowIdx + 1; tr <= txTotalRowIdx; tr++) {
-    var fillColor = (tr % 2 === 0) ? 'F8FAFC' : 'FFFFFF';
-    ['A','B','C','E','F'].forEach(function(col){
-      styleExcelCell(wsTx, col + tr, {fill:fillColor, border:true, fontSize:24});
-    });
-    styleExcelCell(wsTx, 'D' + tr, {fill:fillColor, border:true, fontSize:24});
-  }
-  ['A','B','C','D','E','F'].forEach(function(col){
-    styleExcelCell(wsTx, col + (txTotalRowIdx + 1), {bold:true, border:true, fontSize:26});
-  });
-  wsTx['!cols'] = [{wch:20},{wch:17},{wch:48},{wch:22},{wch:22},{wch:36}];
-  setExcelRowHeights(wsTx, txTotalRowIdx + 1, txHeaderRowIdx, txTotalRowIdx + 1);
-
-  // ── SHEET 3: CLIENTS ──
-  var clientHeaderLabels = {
-    name:{en:'Client Name',ar:'اسم العميل',de:'Kundenname'},
-    company:{en:'Company',ar:'الشركة',de:'Firma'},
-    email:{en:'Email',ar:'البريد الإلكتروني',de:'E-Mail'},
-    phone:{en:'Phone',ar:'الهاتف',de:'Telefon'},
-    total:{en:'Total Received',ar:'إجمالي المستلم',de:'Gesamt erhalten'},
-  };
-  var clientRows = buildExcelHeaderRows('Clients', dateRangeLabel);
-  clientRows.push([
-    (clientHeaderLabels.name[lang]||clientHeaderLabels.name.en),
-    (clientHeaderLabels.company[lang]||clientHeaderLabels.company.en),
-    (clientHeaderLabels.email[lang]||clientHeaderLabels.email.en),
-    (clientHeaderLabels.phone[lang]||clientHeaderLabels.phone.en),
-    (clientHeaderLabels.total[lang]||clientHeaderLabels.total.en)
-  ]);
-  (state.clients || []).forEach(function(c){
-    var totalReceived = filteredTransactions.filter(function(tx){
-      return tx.type === 'income' && (tx.clientId === c.id || tx.clientName === c.name);
-    }).reduce(function(s,tx){ return s + (tx.amount||0); }, 0);
-    clientRows.push([c.name || '', c.company || '', c.email || '', c.phone || '', '€' + totalReceived.toFixed(2)]);
-  });
-  var wsClients = XLSX.utils.aoa_to_sheet(clientRows);
-  styleExcelTitleRows(wsClients);
-  styleExcelSheetTable(wsClients, 4, clientRows.length, 5);
-  wsClients['!cols'] = [{wch:37},{wch:33},{wch:40},{wch:27},{wch:27}];
-  setExcelRowHeights(wsClients, clientRows.length, 4, 0);
-
-  // ── SHEET 4: SUPPLIERS ──
-  var supplierHeaderLabels = {
-    name:{en:'Supplier Name',ar:'اسم المورد',de:'Lieferantenname'},
-    company:{en:'Company',ar:'الشركة',de:'Firma'},
-    email:{en:'Email',ar:'البريد الإلكتروني',de:'E-Mail'},
-    phone:{en:'Phone',ar:'الهاتف',de:'Telefon'},
-    total:{en:'Total Purchased',ar:'إجمالي المشتريات',de:'Gesamt eingekauft'},
-  };
-  var supplierRows = buildExcelHeaderRows('Suppliers', dateRangeLabel);
-  supplierRows.push([
-    (supplierHeaderLabels.name[lang]||supplierHeaderLabels.name.en),
-    (supplierHeaderLabels.company[lang]||supplierHeaderLabels.company.en),
-    (supplierHeaderLabels.email[lang]||supplierHeaderLabels.email.en),
-    (supplierHeaderLabels.phone[lang]||supplierHeaderLabels.phone.en),
-    (supplierHeaderLabels.total[lang]||supplierHeaderLabels.total.en)
-  ]);
-  (state.suppliers || []).forEach(function(s){
-    var totalPurchased = filteredTransactions.filter(function(tx){
-      return tx.type === 'expense' && (tx.supplierId === s.id || tx.supplierName === s.name);
-    }).reduce(function(sum,tx){ return sum + (tx.amount||0); }, 0);
-    supplierRows.push([s.name || '', s.company || '', s.email || '', s.phone || '', '€' + totalPurchased.toFixed(2)]);
-  });
-  var wsSuppliers = XLSX.utils.aoa_to_sheet(supplierRows);
-  styleExcelTitleRows(wsSuppliers);
-  styleExcelSheetTable(wsSuppliers, 4, supplierRows.length, 5);
-  wsSuppliers['!cols'] = [{wch:37},{wch:33},{wch:40},{wch:27},{wch:27}];
-  setExcelRowHeights(wsSuppliers, supplierRows.length, 4, 0);
-
-  var wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, wsSummary, 'Summary');
-  XLSX.utils.book_append_sheet(wb, wsTx, 'Transactions');
-  XLSX.utils.book_append_sheet(wb, wsClients, 'Clients');
-  XLSX.utils.book_append_sheet(wb, wsSuppliers, 'Suppliers');
-
-  var fileLabel = dateRangeLabel.replace(/[^a-zA-Z0-9]/g, '_');
-  var fileName = 'SmartAc_Export_' + fileLabel + '.xlsx';
-  saveExcelWorkbook(wb, fileName, forceDownload);
-}
-
-function saveExcelWorkbook(wb, fileName, forceDownload) {
-  if(!forceDownload && typeof window.showSaveFilePicker === 'function') {
-    var arrayBuffer = XLSX.write(wb, {bookType:'xlsx', type:'array'});
-    var blob = new Blob([arrayBuffer], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    window.showSaveFilePicker({
-      suggestedName: fileName,
-      types: [{
-        description: 'Excel Workbook',
-        accept: {'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx']}
-      }]
-    }).then(function(handle){
-      return handle.createWritable().then(function(writable){
-        return writable.write(blob).then(function(){ return writable.close(); });
-      });
-    }).catch(function(err){
-      if(err && err.name === 'AbortError') return;
-      XLSX.writeFile(wb, fileName);
-    });
-    return;
-  }
-  XLSX.writeFile(wb, fileName);
-}
-
-function styleExcelSheetTable(ws, headerRowIdx, totalRows, colCount) {
-  var cols = ['A','B','C','D','E','F','G'].slice(0, colCount);
-  cols.forEach(function(col){
-    styleExcelCell(ws, col + headerRowIdx, {bold:true, fill:'2E9E6B', color:'FFFFFF', border:true, fontSize:26});
-  });
-  for(var r = headerRowIdx + 1; r <= totalRows; r++) {
-    var fillColor = ((r - headerRowIdx) % 2 === 0) ? 'F8FAFC' : 'FFFFFF';
-    cols.forEach(function(col){
-      styleExcelCell(ws, col + r, {fill:fillColor, border:true, fontSize:24});
-    });
-  }
-}
-
 // ═══════════════ PRIVACY POLICY TRANSLATIONS ═══════════════
 function updatePrivacyTexts() {
   var lang = state.lang;
@@ -15855,7 +15453,6 @@ function toggleSidebar() {
   </div>
 </div>
 
-<!-- EXCEL EXPORT MODAL -->
 <div id="invShareModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
   <div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto;box-sizing:border-box">
     <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="ivsh-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Invoice</div>
@@ -15879,41 +15476,6 @@ function toggleSidebar() {
     </div>
     <div style="margin-top:8px">
       <button type="button" onclick="closeInvoiceShareModal()" style="width:100%;padding:11px;border:none;background:transparent;color:var(--text3);border-radius:12px;cursor:pointer;font-size:14px" id="ivsh-btn-cancel">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<div id="excelExportModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
-  <div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto;box-sizing:border-box">
-    <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="xls-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg> Export to Excel</div>
-    <div style="font-size:13px;color:var(--text3);margin-bottom:16px" id="xls-subtitle">Select the period to export</div>
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px" id="xlsPeriodPills">
-      <button type="button" class="xls-period-pill active" data-xls-period="today" onclick="setExcelExportPeriod('today',this)" id="xls-opt-today">Today</button>
-      <button type="button" class="xls-period-pill" data-xls-period="week" onclick="setExcelExportPeriod('week',this)" id="xls-opt-week">This Week</button>
-      <button type="button" class="xls-period-pill" data-xls-period="month" onclick="setExcelExportPeriod('month',this)" id="xls-opt-month">This Month</button>
-      <button type="button" class="xls-period-pill" data-xls-period="year" onclick="setExcelExportPeriod('year',this)" id="xls-opt-year">This Year</button>
-      <button type="button" class="xls-period-pill" data-xls-period="custom" onclick="setExcelExportPeriod('custom',this)" id="xls-opt-custom">Custom Date</button>
-    </div>
-    <div id="xlsCustomFields" style="display:none">
-      <div style="display:flex;gap:0;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:12px">
-        <button type="button" id="xlsModeSingleBtn" onclick="setExcelDateMode('single')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)">Single Day</button>
-        <button type="button" id="xlsModeRangeBtn" onclick="setExcelDateMode('range')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer">Date Range</button>
-      </div>
-      <div id="xlsSingleFields">
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateSingle" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-      </div>
-      <div id="xlsRangeFields" style="display:none">
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateFrom" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="xlsDateTo" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-      </div>
-      <div id="xlsDateError" style="display:none;color:var(--red);font-size:12px;margin-bottom:8px"></div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:8px">
-      <button type="button" onclick="confirmExcelExport(false)" style="flex:1;padding:12px;border:none;background:#2E9E6B;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="xls-btn-export">Export</button>
-      <button type="button" onclick="confirmExcelExport(true)" style="flex:1;padding:12px;border:none;background:var(--bg);color:var(--text);border:1.5px solid var(--border);border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="xls-btn-download">Download</button>
-    </div>
-    <div style="margin-top:8px">
-      <button type="button" onclick="closeExcelExportModal()" style="width:100%;padding:11px;border:none;background:transparent;color:var(--text3);border-radius:12px;cursor:pointer;font-size:14px" id="xls-btn-cancel">Cancel</button>
     </div>
   </div>
 </div>
