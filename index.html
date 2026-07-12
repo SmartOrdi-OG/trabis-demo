@@ -807,7 +807,7 @@ html.theme-dark .lp-input { background:var(--bg2); color:var(--text); }
 
 
 /* ── CONFIRM DIALOG ── */
-.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9000;display:none;align-items:center;justify-content:center;padding:20px}
+.confirm-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:1000000;display:none;align-items:center;justify-content:center;padding:20px}
 .confirm-overlay.open{display:flex}
 .confirm-box{background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.3)}
 .confirm-title{font-size:17px;font-weight:700;margin-bottom:10px}
@@ -4220,6 +4220,7 @@ function assetFormOpen(vehicleId) {
     }
 
     save();
+    checkInstallmentsDue();
     close();
     renderVehicleAssetSection(v);
   };
@@ -4835,6 +4836,7 @@ function assetOpenForm(editId) {
     }
 
     save();
+    checkInstallmentsDue();
     close();
     renderAssetsPage();
   };
@@ -13690,21 +13692,28 @@ function checkInstallmentsDue() {
 
   (state.installments || []).forEach(function(inst) {
     if(inst.status !== 'active') return;
-    if(inst.monthsPosted >= inst.totalMonths) { inst.status = 'completed'; return; }
-    if(inst.lastRecorded === curMonth) return;
-    state.transactions.push({
-      id: Date.now() + Math.floor(Math.random()*1000),
-      type: 'expense',
-      name: inst.name,
-      amount: bruttoFromNetto(inst.monthlyNetto, inst.vatRate),
-      vatRate: inst.vatRate,
-      category: 'Vehicle',
-      date: curMonth + '-01'
-    });
-    inst.monthsPosted = (inst.monthsPosted || 0) + 1;
+    // Catch up every elapsed month since startDate (not just the current one) —
+    // covers both a purchase date entered in the past and the app not having
+    // been opened for a while, so monthsPosted always matches real elapsed time.
+    var elapsed = Math.min(monthsBetween(inst.startDate, today()), inst.totalMonths);
+    while(inst.monthsPosted < elapsed) {
+      var d = new Date(inst.startDate + 'T00:00:00');
+      d.setMonth(d.getMonth() + 1 + inst.monthsPosted);
+      var dateStr = d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-01';
+      state.transactions.push({
+        id: Date.now() + recordedCount,
+        type: 'expense',
+        name: inst.name,
+        amount: bruttoFromNetto(inst.monthlyNetto, inst.vatRate),
+        vatRate: inst.vatRate,
+        category: 'Vehicle',
+        date: dateStr
+      });
+      inst.monthsPosted++;
+      recordedCount++;
+    }
     inst.lastRecorded = curMonth;
     if(inst.monthsPosted >= inst.totalMonths) inst.status = 'completed';
-    recordedCount++;
   });
 
   if(recordedCount > 0) {
