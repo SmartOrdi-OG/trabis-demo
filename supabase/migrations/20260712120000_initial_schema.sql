@@ -2,6 +2,8 @@
 -- One business per auth.users row (auth.uid()). Every business-data table
 -- carries user_id directly (rather than relying on joins) so RLS policies
 -- stay simple and fast: `using (auth.uid() = user_id)`.
+-- (Re-touched to trigger the Supabase GitHub integration against the
+-- Frankfurt project, connected after the original push.)
 
 -- ── profiles (business settings — 1:1 with auth.users) ──
 create table if not exists profiles (
