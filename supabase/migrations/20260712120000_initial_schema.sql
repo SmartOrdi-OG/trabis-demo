@@ -4,6 +4,7 @@
 -- stay simple and fast: `using (auth.uid() = user_id)`.
 -- (Re-touched to trigger the Supabase GitHub integration against the
 -- Frankfurt project, connected after the original push.)
+-- (Re-touched again to exercise the new GitHub Actions deploy workflow.)
 
 -- ── profiles (business settings — 1:1 with auth.users) ──
 create table if not exists profiles (
