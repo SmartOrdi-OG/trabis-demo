@@ -202,12 +202,13 @@
 
 ## المرحلة 2 — Supabase Setup
 
-- [ ] إنشاء project على supabase.com
-- [ ] إنشاء الـ tables: users, transactions, clients, suppliers, invoices, recurring, employees, fixedIncome, debts, fleet, assets, notes, appointments
+- [x] إنشاء project على supabase.com — ✅ اتعمل بمنطقة Frankfurt (eu-central-1) للـ DSGVO compliance
+- [x] إنشاء الـ tables — ✅ سكيما كاملة (21 جدول) في `supabase/migrations/20260712120000_initial_schema.sql`، بتتنشر أوتوماتيك على الداتابيز عن طريق GitHub Integration بتاعة Supabase (مربوطة بالريبو، أي migration جديد بيتنفذ تلقائيًا عند الـ push على `main`). الجداول: `profiles` (إعدادات البيزنس)، `transactions`، `debts`، `clients`، `suppliers`، `employees` + `employee_work_hours` + `employee_documents`، `recurring`، `fixed_income`، `installments`، `issued_invoices`، `received_invoices`، `fleet` + `fleet_maintenance`، `assets`، `inventory`، `notes`، `appointments`، `uva_freigaben`، `receipts` — كل جدول مربوط بـ `user_id` بيرجع لـ `auth.users`. اتعمل تحقق محلي (Postgres مؤقت على الجهاز، من غير أي لمسة لداتابيز Supabase الحقيقية) للتأكد إن كل الـ SQL شغال صح قبل الرفع.
+- [x] ضبط Row Level Security (RLS) — ✅ كل الجداول الـ 21 عليها RLS مفعّل، وكل واحد فيهم عنده policy بسيط: كل يوزر يشوف/يعدّل بياناته هو بس (`auth.uid() = user_id`)، بالإضافة لـ 2 policy على مستوى Supabase Storage (bucket الفواتير `receipts` وbucket مستندات الموظفين `employee-documents`) بنفس المبدأ.
+- [x] اختيار EU region (Frankfurt) للـ DSGVO compliance — ✅ (جزء من إنشاء الـ project)
+- [x] Trigger أوتوماتيك — ✅ لما يوزر جديد يعمل حساب (signup)، صف `profiles` بتاعه بيتعمل تلقائيًا.
 - [ ] تفعيل Supabase Auth (email + password)
 - [ ] اختبار API (insert + select)
-- [ ] ضبط Row Level Security (RLS) — كل يوزر يشوف بياناته بس
-- [ ] اختيار EU region (Frankfurt) للـ DSGVO compliance
 - [ ] تصميم نظام الـ Viewer/Accountant access في الـ database
 
 ---
