@@ -363,10 +363,13 @@ alter table uva_freigaben enable row level security;
 alter table receipts enable row level security;
 
 -- profiles: id IS the user's own auth uid, no separate user_id column
+drop policy if exists "profiles_owner" on profiles;
 create policy "profiles_owner" on profiles
   for all using (auth.uid() = id) with check (auth.uid() = id);
 
 -- every other table: standard "owns via user_id" policy
+-- (drop-then-create makes this block safe to re-run, since Postgres has no
+-- "create policy if not exists")
 do $$
 declare
   t text;
@@ -379,6 +382,7 @@ begin
     'uva_freigaben','receipts'
   ]
   loop
+    execute format('drop policy if exists "%1$s_owner" on %1$s;', t);
     execute format(
       'create policy "%1$s_owner" on %1$s for all using (auth.uid() = user_id) with check (auth.uid() = user_id);',
       t
@@ -399,10 +403,12 @@ on conflict (id) do nothing;
 
 -- Storage RLS: object path convention is "<user_id>/<filename>" so a user can
 -- only reach objects prefixed with their own uid.
+drop policy if exists "receipts_owner" on storage.objects;
 create policy "receipts_owner" on storage.objects for all
   using (bucket_id = 'receipts' and auth.uid()::text = (storage.foldername(name))[1])
   with check (bucket_id = 'receipts' and auth.uid()::text = (storage.foldername(name))[1]);
 
+drop policy if exists "employee_documents_owner" on storage.objects;
 create policy "employee_documents_owner" on storage.objects for all
   using (bucket_id = 'employee-documents' and auth.uid()::text = (storage.foldername(name))[1])
   with check (bucket_id = 'employee-documents' and auth.uid()::text = (storage.foldername(name))[1]);
