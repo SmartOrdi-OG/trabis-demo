@@ -208,8 +208,8 @@
 - [x] ضبط Row Level Security (RLS) — ✅ كل الجداول الـ 21 عليها RLS مفعّل، وكل واحد فيهم عنده policy بسيط: كل يوزر يشوف/يعدّل بياناته هو بس (`auth.uid() = user_id`)، بالإضافة لـ 2 policy على مستوى Supabase Storage (bucket الفواتير `receipts` وbucket مستندات الموظفين `employee-documents`) بنفس المبدأ.
 - [x] اختيار EU region (Frankfurt) للـ DSGVO compliance — ✅ (جزء من إنشاء الـ project)
 - [x] Trigger أوتوماتيك — ✅ لما يوزر جديد يعمل حساب (signup)، صف `profiles` بتاعه بيتعمل تلقائيًا.
-- [ ] تفعيل Supabase Auth (email + password)
-- [ ] اختبار API (insert + select)
+- [x] تفعيل Supabase Auth (email + password) — ✅ اتأكد إنه مفعّل (شغال افتراضيًا في أي مشروع جديد). ملاحظة: التطبيق الحالي (`index.html`) لسه بيستخدم نظام تسجيل الدخول بتاعه الخاص (`btoa` + localStorage)، الاستبدال بـ Supabase Auth مهمة في المرحلة 3.
+- [x] اختبار API (insert + select) — ✅ اختبار end-to-end حقيقي للـ RLS باستخدام يوزر تجريبي حقيقي (اتعمل عن طريق Authentication → Add User، مش insert مباشر في `auth.users`) ومحاكاة جلسة تسجيل دخول فعلية (`request.jwt.claim.sub` + `set local role authenticated`) في SQL Editor: (1) اليوزر بيضيف معاملة ويشوفها — نجح (2) يوزر تاني (uid عشوائي) — مايشفهاش خالص (3) زائر مش مسجل دخول (`role anon`) — مايشفهاش خالص. الثلاث حالات طلعوا مظبوطين تمامًا، يعني الـ RLS بتحمي البيانات فعليًا مش بس نظريًا.
 - [ ] تصميم نظام الـ Viewer/Accountant access في الـ database
 
 ---
