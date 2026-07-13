@@ -140,7 +140,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .fab:active{transform:scale(0.94)}
 
 /* MODAL */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:200;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:500000;display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s}
 .modal-overlay.open{opacity:1;pointer-events:all}
 .modal{position:relative;background:var(--card);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;transform:translateY(100%);transition:transform 0.3s cubic-bezier(0.32,0.72,0,1)}
 .modal-overlay.open .modal{transform:translateY(0)}
@@ -767,7 +767,7 @@ html.theme-dark .lp-input { background:var(--bg2); color:var(--text); }
 .forecast-val { color:#f59e0b; font-weight:700; }
 .forecast-disclaimer { font-size:11px; color:var(--text3); margin-top:10px; padding:10px 12px; background:rgba(245,158,11,0.08); border-radius:10px; border-left:3px solid #f59e0b; line-height:1.5; }
 /* ── EXPORT DIALOG ── */
-.export-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:3000; display:none; align-items:flex-end; justify-content:center; }
+.export-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:500000; display:none; align-items:flex-end; justify-content:center; }
 .export-overlay.open { display:flex; }
 .export-sheet { background:var(--card); border-radius:24px 24px 0 0; padding:24px 20px 40px; width:100%; max-width:480px; animation:slideUp 0.3s ease; }
 .export-sheet h3 { font-size:17px; font-weight:700; margin-bottom:16px; }
@@ -781,7 +781,7 @@ html.theme-dark .lp-input { background:var(--bg2); color:var(--text); }
 .export-action-btn.email { background:rgba(26,127,212,0.12); color:var(--primary); border:1.5px solid var(--border); }
 .export-action-btn.whatsapp { background:rgba(37,211,102,0.12); color:#25d366; border:1.5px solid rgba(37,211,102,0.3); }
 /* ── PRIVACY POLICY MODAL ── */
-.policy-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:5000; display:none; align-items:center; justify-content:center; padding:20px; }
+.policy-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:500000; display:none; align-items:center; justify-content:center; padding:20px; }
 .policy-overlay.open { display:flex; }
 .policy-modal { background:var(--card); border-radius:20px; padding:24px; width:100%; max-width:480px; max-height:80vh; overflow-y:auto; }
 .policy-modal h2 { font-size:17px; font-weight:700; margin-bottom:12px; }
@@ -796,7 +796,7 @@ html.theme-dark .lp-input { background:var(--bg2); color:var(--text); }
 .snav-biz-name { font-size:12px; color:var(--text3); padding:0 20px 8px; font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .hdr-biz-name { font-size:11px; color:var(--text3); margin-top:0px; }
 /* ── CLIENT PROFILE ── */
-.client-profile-overlay { position:fixed; inset:0; background:var(--bg); z-index:2000; display:none; overflow-y:auto; }
+.client-profile-overlay { position:fixed; inset:0; background:var(--bg); z-index:500000; display:none; overflow-y:auto; }
 .client-profile-overlay.open { display:block; }
 .cp-header { background:var(--primary); padding:20px 16px 28px; color:#fff; position:relative; }
 .cp-back { position:absolute; top:16px; left:16px; background:rgba(255,255,255,0.2); border:none; color:#fff; border-radius:10px; padding:6px 12px; cursor:pointer; font-size:14px; }
@@ -823,11 +823,11 @@ html.theme-dark .lp-input { background:var(--bg2); color:var(--text); }
 /* ── REPORT PREVIEW MODAL ── */
 
 /* ── EDIT DEBT MODAL ── */
-.edit-debt-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:8500;display:none;align-items:flex-end;justify-content:center}
+.edit-debt-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500000;display:none;align-items:flex-end;justify-content:center}
 .edit-debt-overlay.open{display:flex}
 .edit-debt-sheet{background:var(--card);border-radius:24px 24px 0 0;padding:20px 20px 40px;width:100%;max-width:480px;max-height:85vh;overflow-y:auto}
 /* ── CLEAR DATA SECURE MODAL ── */
-.cleardata-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:9500;display:none;align-items:center;justify-content:center;padding:20px}
+.cleardata-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500000;display:none;align-items:center;justify-content:center;padding:20px}
 .cleardata-overlay.open{display:flex}
 .cleardata-box{background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.4)}
 .pw-input-wrap{position:relative;margin-bottom:12px}
@@ -1253,7 +1253,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 </div>
 
 <!-- TRANSACTION DETAIL OVERLAY -->
-<div id="txDetailOverlay" onclick="if(event.target===this)closeTxDetail()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:8888;align-items:flex-end;justify-content:center">
+<div id="txDetailOverlay" onclick="if(event.target===this)closeTxDetail()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:500000;align-items:flex-end;justify-content:center">
   <div id="txDetailCard" style="background:var(--card);border-radius:24px 24px 0 0;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 0 40px">
     <!-- Handle (swipe down) -->
     <div style="display:flex;justify-content:center;padding:12px 0 8px;cursor:pointer" onclick="closeTxDetail()">
@@ -15453,7 +15453,7 @@ function toggleSidebar() {
   </div>
 </div>
 
-<div id="invShareModal" style="display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
+<div id="invShareModal" style="display:none;position:fixed;inset:0;z-index:500000;background:rgba(0,0,0,0.5);align-items:center;justify-content:center">
   <div style="background:var(--card);border-radius:16px;padding:24px;width:90%;max-width:380px;max-height:85vh;overflow-y:auto;box-sizing:border-box">
     <div style="font-size:18px;font-weight:700;margin-bottom:4px" id="ivsh-title"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M12 3v10"/><path d="M7 8l5-5 5 5"/><path d="M5 21h14"/></svg> Share Invoice</div>
     <div style="font-size:13px;color:var(--text3);margin-bottom:16px" id="ivsh-subtitle">Choose how to send this document</div>
