@@ -233,6 +233,7 @@
 - [ ] تحويل recurring/fixed/employees CRUD
 - [ ] تحويل debts CRUD
 - [ ] تحويل fleet/assets/notes/appointments CRUD
+- [ ] رفع الملفات (أرشيف/إيصالات/فواتير/مستندات موظفين) فعليًا على Supabase Storage بدل IndexedDB المحلي — عشان أي ملف يترفع من جهاز يبقى متاح ومتنزّل من أي جهاز تاني بنفس الحساب (Buckets `receipts` و `employee-documents` جاهزين من المرحلة 2، محتاجين ربط فعلي + bucket جديد للأرشيف)
 - [ ] إضافة loading states على كل العمليات
 - [ ] إضافة error handling ورسائل خطأ للمستخدم
 - [ ] اختبار multi-device (موبايل + ديسكتوب بنفس الأكاونت)
