@@ -3251,7 +3251,7 @@ function updateFleetNavVisibility() {
   var snavFleetEl = document.getElementById('snav-fleet');
   if(snavFleetEl) snavFleetEl.style.display = state.businessType === 'transport' ? 'flex' : 'none';
   var snavInvEl = document.getElementById('snav-inventory');
-  if(snavInvEl) snavInvEl.style.display = state.businessType === 'retail' ? 'flex' : 'none';
+  if(snavInvEl) snavInvEl.style.display = (state.businessType === 'retail' || state.businessType === 'transport') ? 'flex' : 'none';
 }
 
 function getFiltered() {
@@ -3278,7 +3278,7 @@ function getFiltered() {
 // ── NAV ──
 function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
-  if(page === 'inventory' && state.businessType !== 'retail') { showNav('home'); return; }
+  if(page === 'inventory' && state.businessType !== 'retail' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
   ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
@@ -3386,7 +3386,7 @@ function openMoreMenu() {
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
   if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
-  if(state.businessType === 'retail') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
+  if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
@@ -4951,6 +4951,16 @@ var PRODUCT_L = {
   exportPdf:  {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
   lowStockNotif: {en:' is low on stock: ', ar:' قرب ينفد: ', de:' hat niedrigen Bestand: '},
   outOfStockNotif: {en:' is out of stock', ar:' نفدت كميته', de:' ist nicht mehr auf Lager'},
+  consume:    {en:'Use', ar:'استهلاك', de:'Verbrauchen'},
+  consumeTitle: {en:'Record Usage', ar:'تسجيل استهلاك', de:'Verbrauch erfassen'},
+  consumeQty: {en:'Quantity Used', ar:'الكمية المستهلكة', de:'Verbrauchte Menge'},
+  consumeVehicle: {en:'Vehicle (optional)', ar:'العربية (اختياري)', de:'Fahrzeug (optional)'},
+  consumeVehicleNone: {en:'No vehicle', ar:'بدون عربية', de:'Kein Fahrzeug'},
+  consumeNote: {en:'Note (optional)', ar:'ملاحظة (اختياري)', de:'Notiz (optional)'},
+  consumeInvalid: {en:'Enter a valid quantity', ar:'ادخل كمية صحيحة', de:'Bitte gültige Menge eingeben'},
+  consumeExceeds: {en:'Not enough stock available', ar:'الكمية المتاحة غير كافية', de:'Nicht genug Bestand verfügbar'},
+  consumeHistory: {en:'Recent Usage', ar:'آخر عمليات الاستهلاك', de:'Letzte Verbrauchseinträge'},
+  consumeHistoryEmpty: {en:'No usage recorded yet', ar:'لا يوجد استهلاك مسجل بعد', de:'Noch kein Verbrauch erfasst'},
 };
 function invtx(k) { return (PRODUCT_L[k] && PRODUCT_L[k][state.lang]) || (PRODUCT_L[k] && PRODUCT_L[k].en) || k; }
 
@@ -5005,6 +5015,7 @@ function renderInventoryPage() {
       h += '<div style="font-size:12px;color:var(--text3)">' + fmt(p.sellPrice) + ' · ' + qty + ' ' + escHtml(p.unit||'')
         + (isLow ? ' <span style="color:' + (qty<=0?'#ef4444':'#ea580c') + ';font-weight:700">· ' + (qty<=0?invtx('outOfStock'):invtx('lowStockBadge')) + '</span>' : '') + '</div>';
       h += '</div>';
+      h += '<button onclick="productConsumeForm(' + p.id + ')" style="border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap">' + invtx('consume') + '</button>';
       h += '<button onclick="productDelete(' + p.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 15) + '</button>';
       h += '</div>';
     });
@@ -5089,6 +5100,90 @@ async function productDelete(id) {
   state.inventory = (state.inventory || []).filter(function(p){ return p.id !== id; });
   save();
   renderInventoryPage();
+}
+
+function productConsumeForm(id) {
+  var prod = (state.inventory || []).find(function(p){ return p.id === id; });
+  if(!prod) return;
+
+  var existing = document.getElementById('productConsumeOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'productConsumeOverlay';
+  ov.className = 'modal-overlay open';
+  var fleet = state.fleet || [];
+  var history = (prod.usageLog || []).slice().reverse().slice(0, 10);
+
+  var html = '';
+  html += '<div class="modal" id="productConsumeModal">';
+  html += '<button class="modal-close-btn" id="productConsumeCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + invtx('consumeTitle') + '</div>';
+  html += '<div style="font-size:13px;color:var(--text3);margin:-6px 0 12px">' + escHtml(prod.name) + ' · ' + (parseFloat(prod.quantity)||0) + ' ' + escHtml(prod.unit||'') + '</div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('consumeQty') + '</label>';
+  html += '<input id="pc-qty" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" placeholder="0">';
+  if(fleet.length) {
+    html += '<label style="font-size:12px;color:var(--text3);display:block;margin:12px 0 4px">' + invtx('consumeVehicle') + '</label>';
+    html += '<select class="input-field" id="pc-vehicle">';
+    html += '<option value="">' + invtx('consumeVehicleNone') + '</option>';
+    fleet.forEach(function(v) {
+      html += '<option value="' + v.id + '">' + escHtml(v.name || v.plate || '') + (v.name && v.plate ? ' (' + escHtml(v.plate) + ')' : '') + '</option>';
+    });
+    html += '</select>';
+  }
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin:12px 0 4px">' + invtx('consumeNote') + '</label>';
+  html += '<textarea class="input-field" id="pc-note" style="min-height:60px;resize:vertical"></textarea>';
+  html += '<div id="pc-error" style="display:none;color:#ef4444;font-size:12px;margin:4px 0 0"></div>';
+  html += '<div style="display:flex;gap:10px;margin-top:14px">';
+  html += '<button id="productConsumeSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + invtx('save') + '</button>';
+  html += '<button id="productConsumeCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + invtx('cancel') + '</button>';
+  html += '</div>';
+
+  html += '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border)">';
+  html += '<div style="font-size:12px;font-weight:700;color:var(--text3);margin-bottom:8px">' + invtx('consumeHistory') + '</div>';
+  if(!history.length) {
+    html += '<div style="font-size:12px;color:var(--text3)">' + invtx('consumeHistoryEmpty') + '</div>';
+  } else {
+    history.forEach(function(u) {
+      html += '<div style="font-size:12px;color:var(--text2);padding:6px 0;border-bottom:1px solid var(--border)">';
+      html += '<b>' + (parseFloat(u.qty)||0) + ' ' + escHtml(prod.unit||'') + '</b> · ' + escHtml(u.date||'');
+      if(u.vehicleName) html += ' · ' + escHtml(u.vehicleName);
+      if(u.note) html += '<div style="color:var(--text3);margin-top:2px">' + escHtml(u.note) + '</div>';
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+  html += '</div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('productConsumeOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('productConsumeCloseBtn').onclick = close;
+  document.getElementById('productConsumeCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('productConsumeSaveBtn').onclick = function() {
+    var qty = parseAmount(document.getElementById('pc-qty').value);
+    var errEl = document.getElementById('pc-error');
+    var curQty = parseFloat(prod.quantity) || 0;
+    if(isNaN(qty) || qty <= 0) { errEl.textContent = invtx('consumeInvalid'); errEl.style.display = 'block'; return; }
+    if(qty > curQty) { errEl.textContent = invtx('consumeExceeds'); errEl.style.display = 'block'; return; }
+    var vehicleSel = document.getElementById('pc-vehicle');
+    var vehicleId = vehicleSel && vehicleSel.value ? parseInt(vehicleSel.value, 10) : null;
+    var vehicleName = null;
+    if(vehicleId) {
+      var veh = fleet.find(function(v){ return v.id === vehicleId; });
+      vehicleName = veh ? (veh.name || veh.plate || '') : null;
+    }
+    var note = document.getElementById('pc-note').value.trim();
+    prod.quantity = curQty - qty;
+    if(!prod.usageLog) prod.usageLog = [];
+    prod.usageLog.push({id: Date.now(), qty: qty, vehicleId: vehicleId, vehicleName: vehicleName, note: note || null, date: today()});
+    save();
+    checkLowStock(prod);
+    close();
+    renderInventoryPage();
+  };
 }
 
 function inventoryExportPDF() {
@@ -5303,7 +5398,7 @@ function renderHelpPage() {
   h += helpSectionTitle(htx('secTeam'));
   h += helpRow('help-employees', htx('employees'));
   if(state.businessType === 'transport') h += helpRow('help-fleet', htx('fleet'));
-  if(state.businessType === 'retail') h += helpRow('help-inventory', htx('inventory'));
+  if(state.businessType === 'retail' || state.businessType === 'transport') h += helpRow('help-inventory', htx('inventory'));
   h += helpRow('help-assets', htx('assets'));
 
   h += helpSectionTitle(htx('secCal'));
@@ -8128,13 +8223,14 @@ function renderModal() {
   document.getElementById('modalTitle').textContent = t('addTx');
 
   var prodWrap = document.getElementById('modal-product-wrap');
-  if(prodWrap) prodWrap.style.display = (state.businessType === 'retail' && typ !== 'debt') ? 'block' : 'none';
+  var isInvBiz = state.businessType === 'retail' || state.businessType === 'transport';
+  if(prodWrap) prodWrap.style.display = (isInvBiz && typ !== 'debt') ? 'block' : 'none';
   var prodLbl = document.getElementById('modal-product-lbl');
   if(prodLbl) {
     var prodLblTx = {en:'Product (optional)', ar:'المنتج (اختياري)', de:'Produkt (optional)'};
     prodLbl.textContent = prodLblTx[lang] || prodLblTx.en;
   }
-  if(state.businessType === 'retail' && typ !== 'debt') refreshProductDropdown();
+  if(isInvBiz && typ !== 'debt') refreshProductDropdown();
 
   var cliWrap = document.getElementById('modal-client-wrap');
   if(cliWrap) cliWrap.style.display = typ === 'income' ? 'block' : 'none';
@@ -8397,7 +8493,7 @@ async function addTransaction() {
       invRef = refInp ? refInp.value.trim() : null;
     }
     var prodId = null, prodQty = 0;
-    if(state.businessType === 'retail') {
+    if(state.businessType === 'retail' || state.businessType === 'transport') {
       var prodSel = document.getElementById('modal-product');
       var rawProdId = prodSel ? prodSel.value : '';
       if(rawProdId) {
