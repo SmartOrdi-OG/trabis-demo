@@ -305,3 +305,4 @@
 - Gmail Integration + Multi-account + Chat = v2.0 فقط (محتاجين backend)
 - DATEV ASCII Export = مرحلة مستقبلية للسوق النمساوي/الألماني
 - حد الـ 10 معاملات في addTransaction() (leftover من v1.0) اتشال مؤقتًا — البيزنس متاح بلا حدود لحد ما نبني نظام الـ Free plan الحقيقي في المرحلة 4
+- **⚠️ Vercel Auto-Deploy توقف لما الـ Repo بقى Private**: لما اتعمل الـ GitHub repo Private، الـ GitHub↔Vercel integration وقف يشتغل تمامًا (Push على main مبقاش بيعمل Deploy جديد خالص، من غير أي خطأ ظاهر). السبب: خطة Vercel الحالية (Hobby) محتاجة إما الريبو يفضل Public أو Upgrade لـ Pro عشان يقدر يشتغل مع Private repos. الحل المؤقت: الريبو رجع Public تاني والـ Deploy رجع يشتغل عادي. **لو حد فكر يخلي الريبو Private تاني في المستقبل، لازم Upgrade لـ Vercel Pro الأول وإلا الـ Auto-Deploy هيوقف تاني.**
