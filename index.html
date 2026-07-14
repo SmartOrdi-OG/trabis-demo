@@ -2087,6 +2087,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item" id="snav-notizen" onclick="showNav('notizen')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></span><span id="snav-lbl-notizen">Notizen</span>
   </div>
+  <div class="snav-item" id="snav-archive" onclick="showNav('archive')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><span id="snav-lbl-archive">Archiv</span>
+  </div>
   <div class="snav-divider"></div>
   <div class="snav-item" id="snav-settings" onclick="showNav('settings')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span id="snav-lbl-settings">Settings</span>
@@ -2546,6 +2549,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="inventoryPage" style="display:none" class="settings-page"></div>
 <div id="kalenderPage" style="display:none" class="settings-page"></div>
 <div id="notizenPage" style="display:none" class="settings-page"></div>
+<div id="archivePage" style="display:none" class="settings-page"></div>
 
 <!-- IN-APP NOTIFICATION CONTAINER -->
 <div id="inAppNotifContainer"></div>
@@ -2971,6 +2975,8 @@ var state = {
   fleet: [],
   assets: [],
   inventory: [],
+  archiveFolders: [],
+  archiveDocs: [],
 };
 
 var CURRENCIES = {
@@ -3123,6 +3129,7 @@ var SVG_ICON_PATHS = {
   checklist: '<rect x="3" y="5" width="6" height="6" rx="1"/><path d="M4.5 8l1 1 2-2"/><path d="M12 8h9"/><rect x="3" y="15" width="6" height="6" rx="1"/><path d="M4.5 18l1 1 2-2"/><path d="M12 18h9"/>',
   truck: '<path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l3 3v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
   note: '<rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>',
+  folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
   helpCircle: '<circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
   chevronRight: '<polyline points="9 18 15 12 9 6"/>',
   chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
@@ -3183,6 +3190,8 @@ function save() {
   localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
   localStorage.setItem(uk('appointments'), JSON.stringify(state.appointments));
   localStorage.setItem(uk('notes'), JSON.stringify(state.notes));
+  localStorage.setItem(uk('archiveFolders'), JSON.stringify(state.archiveFolders || []));
+  localStorage.setItem(uk('archiveDocs'), JSON.stringify(state.archiveDocs || []));
 }
 
 var _loadedDataUser = null;
@@ -3227,6 +3236,8 @@ function loadUserData() {
   state.appointments = JSON.parse(localStorage.getItem(uk('appointments')) || '[]');
   state.notes = JSON.parse(localStorage.getItem(uk('notes')) || '[]');
   state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
+  state.archiveFolders = JSON.parse(localStorage.getItem(uk('archiveFolders')) || '[]');
+  state.archiveDocs = JSON.parse(localStorage.getItem(uk('archiveDocs')) || '[]');
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
@@ -3269,10 +3280,10 @@ function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   if(page === 'inventory' && state.businessType !== 'retail') { showNav('home'); return; }
   closeMoreMenu();
-  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage'].forEach(function(p) {
+  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
   });
-  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen'].forEach(function(n) {
+  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen','archive'].forEach(function(n) {
     var navEl = document.getElementById('nav-'+n);
     if(navEl) navEl.classList.remove('active');
     var snavEl = document.getElementById('snav-'+n);
@@ -3282,7 +3293,7 @@ function showNav(page) {
   var snavSettings = document.getElementById('snav-settings');
   if(snavSettings) snavSettings.classList.remove('active');
 
-  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage'};
+  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
   if(page !== 'home') {
@@ -3313,6 +3324,7 @@ function showNav(page) {
   if(page === 'inventory') renderInventoryPage();
   if(page === 'kalender') renderKalenderPage();
   if(page === 'notizen') renderNotizenPage();
+  if(page === 'archive') renderArchivePage();
 }
 
 // ── MORE MENU (mobile) ──
@@ -3350,6 +3362,7 @@ var MORE_MENU_L = {
   inventory: {en:'Inventory', ar:'المخزون', de:'Lagerbestand'},
   kalender: {en:'Calendar', ar:'التقويم', de:'Kalender'},
   notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
+  archive: {en:'Archive', ar:'الأرشيف', de:'Archiv'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
   help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
 };
@@ -3377,6 +3390,7 @@ function openMoreMenu() {
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
+  h += moreMenuItemHtml('mm-archive', 'folder', mtx('archive'));
 
   h += moreMenuGroupTitleHtml(mtx('support'));
   h += moreMenuItemHtml('mm-settings', 'gear', mtx('settings'));
@@ -3407,6 +3421,8 @@ function openMoreMenu() {
   if(mmKalender) mmKalender.onclick = function(){ showNav('kalender'); };
   var mmNotizen = document.getElementById('mm-notizen');
   if(mmNotizen) mmNotizen.onclick = function(){ showNav('notizen'); };
+  var mmArchive = document.getElementById('mm-archive');
+  if(mmArchive) mmArchive.onclick = function(){ showNav('archive'); };
   var mmSettings = document.getElementById('mm-settings');
   if(mmSettings) mmSettings.onclick = function(){ showNav('settings'); };
   var mmHelp = document.getElementById('mm-help');
@@ -7352,6 +7368,367 @@ function renderEmpDocsSection(emp) {
     h += '</div>';
   });
   wrap.innerHTML = h;
+}
+
+// ────────────────────────────────────────
+// ── DOCUMENT ARCHIVE: folders + files (PDF/image) + notes ──
+// ────────────────────────────────────────
+var ARCH_L = {
+  title:            {en:'Archive', ar:'الأرشيف', de:'Archiv'},
+  newFolder:        {en:'+ New Folder', ar:'+ فولدر جديد', de:'+ Neuer Ordner'},
+  newFolderTitle:   {en:'New Folder', ar:'فولدر جديد', de:'Neuer Ordner'},
+  renameFolderTitle:{en:'Rename Folder', ar:'إعادة تسمية الفولدر', de:'Ordner umbenennen'},
+  folderNamePh:     {en:'Folder name (e.g. Company Registration)', ar:'اسم الفولدر (مثال: أوراق تسجيل الشركة)', de:'Ordnername (z.B. Firmenunterlagen)'},
+  empty:            {en:'No folders yet.\nCreate one to start archiving documents.', ar:'لا توجد فولدرات بعد.\nأنشئ واحدًا عشان تبدأ تؤرشف مستنداتك.', de:'Noch keine Ordner.\nErstellen Sie einen, um Dokumente zu archivieren.'},
+  docsCount:        {en:'documents', ar:'مستند', de:'Dokumente'},
+  addDoc:           {en:'+ Add Document', ar:'+ إضافة مستند', de:'+ Dokument hinzufügen'},
+  camera:           {en:'Camera', ar:'كاميرا', de:'Kamera'},
+  upload:           {en:'Upload', ar:'رفع ملف', de:'Hochladen'},
+  emptyDocs:        {en:'No documents in this folder yet', ar:'لا توجد مستندات في هذا الفولدر بعد', de:'Noch keine Dokumente in diesem Ordner'},
+  docNamePh:        {en:'Document name', ar:'اسم المستند', de:'Dokumentname'},
+  notePh:           {en:'Note / comment (optional)', ar:'ملاحظة / تعليق (اختياري)', de:'Notiz / Kommentar (optional)'},
+  editDocTitle:     {en:'Edit Document', ar:'تعديل المستند', de:'Dokument bearbeiten'},
+  save:             {en:'Save', ar:'حفظ', de:'Speichern'},
+  cancel:           {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  confirmDeleteDoc: {en:'Delete this document?', ar:'حذف هذا المستند؟', de:'Dieses Dokument löschen?'},
+};
+function atx(k) { return (ARCH_L[k] && ARCH_L[k][state.lang]) || (ARCH_L[k] && ARCH_L[k].en) || k; }
+
+function archiveDb() {
+  return new Promise(function(resolve, reject) {
+    if(window._archiveDbInst) { resolve(window._archiveDbInst); return; }
+    var req = indexedDB.open('smartac_archive', 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('docs')) db.createObjectStore('docs', {keyPath:'id'});
+    };
+    req.onsuccess = function(e) { window._archiveDbInst = e.target.result; resolve(window._archiveDbInst); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+function archivePut(rec) {
+  return archiveDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').put(rec);
+      t.oncomplete = res; t.onerror = function(){ rej(t.error); };
+    });
+  });
+}
+function archiveGet(id) {
+  return archiveDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var r = db.transaction('docs').objectStore('docs').get(id);
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  });
+}
+function archiveDeleteRec(id) {
+  return archiveDb().then(function(db) {
+    return new Promise(function(res) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').delete(id);
+      t.oncomplete = res; t.onerror = res;
+    });
+  }).catch(function(){});
+}
+
+function renderArchivePage() {
+  var page = document.getElementById('archivePage');
+  if(!page) return;
+  var h = '';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
+  h += '<div style="font-size:18px;font-weight:700">' + atx('title') + '</div>';
+  h += '<button id="archiveNewFolderBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + atx('newFolder') + '</button>';
+  h += '</div>';
+
+  var folders = (state.archiveFolders || []).slice().sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+  if(!folders.length) {
+    h += '<div style="text-align:center;padding:60px 20px;color:var(--text3);font-size:14px;white-space:pre-line">' + atx('empty') + '</div>';
+  } else {
+    h += '<div id="archiveFolderList">';
+    folders.forEach(function(f) {
+      var count = (state.archiveDocs || []).filter(function(d){ return d.folderId === f.id; }).length;
+      h += '<div class="archive-folder-card" data-id="' + f.id + '" style="display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:14px 16px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.06)">';
+      h += '<span style="color:var(--primary);flex-shrink:0;display:flex">' + svgIcon('folder', 24) + '</span>';
+      h += '<div style="flex:1;min-width:0">';
+      h += '<div style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(f.name) + '</div>';
+      h += '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + count + ' ' + atx('docsCount') + '</div>';
+      h += '</div>';
+      h += '<span style="display:flex;color:var(--text3)">' + svgIcon('chevronRight', 16) + '</span>';
+      h += '</div>';
+    });
+    h += '</div>';
+  }
+
+  page.innerHTML = h;
+  var addBtn = document.getElementById('archiveNewFolderBtn');
+  if(addBtn) addBtn.onclick = function(){ openFolderPrompt(null); };
+
+  var cards = page.querySelectorAll('.archive-folder-card');
+  var ci;
+  for(ci = 0; ci < cards.length; ci++) {
+    (function(card) {
+      var id = parseInt(card.getAttribute('data-id'), 10);
+      card.onclick = function() { openArchiveFolder(id); };
+    })(cards[ci]);
+  }
+}
+
+// Shared modal for both "new folder" and "rename folder" (folderId null = new)
+function openFolderPrompt(folderId) {
+  var folder = folderId ? (state.archiveFolders || []).find(function(f){ return f.id === folderId; }) : null;
+  var existing = document.getElementById('archiveFolderPromptOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'archiveFolderPromptOverlay';
+  ov.className = 'modal-overlay open';
+  var html = '';
+  html += '<div class="modal">';
+  html += '<button class="modal-close-btn" id="afp-closeBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + (folder ? atx('renameFolderTitle') : atx('newFolderTitle')) + '</div>';
+  html += '<input class="input-field" id="afp-name" placeholder="' + atx('folderNamePh') + '" value="' + (folder ? escHtml(folder.name) : '') + '">';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="afp-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + atx('save') + '</button>';
+  html += '<button id="afp-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + atx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('archiveFolderPromptOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('afp-closeBtn').onclick = close;
+  document.getElementById('afp-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('afp-saveBtn').onclick = function() {
+    var nameEl = document.getElementById('afp-name');
+    var name = nameEl.value.trim();
+    if(!name) { nameEl.focus(); return; }
+    if(folder) {
+      folder.name = name;
+      save();
+      var titleEl = document.getElementById('archiveFolderTitle');
+      if(titleEl) titleEl.textContent = name;
+    } else {
+      state.archiveFolders.push({id: Date.now(), name: name, createdAt: Date.now()});
+      save();
+      renderArchivePage();
+    }
+    close();
+  };
+}
+
+function openArchiveFolder(folderId) {
+  var folder = (state.archiveFolders || []).find(function(f){ return f.id === folderId; });
+  if(!folder) return;
+
+  var existing = document.getElementById('archiveFolderOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var lang = state.lang;
+  var backLbl = lang === 'ar'
+    ? (svgIcon('chevronRight',14) + ' رجوع')
+    : (svgIcon('chevronLeft',14) + ' ' + (lang === 'de' ? 'Zurück' : 'Back'));
+
+  var ov = document.createElement('div');
+  ov.id = 'archiveFolderOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch';
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:10;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="archiveFolderBackBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px;display:flex;align-items:center;gap:4px;flex-shrink:0">' + backLbl + '</button>';
+  html += '<div id="archiveFolderTitle" style="flex:1;font-size:16px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(folder.name) + '</div>';
+  html += '<button id="archiveFolderRenameBtn" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;flex-shrink:0">' + svgIcon('pencil', 16) + '</button>';
+  html += '<button id="archiveFolderDeleteBtn" style="background:none;border:none;color:var(--text3);cursor:pointer;padding:4px;flex-shrink:0">' + svgIcon('trash', 16) + '</button>';
+  html += '</div>';
+  html += '<div style="padding:16px">';
+  html += '<div style="display:flex;gap:8px;margin-bottom:16px">';
+  html += '<button id="archiveDocCameraBtn" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('camera',14) + ' ' + atx('camera') + '</button>';
+  html += '<button id="archiveDocUploadBtn" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('upload',14) + ' ' + atx('upload') + '</button>';
+  html += '</div>';
+  html += '<input type="file" id="archiveDocCameraInput" accept="image/*" capture="environment" style="display:none">';
+  html += '<input type="file" id="archiveDocFileInput" accept="image/*,application/pdf" style="display:none">';
+  html += '<div id="archiveDocList"></div>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  document.getElementById('archiveFolderBackBtn').onclick = function() { ov.parentNode.removeChild(ov); renderArchivePage(); };
+  document.getElementById('archiveFolderRenameBtn').onclick = function() { openFolderPrompt(folderId); };
+  document.getElementById('archiveFolderDeleteBtn').onclick = function() { archiveFolderDelete(folderId); };
+  document.getElementById('archiveDocCameraBtn').onclick = function() { document.getElementById('archiveDocCameraInput').click(); };
+  document.getElementById('archiveDocUploadBtn').onclick = function() { document.getElementById('archiveDocFileInput').click(); };
+  document.getElementById('archiveDocCameraInput').onchange = function() { archiveDocFileChosen(this, folderId); };
+  document.getElementById('archiveDocFileInput').onchange = function() { archiveDocFileChosen(this, folderId); };
+
+  renderArchiveDocList(folderId);
+}
+
+function renderArchiveDocList(folderId) {
+  var wrap = document.getElementById('archiveDocList');
+  if(!wrap) return;
+  var docs = (state.archiveDocs || []).filter(function(d){ return d.folderId === folderId; })
+    .sort(function(a,b){ return (b.createdAt||0) - (a.createdAt||0); });
+  if(!docs.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">' + atx('emptyDocs') + '</div>';
+    return;
+  }
+  var h = '';
+  docs.forEach(function(d) {
+    var isPdf = d.type === 'application/pdf';
+    h += '<div style="display:flex;align-items:flex-start;gap:10px;padding:12px 0;border-bottom:1px solid var(--border)">';
+    h += '<span style="font-size:18px;flex-shrink:0;margin-top:2px;color:var(--text2);display:flex">' + (isPdf ? svgIcon('fileText', 20) : svgIcon('image', 20)) + '</span>';
+    h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="archiveDocView(' + d.id + ')">';
+    h += '<div style="font-size:14px;font-weight:600;color:var(--primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(d.name) + '</div>';
+    if(d.note) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(d.note) + '</div>';
+    h += '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + formatDateDisplay(new Date(d.createdAt || Date.now()).toISOString()) + '</div>';
+    h += '</div>';
+    h += '<button onclick="openArchiveEditDocPrompt(' + d.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('pencil', 14) + '</button>';
+    h += '<button onclick="archiveDocDelete(' + d.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 14) + '</button>';
+    h += '</div>';
+  });
+  wrap.innerHTML = h;
+}
+
+var _archivePendingFile = null;
+function archiveDocFileChosen(input, folderId) {
+  var f = input.files && input.files[0];
+  input.value = '';
+  if(!f) return;
+  var isPdf = f.type === 'application/pdf';
+  receiptCompress(f).then(function(blob) {
+    _archivePendingFile = {blob: blob, type: isPdf ? 'application/pdf' : 'image/jpeg'};
+    openArchiveDocNamePrompt(folderId, f.name || '');
+  });
+}
+
+function openArchiveDocNamePrompt(folderId, suggestedName) {
+  var existing = document.getElementById('archiveDocNameOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+  if(!_archivePendingFile) return;
+
+  var ov = document.createElement('div');
+  ov.id = 'archiveDocNameOverlay';
+  ov.className = 'modal-overlay open';
+  var defaultName = suggestedName.replace(/\.[^.]+$/, '');
+  var html = '';
+  html += '<div class="modal">';
+  html += '<button class="modal-close-btn" id="adn-closeBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + atx('save') + '</div>';
+  html += '<input class="input-field" id="adn-name" placeholder="' + atx('docNamePh') + '" value="' + escHtml(defaultName) + '">';
+  html += '<textarea class="input-field" id="adn-note" placeholder="' + atx('notePh') + '" style="height:70px;resize:vertical;padding-top:10px"></textarea>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="adn-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + atx('save') + '</button>';
+  html += '<button id="adn-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + atx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { _archivePendingFile = null; var o = document.getElementById('archiveDocNameOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('adn-closeBtn').onclick = close;
+  document.getElementById('adn-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('adn-saveBtn').onclick = function() {
+    var nameEl = document.getElementById('adn-name');
+    var name = nameEl.value.trim();
+    if(!name) { nameEl.focus(); return; }
+    var note = document.getElementById('adn-note').value.trim();
+    archiveDocSave(folderId, name, note);
+    close();
+  };
+}
+
+function archiveDocSave(folderId, name, note) {
+  if(!_archivePendingFile) return;
+  var docId = Date.now();
+  var pending = _archivePendingFile;
+  archivePut({
+    id: docId,
+    user: localStorage.getItem('smartac_user') || '',
+    name: name,
+    type: pending.type,
+    blob: pending.blob,
+    createdAt: new Date().toISOString()
+  }).then(function() {
+    state.archiveDocs.push({id: docId, folderId: folderId, name: name, note: note || '', type: pending.type, createdAt: Date.now()});
+    save();
+    _archivePendingFile = null;
+    renderArchiveDocList(folderId);
+  });
+}
+
+function archiveDocView(docId) {
+  archiveGet(docId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+}
+
+function openArchiveEditDocPrompt(docId) {
+  var doc = (state.archiveDocs || []).find(function(d){ return d.id === docId; });
+  if(!doc) return;
+  var existing = document.getElementById('archiveDocEditOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'archiveDocEditOverlay';
+  ov.className = 'modal-overlay open';
+  var html = '';
+  html += '<div class="modal">';
+  html += '<button class="modal-close-btn" id="ade-closeBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + atx('editDocTitle') + '</div>';
+  html += '<input class="input-field" id="ade-name" value="' + escHtml(doc.name) + '">';
+  html += '<textarea class="input-field" id="ade-note" placeholder="' + atx('notePh') + '" style="height:70px;resize:vertical;padding-top:10px">' + escHtml(doc.note || '') + '</textarea>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="ade-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + atx('save') + '</button>';
+  html += '<button id="ade-cancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + atx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('archiveDocEditOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('ade-closeBtn').onclick = close;
+  document.getElementById('ade-cancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('ade-saveBtn').onclick = function() {
+    var nameEl = document.getElementById('ade-name');
+    var name = nameEl.value.trim();
+    if(!name) { nameEl.focus(); return; }
+    doc.name = name;
+    doc.note = document.getElementById('ade-note').value.trim();
+    save();
+    close();
+    renderArchiveDocList(doc.folderId);
+  };
+}
+
+async function archiveDocDelete(docId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, atx('confirmDeleteDoc')))) return;
+  var doc = (state.archiveDocs || []).find(function(d){ return d.id === docId; });
+  if(!doc) return;
+  var folderId = doc.folderId;
+  state.archiveDocs = (state.archiveDocs || []).filter(function(d){ return d.id !== docId; });
+  save();
+  archiveDeleteRec(docId);
+  renderArchiveDocList(folderId);
+}
+
+async function archiveFolderDelete(folderId) {
+  var folder = (state.archiveFolders || []).find(function(f){ return f.id === folderId; });
+  if(!folder) return;
+  var docs = (state.archiveDocs || []).filter(function(d){ return d.folderId === folderId; });
+  var msg = docs.length
+    ? {en:'Delete "'+folder.name+'" and its '+docs.length+' document(s) inside? This cannot be undone.', ar:'حذف "'+folder.name+'" و'+docs.length+' مستند بداخله؟ الإجراء ده مايتراجعش.', de:'"'+folder.name+'" und die '+docs.length+' Dokument(e) darin löschen? Kann nicht rückgängig gemacht werden.'}
+    : {en:'Delete "'+folder.name+'"?', ar:'حذف "'+folder.name+'"؟', de:'"'+folder.name+'" löschen?'};
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, msg[state.lang]||msg.en))) return;
+  docs.forEach(function(d) { archiveDeleteRec(d.id); });
+  state.archiveDocs = (state.archiveDocs || []).filter(function(d){ return d.folderId !== folderId; });
+  state.archiveFolders = (state.archiveFolders || []).filter(function(f){ return f.id !== folderId; });
+  save();
+  var ov = document.getElementById('archiveFolderOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+  renderArchivePage();
 }
 
 // ────────────────────────────────────────
