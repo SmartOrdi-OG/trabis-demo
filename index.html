@@ -5012,7 +5012,8 @@ function renderInventoryPage() {
       h += '<span style="color:var(--primary)">' + svgIcon('shoppingCart', 20) + '</span>';
       h += '<div style="flex:1;min-width:0;cursor:pointer" onclick="productOpenForm(' + p.id + ')">';
       h += '<div style="font-size:14px;font-weight:700">' + escHtml(p.name) + '</div>';
-      h += '<div style="font-size:12px;color:var(--text3)">' + fmt(p.sellPrice) + ' · ' + qty + ' ' + escHtml(p.unit||'')
+      var rowSub = state.businessType === 'transport' ? (qty + ' ' + escHtml(p.unit||'')) : (fmt(p.sellPrice) + ' · ' + qty + ' ' + escHtml(p.unit||''));
+      h += '<div style="font-size:12px;color:var(--text3)">' + rowSub
         + (isLow ? ' <span style="color:' + (qty<=0?'#ef4444':'#ea580c') + ';font-weight:700">· ' + (qty<=0?invtx('outOfStock'):invtx('lowStockBadge')) + '</span>' : '') + '</div>';
       h += '</div>';
       h += '<button onclick="productConsumeForm(' + p.id + ')" style="border:1.5px solid var(--border);background:var(--bg);color:var(--text2);border-radius:8px;padding:6px 10px;font-size:12px;font-weight:600;cursor:pointer;flex-shrink:0;white-space:nowrap">' + invtx('consume') + '</button>';
@@ -5031,6 +5032,7 @@ function renderInventoryPage() {
 
 function productOpenForm(editId) {
   var editing = editId != null ? (state.inventory || []).find(function(p){ return p.id === editId; }) : null;
+  var isTransport = state.businessType === 'transport';
 
   var existing = document.getElementById('productFormOverlay');
   if(existing) existing.parentNode.removeChild(existing);
@@ -5047,7 +5049,9 @@ function productOpenForm(editId) {
   html += '<input class="input-field" id="pf-desc" placeholder="' + invtx('description') + '" value="' + (editing ? escHtml(editing.description||'') : '') + '">';
   html += '<div style="display:flex;gap:10px">';
   html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('purchasePrice') + '</label><input id="pf-purchase" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.purchasePrice : '') + '"></div>';
-  html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('sellPrice') + '</label><input id="pf-sell" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.sellPrice : '') + '"></div>';
+  if(!isTransport) {
+    html += '<div style="flex:1"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + invtx('sellPrice') + '</label><input id="pf-sell" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:0" value="' + (editing ? editing.sellPrice : '') + '"></div>';
+  }
   html += '</div>';
   html += '<div style="height:12px"></div>';
   html += '<div style="display:flex;gap:10px">';
@@ -5073,7 +5077,8 @@ function productOpenForm(editId) {
     var name = document.getElementById('pf-name').value.trim();
     var desc = document.getElementById('pf-desc').value.trim();
     var purchasePrice = parseAmount(document.getElementById('pf-purchase').value);
-    var sellPrice = parseAmount(document.getElementById('pf-sell').value);
+    var sellEl = document.getElementById('pf-sell');
+    var sellPrice = sellEl ? parseAmount(sellEl.value) : 0;
     var qty = parseAmount(document.getElementById('pf-qty').value);
     var unit = document.getElementById('pf-unit').value.trim();
     var threshold = parseAmount(document.getElementById('pf-threshold').value);
@@ -8223,14 +8228,17 @@ function renderModal() {
   document.getElementById('modalTitle').textContent = t('addTx');
 
   var prodWrap = document.getElementById('modal-product-wrap');
-  var isInvBiz = state.businessType === 'retail' || state.businessType === 'transport';
-  if(prodWrap) prodWrap.style.display = (isInvBiz && typ !== 'debt') ? 'block' : 'none';
+  var isTransportBiz = state.businessType === 'transport';
+  var showProdWrap = state.businessType === 'retail' ? (typ !== 'debt') : (isTransportBiz && typ === 'expense');
+  if(prodWrap) prodWrap.style.display = showProdWrap ? 'block' : 'none';
   var prodLbl = document.getElementById('modal-product-lbl');
   if(prodLbl) {
-    var prodLblTx = {en:'Product (optional)', ar:'المنتج (اختياري)', de:'Produkt (optional)'};
+    var prodLblTx = isTransportBiz
+      ? {en:'Restock supply (optional)', ar:'تزويد صنف من المخزن (اختياري)', de:'Lagerbestand auffüllen (optional)'}
+      : {en:'Product (optional)', ar:'المنتج (اختياري)', de:'Produkt (optional)'};
     prodLbl.textContent = prodLblTx[lang] || prodLblTx.en;
   }
-  if(isInvBiz && typ !== 'debt') refreshProductDropdown();
+  if(showProdWrap) refreshProductDropdown();
 
   var cliWrap = document.getElementById('modal-client-wrap');
   if(cliWrap) cliWrap.style.display = typ === 'income' ? 'block' : 'none';
