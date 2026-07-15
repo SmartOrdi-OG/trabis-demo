@@ -3910,6 +3910,25 @@ var FLEET_L = {
   sellDate:       {en:'Sale Date', ar:'تاريخ البيع', de:'Verkaufsdatum'},
   sellConfirm:    {en:'Confirm Sale', ar:'تأكيد البيع', de:'Verkauf bestätigen'},
   sellInvalid:    {en:'Enter a valid sale price and date', ar:'ادخل سعر وتاريخ بيع صحيحين', de:'Bitte gültigen Verkaufspreis und Datum eingeben'},
+  fbTitle:        {en:'Fahrtenbuch (Logbook)', ar:'دفتر السيارة (Fahrtenbuch)', de:'Fahrtenbuch'},
+  fbAdd:          {en:'+ Add Trip', ar:'+ إضافة رحلة', de:'+ Fahrt hinzufügen'},
+  fbExport:       {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
+  fbEmpty:        {en:'No trips logged yet', ar:'لا توجد رحلات مسجلة بعد', de:'Noch keine Fahrten erfasst'},
+  fbColDate:      {en:'Date', ar:'التاريخ', de:'Datum'},
+  fbColDepTime:   {en:'Dep. Time', ar:'وقت المغادرة', de:'Abf.-Zeit'},
+  fbColDepLoc:    {en:'Departure', ar:'مكان المغادرة', de:'Abfahrtsort'},
+  fbColDepKm:     {en:'Km (Start)', ar:'عداد (بداية)', de:'Km-Stand'},
+  fbColArrTime:   {en:'Arr. Time', ar:'وقت الوصول', de:'Ank.-Zeit'},
+  fbColArrLoc:    {en:'Arrival', ar:'مكان الوصول', de:'Ankunftsort'},
+  fbColArrKm:     {en:'Km (End)', ar:'عداد (نهاية)', de:'Km-Stand'},
+  fbColDrivenKm:  {en:'Km Driven', ar:'كم مقطوعة', de:'Gef. km'},
+  fbColPurpose:   {en:'Purpose', ar:'الغرض', de:'Reisezweck'},
+  fbColCustomer:  {en:'Customer', ar:'العميل', de:'Kunde'},
+  fbColDuration:  {en:'Duration', ar:'مدة الرحلة', de:'Dauer'},
+  fbColPrivateKm: {en:'Private km', ar:'خاص كم', de:'Privat km'},
+  fbColBusinessKm:{en:'Business km', ar:'خدمة كم', de:'Dienst km'},
+  fbSumme:        {en:'Total', ar:'الإجمالي', de:'Summe'},
+  fbConfirmDeleteRow: {en:'Delete this trip entry?', ar:'حذف سجل الرحلة دي؟', de:'Diesen Fahrteintrag löschen?'},
 };
 function fleettx(k) { return (FLEET_L[k] && FLEET_L[k][state.lang]) || (FLEET_L[k] && FLEET_L[k].en) || k; }
 var FLEET_CATS = ['catService','catRepair','catFuel','catInsurance','catOther'];
@@ -4297,6 +4316,16 @@ function renderVehicleProfile(id) {
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">';
+  html += '<div style="font-size:15px;font-weight:700">' + fleettx('fbTitle') + '</div>';
+  html += '<div style="display:flex;gap:6px">';
+  html += '<button onclick="fleetTripAddRow(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('fbAdd') + '</button>';
+  html += '<button onclick="fleetTripsExportPDF(' + id + ')" style="background:none;border:none;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('fbExport') + '</button>';
+  html += '</div></div>';
+  html += '<div id="fbTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>';
+  html += '</div>';
+
+  html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
   html += '<div style="font-size:15px;font-weight:700;margin-bottom:8px">' + fleettx('notes') + '</div>';
   html += '<textarea id="fleetNotesArea" placeholder="' + fleettx('notesPh') + '" rows="4" style="width:100%;border:1.5px solid var(--border);border-radius:10px;padding:10px;background:var(--bg);color:var(--text);font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box">' + escHtml(v.notes || '') + '</textarea>';
   html += '</div>';
@@ -4314,6 +4343,7 @@ function renderVehicleProfile(id) {
   renderFleetDocsSection(v);
   renderVehicleAssetSection(v);
   renderMaintSection(v);
+  renderFleetTripsSection(v);
 
   document.getElementById('fleetBackBtn').onclick = closeVehicleProfile;
   document.getElementById('fleetEditBtn').onclick = function() {
@@ -4675,6 +4705,180 @@ function renderMaintSection(v) {
     h += '</div>';
   });
   list.innerHTML = h;
+}
+
+// ── FAHRTENBUCH (Vehicle Trip Logbook) ──
+var FB_COLS = [
+  {f:'date', type:'date', tx:'fbColDate', w:118},
+  {f:'depTime', type:'time', tx:'fbColDepTime', w:78},
+  {f:'depLocation', type:'text', tx:'fbColDepLoc', w:110},
+  {f:'depKm', type:'number', tx:'fbColDepKm', w:80},
+  {f:'arrTime', type:'time', tx:'fbColArrTime', w:78},
+  {f:'arrLocation', type:'text', tx:'fbColArrLoc', w:110},
+  {f:'arrKm', type:'number', tx:'fbColArrKm', w:80},
+  {f:'drivenKm', type:'number', tx:'fbColDrivenKm', w:80},
+  {f:'purpose', type:'text', tx:'fbColPurpose', w:120},
+  {f:'customer', type:'text', tx:'fbColCustomer', w:110},
+  {f:'duration', type:'text', tx:'fbColDuration', w:70},
+  {f:'privateKm', type:'number', tx:'fbColPrivateKm', w:80},
+  {f:'businessKm', type:'number', tx:'fbColBusinessKm', w:80},
+];
+
+function fleetTripAddRow(vehicleId) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  if(!v.trips) v.trips = [];
+  v.trips.push({id: Date.now(), date: today(), depTime:'', depLocation:'', depKm:'', arrTime:'', arrLocation:'', arrKm:'', drivenKm:'', purpose:'', customer:'', duration:'', privateKm:'', businessKm:''});
+  save();
+  renderFleetTripsSection(v);
+}
+
+async function fleetTripDeleteRow(vehicleId, tripId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, fleettx('fbConfirmDeleteRow')))) return;
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  v.trips = (v.trips || []).filter(function(t){ return t.id !== tripId; });
+  save();
+  renderFleetTripsSection(v);
+}
+
+function fleetTripFieldChange(el) {
+  var vehicleId = parseInt(el.getAttribute('data-vehicle'), 10);
+  var tripId = parseInt(el.getAttribute('data-trip'), 10);
+  var field = el.getAttribute('data-field');
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  var trip = (v.trips || []).find(function(t){ return t.id === tripId; });
+  if(!trip) return;
+  trip[field] = el.value;
+  if(field === 'depKm' || field === 'arrKm') {
+    var dep = parseFloat(trip.depKm), arr = parseFloat(trip.arrKm);
+    if(!isNaN(dep) && !isNaN(arr) && arr >= dep) trip.drivenKm = arr - dep;
+  }
+  save();
+  setTimeout(function(){ renderFleetTripsSection(v); }, 0);
+}
+
+function renderFleetTripsSection(v) {
+  var wrap = document.getElementById('fbTableWrap');
+  if(!wrap) return;
+  var trips = (v.trips || []).slice().sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : a.id - b.id); });
+
+  if(!trips.length) {
+    wrap.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + fleettx('fbEmpty') + '</div>';
+    return;
+  }
+
+  var h = '<table style="border-collapse:collapse;font-size:12px;white-space:nowrap">';
+  h += '<thead><tr>';
+  FB_COLS.forEach(function(c) {
+    h += '<th style="text-align:left;padding:6px 6px;border-bottom:1.5px solid var(--border);color:var(--text3);font-weight:700;min-width:' + c.w + 'px">' + fleettx(c.tx) + '</th>';
+  });
+  h += '<th style="min-width:36px"></th>';
+  h += '</tr></thead><tbody>';
+
+  var sumDriven = 0, sumPrivate = 0, sumBusiness = 0;
+  trips.forEach(function(t) {
+    sumDriven += parseFloat(t.drivenKm) || 0;
+    sumPrivate += parseFloat(t.privateKm) || 0;
+    sumBusiness += parseFloat(t.businessKm) || 0;
+    h += '<tr>';
+    FB_COLS.forEach(function(c) {
+      var val = t[c.f] != null ? t[c.f] : '';
+      var inputAttrs = 'data-vehicle="' + v.id + '" data-trip="' + t.id + '" data-field="' + c.f + '" onchange="fleetTripFieldChange(this)"';
+      var inputStyle = 'width:' + (c.w - 12) + 'px;border:1px solid var(--border);border-radius:6px;padding:5px 6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box';
+      h += '<td style="padding:3px 6px;border-bottom:1px solid var(--border)">';
+      if(c.type === 'number') {
+        h += '<input type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
+      } else if(c.type === 'date') {
+        h += '<div class="date-fix-wrap"><input type="date" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '"></div>';
+      } else if(c.type === 'time') {
+        h += '<input type="time" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
+      } else {
+        h += '<input type="text" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
+      }
+      h += '</td>';
+    });
+    h += '<td style="padding:3px 6px;border-bottom:1px solid var(--border)"><button onclick="fleetTripDeleteRow(' + v.id + ',' + t.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:4px">' + svgIcon('trash', 13) + '</button></td>';
+    h += '</tr>';
+  });
+
+  h += '<tr style="font-weight:700">';
+  h += '<td style="padding:6px" colspan="7">' + fleettx('fbSumme') + '</td>';
+  h += '<td style="padding:6px">' + sumDriven.toFixed(1) + '</td>';
+  h += '<td colspan="3"></td>';
+  h += '<td style="padding:6px">' + sumPrivate.toFixed(1) + '</td>';
+  h += '<td style="padding:6px">' + sumBusiness.toFixed(1) + '</td>';
+  h += '<td></td>';
+  h += '</tr>';
+
+  h += '</tbody></table>';
+  wrap.innerHTML = h;
+}
+
+function fleetTripsExportPDF(vehicleId) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
+  var trips = (v.trips || []).slice().sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : a.id - b.id); });
+  var doc = new JsPdf({orientation:'l', unit:'mm', format:'a4'});
+  var displayName = v.name || v.plate || '';
+
+  var cols = [
+    {tx:'fbColDate', w:16}, {tx:'fbColDepTime', w:12}, {tx:'fbColDepLoc', w:26}, {tx:'fbColDepKm', w:15},
+    {tx:'fbColArrTime', w:12}, {tx:'fbColArrLoc', w:26}, {tx:'fbColArrKm', w:15}, {tx:'fbColDrivenKm', w:14},
+    {tx:'fbColPurpose', w:26}, {tx:'fbColCustomer', w:24}, {tx:'fbColDuration', w:14}, {tx:'fbColPrivateKm', w:14}, {tx:'fbColBusinessKm', w:14}
+  ];
+  var startX = 8, tableWidth = cols.reduce(function(s,c){ return s+c.w; }, 0);
+
+  function drawHeader(y) {
+    doc.setFontSize(9); doc.setFont(undefined, 'normal');
+    doc.text('Fahrtenbuch für Kfz-Kennzeichen: ' + (v.plate || ''), startX, y);
+    doc.text(String(state.businessName || ''), startX + tableWidth/2, y, {align:'center'});
+    y += 6;
+    doc.setFont(undefined, 'bold'); doc.setFontSize(7.5);
+    var x = startX;
+    cols.forEach(function(c) {
+      doc.text(fleettx(c.tx), x + 1, y);
+      x += c.w;
+    });
+    y += 2;
+    doc.line(startX, y, startX + tableWidth, y);
+    doc.setFont(undefined, 'normal');
+    return y + 4;
+  }
+
+  var y = drawHeader(14);
+  var sumDriven = 0, sumPrivate = 0, sumBusiness = 0;
+  var fieldMap = ['date','depTime','depLocation','depKm','arrTime','arrLocation','arrKm','drivenKm','purpose','customer','duration','privateKm','businessKm'];
+
+  trips.forEach(function(t) {
+    sumDriven += parseFloat(t.drivenKm) || 0;
+    sumPrivate += parseFloat(t.privateKm) || 0;
+    sumBusiness += parseFloat(t.businessKm) || 0;
+    if(y > 195) { doc.addPage(); y = drawHeader(14); }
+    var x = startX;
+    doc.setFontSize(7.5);
+    cols.forEach(function(c, i) {
+      var val = t[fieldMap[i]];
+      var text = val != null && val !== '' ? String(val) : '';
+      doc.text(text.substring(0, 18), x + 1, y);
+      x += c.w;
+    });
+    y += 5.5;
+  });
+
+  y += 1; doc.line(startX, y, startX + tableWidth, y); y += 5;
+  doc.setFont(undefined, 'bold'); doc.setFontSize(8);
+  doc.text(fleettx('fbSumme'), startX + 1, y);
+  var sumX = startX + cols[0].w + cols[1].w + cols[2].w + cols[3].w + cols[4].w + cols[5].w + cols[6].w;
+  doc.text(sumDriven.toFixed(1), sumX + 1, y);
+  var privX = sumX + cols[7].w + cols[8].w + cols[9].w + cols[10].w;
+  doc.text(sumPrivate.toFixed(1), privX + 1, y);
+  doc.text(sumBusiness.toFixed(1), privX + cols[11].w + 1, y);
+
+  doc.save('Fahrtenbuch_' + (v.plate || displayName || 'vehicle') + '_' + today() + '.pdf');
 }
 
 // ── ANLAGEVERMÖGEN (Assets) ──
