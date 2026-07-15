@@ -3662,6 +3662,7 @@ function empInfoRow(label, value) {
 var _empProfileId = null;
 var _empProfileEditMode = false;
 var _whViewMonth = null;
+var _fbViewMonth = null;
 
 function closeEmployeeProfile() {
   var ov = document.getElementById('empProfileOverlay');
@@ -4316,13 +4317,18 @@ function renderVehicleProfile(id) {
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
-  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px">';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">';
   html += '<div style="font-size:15px;font-weight:700">' + fleettx('fbTitle') + '</div>';
-  html += '<div style="display:flex;gap:6px">';
-  html += '<button onclick="fleetTripAddRow(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('fbAdd') + '</button>';
-  html += '<button onclick="fleetTripsExportPDF(' + id + ')" style="background:none;border:none;color:var(--text2);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('fbExport') + '</button>';
-  html += '</div></div>';
-  html += '<div id="fbTableWrap" style="overflow-x:auto;-webkit-overflow-scrolling:touch"></div>';
+  html += '<button onclick="fbOpenMonthSheet(' + id + ')" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('fbAdd') + '</button>';
+  html += '</div>';
+  html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px">';
+  html += '<button id="fbPrevMonthBtn" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;color:var(--text2);cursor:pointer;flex-shrink:0">' + svgIcon('chevronLeft', 14) + '</button>';
+  html += '<div id="fbMonthLabel" style="font-size:14px;font-weight:700;flex:1;text-align:center"></div>';
+  html += '<button id="fbNextMonthBtn" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;color:var(--text2);cursor:pointer;flex-shrink:0">' + svgIcon('chevronRight', 14) + '</button>';
+  html += '</div>';
+  html += '<div id="fbSummary" style="font-size:13px;color:var(--text3);margin-bottom:8px"></div>';
+  html += '<div id="fbList"></div>';
+  html += '<button id="fbExportBtn" style="width:100%;margin-top:10px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('download', 13) + ' ' + fleettx('fbExport') + '</button>';
   html += '</div>';
 
   html += '<div style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)">';
@@ -4708,112 +4714,188 @@ function renderMaintSection(v) {
 }
 
 // ── FAHRTENBUCH (Vehicle Trip Logbook) ──
-var FB_COLS = [
-  {f:'date', type:'date', tx:'fbColDate', w:118},
-  {f:'depTime', type:'time', tx:'fbColDepTime', w:78},
-  {f:'depLocation', type:'text', tx:'fbColDepLoc', w:110},
-  {f:'depKm', type:'number', tx:'fbColDepKm', w:80},
-  {f:'arrTime', type:'time', tx:'fbColArrTime', w:78},
-  {f:'arrLocation', type:'text', tx:'fbColArrLoc', w:110},
-  {f:'arrKm', type:'number', tx:'fbColArrKm', w:80},
-  {f:'drivenKm', type:'number', tx:'fbColDrivenKm', w:80},
-  {f:'purpose', type:'text', tx:'fbColPurpose', w:120},
-  {f:'customer', type:'text', tx:'fbColCustomer', w:110},
-  {f:'duration', type:'text', tx:'fbColDuration', w:70},
-  {f:'privateKm', type:'number', tx:'fbColPrivateKm', w:80},
-  {f:'businessKm', type:'number', tx:'fbColBusinessKm', w:80},
-];
+// Monthly sheet: one pre-generated row per calendar day of the selected month,
+// matching the official Fahrtenbuch template exactly — mirrors the Work Hours
+// (Arbeitszeiterfassung) month-sheet pattern: browse by month, tap edit to open
+// a full sheet with every day of that month, fill in freely, save in one batch.
+var FB_FIELDS = ['depTime','depLocation','depKm','arrTime','arrLocation','arrKm','drivenKm','purpose','customer','duration','privateKm','businessKm'];
 
-function fleetTripAddRow(vehicleId) {
-  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
-  if(!v) return;
-  if(!v.trips) v.trips = [];
-  v.trips.push({id: Date.now(), date: today(), depTime:'', depLocation:'', depKm:'', arrTime:'', arrLocation:'', arrKm:'', drivenKm:'', purpose:'', customer:'', duration:'', privateKm:'', businessKm:''});
-  save();
-  renderFleetTripsSection(v);
+function fbDayEntry(v, day) {
+  return (v.trips || []).find(function(t){ return t.date === day; });
 }
 
-async function fleetTripDeleteRow(vehicleId, tripId) {
+function fbGridAutoCalc(day) {
+  var depEl = document.getElementById('fbd-depKm-' + day), arrEl = document.getElementById('fbd-arrKm-' + day), drivenEl = document.getElementById('fbd-drivenKm-' + day);
+  if(!depEl || !arrEl || !drivenEl) return;
+  var dep = parseFloat(depEl.value), arr = parseFloat(arrEl.value);
+  if(!isNaN(dep) && !isNaN(arr) && arr >= dep) drivenEl.value = (arr - dep).toString();
+}
+
+function fbShiftMonth(delta) {
+  var parts = _fbViewMonth.split('-');
+  var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1 + delta, 1);
+  _fbViewMonth = d.getFullYear() + '-' + pad2(d.getMonth()+1);
+  var v = (state.fleet || []).find(function(x){ return x.id === _fleetProfileId; });
+  if(v) renderFleetTripsSection(v);
+}
+
+function fbCellInput(day, field, type) {
+  var id = 'fbd-' + field + '-' + day;
+  var isNum = type === 'number';
+  var oninputAttr = isNum ? ' oninput="sanitizeAmountField(this)"' : '';
+  if(field === 'depKm' || field === 'arrKm') oninputAttr = ' oninput="fbGridAutoCalc(\'' + day + '\')"';
+  var inputType = isNum ? 'text' : type;
+  var inputMode = isNum ? ' inputmode="decimal"' : '';
+  var style = 'width:100%;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box';
+  return '<input type="' + inputType + '" id="' + id + '"' + inputMode + oninputAttr + ' style="' + style + '">';
+}
+
+function fbOpenMonthSheet(vehicleId) {
+  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
+  if(!v) return;
+  if(!_fbViewMonth) _fbViewMonth = today().substring(0,7);
+  var monthKey = _fbViewMonth;
+  var days = whDaysInMonth(monthKey);
+  var displayName = v.name || v.plate || '';
+
+  var existing = document.getElementById('fbSheetOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'fbSheetOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:100000;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch';
+
+  var cols = [
+    ['depTime','time',fleettx('fbColDepTime'),70], ['depLocation','text',fleettx('fbColDepLoc'),110], ['depKm','number',fleettx('fbColDepKm'),75],
+    ['arrTime','time',fleettx('fbColArrTime'),70], ['arrLocation','text',fleettx('fbColArrLoc'),110], ['arrKm','number',fleettx('fbColArrKm'),75],
+    ['drivenKm','number',fleettx('fbColDrivenKm'),70], ['purpose','text',fleettx('fbColPurpose'),120], ['customer','text',fleettx('fbColCustomer'),110],
+    ['duration','text',fleettx('fbColDuration'),65], ['privateKm','number',fleettx('fbColPrivateKm'),75], ['businessKm','number',fleettx('fbColBusinessKm'),75]
+  ];
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:5;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="fbSheetCloseBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px">' + fleettx('cancel') + '</button>';
+  html += '<div style="flex:1;font-size:16px;font-weight:700;text-align:center">' + whAtMonthLabel(monthKey) + '</div>';
+  html += '<button id="fbSheetSaveBtn" style="background:none;border:none;color:var(--primary);font-size:15px;font-weight:700;cursor:pointer;padding:4px">' + fleettx('save') + '</button>';
+  html += '</div>';
+  html += '<div style="padding:10px 16px 0;font-size:12px;color:var(--text2)">Fahrtenbuch für Kfz-Kennzeichen: <b>' + escHtml(v.plate || '') + '</b> · ' + escHtml(displayName) + '</div>';
+
+  html += '<div style="padding:12px;overflow-x:auto">';
+  html += '<table style="border-collapse:collapse;width:100%;min-width:1300px;font-size:12px">';
+  html += '<thead><tr style="background:var(--bg2,var(--card));border-bottom:2px solid var(--border)">';
+  html += '<th style="padding:8px 6px;text-align:left;font-weight:700;white-space:nowrap;border:1px solid var(--border);min-width:90px">' + fleettx('fbColDate') + '</th>';
+  cols.forEach(function(c) {
+    html += '<th style="padding:8px 5px;text-align:left;font-weight:700;white-space:nowrap;border:1px solid var(--border);min-width:' + c[3] + 'px">' + c[2] + '</th>';
+  });
+  html += '</tr></thead><tbody>';
+
+  days.forEach(function(day) {
+    html += '<tr style="border-bottom:1px solid var(--border)">';
+    html += '<td style="padding:6px;border:1px solid var(--border);white-space:nowrap;color:var(--text2)">' + whFmtDayDate(day) + '</td>';
+    cols.forEach(function(c) {
+      html += '<td style="padding:3px;border:1px solid var(--border)">' + fbCellInput(day, c[0], c[1]) + '</td>';
+    });
+    html += '</tr>';
+  });
+  html += '</tbody></table></div>';
+
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  // Populate values after insertion (avoids escaping every attribute inline above)
+  days.forEach(function(day) {
+    var entry = fbDayEntry(v, day);
+    if(!entry) return;
+    FB_FIELDS.forEach(function(f) {
+      var el = document.getElementById('fbd-' + f + '-' + day);
+      if(el && entry[f] != null) el.value = entry[f];
+    });
+  });
+
+  function close() { var o = document.getElementById('fbSheetOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('fbSheetCloseBtn').onclick = close;
+  document.getElementById('fbSheetSaveBtn').onclick = function() {
+    if(!v.trips) v.trips = [];
+    var idCounter = 0;
+    days.forEach(function(day) {
+      var rowVals = {};
+      FB_FIELDS.forEach(function(f) { var el = document.getElementById('fbd-' + f + '-' + day); rowVals[f] = el ? el.value : ''; });
+      var hasData = FB_FIELDS.some(function(f) { return rowVals[f] !== ''; });
+      var entry = fbDayEntry(v, day);
+      if(!hasData) {
+        if(entry) v.trips = v.trips.filter(function(t){ return t.id !== entry.id; });
+        return;
+      }
+      if(entry) {
+        FB_FIELDS.forEach(function(f) { entry[f] = rowVals[f]; });
+      } else {
+        var newEntry = {id: Date.now() + (idCounter++), date: day};
+        FB_FIELDS.forEach(function(f) { newEntry[f] = rowVals[f]; });
+        v.trips.push(newEntry);
+      }
+    });
+    save();
+    close();
+    renderFleetTripsSection(v);
+  };
+}
+
+async function fbDelete(vehicleId, entryId) {
   if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, fleettx('fbConfirmDeleteRow')))) return;
   var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
   if(!v) return;
-  v.trips = (v.trips || []).filter(function(t){ return t.id !== tripId; });
+  v.trips = (v.trips || []).filter(function(t){ return t.id !== entryId; });
   save();
   renderFleetTripsSection(v);
 }
 
-function fleetTripFieldChange(el) {
-  var vehicleId = parseInt(el.getAttribute('data-vehicle'), 10);
-  var tripId = parseInt(el.getAttribute('data-trip'), 10);
-  var field = el.getAttribute('data-field');
-  var v = (state.fleet || []).find(function(x){ return x.id === vehicleId; });
-  if(!v) return;
-  var trip = (v.trips || []).find(function(t){ return t.id === tripId; });
-  if(!trip) return;
-  trip[field] = el.value;
-  if(field === 'depKm' || field === 'arrKm') {
-    var dep = parseFloat(trip.depKm), arr = parseFloat(trip.arrKm);
-    if(!isNaN(dep) && !isNaN(arr) && arr >= dep) trip.drivenKm = arr - dep;
-  }
-  save();
-  setTimeout(function(){ renderFleetTripsSection(v); }, 0);
+function fbMonthLabelText(monthKey) {
+  var parts = monthKey.split('-');
+  var monthNames = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+  return monthNames[parseInt(parts[1],10)-1] + ' ' + parts[0];
 }
 
 function renderFleetTripsSection(v) {
-  var wrap = document.getElementById('fbTableWrap');
-  if(!wrap) return;
-  var trips = (v.trips || []).slice().sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : a.id - b.id); });
+  var list = document.getElementById('fbList');
+  var summary = document.getElementById('fbSummary');
+  var monthLabelEl = document.getElementById('fbMonthLabel');
+  if(!list || !summary) return;
+  if(!_fbViewMonth) _fbViewMonth = today().substring(0,7);
+  if(monthLabelEl) monthLabelEl.textContent = fbMonthLabelText(_fbViewMonth);
 
-  if(!trips.length) {
-    wrap.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + fleettx('fbEmpty') + '</div>';
+  var entries = (v.trips || []).filter(function(t){ return (t.date||'').substring(0,7) === _fbViewMonth; })
+    .sort(function(a,b){ return a.date < b.date ? 1 : (a.date > b.date ? -1 : b.id - a.id); });
+
+  var sumDriven = entries.reduce(function(s,t){ return s + (parseFloat(t.drivenKm)||0); }, 0);
+  var sumPrivate = entries.reduce(function(s,t){ return s + (parseFloat(t.privateKm)||0); }, 0);
+  var sumBusiness = entries.reduce(function(s,t){ return s + (parseFloat(t.businessKm)||0); }, 0);
+  summary.textContent = fleettx('fbSumme') + ': ' + sumDriven.toFixed(1) + ' km  ·  ' + fleettx('fbColPrivateKm') + ' ' + sumPrivate.toFixed(1) + '  ·  ' + fleettx('fbColBusinessKm') + ' ' + sumBusiness.toFixed(1);
+
+  var prevBtn = document.getElementById('fbPrevMonthBtn');
+  if(prevBtn) prevBtn.onclick = function(){ fbShiftMonth(-1); };
+  var nextBtn = document.getElementById('fbNextMonthBtn');
+  if(nextBtn) nextBtn.onclick = function(){ fbShiftMonth(1); };
+  var exportBtn = document.getElementById('fbExportBtn');
+  if(exportBtn) exportBtn.onclick = function(){ fleetTripsExportPDF(v.id); };
+
+  if(!entries.length) {
+    list.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px">' + fleettx('fbEmpty') + '</div>';
     return;
   }
-
-  var h = '<table style="border-collapse:collapse;font-size:12px;white-space:nowrap">';
-  h += '<thead><tr>';
-  FB_COLS.forEach(function(c) {
-    h += '<th style="text-align:left;padding:6px 6px;border-bottom:1.5px solid var(--border);color:var(--text3);font-weight:700;min-width:' + c.w + 'px">' + fleettx(c.tx) + '</th>';
+  var h = '';
+  entries.forEach(function(t) {
+    var route = (t.depLocation || '?') + ' → ' + (t.arrLocation || '?');
+    h += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-size:14px;font-weight:600">' + whFmtDayDate(t.date) + ' <span style="color:var(--text3);font-weight:400">· ' + escHtml(route) + '</span></div>';
+    if(t.purpose) h += '<div style="font-size:12px;color:var(--text3);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(t.purpose) + '</div>';
+    h += '</div>';
+    h += '<div style="font-size:14px;font-weight:700;color:var(--primary);white-space:nowrap">' + (parseFloat(t.drivenKm)||0) + ' km</div>';
+    h += '<button onclick="fbOpenMonthSheet(' + v.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('pencil', 14) + '</button>';
+    h += '<button onclick="fbDelete(' + v.id + ',' + t.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px;flex-shrink:0">' + svgIcon('trash', 14) + '</button>';
+    h += '</div>';
   });
-  h += '<th style="min-width:36px"></th>';
-  h += '</tr></thead><tbody>';
-
-  var sumDriven = 0, sumPrivate = 0, sumBusiness = 0;
-  trips.forEach(function(t) {
-    sumDriven += parseFloat(t.drivenKm) || 0;
-    sumPrivate += parseFloat(t.privateKm) || 0;
-    sumBusiness += parseFloat(t.businessKm) || 0;
-    h += '<tr>';
-    FB_COLS.forEach(function(c) {
-      var val = t[c.f] != null ? t[c.f] : '';
-      var inputAttrs = 'data-vehicle="' + v.id + '" data-trip="' + t.id + '" data-field="' + c.f + '" onchange="fleetTripFieldChange(this)"';
-      var inputStyle = 'width:' + (c.w - 12) + 'px;border:1px solid var(--border);border-radius:6px;padding:5px 6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box';
-      h += '<td style="padding:3px 6px;border-bottom:1px solid var(--border)">';
-      if(c.type === 'number') {
-        h += '<input type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
-      } else if(c.type === 'date') {
-        h += '<div class="date-fix-wrap"><input type="date" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '"></div>';
-      } else if(c.type === 'time') {
-        h += '<input type="time" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
-      } else {
-        h += '<input type="text" ' + inputAttrs + ' style="' + inputStyle + '" value="' + escHtml(String(val)) + '">';
-      }
-      h += '</td>';
-    });
-    h += '<td style="padding:3px 6px;border-bottom:1px solid var(--border)"><button onclick="fleetTripDeleteRow(' + v.id + ',' + t.id + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:4px">' + svgIcon('trash', 13) + '</button></td>';
-    h += '</tr>';
-  });
-
-  h += '<tr style="font-weight:700">';
-  h += '<td style="padding:6px" colspan="7">' + fleettx('fbSumme') + '</td>';
-  h += '<td style="padding:6px">' + sumDriven.toFixed(1) + '</td>';
-  h += '<td colspan="3"></td>';
-  h += '<td style="padding:6px">' + sumPrivate.toFixed(1) + '</td>';
-  h += '<td style="padding:6px">' + sumBusiness.toFixed(1) + '</td>';
-  h += '<td></td>';
-  h += '</tr>';
-
-  h += '</tbody></table>';
-  wrap.innerHTML = h;
+  list.innerHTML = h;
 }
 
 function fleetTripsExportPDF(vehicleId) {
@@ -4821,7 +4903,9 @@ function fleetTripsExportPDF(vehicleId) {
   if(!v) return;
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
   if(!JsPdf) { showToast('PDF library not available', 'error'); return; }
-  var trips = (v.trips || []).slice().sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : a.id - b.id); });
+  if(!_fbViewMonth) _fbViewMonth = today().substring(0,7);
+  var trips = (v.trips || []).filter(function(t){ return (t.date||'').substring(0,7) === _fbViewMonth; })
+    .sort(function(a,b){ return a.date < b.date ? -1 : (a.date > b.date ? 1 : a.id - b.id); });
   var doc = new JsPdf({orientation:'l', unit:'mm', format:'a4'});
   var displayName = v.name || v.plate || '';
 
@@ -4834,7 +4918,7 @@ function fleetTripsExportPDF(vehicleId) {
 
   function drawHeader(y) {
     doc.setFontSize(9); doc.setFont(undefined, 'normal');
-    doc.text('Fahrtenbuch für Kfz-Kennzeichen: ' + (v.plate || ''), startX, y);
+    doc.text('Fahrtenbuch für Kfz-Kennzeichen: ' + (v.plate || '') + '   ' + whAtMonthLabel(_fbViewMonth), startX, y);
     doc.text(String(state.businessName || ''), startX + tableWidth/2, y, {align:'center'});
     y += 6;
     doc.setFont(undefined, 'bold'); doc.setFontSize(7.5);
@@ -4861,7 +4945,8 @@ function fleetTripsExportPDF(vehicleId) {
     var x = startX;
     doc.setFontSize(7.5);
     cols.forEach(function(c, i) {
-      var val = t[fieldMap[i]];
+      var f = fieldMap[i];
+      var val = f === 'date' ? whFmtDayDate(t.date) : t[f];
       var text = val != null && val !== '' ? String(val) : '';
       doc.text(text.substring(0, 18), x + 1, y);
       x += c.w;
@@ -4878,7 +4963,7 @@ function fleetTripsExportPDF(vehicleId) {
   doc.text(sumPrivate.toFixed(1), privX + 1, y);
   doc.text(sumBusiness.toFixed(1), privX + cols[11].w + 1, y);
 
-  doc.save('Fahrtenbuch_' + (v.plate || displayName || 'vehicle') + '_' + today() + '.pdf');
+  doc.save('Fahrtenbuch_' + (v.plate || displayName || 'vehicle') + '_' + _fbViewMonth + '.pdf');
 }
 
 // ── ANLAGEVERMÖGEN (Assets) ──
