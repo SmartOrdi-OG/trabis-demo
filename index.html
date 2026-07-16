@@ -137,6 +137,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 /* FAB */
 .fab{position:fixed;bottom:80px;right:calc(50% - 215px + 16px);width:52px;height:52px;border-radius:50%;background:var(--primary);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:24px;color:#fff;box-shadow:0 4px 16px rgba(37,99,235,0.4);z-index:99;transition:all 0.2s}
+.fab-scan{position:fixed;bottom:146px;right:calc(50% - 215px + 16px);width:44px;height:44px;border-radius:50%;background:var(--card);border:1.5px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--primary);box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:99;transition:all 0.2s}
 .fab:active{transform:scale(0.94)}
 
 /* MODAL */
@@ -647,6 +648,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage{margin-left:240px !important;max-width:none}
   body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
+  .fab-scan{right:32px;bottom:96px;left:auto}
   .modal-overlay{align-items:center}
   .modal{border-radius:16px;max-width:520px;margin:auto;max-height:85vh;width:calc(100% - 48px)}
   .summary{grid-template-columns:repeat(3,1fr) !important;max-width:960px;padding:20px 24px 0;margin:0 auto}
@@ -708,7 +710,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 /* ── PRINT / PDF EXPORT ── */
 @media print {
   body{background:#fff!important;margin:0;padding:0;color:#000!important}
-  #landingPage,#onboardingOverlay,.bnav,.fab,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
+  #landingPage,#onboardingOverlay,.bnav,.fab,.fab-scan,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
   #reportsPage{display:block!important;position:static!important;overflow:visible!important;padding:20px!important;max-width:210mm!important;margin:0 auto!important;background:#fff!important}
   .report-card{box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid;margin-bottom:16px;background:#fff!important}
   .bar-chart{display:none!important}
@@ -2559,6 +2561,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- FAB -->
 <button class="fab" onclick="openModal('income')" id="fab">+</button>
+<button class="fab-scan" onclick="openScanInvoicesFlow()" id="fabScan" title="Scan Invoices"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></button>
 
 <!-- ADD TRANSACTION MODAL -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModalIfOutside(event)">
@@ -3310,6 +3313,8 @@ function showNav(page) {
   var activeSNav = document.getElementById('snav-'+page);
   if(activeSNav) activeSNav.classList.add('active');
   document.getElementById('fab').style.display = page === 'home' ? 'flex' : 'none';
+  var fabScanEl = document.getElementById('fabScan');
+  if(fabScanEl) fabScanEl.style.display = page === 'home' ? 'flex' : 'none';
 
   if(page === 'home') { renderHome(); playHomeAnim(); }
   if(page === 'reports') { renderReports(); renderChart(); uvaPopulatePeriods(); renderUva(); }
