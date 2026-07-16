@@ -233,6 +233,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 
 @keyframes slideUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 .slide-up{animation:slideUp 0.3s ease}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 /* ── HOME LOAD ANIMATION (staggered fade-up) ── */
 @keyframes homeItemIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
 #mainPage.home-anim>*{animation:homeItemIn 0.45s cubic-bezier(.16,1,.3,1) both}
@@ -3366,6 +3367,7 @@ var MORE_MENU_L = {
   kalender: {en:'Calendar', ar:'التقويم', de:'Kalender'},
   notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
   archive: {en:'Archive', ar:'الأرشيف', de:'Archiv'},
+  scanInvoices: {en:'Scan Invoices', ar:'مسح الفواتير', de:'Rechnungen scannen'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
   help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
 };
@@ -3388,6 +3390,7 @@ function openMoreMenu() {
   h += moreMenuItemHtml('mm-fixed', 'checklist', mtx('fixed'));
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
+  h += moreMenuItemHtml('mm-scan-invoices', 'camera', mtx('scanInvoices'));
   if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
   if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
@@ -3414,6 +3417,8 @@ function openMoreMenu() {
   if(mmEmployees) mmEmployees.onclick = function(){ showNav('employees'); };
   var mmFixed = document.getElementById('mm-fixed');
   if(mmFixed) mmFixed.onclick = function(){ showNav('fixed'); };
+  var mmScanInvoices = document.getElementById('mm-scan-invoices');
+  if(mmScanInvoices) mmScanInvoices.onclick = function(){ openScanInvoicesFlow(); };
   var mmFleet = document.getElementById('mm-fleet');
   if(mmFleet) mmFleet.onclick = function(){ showNav('fleet'); };
   var mmInventory = document.getElementById('mm-inventory');
@@ -7609,6 +7614,323 @@ function receiptRunOcr(file) {
   }).catch(function() {
     receiptOcrStatus(rtx('noRead'));
   });
+}
+
+// ── BATCH INVOICE SCAN: scan/upload multiple invoices, auto-create transactions ──
+// ────────────────────────────────────────
+var SCAN_L = {
+  menuTitle:     {en:'Scan Invoices', ar:'مسح الفواتير', de:'Rechnungen scannen'},
+  chooseTypeTitle:{en:'What kind of invoices?', ar:'الفواتير دي إيه نوعها؟', de:'Welche Art von Rechnungen?'},
+  captureTitle:  {en:'Add Invoices', ar:'إضافة فواتير', de:'Rechnungen hinzufügen'},
+  camera:        {en:'Camera', ar:'كاميرا', de:'Kamera'},
+  upload:        {en:'Upload', ar:'رفع ملفات', de:'Hochladen'},
+  addAnother:    {en:'+ Add another', ar:'+ إضافة كمان', de:'+ Weitere hinzufügen'},
+  noFiles:       {en:'No invoices added yet', ar:'لسه مفيش فواتير مضافة', de:'Noch keine Rechnungen hinzugefügt'},
+  analyzeBtn:    {en:'Analyze', ar:'تحليل', de:'Analysieren'},
+  analyzing:     {en:'Analyzing invoice ', ar:'جاري تحليل فاتورة ', de:'Analysiere Rechnung '},
+  reviewTitle:   {en:'Review & Confirm', ar:'مراجعة وتأكيد', de:'Überprüfen & Bestätigen'},
+  reviewNote:    {en:'Extraction is automatic and may not be 100% accurate — please check the numbers before saving.', ar:'الاستخراج تلقائي وممكن ميبقاش دقيق ١٠٠٪ — راجع الأرقام قبل الحفظ.', de:'Die Erkennung ist automatisch und evtl. nicht 100% genau — bitte Zahlen vor dem Speichern prüfen.'},
+  fieldDate:     {en:'Date', ar:'التاريخ', de:'Datum'},
+  fieldBrutto:   {en:'Total (Brutto)', ar:'الإجمالي (Brutto)', de:'Gesamtbetrag (Brutto)'},
+  fieldVat:      {en:'VAT %', ar:'نسبة الضريبة %', de:'MwSt. %'},
+  computedLine:  {en:'Netto ', ar:'Netto ', de:'Netto '},
+  saveAllBtn:    {en:'Save All', ar:'حفظ الكل', de:'Alle speichern'},
+  cancel:        {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  back:          {en:'Back', ar:'رجوع', de:'Zurück'},
+  savedToast:    {en:' invoice(s) added', ar:' فاتورة اتضافت', de:' Rechnung(en) hinzugefügt'},
+  couldNotRead:  {en:'Could not read — fill in manually', ar:'معرفناش نقراها — اكتب يدوي', de:'Konnte nicht gelesen werden — bitte manuell eingeben'},
+  removeBtn:     {en:'Remove', ar:'حذف', de:'Entfernen'},
+};
+function scantx(k) { return (SCAN_L[k] && SCAN_L[k][state.lang]) || (SCAN_L[k] && SCAN_L[k].en) || k; }
+
+var _scanInv = { type: null, files: [] };
+
+// Foundation seam: today this runs local OCR (Tesseract) + heuristic parsing.
+// Once a backend AI endpoint exists, replace the body of this function with
+// a call to it — the return shape {date, brutto, rate} stays the same, so
+// no other code (capture/review/save flow) needs to change.
+function extractInvoiceData(file) {
+  return new Promise(function(resolve) {
+    if(file.type === 'application/pdf') { resolve({date: null, brutto: null, rate: null}); return; }
+    receiptLoadTesseract().then(function() {
+      return Tesseract.recognize(file, 'deu+eng');
+    }).then(function(res) {
+      var text = res && res.data ? res.data.text : '';
+      var p = receiptParseOcr(text);
+      resolve({date: invoiceExtractDate(text), brutto: p.brutto, rate: p.rate});
+    }).catch(function() {
+      resolve({date: null, brutto: null, rate: null});
+    });
+  });
+}
+
+function invoiceExtractDate(text) {
+  var lines = (text || '').split(/\n+/);
+  var dateRe = /(\d{1,2})[.\/-](\d{1,2})[.\/-](\d{4})|(\d{4})-(\d{1,2})-(\d{1,2})/;
+  var dateKw = /(rechnungsdatum|ausstellungsdatum|datum|invoice date|date)/i;
+  var found = null;
+  lines.forEach(function(ln) {
+    if(found) return;
+    if(dateKw.test(ln)) { var m = ln.match(dateRe); if(m) found = m; }
+  });
+  if(!found) { var m2 = (text||'').match(dateRe); if(m2) found = m2; }
+  if(!found) return null;
+  var y, mo, d;
+  if(found[4]) { y = found[4]; mo = parseInt(found[5],10); d = parseInt(found[6],10); }
+  else { d = parseInt(found[1],10); mo = parseInt(found[2],10); y = found[3]; }
+  if(mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  return y + '-' + pad2(mo) + '-' + pad2(d);
+}
+
+function openScanInvoicesFlow() {
+  _scanInv = { type: null, files: [] };
+  closeMoreMenu();
+  scanInvoicesOpenTypeStep();
+}
+
+function scanInvoicesOpenTypeStep() {
+  var existing = document.getElementById('scanTypeOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+  var ov = document.createElement('div');
+  ov.id = 'scanTypeOverlay';
+  ov.className = 'modal-overlay open';
+  var html = '';
+  html += '<div class="modal" id="scanTypeModal">';
+  html += '<button class="modal-close-btn" id="scanTypeCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + scantx('chooseTypeTitle') + '</div>';
+  html += '<div style="display:flex;gap:10px;margin-top:6px">';
+  html += '<button id="scanTypeExpenseBtn" style="flex:1;padding:22px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);color:var(--expense);font-size:15px;font-weight:700;cursor:pointer">' + t('expense') + '</button>';
+  html += '<button id="scanTypeIncomeBtn" style="flex:1;padding:22px 10px;border-radius:14px;border:1.5px solid var(--border);background:var(--bg);color:var(--income);font-size:15px;font-weight:700;cursor:pointer">' + t('income') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { var o = document.getElementById('scanTypeOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('scanTypeCloseBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('scanTypeExpenseBtn').onclick = function(){ close(); _scanInv.type = 'expense'; scanInvoicesOpenCapture(); };
+  document.getElementById('scanTypeIncomeBtn').onclick = function(){ close(); _scanInv.type = 'income'; scanInvoicesOpenCapture(); };
+}
+
+function scanInvoicesOpenCapture() {
+  var existing = document.getElementById('scanFlowOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+
+  var ov = document.createElement('div');
+  ov.id = 'scanFlowOverlay';
+  ov.style.cssText = 'position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch';
+  document.body.appendChild(ov);
+  scanInvoicesRenderCapture();
+}
+
+function scanInvoicesRenderCapture() {
+  var ov = document.getElementById('scanFlowOverlay');
+  if(!ov) return;
+  var files = _scanInv.files;
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:5;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="scanCapBackBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px">' + scantx('back') + '</button>';
+  html += '<div style="flex:1;font-size:16px;font-weight:700;text-align:center">' + scantx('captureTitle') + '</div>';
+  html += '<div style="width:44px"></div>';
+  html += '</div>';
+
+  html += '<div style="padding:16px">';
+  html += '<div style="display:flex;gap:10px;margin-bottom:16px">';
+  html += '<button id="scanCapCameraBtn" style="flex:1;padding:16px;border-radius:12px;border:1.5px dashed var(--border);background:var(--card);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('camera',18) + '<div style="margin-top:6px">' + scantx('camera') + '</div></button>';
+  html += '<button id="scanCapUploadBtn" style="flex:1;padding:16px;border-radius:12px;border:1.5px dashed var(--border);background:var(--card);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('upload',18) + '<div style="margin-top:6px">' + scantx('upload') + '</div></button>';
+  html += '</div>';
+  html += '<input type="file" id="scanCameraInput" accept="image/*" capture="environment" style="display:none">';
+  html += '<input type="file" id="scanUploadInput" accept="image/*,application/pdf" multiple style="display:none">';
+
+  html += '<div id="scanFileList">';
+  if(!files.length) {
+    html += '<div style="text-align:center;padding:24px;color:var(--text3);font-size:13px">' + scantx('noFiles') + '</div>';
+  } else {
+    files.forEach(function(f, idx) {
+      html += '<div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">';
+      if(f.mimeType === 'application/pdf') {
+        html += '<span style="color:var(--text2)">' + svgIcon('fileText',20) + '</span>';
+      } else {
+        html += '<img src="' + f.previewUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px">';
+      }
+      html += '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px">' + escHtml(f.name) + '</span>';
+      html += '<button onclick="scanInvoicesRemoveFile(' + idx + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:6px">' + svgIcon('trash',14) + '</button>';
+      html += '</div>';
+    });
+  }
+  html += '</div>';
+
+  html += '<button id="scanAnalyzeBtn" ' + (!files.length ? 'disabled' : '') + ' style="width:100%;margin-top:20px;padding:13px;border-radius:12px;border:none;background:' + (files.length ? 'var(--primary)' : 'var(--border)') + ';color:#fff;font-size:15px;font-weight:700;cursor:' + (files.length ? 'pointer' : 'default') + '">' + scantx('analyzeBtn') + (files.length ? ' (' + files.length + ')' : '') + '</button>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+
+  document.getElementById('scanCapBackBtn').onclick = function(){ ov.parentNode.removeChild(ov); };
+  document.getElementById('scanCapCameraBtn').onclick = function(){ document.getElementById('scanCameraInput').click(); };
+  document.getElementById('scanCapUploadBtn').onclick = function(){ document.getElementById('scanUploadInput').click(); };
+  document.getElementById('scanCameraInput').onchange = function(e){ scanInvoicesFilesChosen(e.target.files); e.target.value = ''; };
+  document.getElementById('scanUploadInput').onchange = function(e){ scanInvoicesFilesChosen(e.target.files); e.target.value = ''; };
+  if(files.length) document.getElementById('scanAnalyzeBtn').onclick = scanInvoicesAnalyze;
+}
+
+function scanInvoicesFilesChosen(fileList) {
+  var promises = [];
+  for(var i=0;i<fileList.length;i++) {
+    (function(f){
+      var isPdf = f.type === 'application/pdf';
+      promises.push(receiptCompress(f).then(function(blob) {
+        _scanInv.files.push({
+          blob: blob,
+          name: f.name || ('invoice-' + Date.now() + (isPdf ? '.pdf' : '.jpg')),
+          mimeType: isPdf ? 'application/pdf' : 'image/jpeg',
+          previewUrl: isPdf ? null : URL.createObjectURL(blob),
+          date: null, brutto: null, rate: null
+        });
+      }));
+    })(fileList[i]);
+  }
+  Promise.all(promises).then(scanInvoicesRenderCapture);
+}
+
+function scanInvoicesRemoveFile(idx) {
+  _scanInv.files.splice(idx, 1);
+  scanInvoicesRenderCapture();
+}
+
+function scanInvoicesAnalyze() {
+  var ov = document.getElementById('scanFlowOverlay');
+  if(!ov) return;
+  var files = _scanInv.files;
+  var total = files.length;
+  var doneCount = 0;
+
+  function renderProgress() {
+    ov.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;padding:24px;text-align:center">'
+      + '<div class="spinner" style="width:36px;height:36px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite"></div>'
+      + '<div style="color:var(--text2);font-size:14px">' + scantx('analyzing') + (doneCount+1) + ' / ' + total + '</div>'
+      + '</div>';
+  }
+  renderProgress();
+
+  function processNext(i) {
+    if(i >= files.length) { scanInvoicesRenderReview(); return; }
+    extractInvoiceData(files[i].blob).then(function(data) {
+      files[i].date = data.date;
+      files[i].brutto = data.brutto;
+      files[i].rate = data.rate;
+      doneCount++;
+      renderProgress();
+      processNext(i+1);
+    });
+  }
+  processNext(0);
+}
+
+function scanInvoicesRenderReview() {
+  var ov = document.getElementById('scanFlowOverlay');
+  if(!ov) return;
+  var files = _scanInv.files;
+
+  var html = '';
+  html += '<div style="position:sticky;top:0;z-index:5;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
+  html += '<button id="scanRevCancelBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px">' + scantx('cancel') + '</button>';
+  html += '<div style="flex:1;font-size:16px;font-weight:700;text-align:center">' + scantx('reviewTitle') + '</div>';
+  html += '<div style="width:44px"></div>';
+  html += '</div>';
+
+  html += '<div style="padding:16px">';
+  html += '<div style="font-size:12px;color:var(--text3);background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:14px">' + scantx('reviewNote') + '</div>';
+
+  files.forEach(function(f, idx) {
+    var brutto = parseFloat(f.brutto) || 0;
+    var rate = f.rate != null ? f.rate : 20;
+    var b = vatBreakdown(brutto, rate);
+    html += '<div style="background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)">';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">';
+    if(f.mimeType === 'application/pdf') html += '<span style="color:var(--text2)">' + svgIcon('fileText',20) + '</span>';
+    else html += '<img src="' + f.previewUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px">';
+    html += '<span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(f.name) + '</span>';
+    html += '<button onclick="scanInvoicesRemoveReviewItem(' + idx + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:4px">' + svgIcon('trash',14) + '</button>';
+    html += '</div>';
+    if(f.mimeType === 'application/pdf' || (f.brutto == null)) {
+      html += '<div style="font-size:11px;color:#ea580c;margin-bottom:8px">' + scantx('couldNotRead') + '</div>';
+    }
+    html += '<label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldDate') + '</label>';
+    html += '<div class="date-fix-wrap"><input type="date" id="scanRev-date-' + idx + '" class="input-field" style="margin-bottom:8px" value="' + (f.date || today()) + '"></div>';
+    html += '<div style="display:flex;gap:8px">';
+    html += '<div style="flex:1"><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldBrutto') + '</label><input type="text" inputmode="decimal" id="scanRev-brutto-' + idx + '" oninput="sanitizeAmountField(this);scanInvoicesRecalc(' + idx + ')" class="input-field" style="margin-bottom:0" value="' + (brutto || '') + '"></div>';
+    html += '<div style="width:90px"><label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldVat') + '</label><input type="number" min="0" max="100" step="0.1" id="scanRev-vat-' + idx + '" oninput="scanInvoicesRecalc(' + idx + ')" class="input-field" style="margin-bottom:0" value="' + rate + '"></div>';
+    html += '</div>';
+    html += '<div id="scanRev-computed-' + idx + '" style="font-size:12px;color:var(--text3);margin-top:8px">' + scantx('computedLine') + fmt(b.netto) + '</div>';
+    html += '</div>';
+  });
+
+  html += '<button id="scanSaveAllBtn" style="width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer">' + scantx('saveAllBtn') + ' (' + files.length + ')</button>';
+  html += '</div>';
+
+  ov.innerHTML = html;
+
+  document.getElementById('scanRevCancelBtn').onclick = function(){ ov.parentNode.removeChild(ov); };
+  document.getElementById('scanSaveAllBtn').onclick = scanInvoicesSaveAll;
+}
+
+function scanInvoicesRecalc(idx) {
+  var bruttoEl = document.getElementById('scanRev-brutto-' + idx);
+  var vatEl = document.getElementById('scanRev-vat-' + idx);
+  var computedEl = document.getElementById('scanRev-computed-' + idx);
+  if(!bruttoEl || !vatEl || !computedEl) return;
+  var brutto = parseAmount(bruttoEl.value) || 0;
+  var rate = parseFloat(vatEl.value) || 0;
+  var b = vatBreakdown(brutto, rate);
+  computedEl.textContent = scantx('computedLine') + fmt(b.netto);
+}
+
+function scanInvoicesRemoveReviewItem(idx) {
+  _scanInv.files.splice(idx, 1);
+  if(!_scanInv.files.length) { var ov = document.getElementById('scanFlowOverlay'); if(ov) ov.parentNode.removeChild(ov); return; }
+  scanInvoicesRenderReview();
+}
+
+function scanInvoicesSaveAll() {
+  var files = _scanInv.files;
+  var type = _scanInv.type;
+  var savedCount = 0;
+
+  files.forEach(function(f, idx) {
+    var dateEl = document.getElementById('scanRev-date-' + idx);
+    var bruttoEl = document.getElementById('scanRev-brutto-' + idx);
+    var vatEl = document.getElementById('scanRev-vat-' + idx);
+    var date = (dateEl && dateEl.value) || today();
+    var brutto = parseAmount(bruttoEl ? bruttoEl.value : '') || 0;
+    var rate = parseFloat(vatEl ? vatEl.value : '') || 0;
+    if(brutto <= 0) return;
+
+    var newTxId = Date.now() + idx;
+    state.transactions.push({
+      id: newTxId,
+      name: f.name,
+      amount: brutto, type: type, category: 'Other', date: date,
+      vatRate: rate,
+      receiptId: newTxId, receiptName: f.name
+    });
+    receiptPut({
+      id: newTxId,
+      user: localStorage.getItem('smartac_user') || '',
+      name: f.name,
+      type: f.mimeType,
+      blob: f.blob,
+      createdAt: new Date().toISOString()
+    }).catch(function(){});
+    savedCount++;
+  });
+
+  save();
+  var ov = document.getElementById('scanFlowOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+  showToast(savedCount + scantx('savedToast'), 'success');
+  showNav('home');
 }
 
 // ────────────────────────────────────────
