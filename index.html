@@ -5526,6 +5526,7 @@ var HELP_L = {
   secTeam: {en:'Team & Assets', ar:'الفريق والأصول', de:'Team & Vermögenswerte'},
   secLinks: {en:'Useful Links', ar:'روابط مفيدة', de:'Nützliche Links'},
   linkBruttoNetto: {en:'Austrian BMF Gross-Net Salary Calculator', ar:'حاسبة صافي راتب الموظف (BMF النمساوية)', de:'BMF Brutto-Netto-Rechner'},
+  linkTarifrechner: {en:'Austrian Social Insurance Tariff Calculator', ar:'حاسبة التأمين الاجتماعي النمساوية (Tarifrechner)', de:'Sozialversicherung Tarifrechner'},
   secCal: {en:'Calendar & Notes', ar:'التقويم والملاحظات', de:'Kalender & Notizen'},
   secData: {en:'Data & Backup', ar:'البيانات والنسخ الاحتياطي', de:'Daten & Backup'},
   secFaq: {en:'Frequently Asked Questions', ar:'الأسئلة الشائعة', de:'Häufig gestellte Fragen'},
@@ -5706,6 +5707,7 @@ function renderHelpPage() {
 
   h += helpSectionTitle(htx('secLinks'));
   h += helpLinkRow('help-link-brutto-netto', htx('linkBruttoNetto'));
+  h += helpLinkRow('help-link-tarifrechner', htx('linkTarifrechner'));
 
   h += helpSectionTitle(htx('secCal'));
   h += helpRow('help-appointments', htx('appointments'));
@@ -5755,6 +5757,8 @@ function renderHelpPage() {
   if(assetsBtn) assetsBtn.onclick = function(){ openHelpDetail('assets', 'assetsSteps'); };
   var bruttoNettoBtn = document.getElementById('help-link-brutto-netto');
   if(bruttoNettoBtn) bruttoNettoBtn.onclick = function(){ window.open('https://onlinerechner.haude.at/BMF-Brutto-Netto-Rechner/', '_blank', 'noopener'); };
+  var tarifrechnerBtn = document.getElementById('help-link-tarifrechner');
+  if(tarifrechnerBtn) tarifrechnerBtn.onclick = function(){ window.open('https://www.sozialversicherung.at/trechner/views/tarifrechner.xhtml', '_blank', 'noopener'); };
   var appointmentsBtn = document.getElementById('help-appointments');
   if(appointmentsBtn) appointmentsBtn.onclick = function(){ openHelpDetail('appointments', 'appointmentsSteps'); };
   var notesBtn = document.getElementById('help-notes');
