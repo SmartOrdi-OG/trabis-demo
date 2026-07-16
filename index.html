@@ -3130,6 +3130,7 @@ var SVG_ICON_PATHS = {
   truck: '<path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l3 3v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
   note: '<rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/>',
   folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  externalLink: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/>',
   helpCircle: '<circle cx="12" cy="12" r="9"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
   chevronRight: '<polyline points="9 18 15 12 9 6"/>',
   chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
@@ -5523,6 +5524,8 @@ var HELP_L = {
   secBasics: {en:'Getting Started', ar:'البدء', de:'Erste Schritte'},
   secTax: {en:'Tax & Reports', ar:'الضرائب والتقارير', de:'Steuer & Berichte'},
   secTeam: {en:'Team & Assets', ar:'الفريق والأصول', de:'Team & Vermögenswerte'},
+  secLinks: {en:'Useful Links', ar:'روابط مفيدة', de:'Nützliche Links'},
+  linkBruttoNetto: {en:'Austrian BMF Gross-Net Salary Calculator', ar:'حاسبة صافي راتب الموظف (BMF النمساوية)', de:'BMF Brutto-Netto-Rechner'},
   secCal: {en:'Calendar & Notes', ar:'التقويم والملاحظات', de:'Kalender & Notizen'},
   secData: {en:'Data & Backup', ar:'البيانات والنسخ الاحتياطي', de:'Daten & Backup'},
   secFaq: {en:'Frequently Asked Questions', ar:'الأسئلة الشائعة', de:'Häufig gestellte Fragen'},
@@ -5663,6 +5666,12 @@ function renderHelpPage() {
       + svgIcon('chevronRight', 16)
       + '</div>';
   }
+  function helpLinkRow(id, label) {
+    return '<div id="' + id + '" style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);font-size:14px;color:var(--text);cursor:pointer">'
+      + '<span>' + label + '</span>'
+      + '<span style="color:var(--text3)">' + svgIcon('externalLink', 15) + '</span>'
+      + '</div>';
+  }
   function helpSectionTitle(label) {
     return '<div style="font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:16px 16px 4px">' + label + '</div>';
   }
@@ -5694,6 +5703,9 @@ function renderHelpPage() {
   if(state.businessType === 'transport') h += helpRow('help-fleet', htx('fleet'));
   if(state.businessType === 'retail' || state.businessType === 'transport') h += helpRow('help-inventory', htx('inventory'));
   h += helpRow('help-assets', htx('assets'));
+
+  h += helpSectionTitle(htx('secLinks'));
+  h += helpLinkRow('help-link-brutto-netto', htx('linkBruttoNetto'));
 
   h += helpSectionTitle(htx('secCal'));
   h += helpRow('help-appointments', htx('appointments'));
@@ -5741,6 +5753,8 @@ function renderHelpPage() {
   if(inventoryBtn) inventoryBtn.onclick = function(){ openHelpDetail('inventory', 'inventorySteps'); };
   var assetsBtn = document.getElementById('help-assets');
   if(assetsBtn) assetsBtn.onclick = function(){ openHelpDetail('assets', 'assetsSteps'); };
+  var bruttoNettoBtn = document.getElementById('help-link-brutto-netto');
+  if(bruttoNettoBtn) bruttoNettoBtn.onclick = function(){ window.open('https://onlinerechner.haude.at/BMF-Brutto-Netto-Rechner/', '_blank', 'noopener'); };
   var appointmentsBtn = document.getElementById('help-appointments');
   if(appointmentsBtn) appointmentsBtn.onclick = function(){ openHelpDetail('appointments', 'appointmentsSteps'); };
   var notesBtn = document.getElementById('help-notes');
