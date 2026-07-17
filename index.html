@@ -7581,23 +7581,29 @@ function receiptParseOcr(text) {
     return parseFloat(s);
   }
   var amtRe = /\d{1,3}(?:[.,]\d{3})*[.,]\d{2}/g;
-  var bruttoKw = /(brutto|gesamt|total|summe|zu zahlen|endbetrag|zahlbetrag)/i;
+  var nettoKw = /netto/i;
+  var bruttoKw = /(brutto|betrag|gesamtbetrag|endbetrag|zahlbetrag|zu zahlen|gesamt|total|summe)/i;
   var vatKw = /(mwst|ust|mehrwertsteuer|umsatzsteuer|vat|steuer)/i;
+  var vatRateRe = /\b(19|20|13|10|7)(?:[.,]\d)?\s*%/; // DE (19, 7) + AT (20, 13, 10)
   var brutto = null, rate = null, best = 0;
   lines.forEach(function(ln) {
     if(rate == null && vatKw.test(ln)) {
-      var rm = ln.match(/\b(20|13|10)\s*%/);
+      var rm = ln.match(vatRateRe);
       if(rm) rate = parseInt(rm[1], 10);
     }
+    var isNettoLine = nettoKw.test(ln);
     var ms = ln.match(amtRe);
     if(ms) ms.forEach(function(m) {
       var v = norm(m);
       if(!isFinite(v) || v <= 0 || v > 1000000) return;
-      if(bruttoKw.test(ln) && (brutto == null || v > brutto)) brutto = v;
+      // A line labelled "Netto"/subtotal must never be mistaken for the Brutto
+      // total, even if it also matches a generic word like "Summe" (e.g.
+      // "Summe Netto") — netto and brutto are mutually exclusive by definition.
+      if(!isNettoLine && bruttoKw.test(ln) && (brutto == null || v > brutto)) brutto = v;
       if(v > best) best = v;
     });
   });
-  if(rate == null) { var rm2 = (text||'').match(/\b(20|13|10)\s*%/); if(rm2) rate = parseInt(rm2[1], 10); }
+  if(rate == null) { var rm2 = (text||'').match(vatRateRe); if(rm2) rate = parseInt(rm2[1], 10); }
   return {brutto: brutto != null ? brutto : (best || null), rate: rate};
 }
 
