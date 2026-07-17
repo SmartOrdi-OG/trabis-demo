@@ -3261,24 +3261,31 @@ function updateFleetNavVisibility() {
   if(snavInvEl) snavInvEl.style.display = (state.businessType === 'retail' || state.businessType === 'transport') ? 'flex' : 'none';
 }
 
-function getFiltered() {
+// Whether a YYYY-MM-DD date string falls inside the currently active
+// period/custom-date filter — shared by getFiltered() and anything that
+// needs to know in advance whether a given date would actually be visible
+// (e.g. deciding whether to switch the filter after adding a transaction).
+function txDateMatchesFilter(txDate) {
   var now = new Date();
   var todayStr = today();
+  var d = new Date(txDate + 'T12:00:00'); // noon to avoid timezone issues
+  if(state.customDateFilter) {
+    if(state.customDateFilter.mode === 'single') return txDate === state.customDateFilter.date;
+    if(state.customDateFilter.mode === 'range') return txDate >= state.customDateFilter.from && txDate <= state.customDateFilter.to;
+    return true;
+  }
+  if(state.period === 'today') return txDate === todayStr;
+  if(state.period === 'week') { var w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
+  if(state.period === 'month') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  if(state.period === 'quarter') return Math.floor(d.getMonth()/3)===Math.floor(now.getMonth()/3) && d.getFullYear()===now.getFullYear();
+  if(state.period === 'year') return d.getFullYear()===now.getFullYear();
+  return true;
+}
+
+function getFiltered() {
   return state.transactions.filter(function(tx) {
     if(!tx || !tx.date) return false;
-    var txDate = tx.date.substring(0,10); // normalize to YYYY-MM-DD
-    var d = new Date(txDate + 'T12:00:00'); // noon to avoid timezone issues
-    if(state.customDateFilter) {
-      if(state.customDateFilter.mode === 'single') return txDate === state.customDateFilter.date;
-      if(state.customDateFilter.mode === 'range') return txDate >= state.customDateFilter.from && txDate <= state.customDateFilter.to;
-      return true;
-    }
-    if(state.period === 'today') return txDate === todayStr;
-    if(state.period === 'week') { var w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
-    if(state.period === 'month') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if(state.period === 'quarter') return Math.floor(d.getMonth()/3)===Math.floor(now.getMonth()/3) && d.getFullYear()===now.getFullYear();
-    if(state.period === 'year') return d.getFullYear()===now.getFullYear();
-    return true;
+    return txDateMatchesFilter(tx.date.substring(0,10));
   });
 }
 
@@ -7584,12 +7591,12 @@ function receiptParseOcr(text) {
   var nettoKw = /netto/i;
   var bruttoKw = /(brutto|betrag|gesamtbetrag|endbetrag|zahlbetrag|zu zahlen|gesamt|total|summe)/i;
   var vatKw = /(mwst|ust|mehrwertsteuer|umsatzsteuer|vat|steuer)/i;
-  var vatRateRe = /\b(19|20|13|10|7)(?:[.,]\d)?\s*%/; // DE (19, 7) + AT (20, 13, 10)
+  var vatRateRe = /\b(\d{1,2}(?:[.,]\d{1,2})?)\s*%/; // read whatever rate is printed, don't assume a country's fixed rates
   var brutto = null, rate = null, best = 0;
   lines.forEach(function(ln) {
     if(rate == null && vatKw.test(ln)) {
       var rm = ln.match(vatRateRe);
-      if(rm) rate = parseInt(rm[1], 10);
+      if(rm) rate = parseFloat(rm[1].replace(',', '.'));
     }
     var isNettoLine = nettoKw.test(ln);
     var ms = ln.match(amtRe);
@@ -7603,7 +7610,7 @@ function receiptParseOcr(text) {
       if(v > best) best = v;
     });
   });
-  if(rate == null) { var rm2 = (text||'').match(vatRateRe); if(rm2) rate = parseInt(rm2[1], 10); }
+  if(rate == null) { var rm2 = (text||'').match(vatRateRe); if(rm2) rate = parseFloat(rm2[1].replace(',', '.')); }
   return {brutto: brutto != null ? brutto : (best || null), rate: rate};
 }
 
@@ -7919,6 +7926,7 @@ function scanInvoicesSaveAll() {
   var files = _scanInv.files;
   var type = _scanInv.type;
   var savedCount = 0;
+  var savedDates = [];
 
   files.forEach(function(f, idx) {
     var dateEl = document.getElementById('scanRev-date-' + idx);
@@ -7950,13 +7958,27 @@ function scanInvoicesSaveAll() {
       createdAt: new Date().toISOString()
     }).catch(function(){});
     savedCount++;
+    savedDates.push(date);
   });
+
+  // Scanned invoices often carry an old real-world date. If the currently
+  // active period/custom filter would hide any of what was just saved
+  // (e.g. filter is "This Month" but the invoice is from last year), switch
+  // to a custom range covering the saved dates so the user actually sees
+  // what they just added instead of it silently vanishing from view.
+  if(savedDates.length && !savedDates.every(txDateMatchesFilter)) {
+    var minDate = savedDates.reduce(function(a,b){ return b < a ? b : a; });
+    var maxDate = savedDates.reduce(function(a,b){ return b > a ? b : a; });
+    state.customDateFilter = minDate === maxDate ? {mode:'single', date:minDate} : {mode:'range', from:minDate, to:maxDate};
+    document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
+  }
 
   save();
   var ov = document.getElementById('scanFlowOverlay');
   if(ov) ov.parentNode.removeChild(ov);
   showToast(savedCount + scantx('savedToast'), 'success');
   showNav('home');
+  renderCustomDateActiveBar();
 }
 
 // ────────────────────────────────────────
