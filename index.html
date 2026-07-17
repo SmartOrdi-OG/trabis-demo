@@ -7635,6 +7635,9 @@ var SCAN_L = {
   analyzing:     {en:'Analyzing invoice ', ar:'جاري تحليل فاتورة ', de:'Analysiere Rechnung '},
   reviewTitle:   {en:'Review & Confirm', ar:'مراجعة وتأكيد', de:'Überprüfen & Bestätigen'},
   reviewNote:    {en:'Extraction is automatic and may not be 100% accurate — please check the numbers before saving.', ar:'الاستخراج تلقائي وممكن ميبقاش دقيق ١٠٠٪ — راجع الأرقام قبل الحفظ.', de:'Die Erkennung ist automatisch und evtl. nicht 100% genau — bitte Zahlen vor dem Speichern prüfen.'},
+  fieldItem:     {en:'What was bought/sold', ar:'الحاجة اللي اتشترت/اتباعت', de:'Was wurde gekauft/verkauft'},
+  fieldItemPh:   {en:'e.g. Office supplies', ar:'مثال: مستلزمات مكتبية', de:'z.B. Büromaterial'},
+  fieldCategory: {en:'Category', ar:'الفئة', de:'Kategorie'},
   fieldDate:     {en:'Date', ar:'التاريخ', de:'Datum'},
   fieldBrutto:   {en:'Total (Brutto)', ar:'الإجمالي (Brutto)', de:'Gesamtbetrag (Brutto)'},
   fieldVat:      {en:'VAT %', ar:'نسبة الضريبة %', de:'MwSt. %'},
@@ -7862,6 +7865,14 @@ function scanInvoicesRenderReview() {
     if(f.mimeType === 'application/pdf' || (f.brutto == null)) {
       html += '<div style="font-size:11px;color:#ea580c;margin-bottom:8px">' + scantx('couldNotRead') + '</div>';
     }
+    html += '<label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldItem') + '</label>';
+    html += '<input type="text" id="scanRev-item-' + idx + '" class="input-field" style="margin-bottom:8px" placeholder="' + scantx('fieldItemPh') + '" value="' + escHtml(f.item || '') + '">';
+    html += '<label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldCategory') + '</label>';
+    html += '<select id="scanRev-cat-' + idx + '" class="input-field" style="margin-bottom:8px">';
+    (CATS[_scanInv.type] || []).forEach(function(cat) {
+      html += '<option value="' + cat + '"' + (cat === (f.category || CATS[_scanInv.type][0]) ? ' selected' : '') + '>' + tc(cat) + '</option>';
+    });
+    html += '</select>';
     html += '<label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldDate') + '</label>';
     html += '<div class="date-fix-wrap"><input type="date" id="scanRev-date-' + idx + '" class="input-field" style="margin-bottom:8px" value="' + (f.date || today()) + '"></div>';
     html += '<div style="display:flex;gap:8px">';
@@ -7907,16 +7918,20 @@ function scanInvoicesSaveAll() {
     var dateEl = document.getElementById('scanRev-date-' + idx);
     var bruttoEl = document.getElementById('scanRev-brutto-' + idx);
     var vatEl = document.getElementById('scanRev-vat-' + idx);
+    var itemEl = document.getElementById('scanRev-item-' + idx);
+    var catEl = document.getElementById('scanRev-cat-' + idx);
     var date = (dateEl && dateEl.value) || today();
     var brutto = parseAmount(bruttoEl ? bruttoEl.value : '') || 0;
     var rate = parseFloat(vatEl ? vatEl.value : '') || 0;
+    var itemName = (itemEl && itemEl.value.trim()) || f.name;
+    var category = (catEl && catEl.value) || CATS[type][0];
     if(brutto <= 0) return;
 
     var newTxId = Date.now() + idx;
     state.transactions.push({
       id: newTxId,
-      name: f.name,
-      amount: brutto, type: type, category: 'Other', date: date,
+      name: itemName,
+      amount: brutto, type: type, category: category, date: date,
       vatRate: rate,
       receiptId: newTxId, receiptName: f.name
     });
