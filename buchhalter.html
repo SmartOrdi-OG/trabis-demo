@@ -619,9 +619,10 @@ function renderReceiptsSectionHtml() {
   h += '<span class="pill"><select id="recPeriodSel">' + periods.map(function(k){return '<option value="'+k+'"'+(k===buRecPeriod?' selected':'')+'>'+uvaKeyLabelBu(k)+'</option>';}).join('') + '</select></span>';
   h += '</div>';
   h += '<div style="font-size:12.5px;color:var(--text2);margin-bottom:10px">' + exp.length + ' Ausgabenbeleg(e) · ' + inc.length + ' Einnahmenbeleg(e) im gewählten Zeitraum</div>';
-  h += '<button class="dl-btn" id="recDownloadBtn"' + (!exp.length && !inc.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Belege als PDF herunterladen</button>';
+  h += '<button class="dl-btn" id="recDownloadExpBtn"' + (!exp.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Ausgaben als PDF herunterladen</button>';
+  h += '<button class="dl-btn" id="recDownloadIncBtn"' + (!inc.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Einnahmen als PDF herunterladen</button>';
   h += '<div id="recDownloadStatus" style="font-size:12.5px;color:var(--text2);margin-top:8px"></div>';
-  h += '<div class="disclaimer">Alle Belege/Rechnungen, die im Hauptprogramm an Transaktionen angehängt wurden (Foto oder PDF), zusammengeführt in einem einzigen PDF — gruppiert nach Zeitraum und Ausgaben/Einnahmen.</div>';
+  h += '<div class="disclaimer">Alle Belege/Rechnungen, die im Hauptprogramm an Transaktionen angehängt wurden (Foto oder PDF), gruppiert nach Zeitraum — Ausgaben und Einnahmen als zwei separate PDF-Dateien.</div>';
   h += '</div>';
   return h;
 }
@@ -630,8 +631,10 @@ function wireReceiptsSectionControls() {
   var pSel = document.getElementById('recPeriodSel');
   if(ivSel) ivSel.onchange = function() { buRecInterval = ivSel.value; buRecPeriod = null; renderSection(); };
   if(pSel) pSel.onchange = function() { buRecPeriod = pSel.value; renderSection(); };
-  var dlBtn = document.getElementById('recDownloadBtn');
-  if(dlBtn) dlBtn.onclick = downloadReceiptsPdf;
+  var expBtn = document.getElementById('recDownloadExpBtn');
+  var incBtn = document.getElementById('recDownloadIncBtn');
+  if(expBtn) expBtn.onclick = function() { downloadReceiptsPdf('expense'); };
+  if(incBtn) incBtn.onclick = function() { downloadReceiptsPdf('income'); };
 }
 
 function buPdfLoadJs() {
@@ -694,31 +697,24 @@ function imageDimensionsFromDataUrl(dataUrl) {
   });
 }
 
-function downloadReceiptsPdf() {
+function downloadReceiptsPdf(type) {
   var statusEl = document.getElementById('recDownloadStatus');
   var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
   if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var exp = receiptsForPeriod('expense', buRecPeriod, buRecInterval);
-  var inc = receiptsForPeriod('income', buRecPeriod, buRecInterval);
-  if(!exp.length && !inc.length) return;
+  var list = receiptsForPeriod(type, buRecPeriod, buRecInterval);
+  if(!list.length) return;
+  var label = type === 'expense' ? 'Ausgaben' : 'Einnahmen';
 
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
   doc.setFontSize(18); doc.setFont(undefined,'bold');
-  doc.text('Belege — ' + (buData.businessName||''), 14, 24);
+  doc.text(label + ' — ' + (buData.businessName||''), 14, 24);
   doc.setFontSize(11); doc.setFont(undefined,'normal');
   doc.text('Zeitraum: ' + uvaKeyLabelBu(buRecPeriod), 14, 34);
-  doc.text('Ausgaben: ' + exp.length + ' Beleg(e)   ·   Einnahmen: ' + inc.length + ' Beleg(e)', 14, 42);
+  doc.text(list.length + ' Beleg(e)', 14, 42);
   doc.setFontSize(9); doc.setTextColor(140);
   doc.text('Erstellt am ' + new Date().toLocaleDateString('de-AT'), 14, 52);
   doc.setTextColor(0);
 
-  function addSectionHeaderPage(label, count) {
-    doc.addPage();
-    doc.setFontSize(20); doc.setFont(undefined,'bold');
-    doc.text(label, 14, 150);
-    doc.setFontSize(11); doc.setFont(undefined,'normal');
-    doc.text(count + ' Beleg(e)', 14, 160);
-  }
   function addImagePage(dataUrl, dims, caption) {
     var isLandscape = dims.w > dims.h;
     doc.addPage('a4', isLandscape ? 'l' : 'p');
@@ -760,16 +756,8 @@ function downloadReceiptsPdf() {
   }
 
   if(statusEl) statusEl.textContent = 'Wird erstellt …';
-  Promise.resolve().then(function() {
-    if(!exp.length) return;
-    addSectionHeaderPage('Ausgaben', exp.length);
-    return processGroup(exp);
-  }).then(function() {
-    if(!inc.length) return;
-    addSectionHeaderPage('Einnahmen', inc.length);
-    return processGroup(inc);
-  }).then(function() {
-    doc.save('Belege_' + buRecPeriod + '.pdf');
+  processGroup(list).then(function() {
+    doc.save(label + '_' + buRecPeriod + '.pdf');
     if(statusEl) statusEl.textContent = '';
   }).catch(function() {
     if(statusEl) statusEl.textContent = 'Fehler beim Erstellen des PDFs.';
