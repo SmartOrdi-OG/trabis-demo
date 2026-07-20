@@ -67,6 +67,12 @@ input,select,button{font-family:inherit}
 .stat-label{font-size:11px;color:var(--text3)}
 .stat-value{font-size:19px;font-weight:800;margin-top:2px}
 
+.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
+.donut-legend{display:flex;flex-direction:column;gap:10px}
+.donut-legend-item{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--text)}
+.donut-legend-item span.donut-sub{font-weight:500;color:var(--text3)}
+.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
 .pills{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
 .pill{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:600;cursor:pointer}
 .pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
@@ -416,9 +422,9 @@ function whFmtHMBu(decimalHours) {
 // ── tabs / navigation ──
 var TABS = [
   {id:'overview', label:'Übersicht', icon:'home'},
+  {id:'invoices', label:'Rechnungen', icon:'fileText'},
   {id:'uva', label:'UVA', icon:'percent'},
   {id:'transactions', label:'Transaktionen', icon:'list'},
-  {id:'invoices', label:'Rechnungen', icon:'fileText'},
   {id:'employees', label:'Mitarbeiter', icon:'users'},
   {id:'assets', label:'Anlagevermögen', icon:'box'},
   {id:'downloads', label:'Downloads', icon:'download'},
@@ -444,6 +450,24 @@ function renderSection() {
 
 // ── Übersicht ──
 var buPeriod = 'month';
+function renderIncomeExpenseDonutHtml(income, expense) {
+  var total = income + expense;
+  if(total <= 0) return '<div class="empty-msg">Keine Daten für den gewählten Zeitraum</div>';
+  var r = 40, circumference = 2 * Math.PI * r;
+  var incomeLen = circumference * (income / total);
+  var expenseLen = circumference - incomeLen;
+  var h = '<div class="donut-wrap">';
+  h += '<svg width="120" height="120" viewBox="0 0 100 100">';
+  h += '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--income)" stroke-width="14" stroke-dasharray="' + incomeLen + ' ' + expenseLen + '" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>';
+  h += '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--expense)" stroke-width="14" stroke-dasharray="' + expenseLen + ' ' + incomeLen + '" stroke-dashoffset="-' + incomeLen + '" transform="rotate(-90 50 50)"/>';
+  h += '</svg>';
+  h += '<div class="donut-legend">';
+  h += '<div class="donut-legend-item"><span class="donut-dot" style="background:var(--income)"></span>Einnahmen <span class="donut-sub">' + Math.round(income/total*100) + '%</span></div>';
+  h += '<div class="donut-legend-item"><span class="donut-dot" style="background:var(--expense)"></span>Ausgaben <span class="donut-sub">' + Math.round(expense/total*100) + '%</span></div>';
+  h += '</div>';
+  h += '</div>';
+  return h;
+}
 function renderOverviewHtml() {
   var txs = periodFilterTx(buPeriod);
   var income = txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+(t.amount||0);},0);
@@ -458,6 +482,7 @@ function renderOverviewHtml() {
   h += '<div class="stat"><div class="stat-label">Ausgaben</div><div class="stat-value" style="color:var(--expense)">' + fmtBu(expense) + '</div></div>';
   h += '<div class="stat"><div class="stat-label">Netto</div><div class="stat-value">' + fmtBu(income-expense) + '</div></div>';
   h += '</div>';
+  h += '<div class="card"><div class="card-title">Einnahmen vs. Ausgaben</div>' + renderIncomeExpenseDonutHtml(income, expense) + '</div>';
   var openDebts = (buData.debts||[]).filter(function(d){return d.status!=='paid';});
   h += '<div class="card"><div class="card-title">Offene Forderungen / Verbindlichkeiten</div>';
   if(!openDebts.length) h += '<div class="empty-msg">Keine offenen Posten</div>';
