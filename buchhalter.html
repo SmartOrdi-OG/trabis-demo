@@ -393,7 +393,7 @@ function renderSection() {
   if(buTab === 'overview') body.innerHTML = renderOverviewHtml();
   else if(buTab === 'uva') { body.innerHTML = renderUvaHtml(); wireUvaControls(); }
   else if(buTab === 'transactions') body.innerHTML = renderTransactionsHtml();
-  else if(buTab === 'invoices') body.innerHTML = renderInvoicesHtml();
+  else if(buTab === 'invoices') { body.innerHTML = renderInvoicesHtml(); wireReceiptsSectionControls(); }
   else if(buTab === 'employees') body.innerHTML = renderEmployeesHtml();
   else if(buTab === 'assets') body.innerHTML = renderAssetsHtml();
   else if(buTab === 'downloads') body.innerHTML = renderDownloadsHtml();
@@ -581,7 +581,199 @@ function renderInvoicesHtml() {
     h += '</table>';
   }
   h += '</div>';
+  h += renderReceiptsSectionHtml();
   return h;
+}
+
+// ── Belege / Anhänge (combined PDF export, grouped by period + Ausgaben/Einnahmen) ──
+var buRecInterval = 'month';
+var buRecPeriod = null;
+
+function buRecPeriods(interval) {
+  var years = {}; years[todayBu().substring(0,4)] = true;
+  (buData.transactions||[]).forEach(function(tx){ if(tx && tx.date && tx.receiptId) years[tx.date.substring(0,4)]=true; });
+  var yearNums = Object.keys(years).map(Number);
+  var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
+  var keys = [];
+  for(var y = minYear; y <= maxYear; y++) {
+    if(interval === 'month') { for(var m = 1; m <= 12; m++) keys.push(y + '-' + ('0'+m).slice(-2)); }
+    else if(interval === 'quarter') { for(var q = 1; q <= 4; q++) keys.push(y + '-Q' + q); }
+    else keys.push(String(y));
+  }
+  return keys.sort().reverse();
+}
+function receiptsForPeriod(type, key, interval) {
+  return (buData.transactions||[]).filter(function(tx) {
+    return tx && tx.receiptId && tx.type === type && tx.date && uvaKeyForDateBu(tx.date, interval) === key;
+  }).sort(function(a,b){ return (a.date||'') < (b.date||'') ? -1 : ((a.date||'') > (b.date||'') ? 1 : 0); });
+}
+function renderReceiptsSectionHtml() {
+  if(!buRecPeriod) buRecPeriod = uvaKeyForDateBu(todayBu(), buRecInterval);
+  var periods = buRecPeriods(buRecInterval);
+  var exp = receiptsForPeriod('expense', buRecPeriod, buRecInterval);
+  var inc = receiptsForPeriod('income', buRecPeriod, buRecInterval);
+  var h = '<div class="card">';
+  h += '<div class="card-title">Belege / Anhänge</div>';
+  h += '<div class="pills">';
+  h += '<span class="pill"><select id="recIntervalSel"><option value="month"' + (buRecInterval==='month'?' selected':'') + '>Monatlich</option><option value="quarter"' + (buRecInterval==='quarter'?' selected':'') + '>Vierteljährlich</option><option value="year"' + (buRecInterval==='year'?' selected':'') + '>Jährlich</option></select></span>';
+  h += '<span class="pill"><select id="recPeriodSel">' + periods.map(function(k){return '<option value="'+k+'"'+(k===buRecPeriod?' selected':'')+'>'+uvaKeyLabelBu(k)+'</option>';}).join('') + '</select></span>';
+  h += '</div>';
+  h += '<div style="font-size:12.5px;color:var(--text2);margin-bottom:10px">' + exp.length + ' Ausgabenbeleg(e) · ' + inc.length + ' Einnahmenbeleg(e) im gewählten Zeitraum</div>';
+  h += '<button class="dl-btn" id="recDownloadBtn"' + (!exp.length && !inc.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Belege als PDF herunterladen</button>';
+  h += '<div id="recDownloadStatus" style="font-size:12.5px;color:var(--text2);margin-top:8px"></div>';
+  h += '<div class="disclaimer">Alle Belege/Rechnungen, die im Hauptprogramm an Transaktionen angehängt wurden (Foto oder PDF), zusammengeführt in einem einzigen PDF — gruppiert nach Zeitraum und Ausgaben/Einnahmen.</div>';
+  h += '</div>';
+  return h;
+}
+function wireReceiptsSectionControls() {
+  var ivSel = document.getElementById('recIntervalSel');
+  var pSel = document.getElementById('recPeriodSel');
+  if(ivSel) ivSel.onchange = function() { buRecInterval = ivSel.value; buRecPeriod = null; renderSection(); };
+  if(pSel) pSel.onchange = function() { buRecPeriod = pSel.value; renderSection(); };
+  var dlBtn = document.getElementById('recDownloadBtn');
+  if(dlBtn) dlBtn.onclick = downloadReceiptsPdf;
+}
+
+function buPdfLoadJs() {
+  return new Promise(function(resolve, reject) {
+    if(window.pdfjsLib) { resolve(); return; }
+    var s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
+    s.onload = function() {
+      try {
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
+        resolve();
+      } catch(e) { reject(e); }
+    };
+    s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+// Renders every page of an attached PDF to a JPEG data URL (capped at 15
+// pages) so it can be merged as image pages into the combined export —
+// jsPDF alone can't import an existing PDF's pages directly.
+function buPdfBlobToImageDataUrls(blob) {
+  return buPdfLoadJs().then(function() {
+    return blob.arrayBuffer();
+  }).then(function(buf) {
+    return window.pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise;
+  }).then(function(pdf) {
+    var numPages = Math.min(pdf.numPages, 15);
+    var pageNums = [];
+    for(var i = 1; i <= numPages; i++) pageNums.push(i);
+    return pageNums.reduce(function(chain, pageNum) {
+      return chain.then(function(urls) {
+        return pdf.getPage(pageNum).then(function(page) {
+          var viewport = page.getViewport({scale: 2});
+          var canvas = document.createElement('canvas');
+          canvas.width = viewport.width; canvas.height = viewport.height;
+          var ctx = canvas.getContext('2d');
+          return page.render({canvasContext: ctx, viewport: viewport}).promise.then(function() {
+            urls.push(canvas.toDataURL('image/jpeg', 0.9));
+            return urls;
+          });
+        });
+      });
+    }, Promise.resolve([]));
+  });
+}
+function imageBlobToDataUrl(blob) {
+  return new Promise(function(resolve, reject) {
+    var reader = new FileReader();
+    reader.onload = function() { resolve(reader.result); };
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+function imageDimensionsFromDataUrl(dataUrl) {
+  return new Promise(function(resolve) {
+    var img = new Image();
+    img.onload = function() { resolve({w: img.naturalWidth || 800, h: img.naturalHeight || 1131}); };
+    img.onerror = function() { resolve({w: 800, h: 1131}); }; // A4-ish fallback ratio
+    img.src = dataUrl;
+  });
+}
+
+function downloadReceiptsPdf() {
+  var statusEl = document.getElementById('recDownloadStatus');
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
+  var exp = receiptsForPeriod('expense', buRecPeriod, buRecInterval);
+  var inc = receiptsForPeriod('income', buRecPeriod, buRecInterval);
+  if(!exp.length && !inc.length) return;
+
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  doc.setFontSize(18); doc.setFont(undefined,'bold');
+  doc.text('Belege — ' + (buData.businessName||''), 14, 24);
+  doc.setFontSize(11); doc.setFont(undefined,'normal');
+  doc.text('Zeitraum: ' + uvaKeyLabelBu(buRecPeriod), 14, 34);
+  doc.text('Ausgaben: ' + exp.length + ' Beleg(e)   ·   Einnahmen: ' + inc.length + ' Beleg(e)', 14, 42);
+  doc.setFontSize(9); doc.setTextColor(140);
+  doc.text('Erstellt am ' + new Date().toLocaleDateString('de-AT'), 14, 52);
+  doc.setTextColor(0);
+
+  function addSectionHeaderPage(label, count) {
+    doc.addPage();
+    doc.setFontSize(20); doc.setFont(undefined,'bold');
+    doc.text(label, 14, 150);
+    doc.setFontSize(11); doc.setFont(undefined,'normal');
+    doc.text(count + ' Beleg(e)', 14, 160);
+  }
+  function addImagePage(dataUrl, dims, caption) {
+    var isLandscape = dims.w > dims.h;
+    doc.addPage('a4', isLandscape ? 'l' : 'p');
+    var pageW = doc.internal.pageSize.getWidth();
+    var pageH = doc.internal.pageSize.getHeight();
+    var margin = 12;
+    doc.setFontSize(9); doc.setFont(undefined,'normal'); doc.setTextColor(90);
+    doc.text(caption, margin, margin, {maxWidth: pageW - margin*2});
+    doc.setTextColor(0);
+    var top = margin + 8;
+    var usableW = pageW - margin*2, usableH = pageH - top - margin;
+    var ratio = Math.min(usableW / dims.w, usableH / dims.h);
+    var drawW = dims.w * ratio, drawH = dims.h * ratio;
+    doc.addImage(dataUrl, 'JPEG', margin + (usableW-drawW)/2, top + (usableH-drawH)/2, drawW, drawH);
+  }
+  function processGroup(list) {
+    return list.reduce(function(chain, tx) {
+      return chain.then(function() {
+        return idbGet('smartac_receipts', 'receipts', tx.receiptId).then(function(rec) {
+          if(!rec || !rec.blob) return; // attachment not on this device — skip silently, same as the single viewer does
+          var caption = (tx.type === 'expense' ? 'Ausgabe' : 'Einnahme') + ' · ' + fmtDateBu(tx.date) + ' · ' + (tx.name||'') + ' · ' + fmtBu(tx.amount);
+          if(rec.type === 'application/pdf') {
+            return buPdfBlobToImageDataUrls(rec.blob).then(function(dataUrls) {
+              return dataUrls.reduce(function(c2, url, idx) {
+                return c2.then(function() {
+                  return imageDimensionsFromDataUrl(url).then(function(dims) {
+                    addImagePage(url, dims, caption + (dataUrls.length>1 ? ' (Seite ' + (idx+1) + '/' + dataUrls.length + ')' : ''));
+                  });
+                });
+              }, Promise.resolve());
+            }).catch(function(){});
+          }
+          return imageBlobToDataUrl(rec.blob).then(function(url) {
+            return imageDimensionsFromDataUrl(url).then(function(dims) { addImagePage(url, dims, caption); });
+          });
+        });
+      });
+    }, Promise.resolve());
+  }
+
+  if(statusEl) statusEl.textContent = 'Wird erstellt …';
+  Promise.resolve().then(function() {
+    if(!exp.length) return;
+    addSectionHeaderPage('Ausgaben', exp.length);
+    return processGroup(exp);
+  }).then(function() {
+    if(!inc.length) return;
+    addSectionHeaderPage('Einnahmen', inc.length);
+    return processGroup(inc);
+  }).then(function() {
+    doc.save('Belege_' + buRecPeriod + '.pdf');
+    if(statusEl) statusEl.textContent = '';
+  }).catch(function() {
+    if(statusEl) statusEl.textContent = 'Fehler beim Erstellen des PDFs.';
+  });
 }
 
 // ── Mitarbeiter ──
