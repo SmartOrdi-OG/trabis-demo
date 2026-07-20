@@ -7566,9 +7566,9 @@ function receiptFileChosen(input) {
   });
   if(isPdf) {
     receiptOcrStatus(rtx('reading'));
-    pdfFirstPageToImageBlob(f).then(function(imgBlob) {
-      if(!imgBlob) { receiptOcrStatus(rtx('attached')); return; }
-      receiptRunOcr(imgBlob);
+    pdfPagesToImageBlobs(f).then(function(imgBlobs) {
+      if(!imgBlobs || !imgBlobs.length) { receiptOcrStatus(rtx('attached')); return; }
+      receiptRunOcr(imgBlobs);
     }).catch(function() { receiptOcrStatus(rtx('attached')); });
     return;
   }
@@ -7604,24 +7604,38 @@ function pdfLoadJs() {
 // Renders the first page of a PDF to a JPEG Blob so the existing image-based
 // OCR pipeline (Tesseract) can run on it exactly like any photographed
 // receipt/invoice — OCR engines read pixels, not PDF text streams.
-function pdfFirstPageToImageBlob(file) {
+function pdfRenderPageToImageBlob(page) {
+  var viewport = page.getViewport({scale: 2}); // higher resolution improves OCR accuracy
+  var canvas = document.createElement('canvas');
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  var ctx = canvas.getContext('2d');
+  return page.render({canvasContext: ctx, viewport: viewport}).promise.then(function() {
+    return new Promise(function(resolve) {
+      canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', 0.9);
+    });
+  });
+}
+
+// Renders every page of a PDF to a JPEG Blob (capped at 15 pages — plenty for
+// a real invoice, and keeps a stray huge PDF from freezing a mobile browser).
+function pdfPagesToImageBlobs(file) {
   return pdfLoadJs().then(function() {
     return file.arrayBuffer();
   }).then(function(buf) {
     return window.pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise;
   }).then(function(pdf) {
-    return pdf.getPage(1);
-  }).then(function(page) {
-    var viewport = page.getViewport({scale: 2}); // higher resolution improves OCR accuracy
-    var canvas = document.createElement('canvas');
-    canvas.width = viewport.width;
-    canvas.height = viewport.height;
-    var ctx = canvas.getContext('2d');
-    return page.render({canvasContext: ctx, viewport: viewport}).promise.then(function() {
-      return new Promise(function(resolve) {
-        canvas.toBlob(function(blob) { resolve(blob); }, 'image/jpeg', 0.9);
+    var numPages = Math.min(pdf.numPages, 15);
+    var pageNums = [];
+    for(var i = 1; i <= numPages; i++) pageNums.push(i);
+    return pageNums.reduce(function(chain, pageNum) {
+      return chain.then(function(blobs) {
+        return pdf.getPage(pageNum).then(pdfRenderPageToImageBlob).then(function(blob) {
+          blobs.push(blob);
+          return blobs;
+        });
       });
-    });
+    }, Promise.resolve([]));
   });
 }
 
@@ -7661,12 +7675,27 @@ function receiptParseOcr(text) {
   return {brutto: brutto != null ? brutto : (best || null), rate: rate};
 }
 
-function receiptRunOcr(file) {
+// Runs OCR on one or more image blobs (e.g. every rendered page of a
+// multi-page PDF) and concatenates the recognized text, so parsing logic
+// downstream always just sees a single block of text regardless of how many
+// pages/images it came from.
+function runOcrOnBlobs(blobs) {
+  return receiptLoadTesseract().then(function() {
+    return blobs.reduce(function(chain, blob) {
+      return chain.then(function(textSoFar) {
+        return Tesseract.recognize(blob, 'deu+eng').then(function(res) {
+          return textSoFar + '\n' + (res && res.data ? res.data.text : '');
+        });
+      });
+    }, Promise.resolve(''));
+  });
+}
+
+function receiptRunOcr(fileOrBlobs) {
   receiptOcrStatus(rtx('reading'));
-  receiptLoadTesseract().then(function() {
-    return Tesseract.recognize(file, 'deu+eng');
-  }).then(function(res) {
-    var p = receiptParseOcr(res && res.data ? res.data.text : '');
+  var blobs = Array.isArray(fileOrBlobs) ? fileOrBlobs : [fileOrBlobs];
+  runOcrOnBlobs(blobs).then(function(text) {
+    var p = receiptParseOcr(text);
     if(p.brutto) {
       var amtInp = document.getElementById('amountInput');
       if(amtInp) amtInp.value = p.brutto.toFixed(2);
@@ -7720,13 +7749,10 @@ var _scanInv = { type: null, files: [] };
 function extractInvoiceData(file) {
   return new Promise(function(resolve) {
     var isPdf = file.type === 'application/pdf';
-    var imageReady = isPdf ? pdfFirstPageToImageBlob(file).catch(function(){ return null; }) : Promise.resolve(file);
-    imageReady.then(function(imgBlob) {
-      if(!imgBlob) { resolve({date: null, brutto: null, rate: null}); return; }
-      receiptLoadTesseract().then(function() {
-        return Tesseract.recognize(imgBlob, 'deu+eng');
-      }).then(function(res) {
-        var text = res && res.data ? res.data.text : '';
+    var imagesReady = isPdf ? pdfPagesToImageBlobs(file).catch(function(){ return []; }) : Promise.resolve([file]);
+    imagesReady.then(function(imgBlobs) {
+      if(!imgBlobs || !imgBlobs.length) { resolve({date: null, brutto: null, rate: null}); return; }
+      runOcrOnBlobs(imgBlobs).then(function(text) {
         var p = receiptParseOcr(text);
         resolve({date: invoiceExtractDate(text), brutto: p.brutto, rate: p.rate});
       }).catch(function() {
