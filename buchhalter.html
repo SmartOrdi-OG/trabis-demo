@@ -126,6 +126,19 @@ tr:last-child td{border-bottom:none}
 #viewerOverlay.open{display:flex}
 #viewerClose{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 #viewerDownload{position:absolute;top:16px;right:64px;height:38px;padding:0 16px;border-radius:19px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
+
+#legalOverlay{display:none;position:fixed;inset:0;background:#f8fafc;z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#legalOverlay.open{display:block}
+.legal-hdr{background:var(--primary);padding:16px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:1}
+.legal-back{background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.legal-title{font-size:18px;font-weight:800;color:#fff}
+.legal-sub{font-size:12.5px;color:rgba(255,255,255,0.75);margin-top:2px}
+.legal-body{max-width:760px;margin:0 auto;padding:32px 24px 60px}
+.legal-body h2{font-size:15px;font-weight:700;color:var(--text);margin:26px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--primary-light)}
+.legal-body h2:first-child{margin-top:0}
+.legal-body p{font-size:14px;color:var(--text2);line-height:1.8;margin:0 0 4px}
+.legal-body a{color:var(--primary);text-decoration:none}
+.legal-footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text3);text-align:center}
 </style>
 </head>
 <body>
@@ -193,6 +206,17 @@ tr:last-child td{border-bottom:none}
   <button id="viewerDownload" onclick="downloadAttachment()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Herunterladen</button>
   <button id="viewerClose" onclick="closeViewer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
   <div id="viewerContent"></div>
+</div>
+
+<div id="legalOverlay">
+  <div class="legal-hdr">
+    <button class="legal-back" onclick="closeLegalOverlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div>
+      <div class="legal-title" id="legalTitle"></div>
+      <div class="legal-sub" id="legalSub"></div>
+    </div>
+  </div>
+  <div class="legal-body" id="legalBody"></div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -334,6 +358,7 @@ var SVG_ICON_PATHS_BU = {
   fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
   users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
   box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
+  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
 };
 function svgIconBu(name, size) {
   size = size || 16;
@@ -428,6 +453,7 @@ var TABS = [
   {id:'employees', label:'Mitarbeiter', icon:'users'},
   {id:'assets', label:'Anlagevermögen', icon:'box'},
   {id:'downloads', label:'Downloads', icon:'download'},
+  {id:'settings', label:'Einstellungen', icon:'settings'},
 ];
 function renderTabs() {
   var bar = document.getElementById('tabBar');
@@ -446,6 +472,7 @@ function renderSection() {
   else if(buTab === 'employees') body.innerHTML = renderEmployeesHtml();
   else if(buTab === 'assets') body.innerHTML = renderAssetsHtml();
   else if(buTab === 'downloads') body.innerHTML = renderDownloadsHtml();
+  else if(buTab === 'settings') body.innerHTML = renderSettingsHtml();
 }
 
 // ── Übersicht ──
@@ -1035,6 +1062,61 @@ function closeViewer() {
   document.getElementById('viewerDownload').style.display = 'none';
   if(ov.dataset.url) { URL.revokeObjectURL(ov.dataset.url); delete ov.dataset.url; }
   document.getElementById('viewerContent').innerHTML = '';
+}
+
+// ── Einstellungen / Rechtliches ──
+function renderSettingsHtml() {
+  var h = '<div class="card"><div class="card-title">Rechtliches</div>';
+  h += '<button class="dl-btn" onclick="buOpenPrivacy()">' + svgIconBu('fileText',14) + ' Datenschutzrichtlinie</button>';
+  h += '<button class="dl-btn" onclick="buOpenTerms()">' + svgIconBu('fileText',14) + ' Nutzungsbedingungen</button>';
+  h += '<button class="dl-btn" onclick="buOpenImpressum()">' + svgIconBu('fileText',14) + ' Impressum</button>';
+  h += '</div>';
+  h += '<div class="card"><div class="card-title">Über dieses Portal</div>';
+  h += '<div style="font-size:13px;color:var(--text2);line-height:1.7">SmartAc Buchhalter-Portal — eine schreibgeschützte Ansicht für Steuerberater. Alle Daten werden ausschließlich lokal auf dem Gerät des Geschäftsinhabers gespeichert; es finden keine Datenübertragungen an externe Server statt.</div>';
+  h += '</div>';
+  return h;
+}
+function buOpenLegalOverlay(title, subtitle, contentHTML) {
+  document.getElementById('legalTitle').textContent = title;
+  document.getElementById('legalSub').textContent = subtitle;
+  document.getElementById('legalBody').innerHTML = contentHTML;
+  document.getElementById('legalOverlay').classList.add('open');
+  document.getElementById('legalOverlay').scrollTop = 0;
+}
+function closeLegalOverlay() {
+  document.getElementById('legalOverlay').classList.remove('open');
+}
+function buOpenTerms() {
+  var h = '';
+  h += '<h2>1. Geltungsbereich</h2><p>Diese Nutzungsbedingungen gelten für den Zugang zum SmartAc Buchhalter-Portal — einer schreibgeschützten Ansicht, die Ihnen von Ihrem Mandanten (dem Geschäftsinhaber) zur Verfügung gestellt wird.</p>';
+  h += '<h2>2. Nutzung des Portals</h2><p>Der Zugang gewährt eine reine Leseansicht der von Ihrem Mandanten in SmartAc erfassten Geschäftsdaten. Sie dürfen diesen Zugang ausschließlich für die mit Ihrem Mandanten vereinbarten steuerlichen und buchhalterischen Zwecke nutzen.</p>';
+  h += '<h2>3. Vertraulichkeit der Zugangsdaten</h2><p>Sie sind dafür verantwortlich, die Ihnen mitgeteilten Zugangsdaten vertraulich zu behandeln und nicht an unbefugte Dritte weiterzugeben.</p>';
+  h += '<h2>4. Datenspeicherung</h2><p>Alle Daten werden ausschließlich lokal im Browser des Geräts gespeichert, auf dem Ihr Mandant SmartAc verwendet (localStorage/IndexedDB). Smartordi OG erhebt, überträgt oder speichert keine dieser Daten auf externen Servern.</p>';
+  h += '<h2>5. Haftungsausschluss</h2><p>Die im Portal angezeigten Daten werden von Ihrem Mandanten erfasst und von Smartordi OG nicht auf Richtigkeit oder Vollständigkeit geprüft. Smartordi OG haftet nicht für Datenverlust, Fehler in den angezeigten Daten oder Schäden, die aus der Nutzung oder Nichtnutzung des Portals entstehen.</p>';
+  h += '<h2>6. Änderungen</h2><p>Smartordi OG behält sich das Recht vor, das Portal jederzeit ohne vorherige Ankündigung zu ändern, einzuschränken oder einzustellen.</p>';
+  h += '<h2>7. Anwendbares Recht</h2><p>Es gilt österreichisches Recht. Gerichtsstand ist das zuständige Gericht in Linz, Österreich.</p>';
+  h += '<h2>8. Kontakt</h2><p>Bei Fragen: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
+  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
+  buOpenLegalOverlay('Nutzungsbedingungen', 'Buchhalter-Portal · Stand: Juli 2026 · Smartordi OG', h);
+}
+function buOpenPrivacy() {
+  var h = '';
+  h += '<h2>1. Verantwortlicher</h2><p>Smartordi OG · Steingasse 6a, 4020 Linz · <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
+  h += '<h2>2. Welche Daten Sie einsehen können</h2><p>Über das Buchhalter-Portal können Sie die Geschäftsdaten einsehen, die Ihr Mandant in SmartAc erfasst hat (Transaktionen, Rechnungen, Belege, Mitarbeiterdaten u. a.). Diese Daten gehören Ihrem Mandanten — Smartordi OG hat keinen Zugriff darauf und speichert sie nicht.</p>';
+  h += '<h2>3. Keine Datenübertragung an Dritte</h2><p>SmartAc überträgt keine Daten an externe Server. Sämtliche Daten verbleiben ausschließlich auf dem Gerät Ihres Mandanten; ein Zugriff durch Smartordi OG oder Dritte ist technisch nicht möglich.</p>';
+  h += '<h2>4. Cookies und Tracking</h2><p>Das Portal verwendet keine Cookies und keine Tracking- oder Analysetechnologien.</p>';
+  h += '<h2>5. Rechte an den Daten</h2><p>Die angezeigten Daten gehören Ihrem Mandanten. Anfragen zu Auskunft, Berichtigung oder Löschung von Daten (DSGVO/GDPR) sind direkt an Ihren Mandanten zu richten, nicht an Smartordi OG. Als Steuerberater unterliegen Sie zusätzlich Ihren eigenen berufsrechtlichen Verschwiegenheitspflichten hinsichtlich der eingesehenen Daten.</p>';
+  h += '<h2>6. Datensicherheit</h2><p>Die Datensicherheit hängt vom Gerät Ihres Mandanten ab. Smartordi OG haftet nicht für Datenverlust durch Geräteausfall, gelöschte Browserdaten oder unbefugten Zugriff auf das Gerät.</p>';
+  h += '<h2>7. Kontakt</h2><p>Bei Fragen zum Datenschutz: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
+  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
+  buOpenLegalOverlay('Datenschutzrichtlinie', 'Buchhalter-Portal · Stand: Juli 2026 · Smartordi OG', h);
+}
+function buOpenImpressum() {
+  var h = '';
+  h += '<h2>Unternehmen</h2><p><strong>Smartordi OG</strong><br>Steingasse 6a, 4020 Linz<br>Firmenbuchnummer: FN 675586 i<br>Firmenbuchgericht: Landesgericht Linz<br>Rechtsform: Offene Gesellschaft (OG)</p>';
+  h += '<h2>Kontakt</h2><p>E-Mail: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a><br>Tel: <a href="tel:+436677624392">+43 667 762439293</a></p>';
+  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
+  buOpenLegalOverlay('Impressum', 'Angaben gemäß § 5 ECG', h);
 }
 </script>
 </body>
