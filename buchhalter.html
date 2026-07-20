@@ -556,33 +556,8 @@ function renderTransactionsHtml() {
 }
 
 // ── Rechnungen ──
-function invStatusBadge(st) {
-  var cls = st==='Paid' ? 'paid' : (st==='Overdue' ? 'overdue' : 'pending');
-  var lbl = st==='Paid' ? 'Bezahlt' : (st==='Overdue' ? 'Überfällig' : 'Ausstehend');
-  return '<span class="badge ' + cls + '">' + lbl + '</span>';
-}
 function renderInvoicesHtml() {
-  var h = '<div class="card"><div class="card-title">Ausgestellte Rechnungen (' + (buData.issuedInvoices||[]).length + ')</div>';
-  if(!(buData.issuedInvoices||[]).length) h += '<div class="empty-msg">Keine ausgestellten Rechnungen</div>';
-  else {
-    h += '<table><tr><th>Nr.</th><th>Kunde</th><th>Datum</th><th>Fällig</th><th>Betrag</th><th>Status</th></tr>';
-    buData.issuedInvoices.slice().sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(inv) {
-      h += '<tr><td>' + escHtmlBu(inv.number) + '</td><td>' + escHtmlBu(inv.clientName||'—') + '</td><td>' + fmtDateBu(inv.issueDate) + '</td><td>' + fmtDateBu(inv.dueDate) + '</td><td>' + fmtBu(inv.total) + '</td><td>' + invStatusBadge(inv.status) + '</td></tr>';
-    });
-    h += '</table>';
-  }
-  h += '</div><div class="card"><div class="card-title">Erhaltene Rechnungen (' + (buData.receivedInvoices||[]).length + ')</div>';
-  if(!(buData.receivedInvoices||[]).length) h += '<div class="empty-msg">Keine erhaltenen Rechnungen</div>';
-  else {
-    h += '<table><tr><th>Nr.</th><th>Lieferant</th><th>Datum</th><th>Fällig</th><th>Betrag</th><th>Status</th></tr>';
-    buData.receivedInvoices.slice().sort(function(a,b){return (b.id||0)-(a.id||0);}).forEach(function(inv) {
-      h += '<tr><td>' + escHtmlBu(inv.number) + '</td><td>' + escHtmlBu(inv.supplierName||'—') + '</td><td>' + fmtDateBu(inv.issueDate) + '</td><td>' + fmtDateBu(inv.dueDate) + '</td><td>' + fmtBu(inv.total) + '</td><td>' + invStatusBadge(inv.status) + '</td></tr>';
-    });
-    h += '</table>';
-  }
-  h += '</div>';
-  h += renderReceiptsSectionHtml();
-  return h;
+  return renderReceiptsSectionHtml();
 }
 
 // ── Belege / Anhänge (combined PDF export, grouped by period + Ausgaben/Einnahmen) ──
