@@ -597,7 +597,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 
 /* ── MOBILE LAYOUT (default: 430px centered) ── */
 @media (max-width:1023px) {
-  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{max-width:430px;margin-left:auto;margin-right:auto}
+  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{max-width:430px;margin-left:auto;margin-right:auto}
   .bnav{max-width:430px}
   #mainPage{max-width:430px;margin-left:auto;margin-right:auto}
   /* Landing page mobile */
@@ -648,8 +648,8 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .more-back-btn{display:none !important}
   #sidebarNav{transform:translateX(0)}
   body.lang-ar #sidebarNav{transform:translateX(0)}
-  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{margin-left:240px !important;max-width:none}
-  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage,body.lang-ar #agendaPage{margin-left:0 !important;margin-right:240px !important}
+  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{margin-left:240px !important;max-width:none}
+  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage,body.lang-ar #agendaPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
   .fab-scan{left:32px;bottom:32px;right:auto}
   .modal-overlay{align-items:center}
@@ -713,7 +713,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 /* ── PRINT / PDF EXPORT ── */
 @media print {
   body{background:#fff!important;margin:0;padding:0;color:#000!important}
-  #landingPage,#onboardingOverlay,.bnav,.fab,.fab-scan,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
+  #landingPage,#onboardingOverlay,.bnav,.fab,.fab-scan,.hdr,.modal-overlay,#sidebarNav,#inAppNotifContainer,.rpt-period-pills,.rpt-custom-range,.rpt-pdf-btn,.share-btn,.export-overlay,.policy-overlay,#mainPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#txDetailOverlay,#forecastCard .forecast-disclaimer,#exportOverlay,#clientProfileOverlay{display:none!important}
   #reportsPage{display:block!important;position:static!important;overflow:visible!important;padding:20px!important;max-width:210mm!important;margin:0 auto!important;background:#fff!important}
   .report-card{box-shadow:none!important;border:1px solid #ccc!important;break-inside:avoid;margin-bottom:16px;background:#fff!important}
   .bar-chart{display:none!important}
@@ -2055,20 +2055,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item" id="snav-reports" onclick="showNav('reports')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span id="snav-lbl-reports">Reports</span>
   </div>
-  <div class="snav-item" id="snav-invoices" onclick="showNav('invoices')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span id="snav-lbl-invoices">Invoices</span>
-  </div>
-  <div class="snav-item" id="snav-expenses" onclick="showNav('expenses')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg></span><span id="snav-lbl-expenses">Expenses</span>
-  </div>
-  <div class="snav-divider"></div>
-  <div class="snav-group-title" id="snav-group-manage">Manage</div>
   <div class="snav-item" id="snav-agenda" onclick="showNav('agenda')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Daily Log</span>
   </div>
   <div class="snav-item" id="snav-employees" onclick="showNav('employees')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span id="snav-lbl-employees">Employees</span>
   </div>
+  <div class="snav-divider"></div>
+  <div class="snav-group-title" id="snav-group-manage">Manage</div>
   <div class="snav-item" id="snav-archive" onclick="showNav('archive')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><span id="snav-lbl-archive">Archiv</span>
   </div>
@@ -2098,6 +2092,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
   <div class="snav-divider" id="snav-divider-tools"></div>
   <div class="snav-group-title" id="snav-group-tools">Tools</div>
+  <div class="snav-item" id="snav-invoices" onclick="showNav('invoices')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span id="snav-lbl-invoices">Invoices</span>
+  </div>
   <div class="snav-item" id="snav-kalender" onclick="showNav('kalender')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span id="snav-lbl-kalender">Kalender</span>
   </div>
@@ -2535,13 +2532,13 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
     <div class="bnav-label" id="nav-reports-lbl">Reports</div>
   </div>
-  <div class="bnav-item" id="nav-invoices" onclick="showNav('invoices')">
-    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></div>
-    <div class="bnav-label" id="nav-invoices-lbl">Invoices</div>
+  <div class="bnav-item" id="nav-agenda" onclick="showNav('agenda')">
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></div>
+    <div class="bnav-label" id="nav-agenda-lbl">Daily Log</div>
   </div>
-  <div class="bnav-item" id="nav-expenses" onclick="showNav('expenses')">
-    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg></div>
-    <div class="bnav-label" id="nav-expenses-lbl">Expenses</div>
+  <div class="bnav-item" id="nav-employees" onclick="showNav('employees')">
+    <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+    <div class="bnav-label" id="nav-employees-lbl">Employees</div>
   </div>
   <div class="bnav-item" id="nav-more" onclick="openMoreMenu()">
     <div class="bnav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg></div>
@@ -2564,7 +2561,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="clientsPage" style="display:none" class="settings-page"></div>
 <div id="suppliersPage" style="display:none" class="settings-page"></div>
 <div id="fixedPage" style="display:none" class="settings-page"></div>
-<div id="expensesPage" style="display:none" class="settings-page"></div>
 <div id="employeesPage" style="display:none" class="settings-page"></div>
 <div id="helpPage" style="display:none" class="settings-page"></div>
 <div id="fleetPage" style="display:none" class="settings-page"></div>
@@ -3326,10 +3322,10 @@ function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   if(page === 'inventory' && state.businessType !== 'retail' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
-  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage','agendaPage'].forEach(function(p) {
+  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage','agendaPage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
   });
-  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts','agenda'].forEach(function(n) {
+  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts','agenda'].forEach(function(n) {
     var navEl = document.getElementById('nav-'+n);
     if(navEl) navEl.classList.remove('active');
     var snavEl = document.getElementById('snav-'+n);
@@ -3339,7 +3335,7 @@ function showNav(page) {
   var snavSettings = document.getElementById('snav-settings');
   if(snavSettings) snavSettings.classList.remove('active');
 
-  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage',agenda:'agendaPage'};
+  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage',agenda:'agendaPage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
   if(page !== 'home') {
@@ -3364,7 +3360,6 @@ function showNav(page) {
   if(page === 'clients') renderClientsPage();
   if(page === 'suppliers') renderSuppliersPage();
   if(page === 'fixed') renderFixedPage();
-  if(page === 'expenses') renderExpensesPage();
   if(page === 'employees') renderEmployeesPage();
   if(page === 'help') renderHelpPage();
   if(page === 'fleet') renderFleetPage();
@@ -3434,8 +3429,6 @@ function openMoreMenu() {
 
   var h = '';
   h += moreMenuGroupTitleHtml(mtx('manage'));
-  h += moreMenuItemHtml('mm-agenda', 'checklist', mtx('agenda'));
-  h += moreMenuItemHtml('mm-employees', 'users', mtx('employees'));
   h += moreMenuItemHtml('mm-archive', 'folder', mtx('archive'));
   if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
   if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
@@ -3447,6 +3440,7 @@ function openMoreMenu() {
   h += moreMenuItemHtml('mm-fixed', 'checklist', mtx('fixed'));
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
+  h += moreMenuItemHtml('mm-invoices', 'file', t('invoices'));
   h += moreMenuItemHtml('mm-scan-invoices', 'camera', mtx('scanInvoices'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
@@ -3460,14 +3454,14 @@ function openMoreMenu() {
 
   content.innerHTML = h;
 
+  var mmInvoices = document.getElementById('mm-invoices');
+  if(mmInvoices) mmInvoices.onclick = function(){ showNav('invoices'); };
   var mmClients = document.getElementById('mm-clients');
   if(mmClients) mmClients.onclick = function(){ showNav('clients'); };
   var mmDebts = document.getElementById('mm-debts');
   if(mmDebts) mmDebts.onclick = function(){ showNav('debts'); };
   var mmSuppliers = document.getElementById('mm-suppliers');
   if(mmSuppliers) mmSuppliers.onclick = function(){ showNav('suppliers'); };
-  var mmEmployees = document.getElementById('mm-employees');
-  if(mmEmployees) mmEmployees.onclick = function(){ showNav('employees'); };
   var mmFixed = document.getElementById('mm-fixed');
   if(mmFixed) mmFixed.onclick = function(){ showNav('fixed'); };
   var mmScanInvoices = document.getElementById('mm-scan-invoices');
@@ -3480,8 +3474,6 @@ function openMoreMenu() {
   if(mmAssets) mmAssets.onclick = function(){ showNav('assets'); };
   var mmKalender = document.getElementById('mm-kalender');
   if(mmKalender) mmKalender.onclick = function(){ showNav('kalender'); };
-  var mmAgenda = document.getElementById('mm-agenda');
-  if(mmAgenda) mmAgenda.onclick = function(){ showNav('agenda'); };
   var mmNotizen = document.getElementById('mm-notizen');
   if(mmNotizen) mmNotizen.onclick = function(){ showNav('notizen'); };
   var mmArchive = document.getElementById('mm-archive');
@@ -3501,38 +3493,6 @@ function openMoreMenu() {
 function closeMoreMenu() {
   var overlay = document.getElementById('moreMenuOverlay');
   if(overlay) overlay.style.display = 'none';
-}
-
-// ── EXPENSES PAGE ──
-function renderExpensesPage() {
-  var page = document.getElementById('expensesPage');
-  if(!page) return;
-  var totalLbl = {en:'Total', ar:'الإجمالي', de:'Gesamt'}[state.lang] || 'Total';
-  var expenses = state.transactions.filter(function(t){ return t.type === 'expense'; });
-  var total = expenses.reduce(function(s,t){ return s + t.amount; }, 0);
-
-  var h = '<div style="padding:16px 16px 0">';
-  h += '<div style="font-size:18px;font-weight:700;margin-bottom:4px">' + t('expense') + '</div>';
-  h += '<div style="font-size:13px;color:var(--expense);font-weight:600;margin-bottom:16px">' + totalLbl + ': ' + fmt(total) + '</div>';
-  h += '</div>';
-  h += '<div class="tx-list" id="expensesTxList" style="padding:0 16px 120px"></div>';
-  page.innerHTML = h;
-
-  var list = document.getElementById('expensesTxList');
-  if(!expenses.length) {
-    list.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">' + t('noTx').split('\n')[0] + '</div>';
-    return;
-  }
-  expenses.slice().reverse().forEach(function(tx) {
-    var item = document.createElement('div');
-    item.className = 'tx-item';
-    item.innerHTML = '<div class="tx-icon expense">' + txIconSvg(tx) + '</div>'
-      + '<div class="tx-info"><div class="tx-name">' + tx.name + '</div>'
-      + '<div class="tx-meta">' + tc(tx.category) + ' · ' + formatDateDisplay(tx.date) + '</div></div>'
-      + '<div style="text-align:right"><div class="tx-amount expense">-' + fmt(tx.amount) + '</div></div>';
-    item.onclick = function(){ showTxDetail(tx); };
-    list.appendChild(item);
-  });
 }
 
 // ── EMPLOYEES PAGE ──
@@ -11467,8 +11427,10 @@ function applyLang() {
     var el = document.querySelector('#nav-'+k+' .bnav-label');
     if(el) el.textContent = t(k);
   });
-  var expNavLbl = document.getElementById('nav-expenses-lbl');
-  if(expNavLbl) expNavLbl.textContent = t('expense');
+  var agendaNavLbl = document.getElementById('nav-agenda-lbl');
+  if(agendaNavLbl) agendaNavLbl.textContent = {en:'Daily Log',ar:'سجل الأعمال اليومي',de:'Tagesprotokoll'}[state.lang]||'Daily Log';
+  var empNavLbl = document.getElementById('nav-employees-lbl');
+  if(empNavLbl) empNavLbl.textContent = {en:'Employees',ar:'الموظفين',de:'Mitarbeiter'}[state.lang]||'Employees';
   var moreNavLbl = document.getElementById('nav-more-lbl');
   if(moreNavLbl) moreNavLbl.textContent = t('more');
 
@@ -11537,8 +11499,6 @@ function applyLang() {
   if(rptIncLbl) rptIncLbl.textContent = t('income');
   var rptExpLbl = document.getElementById('rpt-expense-lbl');
   if(rptExpLbl) rptExpLbl.textContent = t('expense');
-  var invNavLbl = document.getElementById('nav-invoices-lbl');
-  if(invNavLbl) invNavLbl.textContent = t('invoices');
 
   // Translate static empty state messages
   var noTxEl = document.getElementById('noTxMsg');
@@ -11618,7 +11578,6 @@ function applyLang() {
   snavLabels.clients = {en:'Clients',ar:'العملاء',de:'Kunden'}[state.lang]||'Clients';
   snavLabels.suppliers = {en:'Suppliers',ar:'الموردون',de:'Lieferanten'}[state.lang]||'Suppliers';
   snavLabels.fixed = {en:'Fixed',ar:'ثابت',de:'Fix'}[state.lang]||'Fixed';
-  snavLabels.expenses = {en:'Expenses',ar:'المصروفات',de:'Ausgaben'}[state.lang]||'Expenses';
   snavLabels.employees = {en:'Employees',ar:'الموظفين',de:'Mitarbeiter'}[state.lang]||'Employees';
   snavLabels.fleet = {en:'Fleet',ar:'الأسطول',de:'Fuhrpark'}[state.lang]||'Fleet';
   snavLabels.inventory = {en:'Inventory',ar:'المخزون',de:'Lagerbestand'}[state.lang]||'Inventory';
