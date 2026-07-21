@@ -3944,6 +3944,9 @@ var FLEET_L = {
   assetDate:      {en:'Purchase Date', ar:'تاريخ الشراء', de:'Anschaffungsdatum'},
   assetNotLinked: {en:'Acquisition details not added yet', ar:'لسه ما اتضافتش تفاصيل الحصول عليها', de:'Anschaffungsdetails noch nicht hinzugefügt'},
   assetLinkBtn:   {en:'Add Acquisition Details', ar:'إضافة تفاصيل الحصول عليها', de:'Anschaffungsdetails hinzufügen'},
+  supplierName:   {en:'Supplier / Lessor Name', ar:'اسم المورد / المؤجر', de:'Name des Lieferanten / Vermieters'},
+  supplierPhone:  {en:'Supplier / Lessor Phone', ar:'تليفون المورد / المؤجر', de:'Telefon des Lieferanten / Vermieters'},
+  supplierEmail:  {en:'Supplier / Lessor Email', ar:'إيميل المورد / المؤجر', de:'E-Mail des Lieferanten / Vermieters'},
   acqType:        {en:'Acquisition Type', ar:'نوع الحصول عليها', de:'Erwerbsart'},
   acqPurchase:    {en:'Full Purchase', ar:'شراء كامل', de:'Kauf'},
   acqRentToOwn:   {en:'Rent-to-Own', ar:'إيجار مع الشراء', de:'Mietkauf'},
@@ -4181,6 +4184,11 @@ function renderVehicleAssetSection(v) {
       html += fleetInfoRow(fleettx('assetVat'), (v.assetVatRate || 0) + '%');
       html += fleetInfoRow(fleettx('assetDate'), formatDateDisplay(v.assetPurchaseDate));
     }
+    if(v.supplierName || v.supplierPhone || v.supplierEmail) {
+      html += fleetInfoRow(fleettx('supplierName'), v.supplierName);
+      if(v.supplierPhone) html += fleetInfoRow(fleettx('supplierPhone'), v.supplierPhone);
+      if(v.supplierEmail) html += fleetInfoRow(fleettx('supplierEmail'), v.supplierEmail);
+    }
     var inst = v.installmentId ? (state.installments || []).find(function(i){ return i.id === v.installmentId; }) : null;
     if(inst) {
       var remaining = Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted);
@@ -4235,6 +4243,13 @@ function assetFormOpen(vehicleId) {
   html += '<div class="date-fix-wrap"><input id="fas-date" type="date" class="input-field" value="' + (v.assetPurchaseDate || today()) + '"></div>';
   html += '</div>';
 
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('supplierName') + '</label>';
+  html += '<input id="fas-supplierName" type="text" class="input-field" value="' + escHtml(v.supplierName || '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('supplierPhone') + '</label>';
+  html += '<input id="fas-supplierPhone" type="tel" class="input-field" value="' + escHtml(v.supplierPhone || '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + fleettx('supplierEmail') + '</label>';
+  html += '<input id="fas-supplierEmail" type="email" class="input-field" value="' + escHtml(v.supplierEmail || '') + '">';
+
   html += '<div id="fas-installWrap" style="' + (acqType==='purchase' ? '' : 'display:none') + '">';
   html += '<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-bottom:8px;cursor:pointer"><input type="checkbox" id="fas-installToggle"' + (hasInstallment?' checked':'') + '> ' + fleettx('installToggle') + '</label>';
   html += '<div style="font-size:11px;color:var(--text3);margin-bottom:10px;line-height:1.5">' + fleettx('installHint') + '</div>';
@@ -4280,6 +4295,9 @@ function assetFormOpen(vehicleId) {
       v.assetVatRate = parseFloat(document.getElementById('fas-vat').value) || 0;
       v.assetPurchaseDate = document.getElementById('fas-date').value || today();
     }
+    v.supplierName = document.getElementById('fas-supplierName').value.trim();
+    v.supplierPhone = document.getElementById('fas-supplierPhone').value.trim();
+    v.supplierEmail = document.getElementById('fas-supplierEmail').value.trim();
 
     var wantsInstallment = t === 'purchase' && installToggle.checked;
     if(wantsInstallment) {
