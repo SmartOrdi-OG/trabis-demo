@@ -3577,6 +3577,14 @@ var EMP_L = {
   whExportPdf: {en:'Export PDF', ar:'تصدير PDF', de:'PDF exportieren'},
   whNoEntriesMonth: {en:'No work hours logged this month', ar:'لا توجد ساعات عمل مسجلة هذا الشهر', de:'Keine Arbeitszeiten in diesem Monat erfasst'},
   whMonthTotal: {en:'Total this month', ar:'إجمالي الشهر', de:'Gesamt diesen Monat'},
+  whAddLeave:   {en:'+ Krankenstand / Karenz', ar:'+ Krankenstand / Karenz', de:'+ Krankenstand / Karenz'},
+  whLeaveTitle: {en:'Add Krankenstand / Karenz', ar:'إضافة Krankenstand / Karenz', de:'Krankenstand / Karenz hinzufügen'},
+  whLeaveType:  {en:'Type', ar:'النوع', de:'Art'},
+  whLeaveFrom:  {en:'From', ar:'من', de:'Von'},
+  whLeaveTo:    {en:'To', ar:'إلى', de:'Bis'},
+  whLeaveCert:  {en:'Certificate (optional)', ar:'الشهادة (اختياري)', de:'Nachweis (optional)'},
+  whLeaveInvalid: {en:'Enter a valid date range (from must not be after to)', ar:'ادخل مدى تاريخ صحيح (تاريخ البداية لازم يكون قبل النهاية)', de:'Bitte gültigen Zeitraum eingeben (von darf nicht nach bis liegen)'},
+  whLeaveConfirmDelete: {en:'Delete this Krankenstand/Karenz period? The affected days will become editable again.', ar:'حذف فترة الـ Krankenstand/Karenz دي؟ الأيام المتأثرة هترجع قابلة للتعديل تاني.', de:'Diesen Krankenstand-/Karenz-Zeitraum löschen? Die betroffenen Tage werden wieder bearbeitbar.'},
 };
 function emptx(k) { return (EMP_L[k] && EMP_L[k][state.lang]) || (EMP_L[k] && EMP_L[k].en) || k; }
 
@@ -3699,6 +3707,7 @@ function saveNewEmployee() {
     notes: '',
     documents: [],
     workHours: [],
+    leavePeriods: [],
   });
   save();
   closeAddEmployeeForm();
@@ -9510,6 +9519,11 @@ function whDayEntry(emp, day) {
   });
 }
 
+function whDayLeavePeriod(emp, day) {
+  return (emp.leavePeriods || []).find(function(lp) { return day >= lp.from && day <= lp.to; }) || null;
+}
+function whLeaveTypeLabel(type) { return type === 'karenz' ? 'Karenz' : 'Krankenstand'; }
+
 // Monthly Arbeitszeit sheet: one row per calendar day of the selected month,
 // matching the printed Austrian timesheet format exactly. Replaces the old
 // single from/to range entry form entirely.
@@ -9535,6 +9549,10 @@ function whOpenMonthSheet(empId) {
   html += '<button id="whSheetSaveBtn" style="background:none;border:none;color:var(--primary);font-size:15px;font-weight:700;cursor:pointer;padding:4px">' + emptx('save') + '</button>';
   html += '</div>';
 
+  html += '<div style="padding:12px 16px 0">';
+  html += '<button type="button" id="whAddLeaveBtn" style="width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + emptx('whAddLeave') + '</button>';
+  html += '</div>';
+
   html += '<div style="padding:12px;overflow-x:auto">';
   html += '<table style="border-collapse:collapse;width:100%;min-width:640px;font-size:12px">';
   html += '<thead><tr style="background:var(--bg2,var(--card));border-bottom:2px solid var(--border)">';
@@ -9544,18 +9562,29 @@ function whOpenMonthSheet(empId) {
   html += '</tr></thead><tbody>';
 
   days.forEach(function(day) {
-    var entry = whDayEntry(emp, day);
-    var sVal = entry ? (entry.start || '') : '';
-    var eVal = entry ? (entry.end || '') : '';
-    var bVal = entry && entry.breakMinutes != null ? entry.breakMinutes : '';
-    var hVal = entry ? whComputeHours(entry) : '';
+    var leave = whDayLeavePeriod(emp, day);
     html += '<tr style="border-bottom:1px solid var(--border)">';
     html += '<td style="padding:6px;border:1px solid var(--border);white-space:nowrap">' + whFmtDayDate(day) + '</td>';
     html += '<td style="padding:6px;border:1px solid var(--border);white-space:nowrap;color:var(--text2)">' + escHtml(empName) + '</td>';
-    html += '<td style="padding:3px;border:1px solid var(--border)"><input type="time" id="whd-start-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + sVal + '" style="width:90px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
-    html += '<td style="padding:3px;border:1px solid var(--border)"><input type="time" id="whd-end-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + eVal + '" style="width:90px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
-    html += '<td style="padding:3px;border:1px solid var(--border)"><input type="number" min="0" step="5" id="whd-break-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + bVal + '" style="width:60px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
-    html += '<td style="padding:3px;border:1px solid var(--border)"><input type="text" inputmode="decimal" id="whd-hours-' + day + '" oninput="sanitizeAmountField(this)" value="' + hVal + '" style="width:70px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box;text-align:right"></td>';
+    if(leave) {
+      html += '<td colspan="4" style="padding:6px;border:1px solid var(--border);background:rgba(139,92,246,0.08)">';
+      html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px">';
+      html += '<span style="color:#8b5cf6;font-weight:700">' + whLeaveTypeLabel(leave.type) + ': ' + whFmtDayDate(leave.from) + ' – ' + whFmtDayDate(leave.to) + '</span>';
+      html += '<span style="display:flex;gap:6px;flex-shrink:0">';
+      if(leave.docId) html += '<span class="wh-leave-view" data-id="' + leave.id + '" style="cursor:pointer;color:var(--text2)">' + svgIcon('fileText', 14) + '</span>';
+      html += '<span class="wh-leave-del" data-id="' + leave.id + '" style="cursor:pointer;color:#ef4444">' + svgIcon('trash', 14) + '</span>';
+      html += '</span></div></td>';
+    } else {
+      var entry = whDayEntry(emp, day);
+      var sVal = entry ? (entry.start || '') : '';
+      var eVal = entry ? (entry.end || '') : '';
+      var bVal = entry && entry.breakMinutes != null ? entry.breakMinutes : '';
+      var hVal = entry ? whComputeHours(entry) : '';
+      html += '<td style="padding:3px;border:1px solid var(--border)"><input type="time" id="whd-start-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + sVal + '" style="width:90px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
+      html += '<td style="padding:3px;border:1px solid var(--border)"><input type="time" id="whd-end-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + eVal + '" style="width:90px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
+      html += '<td style="padding:3px;border:1px solid var(--border)"><input type="number" min="0" step="5" id="whd-break-' + day + '" oninput="whGridAutoCalc(\'' + day + '\')" value="' + bVal + '" style="width:60px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box"></td>';
+      html += '<td style="padding:3px;border:1px solid var(--border)"><input type="text" inputmode="decimal" id="whd-hours-' + day + '" oninput="sanitizeAmountField(this)" value="' + hVal + '" style="width:70px;padding:5px;border:1px solid var(--border);border-radius:6px;background:var(--bg);color:var(--text);font-size:12px;box-sizing:border-box;text-align:right"></td>';
+    }
     html += '</tr>';
   });
   html += '</tbody></table></div>';
@@ -9570,10 +9599,22 @@ function whOpenMonthSheet(empId) {
 
   function close() { var o = document.getElementById('whSheetOverlay'); if(o) o.parentNode.removeChild(o); }
   document.getElementById('whSheetCloseBtn').onclick = close;
+  document.getElementById('whAddLeaveBtn').onclick = function(){ whOpenLeaveForm(empId); };
+  var leaveViewIcons = ov.querySelectorAll('.wh-leave-view');
+  var lvi;
+  for(lvi = 0; lvi < leaveViewIcons.length; lvi++) {
+    (function(id) { leaveViewIcons[lvi].onclick = function(){ whLeaveDocView(id, emp); }; })(parseInt(leaveViewIcons[lvi].getAttribute('data-id'), 10));
+  }
+  var leaveDelIcons = ov.querySelectorAll('.wh-leave-del');
+  var ldi;
+  for(ldi = 0; ldi < leaveDelIcons.length; ldi++) {
+    (function(id) { leaveDelIcons[ldi].onclick = function(){ whDeleteLeavePeriod(empId, id); }; })(parseInt(leaveDelIcons[ldi].getAttribute('data-id'), 10));
+  }
   document.getElementById('whSheetSaveBtn').onclick = function() {
     if(!emp.workHours) emp.workHours = [];
     var idCounter = 0;
     days.forEach(function(day) {
+      if(whDayLeavePeriod(emp, day)) return; // day covered by Krankenstand/Karenz — no time inputs rendered for it
       var s = document.getElementById('whd-start-' + day).value;
       var e = document.getElementById('whd-end-' + day).value;
       var bRaw = document.getElementById('whd-break-' + day).value;
@@ -9600,6 +9641,127 @@ function whOpenMonthSheet(empId) {
     close();
     renderWorkHoursSection(emp);
   };
+}
+
+var _whLeavePendingFile = null;
+
+function whLeaveFileChosen(input) {
+  var f = input.files && input.files[0];
+  if(!f) return;
+  var isPdf = f.type === 'application/pdf';
+  input.value = '';
+  receiptCompress(f).then(function(blob) {
+    _whLeavePendingFile = {blob: blob, type: isPdf ? 'application/pdf' : 'image/jpeg', name: f.name || 'certificate'};
+    var status = document.getElementById('whLeaveFileStatus');
+    if(status) status.textContent = _whLeavePendingFile.name;
+  });
+}
+
+function whOpenLeaveForm(empId) {
+  var existing = document.getElementById('whLeaveOverlay');
+  if(existing) existing.parentNode.removeChild(existing);
+  _whLeavePendingFile = null;
+
+  var ov = document.createElement('div');
+  ov.id = 'whLeaveOverlay';
+  ov.className = 'modal-overlay open';
+  ov.style.zIndex = '100002'; // above whSheetOverlay (100000)
+
+  var monthKey = _whViewMonth || today().substring(0,7);
+  var defaultDate = monthKey + '-01';
+
+  var html = '';
+  html += '<div class="modal" id="whLeaveModal">';
+  html += '<button class="modal-close-btn" id="whLeaveCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + emptx('whLeaveTitle') + '</div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whLeaveType') + '</label>';
+  html += '<select id="whl-type" class="input-field"><option value="krankenstand">Krankenstand</option><option value="karenz">Karenz</option></select>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whLeaveFrom') + '</label>';
+  html += '<div class="date-fix-wrap"><input type="date" id="whl-from" class="input-field" value="' + defaultDate + '"></div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('whLeaveTo') + '</label>';
+  html += '<div class="date-fix-wrap"><input type="date" id="whl-to" class="input-field" value="' + defaultDate + '"></div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin:4px 0 6px">' + emptx('whLeaveCert') + '</label>';
+  html += '<button type="button" id="whLeaveUploadBtn" style="width:100%;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + emptx('docUpload') + '</button>';
+  html += '<div id="whLeaveFileStatus" style="font-size:12px;color:var(--primary);margin-top:6px"></div>';
+  html += '<input type="file" id="whLeaveFileInput" accept="image/*,application/pdf" style="display:none">';
+  html += '<div id="whLeaveError" style="font-size:12px;color:#ef4444;margin-top:6px;display:none"></div>';
+  html += '<div style="display:flex;gap:10px;margin-top:14px">';
+  html += '<button id="whLeaveSaveBtn" style="flex:1;background:#8b5cf6;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
+  html += '<button id="whLeaveCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + emptx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { _whLeavePendingFile = null; var o = document.getElementById('whLeaveOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('whLeaveCloseBtn').onclick = close;
+  document.getElementById('whLeaveCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('whLeaveUploadBtn').onclick = function() { document.getElementById('whLeaveFileInput').click(); };
+  document.getElementById('whLeaveFileInput').onchange = function() { whLeaveFileChosen(this); };
+  document.getElementById('whLeaveSaveBtn').onclick = function() { whSaveLeavePeriod(empId); };
+}
+
+function whSaveLeavePeriod(empId) {
+  var emp = (state.employees || []).find(function(e){ return e.id === empId; });
+  if(!emp) return;
+  var type = document.getElementById('whl-type').value;
+  var from = document.getElementById('whl-from').value;
+  var to = document.getElementById('whl-to').value;
+  var errEl = document.getElementById('whLeaveError');
+  if(!from || !to || from > to) {
+    if(errEl) { errEl.textContent = emptx('whLeaveInvalid'); errEl.style.display = 'block'; }
+    return;
+  }
+
+  var leaveId = Date.now();
+  var pending = _whLeavePendingFile;
+  _whLeavePendingFile = null;
+
+  var finish = function(docId) {
+    if(!emp.leavePeriods) emp.leavePeriods = [];
+    emp.leavePeriods.push({id: leaveId, type: type, from: from, to: to, docId: docId || null, createdAt: Date.now()});
+    // Any pre-existing time entries inside the new leave range are now contradictory — remove them.
+    emp.workHours = (emp.workHours || []).filter(function(w) {
+      var wd = whEntryDate(w);
+      return !(wd >= from && wd <= to);
+    });
+    save();
+    var o = document.getElementById('whLeaveOverlay');
+    if(o) o.parentNode.removeChild(o);
+    whOpenMonthSheet(empId);
+  };
+
+  if(pending) {
+    empDocPut({
+      id: leaveId + 1,
+      empId: empId,
+      user: localStorage.getItem('smartac_user') || '',
+      name: pending.name,
+      type: pending.type,
+      blob: pending.blob,
+      createdAt: new Date().toISOString()
+    }).then(function() { finish(leaveId + 1); });
+  } else {
+    finish(null);
+  }
+}
+
+function whLeaveDocView(leaveId, emp) {
+  var leave = (emp.leavePeriods || []).find(function(l){ return l.id === leaveId; });
+  if(!leave || !leave.docId) return;
+  empDocGet(leave.docId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+}
+
+async function whDeleteLeavePeriod(empId, leaveId) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, emptx('whLeaveConfirmDelete')))) return;
+  var emp = (state.employees || []).find(function(e){ return e.id === empId; });
+  if(!emp) return;
+  var leave = (emp.leavePeriods || []).find(function(l){ return l.id === leaveId; });
+  if(leave && leave.docId) empDocDeleteRec(leave.docId);
+  emp.leavePeriods = (emp.leavePeriods || []).filter(function(l){ return l.id !== leaveId; });
+  save();
+  whOpenMonthSheet(empId);
 }
 
 async function whDelete(empId, entryId) {
