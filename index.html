@@ -2088,7 +2088,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span id="snav-lbl-kalender">Kalender</span>
   </div>
   <div class="snav-item" id="snav-agenda" onclick="showNav('agenda')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Agenda</span>
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Daily Log</span>
   </div>
   <div class="snav-item" id="snav-notizen" onclick="showNav('notizen')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></span><span id="snav-lbl-notizen">Notizen</span>
@@ -3402,7 +3402,7 @@ var MORE_MENU_L = {
   notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
   archive: {en:'Archive', ar:'الأرشيف', de:'Archiv'},
   contacts: {en:'Contacts', ar:'جهات الاتصال', de:'Kontakte'},
-  agenda: {en:'Agenda', ar:'الأجندة', de:'Agenda'},
+  agenda: {en:'Daily Log', ar:'سجل الأعمال اليومي', de:'Tagesprotokoll'},
   scanInvoices: {en:'Scan Invoices', ar:'مسح الفواتير', de:'Rechnungen scannen'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
   help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
@@ -6276,10 +6276,10 @@ function saveAppointment() {
 // ── AGENDA: daily business activity log, linked to Kalender + Kontakte ──
 // ────────────────────────────────────────
 var AGENDA_L = {
-  title:        {en:'Agenda', ar:'الأجندة', de:'Agenda'},
+  title:        {en:'Daily Log', ar:'سجل الأعمال اليومي', de:'Tagesprotokoll'},
   addEntry:     {en:'+ Add Entry', ar:'+ إضافة حركة', de:'+ Eintrag hinzufügen'},
-  newEntry:     {en:'New Agenda Entry', ar:'حركة جديدة', de:'Neuer Agenda-Eintrag'},
-  editEntry:    {en:'Edit Agenda Entry', ar:'تعديل الحركة', de:'Agenda-Eintrag bearbeiten'},
+  newEntry:     {en:'New Log Entry', ar:'حركة جديدة', de:'Neuer Eintrag'},
+  editEntry:    {en:'Edit Log Entry', ar:'تعديل الحركة', de:'Eintrag bearbeiten'},
   titleLbl:     {en:'Title *', ar:'العنوان *', de:'Titel *'},
   dateLbl:      {en:'Date', ar:'التاريخ', de:'Datum'},
   contactLbl:   {en:'Related Contact (optional)', ar:'جهة الاتصال (اختياري)', de:'Zugehöriger Kontakt (optional)'},
@@ -6292,10 +6292,10 @@ var AGENDA_L = {
   cancel:       {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
   edit:         {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
   del:          {en:'Delete', ar:'حذف', de:'Löschen'},
-  empty:        {en:'No agenda entries for this day', ar:'لا توجد حركات لهذا اليوم', de:'Keine Agenda-Einträge für diesen Tag'},
-  emptyAll:     {en:'No agenda entries yet', ar:'لا توجد حركات بعد', de:'Noch keine Agenda-Einträge'},
-  searchPh:     {en:'Search agenda...', ar:'بحث في الأجندة...', de:'Agenda durchsuchen...'},
-  confirmDelete:{en:'Delete this agenda entry?', ar:'حذف هذه الحركة؟', de:'Diesen Agenda-Eintrag löschen?'},
+  empty:        {en:'No log entries for this day', ar:'لا توجد حركات لهذا اليوم', de:'Keine Einträge für diesen Tag'},
+  emptyAll:     {en:'No log entries yet', ar:'لا توجد حركات بعد', de:'Noch keine Einträge'},
+  searchPh:     {en:'Search daily log...', ar:'بحث في سجل الأعمال...', de:'Tagesprotokoll durchsuchen...'},
+  confirmDelete:{en:'Delete this log entry?', ar:'حذف هذه الحركة؟', de:'Diesen Eintrag löschen?'},
 };
 function agtx(k) { return (AGENDA_L[k] && AGENDA_L[k][state.lang]) || (AGENDA_L[k] && AGENDA_L[k].en) || k; }
 
@@ -11611,7 +11611,7 @@ function applyLang() {
   snavLabels.notizen = {en:'Notes',ar:'الملاحظات',de:'Notizen'}[state.lang]||'Notes';
   snavLabels.archive = {en:'Archive',ar:'الأرشيف',de:'Archiv'}[state.lang]||'Archive';
   snavLabels.contacts = {en:'Contacts',ar:'جهات الاتصال',de:'Kontakte'}[state.lang]||'Contacts';
-  snavLabels.agenda = {en:'Agenda',ar:'الأجندة',de:'Agenda'}[state.lang]||'Agenda';
+  snavLabels.agenda = {en:'Daily Log',ar:'سجل الأعمال اليومي',de:'Tagesprotokoll'}[state.lang]||'Daily Log';
   snavLabels.help = {en:'Help',ar:'مساعدة',de:'Hilfe'}[state.lang]||'Help';
   Object.keys(snavLabels).forEach(function(k){
     var el = document.getElementById('snav-lbl-'+k);
