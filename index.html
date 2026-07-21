@@ -2307,7 +2307,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="uvaExportPDF()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">PDF</button>
       <button onclick="uvaExportExcel()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">Excel</button>
-      <button onclick="uvaToggleFreigabe()" id="uvaFreigabeBtn" style="flex:1.4;padding:11px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Freigabe</button>
+      <button onclick="uvaToggleFreigabe()" id="uvaFreigabeBtn" style="flex:1.4;padding:11px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer">Approve</button>
     </div>
     <div style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5" id="uva-disclaimer"></div>
   </div>
@@ -5522,7 +5522,7 @@ var HELP_L = {
   addTx: {en:'How to add a transaction', ar:'كيفية إضافة معاملة', de:'Wie man eine Transaktion hinzufügt'},
   createInv: {en:'How to create an invoice', ar:'كيفية إنشاء فاتورة', de:'Wie man eine Rechnung erstellt'},
   addClients: {en:'How to add clients & suppliers', ar:'كيفية إضافة عملاء وموردين', de:'Wie man Kunden & Lieferanten hinzufügt'},
-  uva: {en:'Understanding the UVA report & Freigabe', ar:'فهم تقرير UVA ونظام الاعتماد', de:'Der UVA-Bericht & die Freigabe'},
+  uva: {en:'Understanding the UVA report & Approval', ar:'فهم تقرير UVA ونظام الاعتماد', de:'Der UVA-Bericht & die Freigabe'},
   exportReports: {en:'Export reports (PDF & Excel)', ar:'تصدير التقارير (PDF و Excel)', de:'Berichte exportieren (PDF & Excel)'},
   accountantAccess: {en:'Give your accountant access', ar:'إعطاء المحاسب صلاحية دخول', de:'Zugang für Ihren Steuerberater'},
   employees: {en:'Manage employees & work hours', ar:'إدارة الموظفين وساعات العمل', de:'Mitarbeiter & Arbeitszeiten verwalten'},
@@ -5555,8 +5555,8 @@ var HELP_L = {
     de:'1. Gehen Sie zu Kunden oder Lieferanten.\n2. Tippen Sie auf + Hinzufügen.\n3. Geben Sie deren Daten ein.\n4. Speichern.'
   },
   uvaSteps: {
-    en:'1. Go to Reports and open the UVA card.\n2. Choose your reporting interval: monthly, quarterly or yearly.\n3. Pick the period to review — every period is listed, even ones with no transactions yet.\n4. Check the KZ figures (000, 022, 006, 029, 060, 095) against your transactions’ VAT rates.\n5. Once the numbers are final for that period, tap Freigabe to lock it — this blocks editing any transaction in that period unless you revoke the approval first.\n6. Export as PDF or Excel to send to your accountant.',
-    ar:'1. اذهب لـ التقارير وافتح كارت UVA.\n2. اختر فترة التقرير: شهري أو ربع سنوي أو سنوي.\n3. اختر الفترة اللي عايز تراجعها — كل الفترات ظاهرة حتى لو مفيهاش معاملات لسه.\n4. راجع أرقام الخانات (000, 022, 006, 029, 060, 095) بناءً على نسب الضريبة في معاملاتك.\n5. لما تتأكد إن الأرقام نهائية للفترة دي، اضغط Freigabe عشان تقفلها — ده بيمنع تعديل أي معاملة في الفترة دي من غير ما تلغي الاعتماد الأول.\n6. صدّر PDF أو Excel عشان تبعتها لمحاسبك.',
+    en:'1. Go to Reports and open the UVA card.\n2. Choose your reporting interval: monthly, quarterly or yearly.\n3. Pick the period to review — every period is listed, even ones with no transactions yet.\n4. Check the KZ figures (000, 022, 006, 029, 060, 095) against your transactions’ VAT rates.\n5. Once the numbers are final for that period, tap Approve to lock it — this blocks editing any transaction in that period unless you revoke the approval first.\n6. Export as PDF or Excel to send to your accountant.',
+    ar:'1. اذهب لـ التقارير وافتح كارت UVA.\n2. اختر فترة التقرير: شهري أو ربع سنوي أو سنوي.\n3. اختر الفترة اللي عايز تراجعها — كل الفترات ظاهرة حتى لو مفيهاش معاملات لسه.\n4. راجع أرقام الخانات (000, 022, 006, 029, 060, 095) بناءً على نسب الضريبة في معاملاتك.\n5. لما تتأكد إن الأرقام نهائية للفترة دي، اضغط اعتماد عشان تقفلها — ده بيمنع تعديل أي معاملة في الفترة دي من غير ما تلغي الاعتماد الأول.\n6. صدّر PDF أو Excel عشان تبعتها لمحاسبك.',
     de:'1. Gehen Sie zu Berichte und öffnen Sie die UVA-Karte.\n2. Wählen Sie das Meldeintervall: monatlich, vierteljährlich oder jährlich.\n3. Wählen Sie den gewünschten Zeitraum — alle Zeiträume werden angezeigt, auch ohne Transaktionen.\n4. Prüfen Sie die Kennzahlen (000, 022, 006, 029, 060, 095) anhand der MwSt.-Sätze Ihrer Transaktionen.\n5. Sobald die Zahlen final sind, tippen Sie auf Freigabe, um den Zeitraum zu sperren — danach kann keine Transaktion in diesem Zeitraum geändert werden, ohne die Freigabe zuerst zu widerrufen.\n6. Exportieren Sie als PDF oder Excel für Ihren Steuerberater.'
   },
   exportReportsSteps: {
@@ -7364,11 +7364,11 @@ var UVA_TXT = {
   netUst:     {en:'Net / VAT', ar:'الصافي / الضريبة', de:'Netto / USt'},
   offen:      {en:'OPEN', ar:'مفتوحة', de:'OFFEN'},
   freigegeben:{en:'APPROVED', ar:'معتمدة', de:'FREIGEGEBEN'},
-  freigabeBtn:{en:'Freigabe', ar:'اعتماد Freigabe', de:'Freigabe'},
+  freigabeBtn:{en:'Approve', ar:'اعتماد', de:'Freigabe'},
   revokeBtn:  {en:'Revoke approval', ar:'إلغاء الاعتماد', de:'Freigabe zurückziehen'},
   confirmFg:  {en:'Approve this period? Numbers are final and will be marked as approved for your accountant.', ar:'هل تريد اعتماد هذه الفترة؟ ستُعتبر الأرقام نهائية وستُصنَّف كمعتمدة للمحاسب.', de:'Diesen Zeitraum freigeben? Die Zahlen gelten als final und werden für Ihren Steuerberater als freigegeben markiert.'},
   confirmRev: {en:'Revoke the approval for this period?', ar:'هل تريد إلغاء اعتماد هذه الفترة؟', de:'Freigabe für diesen Zeitraum zurückziehen?'},
-  lockWarn:   {en:'This period is already approved (Freigabe). Changing it will revoke the approval. Continue?', ar:'هذه الفترة معتمدة بالفعل (Freigabe). التعديل سيؤدي إلى إلغاء الاعتماد. هل تريد المتابعة؟', de:'Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
+  lockWarn:   {en:'This period is already approved. Changing it will revoke the approval. Continue?', ar:'هذه الفترة معتمدة بالفعل. التعديل سيؤدي إلى إلغاء الاعتماد. هل تريد المتابعة؟', de:'Dieser Zeitraum ist bereits freigegeben. Eine Änderung zieht die Freigabe zurück. Fortfahren?'},
   fgAt:       {en:'Approved on', ar:'اعتمدت في', de:'Freigegeben am'},
   disclaimer: {en:'Preparation for the UVA — not tax advice. Official filing is done via FinanzOnline. PDF/Excel exports are in German for your accountant.',
                ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
