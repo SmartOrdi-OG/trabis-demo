@@ -65,6 +65,10 @@ Auto-deploys via Vercel on every push to `main`. There's no CI/build step — Ve
 
 See `TODO.md` for the phased plan (current phase, what's done, what's deferred to the Cloud/v2.0 phase, and why).
 
+## Backend handoff
+
+Bringing on a backend developer for the Cloud (v2.0) phase? See [`BACKEND_HANDOFF.md`](BACKEND_HANDOFF.md) — what's already set up (Supabase schema, RLS, Auth, Storage buckets), what's still client-only, and the Supabase-vs-own-server tradeoffs.
+
 ## License
 
 Proprietary — Smartordi OG. Not licensed for reuse.
