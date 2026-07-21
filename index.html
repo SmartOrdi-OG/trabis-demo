@@ -1701,8 +1701,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div class="ob-dot" id="dot1"></div>
       <div class="ob-dot" id="dot2"></div>
       <div class="ob-dot" id="dot3"></div>
-      <div class="ob-dot" id="dot4"></div>
-      <div class="ob-dot" id="dot5"></div>
     </div>
 
     <!-- Step 1: Language (shown after registration) -->
@@ -1998,35 +1996,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <span id="obbiz-medical-lbl">Medical / Clinic</span>
         </div>
       </div>
-      <button class="ob-btn" onclick="obBizNext()" id="ob-biz-next" disabled>Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
-    </div>
-
-    <!-- Step 4: Employees -->
-    <div class="ob-step" id="ob-step4">
-      <div class="ob-step-title" id="ob-emp-title">Add Employees</div>
-      <div class="ob-step-sub" id="ob-emp-sub">Add your team and their salaries</div>
-      <div id="ob-emp-list" style="margin-bottom:12px;max-height:180px;overflow-y:auto"></div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="ob-emp-name" placeholder="Name" style="flex:1;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
-        <input id="ob-emp-salary" placeholder="Salary" type="number" style="width:100px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
-      </div>
-      <button class="ob-btn secondary" onclick="obAddEmployee()" id="ob-emp-add" style="margin-bottom:16px">+ Add Employee</button>
-      <button class="ob-btn" onclick="obNext(5)" id="ob-emp-next">Continue <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></button>
-      <button class="ob-btn secondary" onclick="obNext(5)" id="ob-emp-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
-    </div>
-
-    <!-- Step 5: Recurring Expenses -->
-    <div class="ob-step" id="ob-step5">
-      <div class="ob-step-title" id="ob-rec-title">Fixed Expenses</div>
-      <div class="ob-step-sub" id="ob-rec-sub">Add your monthly fixed costs</div>
-      <div id="ob-rec-list" style="margin-bottom:12px;max-height:180px;overflow-y:auto"></div>
-      <div style="display:flex;gap:8px;margin-bottom:8px">
-        <input id="ob-rec-name" placeholder="e.g. Rent" style="flex:1;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
-        <input id="ob-rec-amount" placeholder="Amount" type="number" style="width:100px;padding:11px 13px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;outline:none">
-      </div>
-      <button class="ob-btn secondary" onclick="obAddRecurring()" id="ob-rec-add" style="margin-bottom:16px">+ Add Expense</button>
-      <button class="ob-btn" onclick="obFinish()" id="ob-cur-next2">Get Started</button>
-      <button class="ob-btn secondary" onclick="obFinish()" id="ob-rec-skip" style="margin-top:8px;opacity:0.6;font-size:13px">Skip</button>
+      <button class="ob-btn" onclick="obBizNext()" id="ob-biz-next" disabled>Get Started</button>
     </div>
 
   </div>
@@ -15308,8 +15278,6 @@ var OB_TEXT = {
     bizTitle:'What type of business do you have?', bizSub:'This helps us show the right features for your business',
     bizGeneral:'General / Freelancer', bizTransport:'Transport / Logistics', bizRetail:'Retail / Shop',
     bizRestaurant:'Restaurant / Café', bizConstruction:'Construction', bizMedical:'Medical / Clinic',
-    empTitle:'Add Employees', empSub:'Add your team and their salaries', empAdd:'+ Add Employee', empNext:'Save & Continue',
-    recTitle:'Fixed Expenses', recSub:'Add your monthly fixed costs', recAdd:'+ Add Expense',
     errUser:'Please enter a username', email:'Email', phone:'Phone Number', country:'Country', confirmPass:'Confirm Password',
     errPass:'Password must be at least 4 characters',
     errWrong:'Incorrect username or password',
@@ -15328,8 +15296,6 @@ var OB_TEXT = {
     bizTitle:'ما نوع نشاطك التجاري؟', bizSub:'هذا يساعدنا في عرض الميزات المناسبة لنشاطك',
     bizGeneral:'عام / فريلانسر', bizTransport:'نقل وخدمات', bizRetail:'محل / تجزئة',
     bizRestaurant:'مطعم / كافيه', bizConstruction:'مقاولات', bizMedical:'طبي / عيادة',
-    empTitle:'إضافة الموظفين', empSub:'أضف فريقك ورواتبهم', empAdd:'+ إضافة موظف', empNext:'حفظ ومتابعة',
-    recTitle:'المصاريف الثابتة', recSub:'أضف تكاليفك الشهرية الثابتة', recAdd:'+ إضافة مصروف',
     errUser:'الرجاء إدخال اسم المستخدم', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة', confirmPass:'تأكيد كلمة المرور',
     errPass:'كلمة المرور يجب أن تكون 4 أحرف على الأقل',
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة',
@@ -15348,8 +15314,6 @@ var OB_TEXT = {
     bizTitle:'Was für ein Unternehmen haben Sie?', bizSub:'Dies hilft uns, die richtigen Funktionen anzuzeigen',
     bizGeneral:'Allgemein / Freelancer', bizTransport:'Transport / Logistik', bizRetail:'Einzelhandel / Shop',
     bizRestaurant:'Restaurant / Café', bizConstruction:'Bau / Handwerk', bizMedical:'Medizin / Klinik',
-    empTitle:'Mitarbeiter hinzufügen', empSub:'Fügen Sie Ihr Team und Gehälter hinzu', empAdd:'+ Mitarbeiter', empNext:'Speichern & Weiter',
-    recTitle:'Fixkosten', recSub:'Fügen Sie monatliche Fixkosten hinzu', recAdd:'+ Ausgabe',
     errUser:'Bitte Benutzernamen eingeben', email:'E-Mail', phone:'Telefonnummer', country:'Land', confirmPass:'Passwort bestätigen',
     errPass:'Passwort mind. 4 Zeichen',
     errWrong:'Falscher Benutzername oder Passwort',
@@ -15385,27 +15349,12 @@ function updateObText() {
     'ob-lang-title':'langTitle','ob-lang-sub':'langSub','ob-lang-next':'cont',
     'ob-auth-title':'authTitle','ob-auth-sub':'authSub',
     'ob-login-btn':'login','ob-register-btn':'register','ob-or-text':'or',
-    'ob-cur-title':'curTitle','ob-cur-sub':'curSub','ob-cur-next':'cont','ob-cur-next2':'finish',
-    'ob-biz-title':'bizTitle','ob-biz-sub':'bizSub','ob-biz-next':'cont',
+    'ob-cur-title':'curTitle','ob-cur-sub':'curSub','ob-cur-next':'cont',
+    'ob-biz-title':'bizTitle','ob-biz-sub':'bizSub','ob-biz-next':'finish',
     'obbiz-general-lbl':'bizGeneral','obbiz-transport-lbl':'bizTransport','obbiz-retail-lbl':'bizRetail',
     'obbiz-restaurant-lbl':'bizRestaurant','obbiz-construction-lbl':'bizConstruction','obbiz-medical-lbl':'bizMedical',
-    'ob-emp-title':'empTitle','ob-emp-sub':'empSub','ob-emp-add':'empAdd','ob-emp-next':'empNext','ob-emp-skip':'skip',
-    'ob-rec-title':'recTitle','ob-rec-sub':'recSub','ob-rec-add':'recAdd','ob-rec-skip':'skip',
-    'ob-emp-lbl':'empLbl','ob-rec-lbl':'recLbl','ob-cur-lbl':'curLbl',
+    'ob-cur-lbl':'curLbl',
   };
-  // Update setup input placeholders too
-  var empNameEl = document.getElementById('ob-emp-name');
-  var empSalEl = document.getElementById('ob-emp-salary');
-  var recNameEl = document.getElementById('ob-rec-name');
-  var recAmtEl = document.getElementById('ob-rec-amount');
-  var empPlaceholders = {en:['Name','Salary'],ar:['الاسم','الراتب'],de:['Name','Gehalt']};
-  var recPlaceholders = {en:['e.g. Rent','Amount'],ar:['مثال: إيجار','المبلغ'],de:['z.B. Miete','Betrag']};
-  var ep = empPlaceholders[obSelectedLang]||empPlaceholders.en;
-  var rp = recPlaceholders[obSelectedLang]||recPlaceholders.en;
-  if(empNameEl) empNameEl.placeholder = ep[0];
-  if(empSalEl) empSalEl.placeholder = ep[1];
-  if(recNameEl) recNameEl.placeholder = rp[0];
-  if(recAmtEl) recAmtEl.placeholder = rp[1];
 
   // Register field labels
   var regLabels = {
@@ -15444,13 +15393,6 @@ function updateObText() {
   var gotoReg = document.getElementById('ob-goto-register');
   var createLbl = {en:'Create Account', ar:'إنشاء حساب', de:'Konto erstellen'};
   if(gotoReg) gotoReg.textContent = createLbl[obSelectedLang]||createLbl.en;
-  // RTL for setup inputs
-  var isRTL = obSelectedLang === 'ar';
-  var dir = isRTL ? 'rtl' : 'ltr';
-  ['ob-emp-name','ob-emp-salary','ob-rec-name','ob-rec-amount'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.style.direction = dir;
-  });
   Object.keys(map).forEach(function(id){
     var el = document.getElementById(id);
     if(el) el.innerHTML = t_ob(map[id]);
@@ -15462,7 +15404,7 @@ function updateObText() {
 }
 
 function obNext(step) {
-  for(var i=0;i<6;i++){
+  for(var i=0;i<4;i++){
     var s = document.getElementById('ob-step'+i);
     if(s) s.className = 'ob-step'+(i===step?' active':'');
     var d = document.getElementById('dot'+i);
@@ -15475,8 +15417,6 @@ function obNext(step) {
       if(u) u.focus();
     }, 300);
   }
-  if(step===4) obRenderSetupLists();
-  if(step===5) obRenderSetupLists();
 }
 
 function selectObBizType(value) {
@@ -15493,7 +15433,7 @@ function obBizNext() {
   if(!obSelectedBizType) return;
   state.businessType = obSelectedBizType;
   save();
-  obNext(4);
+  obFinish();
 }
 
 function selectObCur(code, symbol) {
@@ -15647,11 +15587,9 @@ function obFinish() {
   state.budgets = {};
   state.lang = obSelectedLang;
   state.currency = obSelectedCur;
-  state.employees = obSetupEmployees.length ? obSetupEmployees.slice() : [];
-  state.recurring = obSetupRecurring.length ? obSetupRecurring.slice() : [];
+  state.employees = [];
+  state.recurring = [];
   state.businessName = (accounts[user] && accounts[user].businessName) || '';
-  obSetupEmployees = [];
-  obSetupRecurring = [];
   save(); // saves to uk() keys (smartac_username_tx etc)
   applyLang();
   updateBusinessNameDisplay();
@@ -15702,71 +15640,6 @@ function showRegister() {
     var u = document.getElementById('ob-reg-username');
     if(u) u.focus();
   }, 200);
-}
-
-// Setup wizard temp storage
-var obSetupEmployees = [];
-var obSetupRecurring = [];
-
-function obAddEmployee() {
-  var nameEl = document.getElementById('ob-emp-name');
-  var salEl = document.getElementById('ob-emp-salary');
-  var name = (nameEl ? nameEl.value : '').trim();
-  var salary = parseFloat(salEl ? salEl.value : 0)||0;
-  if(!name) { if(nameEl) nameEl.focus(); return; }
-  obSetupEmployees.push({id: Date.now(), name:name, role:'', salary:salary});
-  if(nameEl) nameEl.value = '';
-  if(salEl) salEl.value = '';
-  if(nameEl) nameEl.focus();
-  obRenderSetupLists();
-}
-
-function obAddRecurring() {
-  var nameEl = document.getElementById('ob-rec-name');
-  var amtEl = document.getElementById('ob-rec-amount');
-  var name = (nameEl ? nameEl.value : '').trim();
-  var amount = parseFloat(amtEl ? amtEl.value : 0)||0;
-  if(!name) { if(nameEl) nameEl.focus(); return; }
-  if(!amount) { if(amtEl) amtEl.focus(); return; }
-  obSetupRecurring.push({id: Date.now(), name:name, amount:amount, day:1});
-  if(nameEl) nameEl.value = '';
-  if(amtEl) amtEl.value = '';
-  if(nameEl) nameEl.focus();
-  obRenderSetupLists();
-}
-
-function obRenderSetupLists() {
-  var cur = obSelectedCur || '€';
-  var empList = document.getElementById('ob-emp-list');
-  if(empList) {
-    if(!obSetupEmployees.length) {
-      empList.innerHTML = '';
-    } else {
-      empList.innerHTML = obSetupEmployees.map(function(e, i){
-        return '<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
-          +'<div style="width:32px;height:32px;border-radius:50%;background:var(--primary);display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;font-weight:700;flex-shrink:0">'+e.name.charAt(0).toUpperCase()+'</div>'
-          +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+e.name+'</div>'
-          +'<div style="font-size:11px;color:var(--income);font-weight:600">'+e.salary+' '+cur+'/mo</div></div>'
-          +'<button onclick="obSetupEmployees.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">'+svgIcon('x',16)+'</button>'
-          +'</div>';
-      }).join('');
-    }
-  }
-  var recList = document.getElementById('ob-rec-list');
-  if(recList) {
-    if(!obSetupRecurring.length) {
-      recList.innerHTML = '';
-    } else {
-      recList.innerHTML = obSetupRecurring.map(function(r, i){
-        return '<div style="display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:10px;padding:10px 12px;margin-bottom:6px">'
-          +'<div style="font-size:20px">'+svgIcon('refreshCw',20)+'</div>'
-          +'<div style="flex:1"><div style="font-size:13px;font-weight:600">'+r.name+'</div>'
-          +'<div style="font-size:11px;color:var(--expense);font-weight:600">-'+r.amount+' '+cur+'/mo</div></div>'
-          +'<button onclick="obSetupRecurring.splice('+i+',1);obRenderSetupLists()" style="background:none;border:none;color:#ef4444;cursor:pointer;font-size:16px">'+svgIcon('x',16)+'</button>'
-          +'</div>';
-      }).join('');
-    }
-  }
 }
 
 // ── IN-APP NOTIFICATIONS ──
