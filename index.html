@@ -595,7 +595,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 
 /* ── MOBILE LAYOUT (default: 430px centered) ── */
 @media (max-width:1023px) {
-  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage{max-width:430px;margin-left:auto;margin-right:auto}
+  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{max-width:430px;margin-left:auto;margin-right:auto}
   .bnav{max-width:430px}
   #mainPage{max-width:430px;margin-left:auto;margin-right:auto}
   /* Landing page mobile */
@@ -645,8 +645,8 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .bnav{display:none !important}
   #sidebarNav{transform:translateX(0)}
   body.lang-ar #sidebarNav{transform:translateX(0)}
-  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage{margin-left:240px !important;max-width:none}
-  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage{margin-left:0 !important;margin-right:240px !important}
+  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{margin-left:240px !important;max-width:none}
+  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #expensesPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage,body.lang-ar #agendaPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
   .fab-scan{left:32px;bottom:32px;right:auto}
   .modal-overlay{align-items:center}
@@ -2087,6 +2087,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item" id="snav-kalender" onclick="showNav('kalender')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span id="snav-lbl-kalender">Kalender</span>
   </div>
+  <div class="snav-item" id="snav-agenda" onclick="showNav('agenda')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Agenda</span>
+  </div>
   <div class="snav-item" id="snav-notizen" onclick="showNav('notizen')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></span><span id="snav-lbl-notizen">Notizen</span>
   </div>
@@ -2559,6 +2562,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="notizenPage" style="display:none" class="settings-page"></div>
 <div id="archivePage" style="display:none" class="settings-page"></div>
 <div id="contactsPage" style="display:none" class="settings-page"></div>
+<div id="agendaPage" style="display:none" class="settings-page"></div>
 
 <!-- IN-APP NOTIFICATION CONTAINER -->
 <div id="inAppNotifContainer"></div>
@@ -2989,6 +2993,8 @@ var state = {
   archiveDocs: [],
   contacts: [],
   contactDocs: [],
+  agenda: [],
+  agendaDocs: [],
 };
 
 var CURRENCIES = {
@@ -3207,6 +3213,8 @@ function save() {
   localStorage.setItem(uk('archiveDocs'), JSON.stringify(state.archiveDocs || []));
   localStorage.setItem(uk('contacts'), JSON.stringify(state.contacts || []));
   localStorage.setItem(uk('contactDocs'), JSON.stringify(state.contactDocs || []));
+  localStorage.setItem(uk('agenda'), JSON.stringify(state.agenda || []));
+  localStorage.setItem(uk('agendaDocs'), JSON.stringify(state.agendaDocs || []));
 }
 
 var _loadedDataUser = null;
@@ -3255,6 +3263,8 @@ function loadUserData() {
   state.archiveDocs = JSON.parse(localStorage.getItem(uk('archiveDocs')) || '[]');
   state.contacts = JSON.parse(localStorage.getItem(uk('contacts')) || '[]');
   state.contactDocs = JSON.parse(localStorage.getItem(uk('contactDocs')) || '[]');
+  state.agenda = JSON.parse(localStorage.getItem(uk('agenda')) || '[]');
+  state.agendaDocs = JSON.parse(localStorage.getItem(uk('agendaDocs')) || '[]');
   var user2 = localStorage.getItem('smartac_session') || '';
   if(user2) {
     var accs = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
@@ -3304,10 +3314,10 @@ function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   if(page === 'inventory' && state.businessType !== 'retail' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
-  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage'].forEach(function(p) {
+  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','expensesPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage','agendaPage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
   });
-  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts'].forEach(function(n) {
+  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','expenses','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts','agenda'].forEach(function(n) {
     var navEl = document.getElementById('nav-'+n);
     if(navEl) navEl.classList.remove('active');
     var snavEl = document.getElementById('snav-'+n);
@@ -3317,7 +3327,7 @@ function showNav(page) {
   var snavSettings = document.getElementById('snav-settings');
   if(snavSettings) snavSettings.classList.remove('active');
 
-  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage'};
+  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',expenses:'expensesPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage',agenda:'agendaPage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
   if(page !== 'home') {
@@ -3352,6 +3362,7 @@ function showNav(page) {
   if(page === 'notizen') renderNotizenPage();
   if(page === 'archive') renderArchivePage();
   if(page === 'contacts') renderContactsPage();
+  if(page === 'agenda') renderAgendaPage();
 }
 
 // ── MORE MENU (mobile) ──
@@ -3391,6 +3402,7 @@ var MORE_MENU_L = {
   notizen: {en:'Notes', ar:'الملاحظات', de:'Notizen'},
   archive: {en:'Archive', ar:'الأرشيف', de:'Archiv'},
   contacts: {en:'Contacts', ar:'جهات الاتصال', de:'Kontakte'},
+  agenda: {en:'Agenda', ar:'الأجندة', de:'Agenda'},
   scanInvoices: {en:'Scan Invoices', ar:'مسح الفواتير', de:'Rechnungen scannen'},
   settings: {en:'Settings', ar:'الإعدادات', de:'Einstellungen'},
   help: {en:'Help', ar:'مساعدة', de:'Hilfe'}
@@ -3419,6 +3431,7 @@ function openMoreMenu() {
   if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
   h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
+  h += moreMenuItemHtml('mm-agenda', 'checklist', mtx('agenda'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
   h += moreMenuItemHtml('mm-archive', 'folder', mtx('archive'));
   h += moreMenuItemHtml('mm-contacts', 'phone', mtx('contacts'));
@@ -3452,6 +3465,8 @@ function openMoreMenu() {
   if(mmAssets) mmAssets.onclick = function(){ showNav('assets'); };
   var mmKalender = document.getElementById('mm-kalender');
   if(mmKalender) mmKalender.onclick = function(){ showNav('kalender'); };
+  var mmAgenda = document.getElementById('mm-agenda');
+  if(mmAgenda) mmAgenda.onclick = function(){ showNav('agenda'); };
   var mmNotizen = document.getElementById('mm-notizen');
   if(mmNotizen) mmNotizen.onclick = function(){ showNav('notizen'); };
   var mmArchive = document.getElementById('mm-archive');
@@ -5975,14 +5990,16 @@ function renderKalenderPage() {
     var isToday = cell.dateStr === todayStr;
     var isSelected = cell.dateStr === _kalSelectedDate;
     var dayAppts = cell.dateStr ? allAppts.filter(function(a){ return a.date === cell.dateStr; }) : [];
+    var dayAgenda = cell.dateStr ? (state.agenda || []).filter(function(a){ return a.date === cell.dateStr; }) : [];
     var dotsHtml = '';
-    if(dayAppts.length) {
+    if(dayAppts.length || dayAgenda.length) {
       var seenTypes = {};
       dayAppts.forEach(function(a){ seenTypes[a.type] = true; });
       dotsHtml = '<div style="display:flex;gap:2px;justify-content:center;margin-top:2px">';
       Object.keys(seenTypes).forEach(function(t) {
         dotsHtml += '<span style="width:5px;height:5px;border-radius:50%;background:' + (KAL_TYPE_COLORS[t] || '#999') + ';display:inline-block"></span>';
       });
+      if(dayAgenda.length) dotsHtml += '<span style="width:5px;height:5px;border-radius:50%;background:#8b5cf6;display:inline-block"></span>';
       dotsHtml += '</div>';
     }
     var circleStyle = isToday ? 'background:var(--primary);color:#fff;border-radius:50%' : (isSelected ? 'background:var(--primary-light);border-radius:50%' : '');
@@ -6019,6 +6036,13 @@ function renderKalenderPage() {
     });
   }
   h += '</div>';
+
+  var selectedAgenda = (state.agenda || []).filter(function(a){ return a.date === _kalSelectedDate; }).sort(function(a, b){ return (b.createdAt||0) - (a.createdAt||0); });
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin:18px 0 10px' + (isRTL ? ';flex-direction:row-reverse' : '') + '">';
+  h += '<div style="font-size:15px;font-weight:700">' + agtx('title') + '</div>';
+  h += '<button id="kalAgendaAddBtn" style="background:#8b5cf6;color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer">' + agtx('addEntry') + '</button>';
+  h += '</div>';
+  h += '<div id="kalAgendaList">' + renderAgendaEntriesHtml(selectedAgenda) + '</div>';
 
   page.innerHTML = h;
 
@@ -6062,6 +6086,10 @@ function renderKalenderPage() {
       btn.onclick = function(){ deleteAppointment(apptId); };
     })(delBtns[di]);
   }
+
+  var agendaAddBtn = document.getElementById('kalAgendaAddBtn');
+  if(agendaAddBtn) agendaAddBtn.onclick = function(){ openAgendaForm(_kalSelectedDate); };
+  wireAgendaEntriesButtons(page);
 }
 
 function closeAppointmentForm() {
@@ -6215,6 +6243,354 @@ function saveAppointment() {
   closeAppointmentForm();
   _kalSelectedDate = dateVal;
   renderKalenderPage();
+}
+
+// ────────────────────────────────────────
+// ── AGENDA: daily business activity log, linked to Kalender + Kontakte ──
+// ────────────────────────────────────────
+var AGENDA_L = {
+  title:        {en:'Agenda', ar:'الأجندة', de:'Agenda'},
+  addEntry:     {en:'+ Add Entry', ar:'+ إضافة حركة', de:'+ Eintrag hinzufügen'},
+  newEntry:     {en:'New Agenda Entry', ar:'حركة جديدة', de:'Neuer Agenda-Eintrag'},
+  editEntry:    {en:'Edit Agenda Entry', ar:'تعديل الحركة', de:'Agenda-Eintrag bearbeiten'},
+  titleLbl:     {en:'Title *', ar:'العنوان *', de:'Titel *'},
+  dateLbl:      {en:'Date', ar:'التاريخ', de:'Datum'},
+  contactLbl:   {en:'Related Contact (optional)', ar:'جهة الاتصال (اختياري)', de:'Zugehöriger Kontakt (optional)'},
+  noContact:    {en:'None', ar:'بدون', de:'Keiner'},
+  noteLbl:      {en:'Note', ar:'ملاحظة', de:'Notiz'},
+  attachments:  {en:'Attachments', ar:'المرفقات', de:'Anhänge'},
+  camera:       {en:'Camera', ar:'كاميرا', de:'Kamera'},
+  upload:       {en:'Upload', ar:'رفع ملف', de:'Hochladen'},
+  save:         {en:'Save', ar:'حفظ', de:'Speichern'},
+  cancel:       {en:'Cancel', ar:'إلغاء', de:'Abbrechen'},
+  edit:         {en:'Edit', ar:'تعديل', de:'Bearbeiten'},
+  del:          {en:'Delete', ar:'حذف', de:'Löschen'},
+  empty:        {en:'No agenda entries for this day', ar:'لا توجد حركات لهذا اليوم', de:'Keine Agenda-Einträge für diesen Tag'},
+  emptyAll:     {en:'No agenda entries yet', ar:'لا توجد حركات بعد', de:'Noch keine Agenda-Einträge'},
+  searchPh:     {en:'Search agenda...', ar:'بحث في الأجندة...', de:'Agenda durchsuchen...'},
+  confirmDelete:{en:'Delete this agenda entry?', ar:'حذف هذه الحركة؟', de:'Diesen Agenda-Eintrag löschen?'},
+};
+function agtx(k) { return (AGENDA_L[k] && AGENDA_L[k][state.lang]) || (AGENDA_L[k] && AGENDA_L[k].en) || k; }
+
+function agendaDb() {
+  return new Promise(function(resolve, reject) {
+    if(window._agendaDbInst) { resolve(window._agendaDbInst); return; }
+    var req = indexedDB.open('smartac_agendadocs', 1);
+    req.onupgradeneeded = function(e) {
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains('docs')) db.createObjectStore('docs', {keyPath:'id'});
+    };
+    req.onsuccess = function(e) { window._agendaDbInst = e.target.result; resolve(window._agendaDbInst); };
+    req.onerror = function() { reject(req.error); };
+  });
+}
+function agendaDocPut(rec) {
+  return agendaDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').put(rec);
+      t.oncomplete = res; t.onerror = function(){ rej(t.error); };
+    });
+  });
+}
+function agendaDocGet(id) {
+  return agendaDb().then(function(db) {
+    return new Promise(function(res, rej) {
+      var r = db.transaction('docs').objectStore('docs').get(id);
+      r.onsuccess = function(){ res(r.result); }; r.onerror = function(){ rej(r.error); };
+    });
+  });
+}
+function agendaDocDeleteRec(id) {
+  return agendaDb().then(function(db) {
+    return new Promise(function(res) {
+      var t = db.transaction('docs', 'readwrite');
+      t.objectStore('docs').delete(id);
+      t.oncomplete = res; t.onerror = res;
+    });
+  }).catch(function(){});
+}
+
+function agendaSearchBlob(a) {
+  var d = String(a.date || '').substring(0,10);
+  var parts = d.split('-');
+  var monthNames = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+  var monthName = parts[1] ? (monthNames[parseInt(parts[1],10)-1] || '') : '';
+  var contact = a.contactId ? (state.contacts || []).find(function(c){ return c.id === a.contactId; }) : null;
+  return [a.title || '', a.note || '', d, formatDateDisplay(a.date), monthName, parts[0] || '', contact ? contact.name : ''].join(' ').toLowerCase();
+}
+
+// Shared list renderer used by both the Kalender day-detail section and the standalone Agenda page.
+function renderAgendaEntriesHtml(list) {
+  var isRTL = state.lang === 'ar';
+  if(!list.length) {
+    return '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">' + agtx('empty') + '</div>';
+  }
+  var h = '';
+  list.forEach(function(a) {
+    var contact = a.contactId ? (state.contacts || []).find(function(c){ return c.id === a.contactId; }) : null;
+    var docs = (state.agendaDocs || []).filter(function(d){ return d.agendaId === a.id; });
+    var borderSide = isRTL ? 'border-right' : 'border-left';
+    h += '<div style="background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:8px;' + borderSide + ':4px solid #8b5cf6;box-shadow:var(--shadow);text-align:' + (isRTL ? 'right' : 'left') + '">';
+    h += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px' + (isRTL ? ';flex-direction:row-reverse' : '') + '">';
+    h += '<div style="flex:1;min-width:0">';
+    h += '<div style="font-size:14px;font-weight:700">' + escHtml(a.title) + '</div>';
+    if(a.date) h += '<div style="font-size:11px;color:var(--text3);margin-top:2px">' + formatDateDisplay(a.date) + '</div>';
+    if(contact) h += '<div style="font-size:12px;color:#8b5cf6;margin-top:4px;font-weight:600">' + svgIcon('phone',11) + ' ' + escHtml(contact.name) + '</div>';
+    if(a.note) h += '<div style="font-size:12px;color:var(--text2);margin-top:4px;white-space:pre-wrap">' + escHtml(a.note) + '</div>';
+    if(docs.length) {
+      h += '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">';
+      docs.forEach(function(d) {
+        var isPdf = d.type === 'application/pdf';
+        h += '<span class="ag-doc-btn" data-id="' + d.id + '" style="display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px;color:var(--text2);cursor:pointer">' + svgIcon(isPdf ? 'fileText' : 'image', 12) + ' ' + escHtml(d.name) + '</span>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+    h += '<div style="display:flex;gap:6px;flex-shrink:0">';
+    h += '<button class="ag-edit-btn" data-id="' + a.id + '" style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer;color:var(--text2)">' + agtx('edit') + '</button>';
+    h += '<button class="ag-del-btn" data-id="' + a.id + '" style="background:rgba(239,68,68,0.1);border:none;border-radius:8px;padding:5px 8px;font-size:11px;cursor:pointer;color:#ef4444">' + agtx('del') + '</button>';
+    h += '</div>';
+    h += '</div></div>';
+  });
+  return h;
+}
+
+function wireAgendaEntriesButtons(container) {
+  var editBtns = container.querySelectorAll('.ag-edit-btn');
+  var i;
+  for(i = 0; i < editBtns.length; i++) {
+    (function(id) { editBtns[i].onclick = function(){ openAgendaForm(null, id); }; })(parseInt(editBtns[i].getAttribute('data-id'), 10));
+  }
+  var delBtns = container.querySelectorAll('.ag-del-btn');
+  for(i = 0; i < delBtns.length; i++) {
+    (function(id) { delBtns[i].onclick = function(){ deleteAgendaEntry(id); }; })(parseInt(delBtns[i].getAttribute('data-id'), 10));
+  }
+  var docBtns = container.querySelectorAll('.ag-doc-btn');
+  for(i = 0; i < docBtns.length; i++) {
+    (function(id) { docBtns[i].onclick = function(){ agendaDocView(id); }; })(parseInt(docBtns[i].getAttribute('data-id'), 10));
+  }
+}
+
+function agendaDocView(docId) {
+  agendaDocGet(docId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+}
+
+var _agendaPendingFiles = [];
+
+function renderAgendaPendingFilesHtml() {
+  if(!_agendaPendingFiles.length) return '';
+  var h = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0" id="agendaPendingList">';
+  _agendaPendingFiles.forEach(function(f, idx) {
+    h += '<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px;color:var(--text2)">' + svgIcon(f.type === 'application/pdf' ? 'fileText' : 'image', 12) + ' ' + escHtml(f.name) + ' <span class="ag-pending-remove" data-idx="' + idx + '" style="cursor:pointer;color:#ef4444;font-weight:700;margin-' + (state.lang==='ar'?'right':'left') + ':2px">×</span></span>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function agendaFileChosen(input) {
+  var files = input.files;
+  if(!files || !files.length) return;
+  var arr = Array.prototype.slice.call(files);
+  input.value = '';
+  Promise.all(arr.map(function(f) {
+    var isPdf = f.type === 'application/pdf';
+    return receiptCompress(f).then(function(blob) {
+      return {blob: blob, type: isPdf ? 'application/pdf' : 'image/jpeg', name: (f.name || 'file').replace(/\.[^.]+$/, '')};
+    });
+  })).then(function(results) {
+    _agendaPendingFiles = _agendaPendingFiles.concat(results);
+    var wrap = document.getElementById('agendaAttachWrap');
+    if(wrap) { wrap.innerHTML = renderAgendaPendingFilesHtml() + renderAgendaExistingDocsHtml(window._agendaEditId); wireAgendaAttachWrap(); }
+  });
+}
+
+function renderAgendaExistingDocsHtml(agendaId) {
+  if(!agendaId) return '';
+  var docs = (state.agendaDocs || []).filter(function(d){ return d.agendaId === agendaId; });
+  if(!docs.length) return '';
+  var h = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0" id="agendaExistingList">';
+  docs.forEach(function(d) {
+    h += '<span style="display:inline-flex;align-items:center;gap:4px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:4px 8px;font-size:11px;color:var(--text2)">' + svgIcon(d.type === 'application/pdf' ? 'fileText' : 'image', 12) + ' <span class="ag-existing-view" data-id="' + d.id + '" style="cursor:pointer">' + escHtml(d.name) + '</span> <span class="ag-existing-remove" data-id="' + d.id + '" style="cursor:pointer;color:#ef4444;font-weight:700;margin-' + (state.lang==='ar'?'right':'left') + ':2px">×</span></span>';
+  });
+  h += '</div>';
+  return h;
+}
+
+function wireAgendaAttachWrap() {
+  var wrap = document.getElementById('agendaAttachWrap');
+  if(!wrap) return;
+  var removeBtns = wrap.querySelectorAll('.ag-pending-remove');
+  var i;
+  for(i = 0; i < removeBtns.length; i++) {
+    (function(idx) {
+      removeBtns[i].onclick = function() {
+        _agendaPendingFiles.splice(idx, 1);
+        wrap.innerHTML = renderAgendaPendingFilesHtml() + renderAgendaExistingDocsHtml(window._agendaEditId);
+        wireAgendaAttachWrap();
+      };
+    })(parseInt(removeBtns[i].getAttribute('data-idx'), 10));
+  }
+  var viewBtns = wrap.querySelectorAll('.ag-existing-view');
+  for(i = 0; i < viewBtns.length; i++) {
+    (function(id) { viewBtns[i].onclick = function(){ agendaDocView(id); }; })(parseInt(viewBtns[i].getAttribute('data-id'), 10));
+  }
+  var existingRemoveBtns = wrap.querySelectorAll('.ag-existing-remove');
+  for(i = 0; i < existingRemoveBtns.length; i++) {
+    (function(id) {
+      existingRemoveBtns[i].onclick = function() {
+        state.agendaDocs = (state.agendaDocs || []).filter(function(d){ return d.id !== id; });
+        save();
+        agendaDocDeleteRec(id);
+        wrap.innerHTML = renderAgendaPendingFilesHtml() + renderAgendaExistingDocsHtml(window._agendaEditId);
+        wireAgendaAttachWrap();
+      };
+    })(parseInt(existingRemoveBtns[i].getAttribute('data-id'), 10));
+  }
+}
+
+function openAgendaForm(date, editId) {
+  var existingOv = document.getElementById('agendaOverlay');
+  if(existingOv) existingOv.parentNode.removeChild(existingOv);
+  _agendaPendingFiles = [];
+
+  var editing = null;
+  if(editId) {
+    var found = (state.agenda || []).filter(function(a){ return a.id === editId; });
+    editing = found.length ? found[0] : null;
+  }
+  window._agendaEditId = editId || null;
+
+  var ov = document.createElement('div');
+  ov.id = 'agendaOverlay';
+  ov.className = 'modal-overlay open';
+  ov.style.zIndex = '100001'; // above appointment modal / kalender overlay layers
+
+  var html = '';
+  html += '<div class="modal" id="agendaModal">';
+  html += '<button class="modal-close-btn" id="agendaCloseBtn">' + svgIcon('x', 16) + '</button>';
+  html += '<div class="modal-handle"></div>';
+  html += '<div class="modal-title">' + (editing ? agtx('editEntry') : agtx('newEntry')) + '</div>';
+  html += '<input class="input-field" id="ag-title" placeholder="' + agtx('titleLbl') + '" value="' + (editing ? escHtml(editing.title) : '') + '">';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + agtx('dateLbl') + '</label>';
+  html += '<div class="date-fix-wrap"><input type="date" class="input-field" id="ag-date" value="' + (editing ? editing.date : (date || today())) + '"></div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + agtx('contactLbl') + '</label>';
+  html += '<select class="input-field" id="ag-contact">';
+  html += '<option value="">' + agtx('noContact') + '</option>';
+  (state.contacts || []).forEach(function(c) {
+    var sel = editing && editing.contactId === c.id ? ' selected' : '';
+    html += '<option value="' + c.id + '"' + sel + '>' + escHtml(c.name) + '</option>';
+  });
+  html += '</select>';
+  html += '<textarea class="input-field" id="ag-note" rows="3" placeholder="' + agtx('noteLbl') + '" style="resize:vertical">' + (editing ? escHtml(editing.note || '') : '') + '</textarea>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin:4px 0 6px">' + agtx('attachments') + '</label>';
+  html += '<div style="display:flex;gap:8px;margin-bottom:8px">';
+  html += '<button type="button" id="agendaCameraBtn" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('camera',14) + ' ' + agtx('camera') + '</button>';
+  html += '<button type="button" id="agendaUploadBtn" style="flex:1;padding:10px;border-radius:10px;border:1.5px dashed var(--border);background:var(--bg);color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + svgIcon('upload',14) + ' ' + agtx('upload') + '</button>';
+  html += '</div>';
+  html += '<input type="file" id="agendaCameraInput" accept="image/*" capture="environment" style="display:none">';
+  html += '<input type="file" id="agendaFileInput" accept="image/*,application/pdf" multiple style="display:none">';
+  html += '<div id="agendaAttachWrap">' + renderAgendaPendingFilesHtml() + renderAgendaExistingDocsHtml(editId) + '</div>';
+  html += '<div style="display:flex;gap:10px;margin-top:10px">';
+  html += '<button id="agendaSaveBtn" style="flex:1;background:#8b5cf6;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + agtx('save') + '</button>';
+  html += '<button id="agendaCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + agtx('cancel') + '</button>';
+  html += '</div></div>';
+  ov.innerHTML = html;
+  document.body.appendChild(ov);
+
+  function close() { _agendaPendingFiles = []; var o = document.getElementById('agendaOverlay'); if(o) o.parentNode.removeChild(o); }
+  document.getElementById('agendaCloseBtn').onclick = close;
+  document.getElementById('agendaCancelBtn').onclick = close;
+  ov.onclick = function(e) { if(e.target === ov) close(); };
+  document.getElementById('agendaCameraBtn').onclick = function() { document.getElementById('agendaCameraInput').click(); };
+  document.getElementById('agendaUploadBtn').onclick = function() { document.getElementById('agendaFileInput').click(); };
+  document.getElementById('agendaCameraInput').onchange = function() { agendaFileChosen(this); };
+  document.getElementById('agendaFileInput').onchange = function() { agendaFileChosen(this); };
+  document.getElementById('agendaSaveBtn').onclick = saveAgendaEntry;
+  wireAgendaAttachWrap();
+}
+
+function saveAgendaEntry() {
+  var titleEl = document.getElementById('ag-title');
+  var title = titleEl ? titleEl.value.trim() : '';
+  if(!title) { if(titleEl) titleEl.focus(); return; }
+  var dateEl = document.getElementById('ag-date');
+  var contactEl = document.getElementById('ag-contact');
+  var noteEl = document.getElementById('ag-note');
+  var dateVal = (dateEl && dateEl.value) ? dateEl.value : today();
+  var contactId = (contactEl && contactEl.value) ? parseInt(contactEl.value, 10) : null;
+  var note = (noteEl && noteEl.value) || '';
+
+  var entryId;
+  if(window._agendaEditId) {
+    entryId = window._agendaEditId;
+    var existing = (state.agenda || []).find(function(a){ return a.id === entryId; });
+    if(existing) {
+      existing.title = title; existing.date = dateVal; existing.contactId = contactId; existing.note = note;
+    }
+  } else {
+    entryId = Date.now();
+    state.agenda.push({id: entryId, title: title, date: dateVal, contactId: contactId, note: note, createdAt: Date.now()});
+  }
+
+  var pending = _agendaPendingFiles.slice();
+  _agendaPendingFiles = [];
+  Promise.all(pending.map(function(f, idx) {
+    var docId = Date.now() + idx;
+    return agendaDocPut({id: docId, user: localStorage.getItem('smartac_user') || '', name: f.name, type: f.type, blob: f.blob, createdAt: new Date().toISOString()})
+      .then(function() { state.agendaDocs.push({id: docId, agendaId: entryId, name: f.name, type: f.type, createdAt: Date.now()}); });
+  })).then(function() {
+    save();
+    var ov = document.getElementById('agendaOverlay');
+    if(ov) ov.parentNode.removeChild(ov);
+    _kalSelectedDate = dateVal;
+    if(document.getElementById('kalenderPage') && document.getElementById('kalenderPage').style.display !== 'none') renderKalenderPage();
+    if(document.getElementById('agendaPage') && document.getElementById('agendaPage').style.display !== 'none') renderAgendaPage();
+  });
+}
+
+async function deleteAgendaEntry(id) {
+  if(!(await confirmAsync(DELETE_CONFIRM_TITLE[state.lang]||DELETE_CONFIRM_TITLE.en, agtx('confirmDelete')))) return;
+  var docs = (state.agendaDocs || []).filter(function(d){ return d.agendaId === id; });
+  docs.forEach(function(d) { agendaDocDeleteRec(d.id); });
+  state.agendaDocs = (state.agendaDocs || []).filter(function(d){ return d.agendaId !== id; });
+  state.agenda = (state.agenda || []).filter(function(a){ return a.id !== id; });
+  save();
+  if(document.getElementById('kalenderPage') && document.getElementById('kalenderPage').style.display !== 'none') renderKalenderPage();
+  if(document.getElementById('agendaPage') && document.getElementById('agendaPage').style.display !== 'none') renderAgendaPage();
+}
+
+function renderAgendaPage() {
+  var page = document.getElementById('agendaPage');
+  if(!page) return;
+  var isRTL = state.lang === 'ar';
+  var dir = isRTL ? 'rtl' : 'ltr';
+  var h = '';
+  h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;direction:' + dir + '">';
+  h += '<div style="font-size:20px;font-weight:700">' + agtx('title') + '</div>';
+  h += '<button id="agendaPageAddBtn" style="background:#8b5cf6;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + agtx('addEntry') + '</button>';
+  h += '</div>';
+  h += '<input type="text" id="agendaSearchInput" placeholder="' + agtx('searchPh') + '" oninput="filterAgenda(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;outline:none;margin-bottom:14px;direction:' + dir + '">';
+  h += '<div id="agendaPageList" style="direction:' + dir + '"></div>';
+  page.innerHTML = h;
+
+  renderAgendaPageList(state.agenda || []);
+  var addBtn = document.getElementById('agendaPageAddBtn');
+  if(addBtn) addBtn.onclick = function(){ openAgendaForm(today()); };
+}
+
+function renderAgendaPageList(list) {
+  var wrap = document.getElementById('agendaPageList');
+  if(!wrap) return;
+  var sorted = list.slice().sort(function(a, b){ return (b.date||'').localeCompare(a.date||'') || (b.createdAt||0) - (a.createdAt||0); });
+  wrap.innerHTML = sorted.length ? renderAgendaEntriesHtml(sorted) : '<div style="text-align:center;padding:40px 16px;color:var(--text3)">' + agtx('emptyAll') + '</div>';
+  wireAgendaEntriesButtons(wrap);
+}
+
+function filterAgenda(query) {
+  var q = (query || '').trim().toLowerCase();
+  var list = !q ? (state.agenda || []) : (state.agenda || []).filter(function(a) { return agendaSearchBlob(a).indexOf(q) !== -1; });
+  renderAgendaPageList(list);
 }
 
 // ── NOTIZEN ──
@@ -11055,6 +11431,7 @@ function applyLang() {
   snavLabels.notizen = {en:'Notes',ar:'الملاحظات',de:'Notizen'}[state.lang]||'Notes';
   snavLabels.archive = {en:'Archive',ar:'الأرشيف',de:'Archiv'}[state.lang]||'Archive';
   snavLabels.contacts = {en:'Contacts',ar:'جهات الاتصال',de:'Kontakte'}[state.lang]||'Contacts';
+  snavLabels.agenda = {en:'Agenda',ar:'الأجندة',de:'Agenda'}[state.lang]||'Agenda';
   snavLabels.help = {en:'Help',ar:'مساعدة',de:'Hilfe'}[state.lang]||'Help';
   Object.keys(snavLabels).forEach(function(k){
     var el = document.getElementById('snav-lbl-'+k);
