@@ -572,6 +572,8 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .snav-item.active{background:var(--primary-light);color:var(--primary);border-right-color:var(--primary)}
 .snav-icon{font-size:18px}
 .snav-divider{height:1px;background:var(--border);margin:8px 20px}
+.snav-group-title{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:0.5px;padding:10px 20px 4px}
+.more-back-btn{background:none;border:none;color:var(--text);cursor:pointer;padding:4px;display:flex;align-items:center;flex-shrink:0}
 .snav-spacer{flex:1}
 .snav-footer{padding:16px 20px;border-top:1px solid var(--border)}
 .snav-user{font-size:12px;color:var(--text3);margin-bottom:10px}
@@ -643,6 +645,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 /* ── DESKTOP RESPONSIVE (≥1024px) ── */
 @media (min-width:1024px) {
   .bnav{display:none !important}
+  .more-back-btn{display:none !important}
   #sidebarNav{transform:translateX(0)}
   body.lang-ar #sidebarNav{transform:translateX(0)}
   .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#expensesPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{margin-left:240px !important;max-width:none}
@@ -2049,8 +2052,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item active" id="snav-home" onclick="showNav('home')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span><span id="snav-lbl-home">Home</span>
   </div>
-  <div class="snav-item" id="snav-clients" onclick="showNav('clients')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span id="snav-lbl-clients">Clients</span>
+  <div class="snav-item" id="snav-reports" onclick="showNav('reports')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span id="snav-lbl-reports">Reports</span>
   </div>
   <div class="snav-item" id="snav-invoices" onclick="showNav('invoices')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg></span><span id="snav-lbl-invoices">Invoices</span>
@@ -2059,22 +2062,16 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M8 7h8"/><path d="M8 11h8"/><path d="M8 15h5"/></svg></span><span id="snav-lbl-expenses">Expenses</span>
   </div>
   <div class="snav-divider"></div>
-  <div class="snav-item" id="snav-reports" onclick="showNav('reports')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span id="snav-lbl-reports">Reports</span>
-  </div>
-  <div class="snav-item" id="snav-debts" onclick="showNav('debts')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span id="snav-lbl-debts">Debts</span>
-  </div>
-  <div class="snav-item" id="snav-suppliers" onclick="showNav('suppliers')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span><span id="snav-lbl-suppliers">Suppliers</span>
+  <div class="snav-group-title" id="snav-group-manage">Manage</div>
+  <div class="snav-item" id="snav-agenda" onclick="showNav('agenda')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Daily Log</span>
   </div>
   <div class="snav-item" id="snav-employees" onclick="showNav('employees')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span id="snav-lbl-employees">Employees</span>
   </div>
-  <div class="snav-item" id="snav-fixed" onclick="showNav('fixed')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span id="snav-lbl-fixed">Fixed</span>
+  <div class="snav-item" id="snav-archive" onclick="showNav('archive')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><span id="snav-lbl-archive">Archiv</span>
   </div>
-  <div class="snav-divider" id="snav-divider-tools"></div>
   <div class="snav-item" id="snav-fleet" onclick="showNav('fleet')" style="display:none">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 17h4V5H2v12h3"/><path d="M14 9h4l3 3v5h-3"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg></span><span id="snav-lbl-fleet">Fleet</span>
   </div>
@@ -2084,22 +2081,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="snav-item" id="snav-assets" onclick="showNav('assets')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg></span><span id="snav-lbl-assets">Assets</span>
   </div>
+  <div class="snav-item" id="snav-contacts" onclick="showNav('contacts')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span id="snav-lbl-contacts">Kontakte</span>
+  </div>
+  <div class="snav-item" id="snav-clients" onclick="showNav('clients')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span id="snav-lbl-clients">Clients</span>
+  </div>
+  <div class="snav-item" id="snav-suppliers" onclick="showNav('suppliers')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/></svg></span><span id="snav-lbl-suppliers">Suppliers</span>
+  </div>
+  <div class="snav-item" id="snav-debts" onclick="showNav('debts')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></span><span id="snav-lbl-debts">Debts</span>
+  </div>
+  <div class="snav-item" id="snav-fixed" onclick="showNav('fixed')">
+    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span id="snav-lbl-fixed">Fixed</span>
+  </div>
+  <div class="snav-divider" id="snav-divider-tools"></div>
+  <div class="snav-group-title" id="snav-group-tools">Tools</div>
   <div class="snav-item" id="snav-kalender" onclick="showNav('kalender')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></span><span id="snav-lbl-kalender">Kalender</span>
-  </div>
-  <div class="snav-item" id="snav-agenda" onclick="showNav('agenda')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg></span><span id="snav-lbl-agenda">Daily Log</span>
   </div>
   <div class="snav-item" id="snav-notizen" onclick="showNav('notizen')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="8" y1="9" x2="16" y2="9"/><line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="12" y2="17"/></svg></span><span id="snav-lbl-notizen">Notizen</span>
   </div>
-  <div class="snav-item" id="snav-archive" onclick="showNav('archive')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></span><span id="snav-lbl-archive">Archiv</span>
-  </div>
-  <div class="snav-item" id="snav-contacts" onclick="showNav('contacts')">
-    <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span id="snav-lbl-contacts">Kontakte</span>
-  </div>
   <div class="snav-divider"></div>
+  <div class="snav-group-title" id="snav-group-support">Support &amp; Settings</div>
   <div class="snav-item" id="snav-settings" onclick="showNav('settings')">
     <span class="snav-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span id="snav-lbl-settings">Settings</span>
   </div>
@@ -2369,13 +2375,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- DEBTS PAGE -->
 <div id="debtsPage" class="debts-page">
-  <div style="font-size:18px;font-weight:700;margin-bottom:16px" id="debts-page-title">Debts</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+    <button type="button" class="more-back-btn" onclick="openMoreMenu()"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div style="font-size:18px;font-weight:700" id="debts-page-title">Debts</div>
+  </div>
   <div id="debtsList"></div>
 </div>
 
 <!-- SETTINGS PAGE -->
 <div id="settingsPage" class="settings-page">
-  <div id="settings-title" style="font-size:18px;font-weight:700;margin-bottom:16px">Settings</div>
+  <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+    <button type="button" class="more-back-btn" onclick="openMoreMenu()"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <div id="settings-title" style="font-size:18px;font-weight:700">Settings</div>
+  </div>
 
   <div id="settings-account-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
@@ -3366,6 +3378,9 @@ function showNav(page) {
 }
 
 // ── MORE MENU (mobile) ──
+function moreBackBtnHtml() {
+  return '<button type="button" class="more-back-btn" onclick="openMoreMenu()">' + svgIcon('chevronLeft', 20) + '</button>';
+}
 function moreMenuItemHtml(id, iconName, label) {
   return '<div id="' + id + '" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);font-size:15px;color:var(--text);background:var(--card);border-radius:12px;margin-bottom:6px;cursor:pointer">'
     + '<span style="color:var(--primary);display:flex">' + svgIcon(iconName, 20) + '</span>'
@@ -3419,22 +3434,22 @@ function openMoreMenu() {
 
   var h = '';
   h += moreMenuGroupTitleHtml(mtx('manage'));
-  h += moreMenuItemHtml('mm-clients', 'users', mtx('clients'));
-  h += moreMenuItemHtml('mm-debts', 'handshake', mtx('debts'));
-  h += moreMenuItemHtml('mm-suppliers', 'building', mtx('suppliers'));
+  h += moreMenuItemHtml('mm-agenda', 'checklist', mtx('agenda'));
   h += moreMenuItemHtml('mm-employees', 'users', mtx('employees'));
+  h += moreMenuItemHtml('mm-archive', 'folder', mtx('archive'));
+  if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
+  if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
+  h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
+  h += moreMenuItemHtml('mm-contacts', 'phone', mtx('contacts'));
+  h += moreMenuItemHtml('mm-clients', 'users', mtx('clients'));
+  h += moreMenuItemHtml('mm-suppliers', 'building', mtx('suppliers'));
+  h += moreMenuItemHtml('mm-debts', 'handshake', mtx('debts'));
   h += moreMenuItemHtml('mm-fixed', 'checklist', mtx('fixed'));
 
   h += moreMenuGroupTitleHtml(mtx('tools'));
   h += moreMenuItemHtml('mm-scan-invoices', 'camera', mtx('scanInvoices'));
-  if(state.businessType === 'transport') h += moreMenuItemHtml('mm-fleet', 'truck', mtx('fleet'));
-  if(state.businessType === 'retail' || state.businessType === 'transport') h += moreMenuItemHtml('mm-inventory', 'shoppingCart', mtx('inventory'));
-  h += moreMenuItemHtml('mm-assets', 'packageIcon', mtx('assets'));
   h += moreMenuItemHtml('mm-kalender', 'calendar', mtx('kalender'));
-  h += moreMenuItemHtml('mm-agenda', 'checklist', mtx('agenda'));
   h += moreMenuItemHtml('mm-notizen', 'note', mtx('notizen'));
-  h += moreMenuItemHtml('mm-archive', 'folder', mtx('archive'));
-  h += moreMenuItemHtml('mm-contacts', 'phone', mtx('contacts'));
 
   h += moreMenuGroupTitleHtml(mtx('support'));
   h += moreMenuItemHtml('mm-settings', 'gear', mtx('settings'));
@@ -3594,7 +3609,7 @@ function renderEmployeesPage() {
 
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h += '<div style="font-size:18px;font-weight:700">' + emptx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + emptx('title') + '</div></div>';
   h += '<button id="empAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + emptx('add') + '</button>';
   h += '</div></div>';
 
@@ -4020,7 +4035,7 @@ function renderFleetPage() {
 
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h += '<div style="font-size:18px;font-weight:700">' + fleettx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + fleettx('title') + '</div></div>';
   h += '<button id="fleetAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + fleettx('add') + '</button>';
   h += '</div></div>';
 
@@ -5083,7 +5098,7 @@ function renderAssetsPage() {
 
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">';
-  h += '<div style="font-size:18px;font-weight:700">' + assetstx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + assetstx('title') + '</div></div>';
   h += '<button id="assetAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + assetstx('add') + '</button>';
   h += '</div><div style="font-size:12px;color:var(--text3);margin-bottom:16px">' + assetstx('sub') + '</div></div>';
 
@@ -5356,7 +5371,7 @@ function renderInventoryPage() {
 
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h += '<div style="font-size:18px;font-weight:700">' + invtx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + invtx('title') + '</div></div>';
   h += '<button id="invAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + invtx('add') + '</button>';
   h += '</div></div>';
 
@@ -5763,7 +5778,7 @@ function renderHelpPage() {
   }
 
   var h = '<div style="padding-bottom:120px">';
-  h += '<div style="padding:16px 16px 0;font-size:18px;font-weight:700">' + htx('title') + '</div>';
+  h += '<div style="padding:16px 16px 0;display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + htx('title') + '</div></div>';
 
   h += helpSectionTitle(htx('secBasics'));
   h += helpRow('help-add-tx', htx('addTx'));
@@ -5997,6 +6012,7 @@ function renderKalenderPage() {
 
   var h = '';
   h += '<div style="position:sticky;top:0;background:var(--bg);z-index:5;padding-bottom:8px">';
+  h += moreBackBtnHtml();
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">';
   h += '<button id="kalLeftBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronLeft', 18) + '</button>';
   h += '<div style="font-size:18px;font-weight:700">' + monthLabel + '</div>';
@@ -6594,7 +6610,7 @@ function renderAgendaPage() {
   var dir = isRTL ? 'rtl' : 'ltr';
   var h = '';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;direction:' + dir + '">';
-  h += '<div style="font-size:20px;font-weight:700">' + agtx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:20px;font-weight:700">' + agtx('title') + '</div></div>';
   h += '<button id="agendaPageAddBtn" style="background:#8b5cf6;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + agtx('addEntry') + '</button>';
   h += '</div>';
   h += '<input type="text" id="agendaSearchInput" placeholder="' + agtx('searchPh') + '" oninput="filterAgenda(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;outline:none;margin-bottom:14px;direction:' + dir + '">';
@@ -6649,7 +6665,7 @@ function renderNotizenPage() {
 
   var h = '';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
-  h += '<div style="font-size:18px;font-weight:700">' + nztx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + nztx('title') + '</div></div>';
   h += '<button id="notizAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + nztx('newNote') + '</button>';
   h += '</div>';
 
@@ -8712,7 +8728,7 @@ function renderArchivePage() {
   if(!page) return;
   var h = '';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
-  h += '<div style="font-size:18px;font-weight:700">' + atx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + atx('title') + '</div></div>';
   h += '<button id="archiveNewFolderBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + atx('newFolder') + '</button>';
   h += '</div>';
 
@@ -9100,7 +9116,7 @@ function renderContactsPage() {
   var inputStyle = 'width:100%;box-sizing:border-box;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;margin-bottom:8px';
   var h = '';
   h += '<div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;direction:' + dir + '">';
-  h += '<div style="font-size:20px;font-weight:700">' + cttx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:20px;font-weight:700">' + cttx('title') + '</div></div>';
   h += '<button id="addContactBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('add') + '</button>';
   h += '</div>';
   h += '<div id="contactForm" style="display:none;background:var(--card);border-radius:14px;margin:12px 16px;padding:16px;box-shadow:var(--shadow);direction:' + dir + '">';
@@ -11589,7 +11605,7 @@ function applyLang() {
   // Update reports page titles
   var rTitle = document.querySelector('#reportsPage > div');
   if(rTitle) rTitle.textContent = t('reports');
-  var dTitle = document.querySelector('#debtsPage > div');
+  var dTitle = document.getElementById('debts-page-title');
   if(dTitle) dTitle.textContent = t('debts');
   var stTitle = document.getElementById('settings-title');
   if(stTitle) stTitle.textContent = t('settings');
@@ -11617,6 +11633,12 @@ function applyLang() {
     var el = document.getElementById('snav-lbl-'+k);
     if(el) el.textContent = snavLabels[k];
   });
+  var snavGroupManage = document.getElementById('snav-group-manage');
+  if(snavGroupManage) snavGroupManage.textContent = mtx('manage');
+  var snavGroupTools = document.getElementById('snav-group-tools');
+  if(snavGroupTools) snavGroupTools.textContent = mtx('tools');
+  var snavGroupSupport = document.getElementById('snav-group-support');
+  if(snavGroupSupport) snavGroupSupport.textContent = mtx('support');
   // Update sidebar user label
   var snavUser = document.getElementById('snav-user-lbl');
   var sUser = localStorage.getItem('smartac_user') || '';
@@ -14367,6 +14389,7 @@ function renderFixedPage() {
   function fiTypeTx(k){ return (fiL.types[k]&&fiL.types[k][lang])||(fiL.types[k]&&fiL.types[k].en)||k; }
 
   var h = '<div style="padding:16px 16px 120px;direction:'+dir+'">';
+  h += moreBackBtnHtml();
 
   // ── Fixed Income (1st) ──
   h += '<div>';
@@ -14524,7 +14547,7 @@ function renderClientsPage() {
 
   var h = '<div style="padding:16px 16px 100px;direction:'+(isRTL?'rtl':'ltr')+'">';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
-  h += '<div style="font-size:18px;font-weight:700">'+tx('title')+'</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">'+moreBackBtnHtml()+'<div style="font-size:18px;font-weight:700">'+tx('title')+'</div></div>';
   h += '<button id="addClientBtn" style="background:var(--primary);color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">'+tx('add')+'</button>';
   h += '</div>';
 
@@ -16788,7 +16811,7 @@ function renderSuppliersPage() {
   var dir = isRTL ? 'rtl' : 'ltr';
   var h = '';
   h += '<div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;direction:' + dir + '">';
-  h += '<div style="font-size:20px;font-weight:700">' + tx('title') + '</div>';
+  h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:20px;font-weight:700">' + tx('title') + '</div></div>';
   h += '<button id="addSupplierBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + tx('add') + '</button>';
   h += '</div>';
   h += '<div id="supplierForm" style="display:none;background:var(--card);border-radius:14px;margin:12px 16px;padding:16px;box-shadow:var(--shadow);direction:' + dir + '">';
