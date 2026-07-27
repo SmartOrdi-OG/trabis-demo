@@ -16334,7 +16334,7 @@ var _invDlPeriod = null;
 
 function invDlPeriods(interval) {
   var years = {}; years[today().substring(0,4)] = true;
-  (state.transactions||[]).forEach(function(tx){ if(tx && tx.date && tx.receiptId) years[tx.date.substring(0,4)]=true; });
+  (state.transactions||[]).forEach(function(tx){ if(tx && tx.date && (tx.receiptId || tx.invoice)) years[tx.date.substring(0,4)]=true; });
   var yearNums = Object.keys(years).map(Number);
   var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
   var keys = [];
@@ -16347,7 +16347,7 @@ function invDlPeriods(interval) {
 }
 function invDlReceiptsForPeriod(type, key, interval) {
   return (state.transactions||[]).filter(function(tx) {
-    return tx && tx.receiptId && tx.type === type && tx.date && uvaKeyForDate(tx.date, interval) === key;
+    return tx && (tx.receiptId || tx.invoice) && tx.type === type && tx.date && uvaKeyForDate(tx.date, interval) === key;
   }).sort(function(a,b){ return (a.date||'') < (b.date||'') ? -1 : ((a.date||'') > (b.date||'') ? 1 : 0); });
 }
 
@@ -16427,6 +16427,13 @@ function downloadInvoicesPdf(type) {
   doc.text(new Date().toLocaleDateString(), 14, 52);
   doc.setTextColor(0);
 
+  function jsPdfImageFormat(dataUrl) {
+    var m = /^data:image\/([a-zA-Z0-9.+-]+);/.exec(dataUrl || '');
+    var ext = m ? m[1].toUpperCase() : 'JPEG';
+    if(ext === 'JPG') ext = 'JPEG';
+    if(ext !== 'JPEG' && ext !== 'PNG' && ext !== 'WEBP' && ext !== 'BMP') ext = 'JPEG';
+    return ext;
+  }
   function addImagePage(dataUrl, dims, caption) {
     var isLandscape = dims.w > dims.h;
     doc.addPage('a4', isLandscape ? 'l' : 'p');
@@ -16440,16 +16447,32 @@ function downloadInvoicesPdf(type) {
     var usableW = pageW - margin*2, usableH = pageH - top - margin;
     var ratio = Math.min(usableW / dims.w, usableH / dims.h);
     var drawW = dims.w * ratio, drawH = dims.h * ratio;
-    doc.addImage(dataUrl, 'JPEG', margin + (usableW-drawW)/2, top + (usableH-drawH)/2, drawW, drawH);
+    doc.addImage(dataUrl, jsPdfImageFormat(dataUrl), margin + (usableW-drawW)/2, top + (usableH-drawH)/2, drawW, drawH);
+  }
+  // Two separate attachment mechanisms feed the transaction list: the OCR receipt-scan
+  // (tx.receiptId, IndexedDB blob) and the generic "Attach Invoice" upload (tx.invoice,
+  // a dataURL stored directly on the transaction). Normalize both to {blob, type}.
+  function attachmentBlobForTx(tx) {
+    if(tx.receiptId) {
+      return receiptGet(tx.receiptId).then(function(rec) {
+        return (rec && rec.blob) ? {blob: rec.blob, type: rec.type} : null;
+      });
+    }
+    if(tx.invoice) {
+      return fetch(tx.invoice).then(function(resp) { return resp.blob(); }).then(function(blob) {
+        return {blob: blob, type: blob.type};
+      }).catch(function(){ return null; });
+    }
+    return Promise.resolve(null);
   }
   function processGroup(list) {
     return list.reduce(function(chain, tx) {
       return chain.then(function() {
-        return receiptGet(tx.receiptId).then(function(rec) {
-          if(!rec || !rec.blob) return; // attachment not on this device — skip silently, same as the single viewer does
+        return attachmentBlobForTx(tx).then(function(att) {
+          if(!att || !att.blob) return; // attachment not on this device — skip silently, same as the single viewer does
           var caption = captionLbl + ' · ' + formatDateDisplay(tx.date) + ' · ' + (tx.name||'') + ' · ' + fmt(tx.amount);
-          if(rec.type === 'application/pdf') {
-            return pdfPagesToImageBlobs(rec.blob).then(function(blobs) {
+          if(att.type === 'application/pdf') {
+            return pdfPagesToImageBlobs(att.blob).then(function(blobs) {
               return blobs.reduce(function(c2, blob, idx) {
                 return c2.then(function() {
                   return imageBlobToDataUrl(blob).then(function(url) {
@@ -16461,7 +16484,7 @@ function downloadInvoicesPdf(type) {
               }, Promise.resolve());
             }).catch(function(){});
           }
-          return imageBlobToDataUrl(rec.blob).then(function(url) {
+          return imageBlobToDataUrl(att.blob).then(function(url) {
             return imageDimensionsFromDataUrl(url).then(function(dims) { addImagePage(url, dims, caption); });
           });
         });
