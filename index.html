@@ -12214,7 +12214,28 @@ function submitVerifyPassword() {
   if(cb) cb();
 }
 
-function exportBackup() {
+// Reads every IndexedDB attachment referenced by the given ids (deduped) via getFn,
+// and returns them with their Blob swapped for a base64 dataURL so they survive JSON.stringify.
+async function backupCollectAttachments(getFn, ids) {
+  var uniqueIds = [];
+  var seen = {};
+  (ids || []).forEach(function(id) { if(id != null && !seen[id]) { seen[id] = true; uniqueIds.push(id); } });
+  var out = [];
+  for(var i = 0; i < uniqueIds.length; i++) {
+    var rec = null;
+    try { rec = await getFn(uniqueIds[i]); } catch(e) {}
+    if(!rec || !rec.blob) continue;
+    var dataUrl;
+    try { dataUrl = await imageBlobToDataUrl(rec.blob); } catch(e) { continue; }
+    var copy = {};
+    for(var k in rec) { if(k !== 'blob') copy[k] = rec[k]; }
+    copy.dataUrl = dataUrl;
+    out.push(copy);
+  }
+  return out;
+}
+
+async function exportBackup() {
   var backup = {
     transactions: state.transactions, clients: state.clients, suppliers: state.suppliers,
     issuedInvoices: state.issuedInvoices, receipts: state.receipts, receivedInvoices: state.receivedInvoices,
@@ -12226,8 +12247,38 @@ function exportBackup() {
     bankName: state.bankName, bankIban: state.bankIban, bankBic: state.bankBic, bankAccountHolder: state.bankAccountHolder,
     fleet: state.fleet, assets: state.assets, inventory: state.inventory,
     businessName: state.businessName, businessType: state.businessType, bizTaxId: state.businessTaxId,
-    uvaFreigaben: state.uvaFreigaben,
+    uvaFreigaben: state.uvaFreigaben, uvaInterval: state.uvaInterval,
+    notifications: state.notifications, invoiceTemplate: state.invoiceTemplate,
+    appointments: state.appointments, notes: state.notes,
+    archiveFolders: state.archiveFolders, archiveDocs: state.archiveDocs,
+    contacts: state.contacts, contactDocs: state.contactDocs,
+    agenda: state.agenda, agendaDocs: state.agendaDocs,
   };
+
+  var receiptIds = (state.transactions || []).filter(function(tx) { return tx && tx.receiptId; }).map(function(tx) { return tx.receiptId; });
+  var empDocIds = [];
+  (state.employees || []).forEach(function(e) { (e.documents || []).forEach(function(d) { if(d && d.id != null) empDocIds.push(d.id); }); });
+  var fleetDocIds = [];
+  (state.fleet || []).forEach(function(v) { (v.documents || []).forEach(function(d) { if(d && d.id != null) fleetDocIds.push(d.id); }); });
+  var archiveIds = (state.archiveDocs || []).map(function(d) { return d.id; });
+  var contactDocIds = (state.contactDocs || []).map(function(d) { return d.id; });
+  var agendaDocIds = (state.agendaDocs || []).map(function(d) { return d.id; });
+
+  var expBtn = document.getElementById('exportBackupBtn');
+  if(expBtn) expBtn.disabled = true;
+  try {
+    backup.attachments = {
+      receipts: await backupCollectAttachments(receiptGet, receiptIds),
+      empdocs: await backupCollectAttachments(empDocGet, empDocIds),
+      fleetdocs: await backupCollectAttachments(fleetDocGet, fleetDocIds),
+      archive: await backupCollectAttachments(archiveGet, archiveIds),
+      contactdocs: await backupCollectAttachments(contactDocGet, contactDocIds),
+      agendadocs: await backupCollectAttachments(agendaDocGet, agendaDocIds),
+    };
+  } finally {
+    if(expBtn) expBtn.disabled = false;
+  }
+
   var blob = new Blob([JSON.stringify(backup, null, 2)], {type:'application/json'});
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
@@ -12237,6 +12288,24 @@ function exportBackup() {
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(url);
+}
+
+// Turns a dataURL back into a Blob and writes the record into IndexedDB via putFn,
+// re-tagging it to the currently active device user (mirrors backupCollectAttachments).
+async function backupRestoreAttachments(putFn, list) {
+  if(!list || !list.length) return;
+  var user = localStorage.getItem('smartac_user') || '';
+  for(var i = 0; i < list.length; i++) {
+    var item = list[i];
+    if(!item || !item.dataUrl) continue;
+    var blob;
+    try { var resp = await fetch(item.dataUrl); blob = await resp.blob(); } catch(e) { continue; }
+    var rec = {};
+    for(var k in item) { if(k !== 'dataUrl') rec[k] = item[k]; }
+    rec.blob = blob;
+    rec.user = user;
+    try { await putFn(rec); } catch(e) {}
+  }
 }
 
 function handleImportBackup(file) {
@@ -12283,6 +12352,17 @@ function handleImportBackup(file) {
     state.inventory = data.inventory || [];
     state.businessType = data.businessType || 'general';
     state.uvaFreigaben = data.uvaFreigaben || {};
+    state.uvaInterval = data.uvaInterval || 'quarter';
+    state.notifications = data.notifications || [];
+    state.invoiceTemplate = data.invoiceTemplate || 'classic';
+    state.appointments = data.appointments || [];
+    state.notes = data.notes || [];
+    state.archiveFolders = data.archiveFolders || [];
+    state.archiveDocs = data.archiveDocs || [];
+    state.contacts = data.contacts || [];
+    state.contactDocs = data.contactDocs || [];
+    state.agenda = data.agenda || [];
+    state.agendaDocs = data.agendaDocs || [];
     if(data.businessName) {
       var _impUser = localStorage.getItem('smartac_session') || '';
       if(_impUser) {
@@ -12292,6 +12372,14 @@ function handleImportBackup(file) {
       }
     }
     save();
+    if(data.attachments) {
+      await backupRestoreAttachments(receiptPut, data.attachments.receipts);
+      await backupRestoreAttachments(empDocPut, data.attachments.empdocs);
+      await backupRestoreAttachments(fleetDocPut, data.attachments.fleetdocs);
+      await backupRestoreAttachments(archivePut, data.attachments.archive);
+      await backupRestoreAttachments(contactDocPut, data.attachments.contactdocs);
+      await backupRestoreAttachments(agendaDocPut, data.attachments.agendadocs);
+    }
     applyTheme();
     applyLang();
     updateFleetNavVisibility();

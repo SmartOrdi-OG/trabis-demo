@@ -263,10 +263,12 @@ function buchhalterLogin() {
     errEl.textContent = 'Benutzername oder Passwort falsch.';
     return;
   }
+  sessionStorage.setItem('bu_loggedin', '1');
   showAccountScreen();
 }
 
 function showAccountScreen() {
+  sessionStorage.removeItem('bu_account');
   document.getElementById('loginScreen').style.display = 'none';
   document.getElementById('dashScreen').style.display = 'none';
   document.getElementById('accountScreen').style.display = 'flex';
@@ -293,6 +295,7 @@ function showAccountScreen() {
 
 function selectAccount(username) {
   buCurrentUser = username;
+  sessionStorage.setItem('bu_account', username);
   buData = loadAccountData(username);
   document.getElementById('accountScreen').style.display = 'none';
   document.getElementById('dashScreen').style.display = 'block';
@@ -304,6 +307,8 @@ function selectAccount(username) {
 }
 
 function buchhalterLogout() {
+  sessionStorage.removeItem('bu_loggedin');
+  sessionStorage.removeItem('bu_account');
   buCurrentUser = null; buData = null;
   document.getElementById('dashScreen').style.display = 'none';
   document.getElementById('accountScreen').style.display = 'none';
@@ -1118,6 +1123,23 @@ function buOpenImpressum() {
   h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
   buOpenLegalOverlay('Impressum', 'Angaben gemäß § 5 ECG', h);
 }
+
+// Resume the accountant session on refresh instead of forcing back to the login screen —
+// sessionStorage clears on tab close, so a fresh browser session still requires login.
+(function buRestoreSession() {
+  if(sessionStorage.getItem('bu_loggedin') !== '1') return;
+  var savedUser = sessionStorage.getItem('bu_account');
+  if(savedUser) {
+    var accounts = {};
+    try { accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
+    if(accounts[savedUser]) {
+      document.getElementById('loginScreen').style.display = 'none';
+      selectAccount(savedUser);
+      return;
+    }
+  }
+  showAccountScreen();
+})();
 </script>
 </body>
 </html>
