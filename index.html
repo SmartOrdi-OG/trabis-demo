@@ -9794,6 +9794,20 @@ function whExportPDF(empId) {
   doc.setFont(undefined, 'normal'); doc.setFontSize(9); doc.setTextColor(0);
   var total = 0;
   days.forEach(function(day) {
+    var leave = whDayLeavePeriod(emp, day);
+    if(leave) {
+      doc.rect(cols[0], y, cols[1]-cols[0], rowH);
+      doc.text(whFmtDayDate(day).substring(0,12), cols[0]+2, y+rowH-2);
+      doc.rect(cols[1], y, cols[2]-cols[1], rowH);
+      doc.text(empName.substring(0,22), cols[1]+2, y+rowH-2);
+      doc.rect(cols[2], y, cols[6]-cols[2], rowH);
+      doc.setFont(undefined, 'bold');
+      doc.text(whLeaveTypeLabel(leave.type), cols[2]+2, y+rowH-2);
+      doc.setFont(undefined, 'normal');
+      y += rowH;
+      if(y > 280) { doc.addPage(); y = 16; }
+      return;
+    }
     var entry = whDayEntry(emp, day);
     var hrs = entry ? whComputeHours(entry) : 0;
     if(entry) total += hrs;
