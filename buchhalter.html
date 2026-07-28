@@ -960,7 +960,89 @@ function renderEmpTimesheet() {
   });
   h += '</table></div>';
   h += '<div style="margin-top:14px;font-weight:700;font-size:14px">Gesamtstunden Monat: ' + whFmtHMBu(total) + '</div>';
+  h += '<button class="dl-btn" style="margin-top:14px" onclick="whExportTimesheetPdf()">' + svgIconBu('download',14) + ' PDF herunterladen</button>';
   document.getElementById('whOverlayBody').innerHTML = h;
+}
+
+// Ported from index.html's whExportPDF — same layout/columns, sourced from buData instead of state.
+function whExportTimesheetPdf() {
+  var emp = (buData.employees||[]).find(function(e){ return e.id === buWhEmpId; });
+  if(!emp) return;
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
+  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
+  var monthKey = buWhMonth;
+  var days = whDaysInMonthBu(monthKey);
+  var empName = emp.fullName || emp.name || '';
+
+  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
+  var cols = [14, 46, 90, 118, 146, 170, 196];
+  var headers = ['Datum','Fahrer','Startzeit','Endzeit','Pause (min)','Gesamtstunden'];
+  var rowH = 6.6;
+  var y = 16;
+
+  doc.setDrawColor(120);
+  doc.setFillColor(216,216,216);
+  doc.rect(cols[0], y, cols[6]-cols[0], rowH, 'FD');
+  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(0);
+  doc.text(whAtMonthLabelBu(monthKey), cols[0]+2, y+rowH-2);
+  y += rowH;
+
+  doc.setFontSize(8);
+  for(var i = 0; i < 6; i++) {
+    doc.setFillColor(240,240,240);
+    doc.rect(cols[i], y, cols[i+1]-cols[i], rowH, 'FD');
+    doc.setTextColor(0);
+    doc.text(headers[i], cols[i]+2, y+rowH-2);
+  }
+  y += rowH;
+
+  doc.setFont(undefined, 'normal'); doc.setFontSize(9); doc.setTextColor(0);
+  var total = 0;
+  days.forEach(function(day) {
+    var leave = whDayLeavePeriodBu(emp, day);
+    if(leave) {
+      doc.rect(cols[0], y, cols[1]-cols[0], rowH);
+      doc.text(whFmtDayDateBu(day).substring(0,12), cols[0]+2, y+rowH-2);
+      doc.rect(cols[1], y, cols[2]-cols[1], rowH);
+      doc.text(empName.substring(0,22), cols[1]+2, y+rowH-2);
+      doc.rect(cols[2], y, cols[6]-cols[2], rowH);
+      doc.setFont(undefined, 'bold');
+      doc.text(whLeaveTypeLabelBu(leave.type), cols[2]+2, y+rowH-2);
+      doc.setFont(undefined, 'normal');
+      y += rowH;
+      if(y > 280) { doc.addPage(); y = 16; }
+      return;
+    }
+    var entry = whDayEntryBu(emp, day);
+    var hrs = entry ? whComputeHoursBu(entry) : 0;
+    if(entry) total += hrs;
+    var values = [
+      whFmtDayDateBu(day), empName,
+      entry && entry.start ? entry.start : '',
+      entry && entry.end ? entry.end : '',
+      entry && entry.breakMinutes != null ? String(entry.breakMinutes) : '',
+      entry ? whFmtHMBu(hrs) : ''
+    ];
+    for(var c = 0; c < 6; c++) {
+      doc.rect(cols[c], y, cols[c+1]-cols[c], rowH);
+      doc.text(String(values[c]).substring(0, c===1?22:12), cols[c]+2, y+rowH-2);
+    }
+    y += rowH;
+    if(y > 280) { doc.addPage(); y = 16; }
+  });
+
+  y += 14;
+  doc.setDrawColor(0);
+  doc.line(14, y, 74, y);
+  y += 5;
+  doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
+  doc.text('Unterschrift Fahrer', 14, y);
+
+  y += 10;
+  doc.setFontSize(8); doc.setTextColor(120);
+  doc.text('Gesamtstunden Monat: ' + whFmtHMBu(total) + '  ·  Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y);
+
+  doc.save('Arbeitszeit_' + empName.replace(/\s+/g,'_') + '_' + monthKey + '.pdf');
 }
 
 // ── Anlagevermögen ──
