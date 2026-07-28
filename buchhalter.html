@@ -910,9 +910,28 @@ function whDayLeavePeriodBu(emp, day) {
 }
 function whLeaveTypeLabelBu(type) { return type === 'karenz' ? 'Karenz' : 'Krankenstand'; }
 
+// Prefer the most recent month with a recorded leave period (that's what a bookkeeper
+// opening this view is usually looking for), then the most recent month with any work-hours
+// entry, and only fall back to today's month if the employee has no recorded data at all —
+// otherwise the sheet silently opens on an empty current month with nothing to see.
+function whMostRelevantMonthBu(emp) {
+  var leaveMonths = {};
+  (emp.leavePeriods||[]).forEach(function(lp){
+    if(lp.from) leaveMonths[lp.from.substring(0,7)] = true;
+    if(lp.to) leaveMonths[lp.to.substring(0,7)] = true;
+  });
+  var leaveKeys = Object.keys(leaveMonths).sort();
+  if(leaveKeys.length) return leaveKeys[leaveKeys.length-1];
+  var whMonths = {};
+  (emp.workHours||[]).forEach(function(w){ var d = w.fromDate||w.date; if(d) whMonths[d.substring(0,7)] = true; });
+  var whKeys = Object.keys(whMonths).sort();
+  if(whKeys.length) return whKeys[whKeys.length-1];
+  return null;
+}
 function openEmpTimesheet(empId) {
   buWhEmpId = empId;
-  buWhMonth = todayBu().substring(0,7);
+  var emp = (buData.employees||[]).find(function(e){ return e.id === empId; });
+  buWhMonth = (emp && whMostRelevantMonthBu(emp)) || todayBu().substring(0,7);
   renderEmpTimesheet();
   document.getElementById('whOverlay').classList.add('open');
 }
@@ -939,6 +958,11 @@ function renderEmpTimesheet() {
   h += '<div style="flex:1;text-align:center;font-weight:700;font-size:15px">' + whAtMonthLabelBu(buWhMonth) + '</div>';
   h += '<button class="wh-month-nav" onclick="whShiftMonth(1)" style="transform:scaleX(-1)">' + svgIconBu('chevronLeft',16) + '</button>';
   h += '</div>';
+
+  var hasAnyData = days.some(function(day) { return whDayLeavePeriodBu(emp, day) || whDayEntryBu(emp, day); });
+  if(!hasAnyData) {
+    h += '<div class="empty-msg">Keine Einträge für diesen Monat — mit den Pfeilen andere Monate durchsuchen.</div>';
+  }
 
   h += '<div style="overflow-x:auto"><table style="min-width:640px">';
   h += '<tr><th>Datum</th><th>Startzeit</th><th>Endzeit</th><th>Pause (min)</th><th>Gesamtstunden</th></tr>';
