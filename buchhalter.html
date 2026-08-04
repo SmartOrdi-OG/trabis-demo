@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SmartAc — Buchhalter Portal</title>
+<title>Trabis — Buchhalter Portal</title>
 <link rel="icon" type="image/png" href="logo-circle.png"/>
 <style>
 :root{
@@ -151,7 +151,7 @@ tr:last-child td{border-bottom:none}
 <!-- LOGIN -->
 <div id="loginScreen">
   <div class="auth-card">
-    <img src="logo-circle.png" class="auth-logo" alt="SmartAc"/>
+    <img src="logo-circle.png" class="auth-logo" alt="Trabis"/>
     <div class="auth-title">Buchhalter-Zugang</div>
     <div class="auth-sub">Nur-Lese-Ansicht für Steuerberater</div>
     <div class="auth-error" id="loginError"></div>
@@ -193,9 +193,9 @@ tr:last-child td{border-bottom:none}
   <div class="wrap">
     <div id="sidebarInner">
       <div class="sidebar-header">
-        <img src="logo-circle.png" class="sidebar-logo-icon" alt="SmartAc"/>
+        <img src="logo-circle.png" class="sidebar-logo-icon" alt="Trabis"/>
         <div>
-          <div class="sidebar-logo-text">SmartAc</div>
+          <div class="sidebar-logo-text">Trabis</div>
           <div class="sidebar-logo-sub">Buchhalter Portal</div>
         </div>
       </div>
@@ -1284,7 +1284,7 @@ function renderSettingsHtml() {
   h += '<button class="dl-btn" onclick="buOpenImpressum()">' + svgIconBu('fileText',14) + ' Impressum</button>';
   h += '</div>';
   h += '<div class="card"><div class="card-title">Über dieses Portal</div>';
-  h += '<div style="font-size:13px;color:var(--text2);line-height:1.7">SmartAc Buchhalter-Portal — eine schreibgeschützte Ansicht für Steuerberater. Alle Daten werden ausschließlich lokal auf dem Gerät des Geschäftsinhabers gespeichert; es finden keine Datenübertragungen an externe Server statt.</div>';
+  h += '<div style="font-size:13px;color:var(--text2);line-height:1.7">Trabis Buchhalter-Portal — eine schreibgeschützte Ansicht für Steuerberater. Alle Daten werden ausschließlich lokal auf dem Gerät des Geschäftsinhabers gespeichert; es finden keine Datenübertragungen an externe Server statt.</div>';
   h += '</div>';
   return h;
 }
@@ -1300,10 +1300,10 @@ function closeLegalOverlay() {
 }
 function buOpenTerms() {
   var h = '';
-  h += '<h2>1. Geltungsbereich</h2><p>Diese Nutzungsbedingungen gelten für den Zugang zum SmartAc Buchhalter-Portal — einer schreibgeschützten Ansicht, die Ihnen von Ihrem Mandanten (dem Geschäftsinhaber) zur Verfügung gestellt wird.</p>';
-  h += '<h2>2. Nutzung des Portals</h2><p>Der Zugang gewährt eine reine Leseansicht der von Ihrem Mandanten in SmartAc erfassten Geschäftsdaten. Sie dürfen diesen Zugang ausschließlich für die mit Ihrem Mandanten vereinbarten steuerlichen und buchhalterischen Zwecke nutzen.</p>';
+  h += '<h2>1. Geltungsbereich</h2><p>Diese Nutzungsbedingungen gelten für den Zugang zum Trabis Buchhalter-Portal — einer schreibgeschützten Ansicht, die Ihnen von Ihrem Mandanten (dem Geschäftsinhaber) zur Verfügung gestellt wird.</p>';
+  h += '<h2>2. Nutzung des Portals</h2><p>Der Zugang gewährt eine reine Leseansicht der von Ihrem Mandanten in Trabis erfassten Geschäftsdaten. Sie dürfen diesen Zugang ausschließlich für die mit Ihrem Mandanten vereinbarten steuerlichen und buchhalterischen Zwecke nutzen.</p>';
   h += '<h2>3. Vertraulichkeit der Zugangsdaten</h2><p>Sie sind dafür verantwortlich, die Ihnen mitgeteilten Zugangsdaten vertraulich zu behandeln und nicht an unbefugte Dritte weiterzugeben.</p>';
-  h += '<h2>4. Datenspeicherung</h2><p>Alle Daten werden ausschließlich lokal im Browser des Geräts gespeichert, auf dem Ihr Mandant SmartAc verwendet (localStorage/IndexedDB). Smartordi OG erhebt, überträgt oder speichert keine dieser Daten auf externen Servern.</p>';
+  h += '<h2>4. Datenspeicherung</h2><p>Alle Daten werden ausschließlich lokal im Browser des Geräts gespeichert, auf dem Ihr Mandant Trabis verwendet (localStorage/IndexedDB). Smartordi OG erhebt, überträgt oder speichert keine dieser Daten auf externen Servern.</p>';
   h += '<h2>5. Haftungsausschluss</h2><p>Die im Portal angezeigten Daten werden von Ihrem Mandanten erfasst und von Smartordi OG nicht auf Richtigkeit oder Vollständigkeit geprüft. Smartordi OG haftet nicht für Datenverlust, Fehler in den angezeigten Daten oder Schäden, die aus der Nutzung oder Nichtnutzung des Portals entstehen.</p>';
   h += '<h2>6. Änderungen</h2><p>Smartordi OG behält sich das Recht vor, das Portal jederzeit ohne vorherige Ankündigung zu ändern, einzuschränken oder einzustellen.</p>';
   h += '<h2>7. Anwendbares Recht</h2><p>Es gilt österreichisches Recht. Gerichtsstand ist das zuständige Gericht in Linz, Österreich.</p>';
@@ -1314,8 +1314,8 @@ function buOpenTerms() {
 function buOpenPrivacy() {
   var h = '';
   h += '<h2>1. Verantwortlicher</h2><p>Smartordi OG · Steingasse 6a, 4020 Linz · <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
-  h += '<h2>2. Welche Daten Sie einsehen können</h2><p>Über das Buchhalter-Portal können Sie die Geschäftsdaten einsehen, die Ihr Mandant in SmartAc erfasst hat (Transaktionen, Rechnungen, Belege, Mitarbeiterdaten u. a.). Diese Daten gehören Ihrem Mandanten — Smartordi OG hat keinen Zugriff darauf und speichert sie nicht.</p>';
-  h += '<h2>3. Keine Datenübertragung an Dritte</h2><p>SmartAc überträgt keine Daten an externe Server. Sämtliche Daten verbleiben ausschließlich auf dem Gerät Ihres Mandanten; ein Zugriff durch Smartordi OG oder Dritte ist technisch nicht möglich.</p>';
+  h += '<h2>2. Welche Daten Sie einsehen können</h2><p>Über das Buchhalter-Portal können Sie die Geschäftsdaten einsehen, die Ihr Mandant in Trabis erfasst hat (Transaktionen, Rechnungen, Belege, Mitarbeiterdaten u. a.). Diese Daten gehören Ihrem Mandanten — Smartordi OG hat keinen Zugriff darauf und speichert sie nicht.</p>';
+  h += '<h2>3. Keine Datenübertragung an Dritte</h2><p>Trabis überträgt keine Daten an externe Server. Sämtliche Daten verbleiben ausschließlich auf dem Gerät Ihres Mandanten; ein Zugriff durch Smartordi OG oder Dritte ist technisch nicht möglich.</p>';
   h += '<h2>4. Cookies und Tracking</h2><p>Das Portal verwendet keine Cookies und keine Tracking- oder Analysetechnologien.</p>';
   h += '<h2>5. Rechte an den Daten</h2><p>Die angezeigten Daten gehören Ihrem Mandanten. Anfragen zu Auskunft, Berichtigung oder Löschung von Daten (DSGVO/GDPR) sind direkt an Ihren Mandanten zu richten, nicht an Smartordi OG. Als Steuerberater unterliegen Sie zusätzlich Ihren eigenen berufsrechtlichen Verschwiegenheitspflichten hinsichtlich der eingesehenen Daten.</p>';
   h += '<h2>6. Datensicherheit</h2><p>Die Datensicherheit hängt vom Gerät Ihres Mandanten ab. Smartordi OG haftet nicht für Datenverlust durch Geräteausfall, gelöschte Browserdaten oder unbefugten Zugriff auf das Gerät.</p>';
