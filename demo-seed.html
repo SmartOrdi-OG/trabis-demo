@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" id="htmlRoot">
+<html lang="en" dir="ltr" id="htmlRoot">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -36,7 +36,6 @@
 <body>
 <div class="wrap">
   <div class="langbar">
-    <button type="button" class="lang-btn" data-lang="ar" onclick="setLang('ar')">AR</button>
     <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
     <button type="button" class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
   </div>
@@ -71,26 +70,6 @@
 <script>
 // ══════════════ i18n ══════════════
 var L = {
-  ar: {
-    title: '🧪 تحميل بيانات ديمو',
-    sub: 'أداة داخلية للعرض على المحاسب — مش جزء من التطبيق ولا هتظهر لأي مستخدم حقيقي.',
-    cardTitle: 'هيتحمّل إيه؟',
-    cardDesc: 'حسابين تجريبيين ببيانات واقعية في نفس المتصفح ده:',
-    li1: '<b>Café Prater</b> — مقهى/مطعم (معاملات، عملاء، موردين، موظفين، إجازة مرضية بشهادة مرفقة، إيصال مصروف مرفق، فاتورة صادرة وفاتورة واردة، أصل/معدة، دين)',
-    li2: '<b>Alpen Transporte</b> — شركة نقل (معاملات، عربية بسعر شراء/إهلاك، موظف سائق بساعات عمل كاملة، إيصال وقود مرفق، عميل ومورد، فاتورة صادرة، دين)',
-    loadBtn: 'تحميل بيانات الديمو',
-    openBtn: 'فتح واجهة المحاسب الآن ↗',
-    clearBtn: 'مسح بيانات الديمو فقط',
-    credsTitle: '🔑 بيانات دخول المحاسب (buchhalter.html)',
-    credsUser: 'اسم المستخدم: <code>buchhalter</code>',
-    credsPass: 'كلمة المرور: <code>Steuer2026!</code>',
-    warn: '⚠️ الأداة دي بتكتب مباشرة في localStorage/IndexedDB بتاع المتصفح اللي فاتحاها فيه — استخدمها في نفس المتصفح اللي هتفتح منه <code>buchhalter.html</code> وقت العرض على المحاسب. بيانات الديمو مش مرتبطة ببيانات حسابك الحقيقي خالص (يوزرنيمز منفصلة: <code>demo_cafe</code> و<code>demo_transport</code>).',
-    busyMsg: 'جاري تجهيز بيانات الديمو…',
-    okMsg: '✅ اتحمّلت بيانات الديمو بنجاح! افتح واجهة المحاسب دلوقتي وسجّل دخول بالبيانات اللي تحت — هتلاقي "Café Prater" و"Alpen Transporte" في قائمة اختيار الشركة.',
-    errMsg: '❌ حصل خطأ: ',
-    clearConfirm: 'متأكد إنك عايز تمسح بيانات الديمو بس (demo_cafe / demo_transport)؟ بيانات حسابك الحقيقي مش هتتأثر.',
-    clearedMsg: 'تم مسح بيانات الديمو.',
-  },
   en: {
     title: '🧪 Load Demo Data',
     sub: 'Internal tool for demoing the accountant portal — not part of the app, never shown to real users.',
@@ -132,12 +111,12 @@ var L = {
     clearedMsg: 'Demo-Daten gelöscht.',
   }
 };
-var currentLang = 'ar';
+var currentLang = 'en';
 function setLang(lang){
   currentLang = lang;
   var t = L[lang];
   document.getElementById('htmlRoot').lang = lang;
-  document.getElementById('htmlRoot').dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('htmlRoot').dir = 'ltr';
   document.getElementById('tTitle').textContent = t.title;
   document.getElementById('tSub').textContent = t.sub;
   document.getElementById('tCardTitle').textContent = t.cardTitle;
@@ -153,7 +132,7 @@ function setLang(lang){
   document.getElementById('tWarn').innerHTML = t.warn;
   document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang')===lang); });
 }
-setLang('ar');
+setLang('en');
 
 // ── date helpers (relative to "today" so the demo never looks stale) ──
 function pad2(n){ return (n<10?'0':'')+n; }
