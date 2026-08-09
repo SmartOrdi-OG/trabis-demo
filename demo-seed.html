@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Trabis — تحميل بيانات ديمو</title>
+<style>
+  :root{--primary:#1a7fd4;--bg:#f0f8ff;--card:#fff;--text:#1a2a3a;--text2:#5a6b7a;--border:#e2e8f0;--green:#16a34a;--red:#ef4444}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);padding:24px;line-height:1.7}
+  .wrap{max-width:640px;margin:0 auto}
+  h1{font-size:22px;margin:0 0 6px}
+  .sub{color:var(--text2);font-size:14px;margin-bottom:24px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:16px}
+  .card h2{font-size:15px;margin:0 0 8px}
+  .card p{font-size:13.5px;color:var(--text2);margin:0}
+  button{width:100%;padding:15px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:8px}
+  button:disabled{opacity:0.6;cursor:default}
+  button.secondary{background:var(--card);color:var(--text);border:1.5px solid var(--border)}
+  button.danger{background:var(--card);color:var(--red);border:1.5px solid var(--red)}
+  #status{margin-top:16px;font-size:13.5px;padding:12px 14px;border-radius:10px;display:none}
+  #status.ok{display:block;background:rgba(22,163,74,0.08);color:var(--green)}
+  #status.err{display:block;background:rgba(239,68,68,0.08);color:var(--red)}
+  #status.busy{display:block;background:rgba(26,127,212,0.08);color:var(--primary)}
+  ul{font-size:13.5px;color:var(--text2);padding-inline-start:20px;margin:8px 0 0}
+  li{margin-bottom:4px}
+  .warn{font-size:12.5px;color:var(--text2);background:rgba(184,134,11,0.08);border-inline-start:3px solid #b8860b;padding:10px 12px;border-radius:8px;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🧪 تحميل بيانات ديمو</h1>
+  <div class="sub">أداة داخلية للعرض على المحاسب — مش جزء من التطبيق ولا هتظهر لأي مستخدم حقيقي.</div>
+
+  <div class="card">
+    <h2>هيتحمّل إيه؟</h2>
+    <p>حسابين تجريبيين ببيانات واقعية في نفس المتصفح ده:</p>
+    <ul>
+      <li><b>Café Prater</b> — مقهى/مطعم (معاملات، عملاء، موردين، موظفين، إجازة مرضية بشهادة مرفقة، إيصال مصروف مرفق، فاتورة صادرة وفاتورة واردة، أصل/معدة، دين)</li>
+      <li><b>Alpen Transporte</b> — شركة نقل (معاملات، عربية بسعر شراء/إهلاك، موظف سائق بساعات عمل كاملة، إيصال وقود مرفق، عميل ومورد، فاتورة صادرة، دين)</li>
+    </ul>
+  </div>
+
+  <button id="loadBtn" onclick="loadDemoData()">تحميل بيانات الديمو</button>
+  <button class="secondary" id="openBuchhalterBtn" onclick="window.open('buchhalter.html','_blank')" style="display:none">فتح واجهة المحاسب الآن ↗</button>
+  <button class="danger" id="clearBtn" onclick="clearDemoData()">مسح بيانات الديمو فقط</button>
+
+  <div id="status"></div>
+
+  <div class="warn">⚠️ الأداة دي بتكتب مباشرة في localStorage/IndexedDB بتاع المتصفح اللي فاتحاها فيه — استخدمها في نفس المتصفح اللي هتفتح منه <code>buchhalter.html</code> وقت العرض على المحاسب. بيانات الديمو مش مرتبطة ببيانات حسابك الحقيقي خالص (يوزرنيمز منفصلة: <code>demo_cafe</code> و <code>demo_transport</code>).</div>
+</div>
+
+<script>
+// ── date helpers (relative to "today" so the demo never looks stale) ──
+function pad2(n){ return (n<10?'0':'')+n; }
+function fmtDate(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
+function daysAgo(n){ var d=new Date(); d.setDate(d.getDate()-n); return fmtDate(d); }
+function monthsAgoRange(n){ // returns [firstOfMonth, lastOfMonth] for "n months ago"
+  var d=new Date(); d.setDate(1); d.setMonth(d.getMonth()-n);
+  var first=fmtDate(d);
+  var last=new Date(d.getFullYear(), d.getMonth()+1, 0);
+  return {first:first, lastDay:last.getDate(), y:d.getFullYear(), m:d.getMonth()+1};
+}
+function todayStr(){ return fmtDate(new Date()); }
+
+// ── tiny canvas-drawn placeholder documents (receipt / medical certificate look) ──
+function makeReceiptImage(lines){
+  var c = document.createElement('canvas'); c.width=400; c.height=560;
+  var ctx = c.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,400,560);
+  ctx.strokeStyle='#ddd'; ctx.strokeRect(4,4,392,552);
+  ctx.fillStyle='#222'; ctx.font='bold 20px monospace'; ctx.textAlign='center';
+  ctx.fillText('BELEG', 200, 40);
+  ctx.font='13px monospace'; ctx.textAlign='left';
+  var y=80;
+  lines.forEach(function(l){ ctx.fillText(l, 24, y); y+=26; });
+  ctx.strokeStyle='#999';
+  ctx.beginPath(); ctx.moveTo(24,y+10); ctx.lineTo(376,y+10); ctx.stroke();
+  return new Promise(function(res){ c.toBlob(function(b){ res(b); }, 'image/png'); });
+}
+function makeCertImage(name, from, to){
+  var c = document.createElement('canvas'); c.width=420; c.height=560;
+  var ctx = c.getContext('2d');
+  ctx.fillStyle='#fff'; ctx.fillRect(0,0,420,560);
+  ctx.strokeStyle='#ccc'; ctx.strokeRect(4,4,412,552);
+  ctx.fillStyle='#1a4d8f'; ctx.font='bold 18px sans-serif'; ctx.textAlign='center';
+  ctx.fillText('ÄRZTLICHE BESTÄTIGUNG', 210, 50);
+  ctx.fillText('(Demo-Dokument)', 210, 74);
+  ctx.fillStyle='#222'; ctx.font='14px sans-serif'; ctx.textAlign='left';
+  var y=130;
+  [ 'Patient/in: ' + name, 'Krankenstand von: ' + from, 'bis: ' + to, '', 'Dr. Med. Musterfrau', 'Allgemeinmedizin, Wien' ].forEach(function(l){ ctx.fillText(l, 30, y); y+=28; });
+  return new Promise(function(res){ c.toBlob(function(b){ res(b); }, 'image/png'); });
+}
+
+// ── generic IndexedDB put (mirrors the store schemas used by index.html) ──
+function idbPut(dbName, storeName, keyPath, rec){
+  return new Promise(function(resolve, reject){
+    var req = indexedDB.open(dbName, 1);
+    req.onupgradeneeded = function(e){
+      var db = e.target.result;
+      if(!db.objectStoreNames.contains(storeName)) db.createObjectStore(storeName, {keyPath:keyPath});
+    };
+    req.onsuccess = function(e){
+      var db = e.target.result;
+      var t = db.transaction(storeName, 'readwrite');
+      t.objectStore(storeName).put(rec);
+      t.oncomplete = function(){ db.close(); resolve(); };
+      t.onerror = function(){ db.close(); reject(t.error); };
+    };
+    req.onerror = function(){ reject(req.error); };
+  });
+}
+
+function uk(user, key){ return 'smartac_u_' + user + '_' + key; }
+
+function writeAccountData(user, data){
+  // Mirrors index.html's save() key list exactly, so buchhalter.html (and index.html
+  // itself, if logged into this demo account) reads it back correctly.
+  var S = window.localStorage;
+  S.setItem(uk(user,'tx'), JSON.stringify(data.transactions||[]));
+  S.setItem(uk(user,'debts'), JSON.stringify(data.debts||[]));
+  S.setItem(uk(user,'currency'), data.currency||'€');
+  S.setItem(uk(user,'clients'), JSON.stringify(data.clients||[]));
+  S.setItem(uk(user,'suppliers'), JSON.stringify(data.suppliers||[]));
+  S.setItem(uk(user,'employees'), JSON.stringify(data.employees||[]));
+  S.setItem(uk(user,'fleet'), JSON.stringify(data.fleet||[]));
+  S.setItem(uk(user,'assets'), JSON.stringify(data.assets||[]));
+  S.setItem(uk(user,'inventory'), JSON.stringify(data.inventory||[]));
+  S.setItem(uk(user,'recurring'), JSON.stringify(data.recurring||[]));
+  S.setItem(uk(user,'installments'), JSON.stringify(data.installments||[]));
+  S.setItem(uk(user,'budgets'), JSON.stringify(data.budgets||{}));
+  S.setItem(uk(user,'lang'), data.lang||'de');
+  S.setItem(uk(user,'uvaInterval'), data.uvaInterval||'quarter');
+  S.setItem(uk(user,'uvaFreigaben'), JSON.stringify(data.uvaFreigaben||{}));
+  S.setItem(uk(user,'theme'), data.theme||'light');
+  S.setItem(uk(user,'fixed_income'), JSON.stringify(data.fixedIncome||[]));
+  S.setItem(uk(user,'issued_inv'), JSON.stringify(data.issuedInvoices||[]));
+  S.setItem(uk(user,'receipts'), JSON.stringify(data.receipts||[]));
+  S.setItem(uk(user,'received_inv'), JSON.stringify(data.receivedInvoices||[]));
+  S.setItem(uk(user,'logo'), '');
+  S.setItem(uk(user,'bizAddress'), data.businessAddress||'');
+  S.setItem(uk(user,'bizTaxId'), data.businessTaxId||'');
+  S.setItem(uk(user,'bizPhone'), data.businessPhone||'');
+  S.setItem(uk(user,'bizEmail'), data.businessEmail||'');
+  S.setItem(uk(user,'dateFormat'), 'YYYY-MM-DD');
+  S.setItem(uk(user,'notifyRecurring'), '1');
+  S.setItem(uk(user,'notifyInvoiceDue'), '1');
+  S.setItem(uk(user,'bankName'), data.bankName||'');
+  S.setItem(uk(user,'bankIban'), data.bankIban||'');
+  S.setItem(uk(user,'bankBic'), '');
+  S.setItem(uk(user,'bankHolder'), '');
+  S.setItem(uk(user,'notifs'), JSON.stringify([]));
+  S.setItem(uk(user,'businessType'), data.businessType||'general');
+  S.setItem(uk(user,'invoiceTpl'), 'classic');
+  S.setItem(uk(user,'appointments'), JSON.stringify([]));
+  S.setItem(uk(user,'notes'), JSON.stringify([]));
+  S.setItem(uk(user,'archiveFolders'), JSON.stringify([]));
+  S.setItem(uk(user,'archiveDocs'), JSON.stringify([]));
+  S.setItem(uk(user,'contacts'), JSON.stringify([]));
+  S.setItem(uk(user,'contactDocs'), JSON.stringify([]));
+  S.setItem(uk(user,'agenda'), JSON.stringify([]));
+  S.setItem(uk(user,'agendaDocs'), JSON.stringify([]));
+}
+
+function setStatus(msg, cls){
+  var el = document.getElementById('status');
+  el.className = cls; el.textContent = msg; el.style.display='block';
+}
+
+async function loadDemoData(){
+  var btn = document.getElementById('loadBtn');
+  btn.disabled = true;
+  setStatus('جاري تجهيز بيانات الديمو…', 'busy');
+  try {
+    // ── 1) smartac_accounts entries (what buchhalter.html's account picker reads) ──
+    var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+    accounts['demo_cafe'] = { password: btoa('demo1234'), fullname:'Anna Berger', email:'anna@cafeprater.at', businessName:'Café Prater', country:'Austria', createdAt:new Date().toISOString(), isNew:false };
+    accounts['demo_transport'] = { password: btoa('demo1234'), fullname:'Markus Huber', email:'markus@alpen-transporte.at', businessName:'Alpen Transporte', country:'Austria', createdAt:new Date().toISOString(), isNew:false };
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+
+    // ══════════════ DEMO 1: Café Prater (restaurant) ══════════════
+    var cafeEmpId = Date.now();
+    var cafeLeaveId = cafeEmpId + 1;
+    var cafeCertDocId = cafeEmpId + 2;
+    var cafeReceiptTxId = cafeEmpId + 3;
+
+    var cafeEmployees = [
+      { id: cafeEmpId, fullName:'Lukas Wagner', position:'Koch', salary:2400, workHours:[
+          {id:cafeEmpId+10, date:daysAgo(20), fromDate:daysAgo(20), toDate:daysAgo(20), start:'09:00', end:'17:00', breakMinutes:30, hours:7.5},
+          {id:cafeEmpId+11, date:daysAgo(19), fromDate:daysAgo(19), toDate:daysAgo(19), start:'09:00', end:'17:00', breakMinutes:30, hours:7.5},
+          {id:cafeEmpId+12, date:daysAgo(18), fromDate:daysAgo(18), toDate:daysAgo(18), start:'09:00', end:'18:00', breakMinutes:45, hours:8.25},
+        ],
+        leavePeriods:[ {id:cafeLeaveId, type:'krankenstand', from:daysAgo(9), to:daysAgo(7), docId:cafeCertDocId, createdAt:Date.now()} ],
+        documents:[] },
+      { id: cafeEmpId+100, fullName:'Sophie Klein', position:'Kellnerin', salary:1900, workHours:[
+          {id:cafeEmpId+110, date:daysAgo(15), fromDate:daysAgo(15), toDate:daysAgo(15), start:'11:00', end:'19:00', breakMinutes:30, hours:7.5},
+          {id:cafeEmpId+111, date:daysAgo(14), fromDate:daysAgo(14), toDate:daysAgo(14), start:'11:00', end:'19:00', breakMinutes:30, hours:7.5},
+        ], leavePeriods:[], documents:[] },
+    ];
+
+    var cafeClients = [
+      {id:cafeEmpId+200, name:'Firma Rossmann Catering', company:'Rossmann GmbH', phone:'+43 660 1112233', email:'office@rossmann-catering.at', country:'Austria', address:'Praterstraße 12, Wien', notes:'Stammkunde, Catering monatlich', since:daysAgo(200)},
+      {id:cafeEmpId+201, name:'Peter Illmer', company:'', phone:'+43 664 5556677', email:'p.illmer@gmail.com', country:'Austria', address:'', notes:'Private Feiern', since:daysAgo(90)},
+    ];
+    var cafeSuppliers = [
+      {id:cafeEmpId+300, name:'Wiener Frischemarkt', company:'Wiener Frischemarkt GmbH', phone:'+43 1 2223344', email:'bestellung@frischemarkt.at', country:'Austria', address:'Naschmarkt 4, Wien', notes:'Obst & Gemüse, wöchentlich', since:daysAgo(400), serviceType:'Lebensmittel'},
+      {id:cafeEmpId+301, name:'Kaffee Alt Wien', company:'', phone:'+43 1 4445566', email:'', country:'Austria', address:'', notes:'Kaffeebohnen', since:daysAgo(300), serviceType:'Getränke'},
+    ];
+
+    var cafeTx = [];
+    var txId = cafeEmpId+1000;
+    // 3 months of realistic income/expense activity
+    for(var m=0; m<3; m++){
+      var mr = monthsAgoRange(m);
+      // Income: daily sales a few times a month, food@10% + drinks@20%
+      for(var i=0;i<5;i++){
+        var day = Math.min(3+i*5, mr.lastDay);
+        var dateStr = mr.y+'-'+pad2(mr.m)+'-'+pad2(day);
+        cafeTx.push({id:txId++, name:'Tagesumsatz', amount: 480+Math.round(Math.random()*220), type:'income', category:'Sales', date:dateStr, vatRate:10, invoice:null, invoiceName:null, clientId:null, clientName:null});
+      }
+      // a catering income tied to a client
+      var cDay = Math.min(12, mr.lastDay);
+      cafeTx.push({id:txId++, name:'Catering Rossmann', amount:1450, type:'income', category:'Sales', date: mr.y+'-'+pad2(mr.m)+'-'+pad2(cDay), vatRate:10, invoice:null, invoiceName:null, clientId:cafeClients[0].id, clientName:cafeClients[0].name});
+      // Expenses: supplies, rent, utilities, marketing
+      var eDay1 = Math.min(5, mr.lastDay);
+      cafeTx.push({id:txId++, name:'Lebensmitteleinkauf', amount: 620+Math.round(Math.random()*80), type:'expense', category:'Supplies', date: mr.y+'-'+pad2(mr.m)+'-'+pad2(eDay1), vatRate:10, invoice:null, invoiceName:null, supplierId:cafeSuppliers[0].id, supplierName:cafeSuppliers[0].name});
+      var eDay2 = Math.min(1, mr.lastDay);
+      cafeTx.push({id:txId++, name:'Miete Lokal', amount:1100, type:'expense', category:'Rent', date: mr.y+'-'+pad2(mr.m)+'-'+pad2(eDay2), vatRate:20, invoice:null, invoiceName:null});
+      var eDay3 = Math.min(8, mr.lastDay);
+      cafeTx.push({id:txId++, name:'Strom & Gas', amount:210, type:'expense', category:'Utilities', date: mr.y+'-'+pad2(mr.m)+'-'+pad2(eDay3), vatRate:20, invoice:null, invoiceName:null});
+    }
+    // one expense with a real attached receipt (this month, ~4 days ago)
+    var receiptDate = daysAgo(4);
+    cafeTx.push({id:cafeReceiptTxId, name:'Kaffeebohnen', amount:145, type:'expense', category:'Supplies', date:receiptDate, vatRate:10, invoice:null, invoiceName:null, supplierId:cafeSuppliers[1].id, supplierName:cafeSuppliers[1].name, receiptId:cafeReceiptTxId, receiptName:'beleg_kaffee.png'});
+
+    var cafeDebts = [
+      {id:cafeEmpId+2000, person:'Rossmann GmbH', amount:1450, category:'Sales', date:daysAgo(12), status:'pending', type:'owes-me', clientId:cafeClients[0].id, supplierId:null},
+    ];
+    var cafeAssets = [
+      {id:cafeEmpId+2100, name:'Kaffeemaschine (gewerblich)', value:3200, purchaseDate:daysAgo(240), vatRate:20},
+    ];
+    var cafeIssuedInvoices = [
+      {id:cafeEmpId+2200, number:'INV-1001', issueDate:daysAgo(12), dueDate:daysAgo(-18), items:[{desc:'Catering-Service', qty:1, price:1450, sub:1450, category:'Sales'}], vatRate:10, notes:'', subtotal:1318.18, vatAmount:131.82, total:1450, status:'Pending', currency:'€', clientId:cafeClients[0].id, clientName:cafeClients[0].name},
+    ];
+    var cafeReceivedInvoices = [
+      {id:cafeEmpId+2300, number:'RINV-0451', issueDate:daysAgo(5), dueDate:daysAgo(-25), items:[{desc:'Obst & Gemüse Lieferung', qty:1, price:340, sub:340, category:'Supplies'}], vatRate:10, notes:'', subtotal:309.09, vatAmount:30.91, total:340, status:'Pending', currency:'€', supplierId:cafeSuppliers[0].id, supplierName:cafeSuppliers[0].name, supplierInvNum:'RE-2024-451'},
+    ];
+
+    writeAccountData('demo_cafe', {
+      transactions: cafeTx, clients: cafeClients, suppliers: cafeSuppliers, employees: cafeEmployees,
+      debts: cafeDebts, assets: cafeAssets, issuedInvoices: cafeIssuedInvoices, receivedInvoices: cafeReceivedInvoices,
+      businessType:'restaurant', currency:'€', lang:'de', businessName:'Café Prater',
+    });
+    accounts['demo_cafe'].businessName = 'Café Prater';
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+
+    // attached receipt image + leave certificate for Café Prater
+    var receiptBlob = await makeReceiptImage(['Kaffee Alt Wien', 'Datum: '+receiptDate, '2x Kaffeebohnen 1kg', 'Gesamt: EUR 145,00', 'Zahlungsart: Bar']);
+    await idbPut('smartac_receipts', 'receipts', 'id', { id:cafeReceiptTxId, user:'demo_cafe', name:'beleg_kaffee.png', type:'image/png', blob:receiptBlob, createdAt:new Date().toISOString() });
+    var certBlob = await makeCertImage('Lukas Wagner', daysAgo(9), daysAgo(7));
+    await idbPut('smartac_empdocs', 'docs', 'id', { id:cafeCertDocId, empId:cafeEmpId, user:'demo_cafe', name:'krankmeldung.png', type:'image/png', blob:certBlob, createdAt:new Date().toISOString() });
+
+    // ══════════════ DEMO 2: Alpen Transporte (transport) ══════════════
+    var trEmpId = Date.now()+5000;
+    var trReceiptTxId = trEmpId+1;
+
+    var trEmployees = [
+      { id: trEmpId, fullName:'Stefan Moser', position:'Fahrer', salary:2600, workHours: (function(){
+          var arr=[]; for(var i=1;i<=10;i++){ arr.push({id:trEmpId+10+i, date:daysAgo(i*2), fromDate:daysAgo(i*2), toDate:daysAgo(i*2), start:'06:00', end:'15:00', breakMinutes:30, hours:8.5}); } return arr;
+        })(), leavePeriods:[], documents:[] },
+    ];
+
+    var trClients = [
+      {id:trEmpId+200, name:'Bau Nord GmbH', company:'Bau Nord GmbH', phone:'+43 1 7778899', email:'logistik@bau-nord.at', country:'Austria', address:'Industriestraße 5, Linz', notes:'Wöchentliche Baustellenlieferungen', since:daysAgo(500)},
+    ];
+    var trSuppliers = [
+      {id:trEmpId+300, name:'OMV Tankstelle', company:'OMV', phone:'', email:'', country:'Austria', address:'', notes:'Tanken', since:daysAgo(600), serviceType:'Treibstoff'},
+      {id:trEmpId+301, name:'KFZ Meisterbetrieb Roth', company:'', phone:'+43 664 1119988', email:'', country:'Austria', address:'', notes:'Wartung & Reparatur', since:daysAgo(500), serviceType:'Wartung'},
+    ];
+
+    var trTx = [];
+    var trTxId = trEmpId+1000;
+    for(var m2=0; m2<3; m2++){
+      var mr2 = monthsAgoRange(m2);
+      for(var j=0;j<4;j++){
+        var day2 = Math.min(4+j*6, mr2.lastDay);
+        trTx.push({id:trTxId++, name:'Transportauftrag', amount: 950+Math.round(Math.random()*350), type:'income', category:'Sales', date: mr2.y+'-'+pad2(mr2.m)+'-'+pad2(day2), vatRate:20, invoice:null, invoiceName:null, clientId:trClients[0].id, clientName:trClients[0].name});
+      }
+      var fDay = Math.min(6, mr2.lastDay);
+      trTx.push({id:trTxId++, name:'Diesel', amount: 380+Math.round(Math.random()*60), type:'expense', category:'Fuel', date: mr2.y+'-'+pad2(mr2.m)+'-'+pad2(fDay), vatRate:20, invoice:null, invoiceName:null, supplierId:trSuppliers[0].id, supplierName:trSuppliers[0].name});
+      var vDay = Math.min(20, mr2.lastDay);
+      trTx.push({id:trTxId++, name:'Wartung LKW', amount: 260, type:'expense', category:'Vehicle', date: mr2.y+'-'+pad2(mr2.m)+'-'+pad2(vDay), vatRate:20, invoice:null, invoiceName:null, supplierId:trSuppliers[1].id, supplierName:trSuppliers[1].name});
+    }
+    var trReceiptDate = daysAgo(3);
+    trTx.push({id:trReceiptTxId, name:'Diesel Tankstopp', amount:92, type:'expense', category:'Fuel', date:trReceiptDate, vatRate:20, invoice:null, invoiceName:null, supplierId:trSuppliers[0].id, supplierName:trSuppliers[0].name, receiptId:trReceiptTxId, receiptName:'beleg_diesel.png'});
+
+    var trFleet = [
+      { id: trEmpId+2000, plate:'W-123AB', name:'Mercedes Sprinter', type:'LKW', year:'2021', notes:'Hauptfahrzeug', documents:[], maintenance:[],
+        acqType:'owned', assetValue: 42000, assetPurchaseDate: daysAgo(700), assetVatRate: 20 },
+    ];
+    var trDebts = [
+      {id:trEmpId+2100, person:'Bau Nord GmbH', amount:1180, category:'Sales', date:daysAgo(6), status:'pending', type:'owes-me', clientId:trClients[0].id, supplierId:null},
+    ];
+    var trIssuedInvoices = [
+      {id:trEmpId+2200, number:'INV-2044', issueDate:daysAgo(6), dueDate:daysAgo(-24), items:[{desc:'Transportauftrag KW', qty:1, price:1180, sub:1180, category:'Sales'}], vatRate:20, notes:'', subtotal:983.33, vatAmount:196.67, total:1180, status:'Pending', currency:'€', clientId:trClients[0].id, clientName:trClients[0].name},
+    ];
+
+    writeAccountData('demo_transport', {
+      transactions: trTx, clients: trClients, suppliers: trSuppliers, employees: trEmployees,
+      debts: trDebts, fleet: trFleet, issuedInvoices: trIssuedInvoices,
+      businessType:'transport', currency:'€', lang:'de', businessName:'Alpen Transporte',
+    });
+    accounts['demo_transport'].businessName = 'Alpen Transporte';
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+
+    var trReceiptBlob = await makeReceiptImage(['OMV Tankstelle', 'Datum: '+trReceiptDate, 'Diesel 65,3 L', 'Gesamt: EUR 92,00', 'Zahlungsart: Karte']);
+    await idbPut('smartac_receipts', 'receipts', 'id', { id:trReceiptTxId, user:'demo_transport', name:'beleg_diesel.png', type:'image/png', blob:trReceiptBlob, createdAt:new Date().toISOString() });
+
+    setStatus('✅ اتحمّلت بيانات الديمو بنجاح! افتح واجهة المحاسب دلوقتي وسجّل دخول (buchhalter / Steuer2026!) — هتلاقي "Café Prater" و"Alpen Transporte" في قائمة اختيار الشركة.', 'ok');
+    document.getElementById('openBuchhalterBtn').style.display = 'block';
+  } catch(e) {
+    setStatus('❌ حصل خطأ: ' + e.message, 'err');
+    console.error(e);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function clearDemoData(){
+  if(!confirm('متأكد إنك عايز تمسح بيانات الديمو بس (demo_cafe / demo_transport)؟ بيانات حسابك الحقيقي مش هتتأثر.')) return;
+  ['demo_cafe','demo_transport'].forEach(function(user){
+    var keys = [];
+    for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k && k.indexOf('smartac_u_'+user+'_')===0) keys.push(k); }
+    keys.forEach(function(k){ localStorage.removeItem(k); });
+  });
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  delete accounts['demo_cafe']; delete accounts['demo_transport'];
+  localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+  setStatus('تم مسح بيانات الديمو.', 'ok');
+  document.getElementById('openBuchhalterBtn').style.display = 'none';
+}
+</script>
+</body>
+</html>
