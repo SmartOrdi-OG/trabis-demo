@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" id="htmlRoot">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Trabis — تحميل بيانات ديمو</title>
+<title>Trabis — Demo Data</title>
 <style>
   :root{--primary:#1a7fd4;--bg:#f0f8ff;--card:#fff;--text:#1a2a3a;--text2:#5a6b7a;--border:#e2e8f0;--green:#16a34a;--red:#ef4444}
   *{box-sizing:border-box}
@@ -25,32 +25,136 @@
   ul{font-size:13.5px;color:var(--text2);padding-inline-start:20px;margin:8px 0 0}
   li{margin-bottom:4px}
   .warn{font-size:12.5px;color:var(--text2);background:rgba(184,134,11,0.08);border-inline-start:3px solid #b8860b;padding:10px 12px;border-radius:8px;margin-top:14px}
+  .creds{font-size:13px;background:rgba(26,127,212,0.06);border-inline-start:3px solid var(--primary);padding:12px 14px;border-radius:8px;margin-top:14px}
+  .creds div{margin-top:4px}
+  .creds code{background:rgba(0,0,0,0.06);padding:2px 6px;border-radius:5px;font-size:12.5px}
+  .langbar{display:flex;gap:6px;justify-content:flex-end;margin-bottom:12px}
+  .langbar button{width:auto;padding:6px 14px;margin:0;font-size:12.5px;font-weight:600;background:var(--card);color:var(--text2);border:1.5px solid var(--border)}
+  .langbar button.active{background:var(--primary);color:#fff;border-color:var(--primary)}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🧪 تحميل بيانات ديمو</h1>
-  <div class="sub">أداة داخلية للعرض على المحاسب — مش جزء من التطبيق ولا هتظهر لأي مستخدم حقيقي.</div>
+  <div class="langbar">
+    <button type="button" class="lang-btn" data-lang="ar" onclick="setLang('ar')">AR</button>
+    <button type="button" class="lang-btn" data-lang="en" onclick="setLang('en')">EN</button>
+    <button type="button" class="lang-btn" data-lang="de" onclick="setLang('de')">DE</button>
+  </div>
+
+  <h1 id="tTitle"></h1>
+  <div class="sub" id="tSub"></div>
 
   <div class="card">
-    <h2>هيتحمّل إيه؟</h2>
-    <p>حسابين تجريبيين ببيانات واقعية في نفس المتصفح ده:</p>
+    <h2 id="tCardTitle"></h2>
+    <p id="tCardDesc"></p>
     <ul>
-      <li><b>Café Prater</b> — مقهى/مطعم (معاملات، عملاء، موردين، موظفين، إجازة مرضية بشهادة مرفقة، إيصال مصروف مرفق، فاتورة صادرة وفاتورة واردة، أصل/معدة، دين)</li>
-      <li><b>Alpen Transporte</b> — شركة نقل (معاملات، عربية بسعر شراء/إهلاك، موظف سائق بساعات عمل كاملة، إيصال وقود مرفق، عميل ومورد، فاتورة صادرة، دين)</li>
+      <li id="tLi1"></li>
+      <li id="tLi2"></li>
     </ul>
   </div>
 
-  <button id="loadBtn" onclick="loadDemoData()">تحميل بيانات الديمو</button>
-  <button class="secondary" id="openBuchhalterBtn" onclick="window.open('buchhalter.html','_blank')" style="display:none">فتح واجهة المحاسب الآن ↗</button>
-  <button class="danger" id="clearBtn" onclick="clearDemoData()">مسح بيانات الديمو فقط</button>
+  <button id="loadBtn" onclick="loadDemoData()"></button>
+  <button class="secondary" id="openBuchhalterBtn" onclick="window.open('buchhalter.html','_blank')" style="display:none"></button>
+  <button class="danger" id="clearBtn" onclick="clearDemoData()"></button>
 
   <div id="status"></div>
 
-  <div class="warn">⚠️ الأداة دي بتكتب مباشرة في localStorage/IndexedDB بتاع المتصفح اللي فاتحاها فيه — استخدمها في نفس المتصفح اللي هتفتح منه <code>buchhalter.html</code> وقت العرض على المحاسب. بيانات الديمو مش مرتبطة ببيانات حسابك الحقيقي خالص (يوزرنيمز منفصلة: <code>demo_cafe</code> و <code>demo_transport</code>).</div>
+  <div class="creds">
+    <b id="tCredsTitle"></b>
+    <div id="tCredsUser"></div>
+    <div id="tCredsPass"></div>
+  </div>
+
+  <div class="warn" id="tWarn"></div>
 </div>
 
 <script>
+// ══════════════ i18n ══════════════
+var L = {
+  ar: {
+    title: '🧪 تحميل بيانات ديمو',
+    sub: 'أداة داخلية للعرض على المحاسب — مش جزء من التطبيق ولا هتظهر لأي مستخدم حقيقي.',
+    cardTitle: 'هيتحمّل إيه؟',
+    cardDesc: 'حسابين تجريبيين ببيانات واقعية في نفس المتصفح ده:',
+    li1: '<b>Café Prater</b> — مقهى/مطعم (معاملات، عملاء، موردين، موظفين، إجازة مرضية بشهادة مرفقة، إيصال مصروف مرفق، فاتورة صادرة وفاتورة واردة، أصل/معدة، دين)',
+    li2: '<b>Alpen Transporte</b> — شركة نقل (معاملات، عربية بسعر شراء/إهلاك، موظف سائق بساعات عمل كاملة، إيصال وقود مرفق، عميل ومورد، فاتورة صادرة، دين)',
+    loadBtn: 'تحميل بيانات الديمو',
+    openBtn: 'فتح واجهة المحاسب الآن ↗',
+    clearBtn: 'مسح بيانات الديمو فقط',
+    credsTitle: '🔑 بيانات دخول المحاسب (buchhalter.html)',
+    credsUser: 'اسم المستخدم: <code>buchhalter</code>',
+    credsPass: 'كلمة المرور: <code>Steuer2026!</code>',
+    warn: '⚠️ الأداة دي بتكتب مباشرة في localStorage/IndexedDB بتاع المتصفح اللي فاتحاها فيه — استخدمها في نفس المتصفح اللي هتفتح منه <code>buchhalter.html</code> وقت العرض على المحاسب. بيانات الديمو مش مرتبطة ببيانات حسابك الحقيقي خالص (يوزرنيمز منفصلة: <code>demo_cafe</code> و<code>demo_transport</code>).',
+    busyMsg: 'جاري تجهيز بيانات الديمو…',
+    okMsg: '✅ اتحمّلت بيانات الديمو بنجاح! افتح واجهة المحاسب دلوقتي وسجّل دخول بالبيانات اللي تحت — هتلاقي "Café Prater" و"Alpen Transporte" في قائمة اختيار الشركة.',
+    errMsg: '❌ حصل خطأ: ',
+    clearConfirm: 'متأكد إنك عايز تمسح بيانات الديمو بس (demo_cafe / demo_transport)؟ بيانات حسابك الحقيقي مش هتتأثر.',
+    clearedMsg: 'تم مسح بيانات الديمو.',
+  },
+  en: {
+    title: '🧪 Load Demo Data',
+    sub: 'Internal tool for demoing the accountant portal — not part of the app, never shown to real users.',
+    cardTitle: 'What gets loaded?',
+    cardDesc: 'Two demo accounts with realistic data, in this same browser:',
+    li1: '<b>Café Prater</b> — a restaurant/café (transactions, clients, suppliers, employees, a sick-leave period with an attached certificate, an attached expense receipt, an issued and a received invoice, an asset, a debt)',
+    li2: '<b>Alpen Transporte</b> — a transport company (transactions, a vehicle with purchase price/depreciation, a driver with a full month of work hours, an attached fuel receipt, a client and a supplier, an issued invoice, a debt)',
+    loadBtn: 'Load Demo Data',
+    openBtn: 'Open Accountant Portal Now ↗',
+    clearBtn: 'Clear Demo Data Only',
+    credsTitle: '🔑 Accountant login (buchhalter.html)',
+    credsUser: 'Username: <code>buchhalter</code>',
+    credsPass: 'Password: <code>Steuer2026!</code>',
+    warn: '⚠️ This tool writes directly to the localStorage/IndexedDB of whichever browser you open it in — use it in the same browser you\'ll open <code>buchhalter.html</code> from for the demo. Demo data is completely separate from your real account (separate usernames: <code>demo_cafe</code> and <code>demo_transport</code>).',
+    busyMsg: 'Preparing demo data…',
+    okMsg: '✅ Demo data loaded successfully! Open the accountant portal now and sign in with the credentials below — you\'ll find "Café Prater" and "Alpen Transporte" in the company list.',
+    errMsg: '❌ Error: ',
+    clearConfirm: 'Are you sure you want to clear only the demo data (demo_cafe / demo_transport)? Your real account data won\'t be affected.',
+    clearedMsg: 'Demo data cleared.',
+  },
+  de: {
+    title: '🧪 Demo-Daten laden',
+    sub: 'Internes Tool zur Vorführung des Buchhalter-Portals — kein Teil der App, wird echten Nutzern nie angezeigt.',
+    cardTitle: 'Was wird geladen?',
+    cardDesc: 'Zwei Demo-Konten mit realistischen Daten, in diesem selben Browser:',
+    li1: '<b>Café Prater</b> — ein Café/Restaurant (Transaktionen, Kunden, Lieferanten, Mitarbeiter, ein Krankenstand mit angehängter Bestätigung, ein angehängter Ausgabenbeleg, eine ausgestellte und eine erhaltene Rechnung, ein Vermögenswert, eine offene Forderung)',
+    li2: '<b>Alpen Transporte</b> — ein Transportunternehmen (Transaktionen, ein Fahrzeug mit Kaufpreis/Abschreibung, ein Fahrer mit einem vollen Monat Arbeitszeit, ein angehängter Tankbeleg, ein Kunde und ein Lieferant, eine ausgestellte Rechnung, eine offene Forderung)',
+    loadBtn: 'Demo-Daten laden',
+    openBtn: 'Buchhalter-Portal jetzt öffnen ↗',
+    clearBtn: 'Nur Demo-Daten löschen',
+    credsTitle: '🔑 Buchhalter-Zugangsdaten (buchhalter.html)',
+    credsUser: 'Benutzername: <code>buchhalter</code>',
+    credsPass: 'Passwort: <code>Steuer2026!</code>',
+    warn: '⚠️ Dieses Tool schreibt direkt in den localStorage/IndexedDB des Browsers, in dem Sie es öffnen — verwenden Sie es im selben Browser, aus dem Sie <code>buchhalter.html</code> für die Vorführung öffnen werden. Die Demo-Daten sind völlig getrennt von Ihrem echten Konto (eigene Benutzernamen: <code>demo_cafe</code> und <code>demo_transport</code>).',
+    busyMsg: 'Demo-Daten werden vorbereitet…',
+    okMsg: '✅ Demo-Daten erfolgreich geladen! Öffnen Sie jetzt das Buchhalter-Portal und melden Sie sich mit den unten stehenden Zugangsdaten an — Sie finden "Café Prater" und "Alpen Transporte" in der Firmenliste.',
+    errMsg: '❌ Fehler: ',
+    clearConfirm: 'Möchten Sie wirklich nur die Demo-Daten löschen (demo_cafe / demo_transport)? Ihre echten Kontodaten sind davon nicht betroffen.',
+    clearedMsg: 'Demo-Daten gelöscht.',
+  }
+};
+var currentLang = 'ar';
+function setLang(lang){
+  currentLang = lang;
+  var t = L[lang];
+  document.getElementById('htmlRoot').lang = lang;
+  document.getElementById('htmlRoot').dir = lang === 'ar' ? 'rtl' : 'ltr';
+  document.getElementById('tTitle').textContent = t.title;
+  document.getElementById('tSub').textContent = t.sub;
+  document.getElementById('tCardTitle').textContent = t.cardTitle;
+  document.getElementById('tCardDesc').textContent = t.cardDesc;
+  document.getElementById('tLi1').innerHTML = t.li1;
+  document.getElementById('tLi2').innerHTML = t.li2;
+  document.getElementById('loadBtn').textContent = t.loadBtn;
+  document.getElementById('openBuchhalterBtn').textContent = t.openBtn;
+  document.getElementById('clearBtn').textContent = t.clearBtn;
+  document.getElementById('tCredsTitle').textContent = t.credsTitle;
+  document.getElementById('tCredsUser').innerHTML = t.credsUser;
+  document.getElementById('tCredsPass').innerHTML = t.credsPass;
+  document.getElementById('tWarn').innerHTML = t.warn;
+  document.querySelectorAll('.lang-btn').forEach(function(b){ b.classList.toggle('active', b.getAttribute('data-lang')===lang); });
+}
+setLang('ar');
+
 // ── date helpers (relative to "today" so the demo never looks stale) ──
 function pad2(n){ return (n<10?'0':'')+n; }
 function fmtDate(d){ return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate()); }
@@ -170,7 +274,7 @@ function setStatus(msg, cls){
 async function loadDemoData(){
   var btn = document.getElementById('loadBtn');
   btn.disabled = true;
-  setStatus('جاري تجهيز بيانات الديمو…', 'busy');
+  setStatus(L[currentLang].busyMsg, 'busy');
   try {
     // ── 1) smartac_accounts entries (what buchhalter.html's account picker reads) ──
     var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
@@ -316,10 +420,10 @@ async function loadDemoData(){
     var trReceiptBlob = await makeReceiptImage(['OMV Tankstelle', 'Datum: '+trReceiptDate, 'Diesel 65,3 L', 'Gesamt: EUR 92,00', 'Zahlungsart: Karte']);
     await idbPut('smartac_receipts', 'receipts', 'id', { id:trReceiptTxId, user:'demo_transport', name:'beleg_diesel.png', type:'image/png', blob:trReceiptBlob, createdAt:new Date().toISOString() });
 
-    setStatus('✅ اتحمّلت بيانات الديمو بنجاح! افتح واجهة المحاسب دلوقتي وسجّل دخول (buchhalter / Steuer2026!) — هتلاقي "Café Prater" و"Alpen Transporte" في قائمة اختيار الشركة.', 'ok');
+    setStatus(L[currentLang].okMsg, 'ok');
     document.getElementById('openBuchhalterBtn').style.display = 'block';
   } catch(e) {
-    setStatus('❌ حصل خطأ: ' + e.message, 'err');
+    setStatus(L[currentLang].errMsg + e.message, 'err');
     console.error(e);
   } finally {
     btn.disabled = false;
@@ -327,7 +431,7 @@ async function loadDemoData(){
 }
 
 function clearDemoData(){
-  if(!confirm('متأكد إنك عايز تمسح بيانات الديمو بس (demo_cafe / demo_transport)؟ بيانات حسابك الحقيقي مش هتتأثر.')) return;
+  if(!confirm(L[currentLang].clearConfirm)) return;
   ['demo_cafe','demo_transport'].forEach(function(user){
     var keys = [];
     for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k && k.indexOf('smartac_u_'+user+'_')===0) keys.push(k); }
@@ -336,7 +440,7 @@ function clearDemoData(){
   var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
   delete accounts['demo_cafe']; delete accounts['demo_transport'];
   localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
-  setStatus('تم مسح بيانات الديمو.', 'ok');
+  setStatus(L[currentLang].clearedMsg, 'ok');
   document.getElementById('openBuchhalterBtn').style.display = 'none';
 }
 </script>
