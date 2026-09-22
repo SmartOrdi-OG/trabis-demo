@@ -141,6 +141,19 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-row-fix .tx-row-dt{color:var(--primary)}
 .tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
 .tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
+.rcpt-cap-ttl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:0.3px}
+.rcpt-strip{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rcpt-strip::-webkit-scrollbar{display:none}
+.rcpt{flex:none;width:78px;background:var(--card);border:1.5px solid transparent;border-radius:11px;padding:5px;
+  box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;color:inherit;font:inherit;text-align:start}
+.rcpt:hover{border-color:var(--primary);transform:translateY(-1px)}
+.rcpt-thumb{width:100%;height:80px;border-radius:7px;background:var(--card2);display:flex;align-items:center;
+  justify-content:center;overflow:hidden;color:var(--text3)}
+.rcpt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rcpt-cap{font-size:9px;font-weight:600;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;unicode-bidi:plaintext}
+.rcpt-amt{display:block;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;
+  unicode-bidi:isolate-override;direction:ltr}
 .year-net{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;
   padding-top:10px;border-top:1.5px solid var(--border)}
 .year-net-l{font-size:12px;color:var(--text3);font-weight:600}
@@ -2234,6 +2247,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="tx-tabs" id="txTabs">
       <button type="button" class="tx-tab" data-t="income" onclick="setTxTab('income')">Income</button>
       <button type="button" class="tx-tab active" data-t="expense" onclick="setTxTab('expense')">Expenses</button>
+    </div>
+    <div id="rcptStripWrap" style="display:none">
+      <div class="rcpt-cap-ttl" id="rcptStripTtl"></div>
+      <div class="rcpt-strip" id="rcptStrip"></div>
     </div>
     <div class="tx-sums" id="txSums"></div>
     <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
@@ -10775,12 +10792,13 @@ var HOMEP_L = {
   expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
   netto:    {en:'Net',           ar:'الصافي',           de:'Netto'},
   vat:      {en:'VAT',           ar:'الضريبة',          de:'MwSt.'},
-  fixOut:   {en:'Fixed payments',ar:'دفعات ثابتة',      de:'Fixzahlungen'},
-  fixIn:    {en:'Fixed income',  ar:'دخل ثابت',         de:'Fixe Einnahmen'},
+  fixOut:   {en:'Fixed \u00b7 due',  ar:'دفعات ثابتة \u00b7 مستحقة', de:'Fixzahlungen \u00b7 offen'},
+  fixIn:    {en:'Fixed \u00b7 due',  ar:'دخل ثابت \u00b7 مستحق',    de:'Fixe Einnahmen \u00b7 offen'},
   restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
   restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
   salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
   none:     {en:'Nothing this month', ar:'ما في شي هالشهر', de:'Nichts in diesem Monat'},
+  docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
   yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
 };
 function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
@@ -10788,22 +10806,30 @@ function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] 
 // Recurring rules rendered as the rows they produce in the selected month.
 // Shape comes straight from state.recurring / state.fixedIncome / state.employees.
 function fixedRowsFor(type) {
+  // checkRecurringDue() turns each rule into a real transaction once its day
+  // arrives and stamps lastRecorded = 'YYYY-MM'. So a rule belongs in this group
+  // only while it is still unbooked for the month on screen — otherwise it is
+  // already sitting in the transactions group and would be counted twice.
+  var monthKey = state.year + '-' + pad2(state.month + 1);
+  var now = new Date();
+  var nowKey = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
+  if(monthKey < nowKey) return [];   // past months: everything was booked at the time
+
   var rows = [];
+  function add(src, name, amount, vatRate, day) {
+    if(src.lastRecorded === monthKey) return;
+    var amt = parseFloat(amount) || 0;
+    if(amt <= 0) return;
+    rows.push({name: name, amount: amt, vatRate: parseFloat(vatRate) || 0,
+               day: parseInt(day, 10) || 1, fixed: true});
+  }
   if(type === 'expense') {
-    (state.recurring || []).forEach(function(r) {
-      rows.push({name: r.name, amount: parseFloat(r.amount) || 0, vatRate: parseFloat(r.vatRate) || 0,
-                 day: parseInt(r.day, 10) || 1, fixed: true});
-    });
+    (state.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
     (state.employees || []).forEach(function(e) {
-      var sal = parseFloat(e.salary) || 0;
-      if(sal > 0) rows.push({name: hptx('salary') + ' · ' + (e.name || e.fullName || ''), amount: sal,
-                             vatRate: 0, day: 28, fixed: true});
+      add(e, hptx('salary') + ' \u00b7 ' + (e.name || e.fullName || ''), e.salary, 0, 1);
     });
   } else {
-    (state.fixedIncome || []).forEach(function(fi) {
-      rows.push({name: fi.name, amount: parseFloat(fi.amount) || 0, vatRate: parseFloat(fi.vatRate) || 0,
-                 day: parseInt(fi.day, 10) || 1, fixed: true});
-    });
+    (state.fixedIncome || []).forEach(function(fi) { add(fi, fi.name, fi.amount, fi.vatRate, fi.day); });
   }
   return rows.sort(function(a, b) { return a.day - b.day; });
 }
@@ -10820,16 +10846,76 @@ function sumRows(rows) {
 // Net for a whole year, using the same model the month cards use:
 // the year's transactions plus the fixed rows once per elapsed month.
 function yearNetTotal(y) {
-  var now = new Date();
-  var months = y < now.getFullYear() ? 12 : (y > now.getFullYear() ? 0 : now.getMonth() + 1);
+  // Booked months are already in state.transactions; only the rest of the
+  // current year is still carried by the unbooked rules.
   var net = 0;
   (state.transactions || []).forEach(function(tx) {
     if(!tx || !tx.date || parseInt(tx.date.substring(0, 4), 10) !== y) return;
     var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
     net += tx.type === 'income' ? n : -n;
   });
-  net += (sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto) * months;
+  var now = new Date();
+  if(y === now.getFullYear()) {
+    var openNet = sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto;
+    net += openNet;
+  }
   return net;
+}
+
+// ── RECEIPT STRIP ──
+// The month's attachments, shown as the documents they are. Two storage paths
+// feed it: tx.invoice is an inline data URL, tx.receiptId points at a blob in
+// IndexedDB — so thumbnails for the latter resolve asynchronously.
+var _stripUrls = [];
+function releaseStripUrls() {
+  _stripUrls.forEach(function(u) { try { URL.revokeObjectURL(u); } catch(e) {} });
+  _stripUrls = [];
+}
+
+function renderReceiptStrip(type) {
+  var wrap = document.getElementById('rcptStripWrap');
+  var strip = document.getElementById('rcptStrip');
+  if(!wrap || !strip) return;
+  releaseStripUrls();
+
+  var docs = getFiltered().filter(function(tx) {
+    return tx.type === type && (tx.invoice || tx.receiptId);
+  });
+  if(!docs.length) { wrap.style.display = 'none'; strip.innerHTML = ''; return; }
+
+  var ttl = document.getElementById('rcptStripTtl');
+  if(ttl) ttl.textContent = hptx('docs');
+  wrap.style.display = '';
+
+  var fileIcon = svgIcon('fileText', 26);
+  strip.innerHTML = '';
+  docs.forEach(function(tx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'rcpt';
+    btn.innerHTML = '<span class="rcpt-thumb">' + fileIcon + '</span>'
+      + '<span class="rcpt-cap">' + escHtml(tx.name || '') + '</span>'
+      + '<span class="rcpt-amt" style="color:' + (type === 'income' ? 'var(--income)' : 'var(--expense)') + '">'
+      + (type === 'income' ? '+' : '-') + fmt(tx.amount) + '</span>';
+    var thumb = btn.querySelector('.rcpt-thumb');
+
+    if(tx.invoice) {
+      if(String(tx.invoice).indexOf('data:image/') === 0) thumb.innerHTML = '<img alt="" src="' + tx.invoice + '"/>';
+      btn.onclick = function() { openInvoice(tx.invoice, tx.invoiceName || 'Invoice'); };
+    } else {
+      btn.onclick = function() {
+        receiptGet(tx.receiptId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+      };
+      receiptGet(tx.receiptId).then(function(rec) {
+        if(!rec || !rec.blob || !thumb.isConnected) return;
+        if((rec.type || '').indexOf('image/') !== 0) return;   // PDFs keep the document icon
+        var u = URL.createObjectURL(rec.blob);
+        _stripUrls.push(u);
+        thumb.innerHTML = '<img alt="" src="' + u + '"/>';
+      }).catch(function() {});
+    }
+    strip.appendChild(btn);
+  });
 }
 
 function setTxTab(t) {
@@ -10857,6 +10943,8 @@ function renderTxPanes() {
   var sTx = sumRows(txs), sFix = sumRows(fixed);
   var color = type === 'income' ? 'var(--income)' : 'var(--expense)';
   var sign = type === 'income' ? '+' : '-';
+
+  renderReceiptStrip(type);
 
   var sums = document.getElementById('txSums');
   if(sums) {
