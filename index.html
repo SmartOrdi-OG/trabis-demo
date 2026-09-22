@@ -116,6 +116,36 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
 
+/* HOME INCOME/EXPENSE PANES */
+.tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
+.tx-tab{flex:1;padding:9px 0 7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;
+  color:var(--text3);border-bottom:2.5px solid var(--border);transition:all 0.18s}
+.tx-tab:hover{color:var(--text2)}
+.tx-tab.active[data-t="income"]{color:var(--income);border-bottom-color:var(--income)}
+.tx-tab.active[data-t="expense"]{color:var(--expense);border-bottom-color:var(--expense)}
+.tx-sums{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.tx-sum{font-size:11px;color:var(--text3);font-weight:600}
+.tx-sum b{display:block;font-size:14px;font-weight:700;color:var(--text);margin-top:1px}
+.tx-grp{margin-bottom:16px}
+.tx-grp-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding-bottom:6px;margin-bottom:4px;border-bottom:1.5px solid var(--border)}
+.tx-grp-ttl{font-size:12px;font-weight:700;color:var(--text2)}
+.tx-grp-sum{font-size:12px;font-weight:700}
+.tx-row{display:flex;align-items:baseline;gap:8px;width:100%;padding:8px 6px;background:none;border:none;
+  border-radius:9px;color:inherit;font:inherit;text-align:start;cursor:pointer;transition:background 0.15s}
+.tx-row:hover{background:var(--card2)}
+.tx-row+.tx-row{border-top:1px solid var(--border)}
+.tx-row-nm{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+.tx-row-dt{flex:none;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.tx-row-am{flex:none;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.tx-row-fix .tx-row-dt{color:var(--primary)}
+.tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
+.tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
+.year-net{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;
+  padding-top:10px;border-top:1.5px solid var(--border)}
+.year-net-l{font-size:12px;color:var(--text3);font-weight:600}
+.year-net-v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+
 /* DEBTS SECTION */
 .debt-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
 .debt-avatar{width:40px;height:40px;border-radius:50%;background:var(--orange-light);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:var(--orange);flex-shrink:0}
@@ -2201,16 +2231,14 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- TRANSACTIONS -->
   <div class="section">
-    <div class="section-hdr">
-      <div class="section-title">Recent Transactions</div>
-      <div class="see-all" onclick="openAllTxPage()">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="tx-tabs" id="txTabs">
+      <button type="button" class="tx-tab" data-t="income" onclick="setTxTab('income')">Income</button>
+      <button type="button" class="tx-tab active" data-t="expense" onclick="setTxTab('expense')">Expenses</button>
     </div>
-    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>
-    <div class="tx-list" id="txList">
-      <div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">
-        <span id="noTxMsg">No transactions yet.<br/>Tap + to add your first one!</span>
-      </div>
-    </div>
+    <div class="tx-sums" id="txSums"></div>
+    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
+    <div id="txPanes"></div>
+    <div class="tx-list" id="txList" style="display:none"></div>
   </div>
 
 
@@ -2874,6 +2902,7 @@ var state = {
   currency: '€',
   lang: localStorage.getItem('smartac_lang') || 'en',
   period: 'month',          // the home filter is always a single month now
+  txTab: 'expense',         // which side of the month the home list is showing
   year: new Date().getFullYear(),
   month: new Date().getMonth(),
   customDateFilter: null,
@@ -10408,6 +10437,7 @@ function calculateNetIncome(filteredTransactions) {
 
 function renderHome() {
   renderMonthTabs();
+  renderTxPanes();
   try {
   // Always reload from storage to ensure data is fresh: compare the
   // currently active session (read fresh, never cached) against whichever
@@ -10738,6 +10768,132 @@ function closeTxDetail() {
   _currentTx = null;
 }
 
+
+// ── HOME INCOME / EXPENSE PANES ──
+var HOMEP_L = {
+  income:   {en:'Income',        ar:'الدخل',            de:'Einnahmen'},
+  expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
+  netto:    {en:'Net',           ar:'الصافي',           de:'Netto'},
+  vat:      {en:'VAT',           ar:'الضريبة',          de:'MwSt.'},
+  fixOut:   {en:'Fixed payments',ar:'دفعات ثابتة',      de:'Fixzahlungen'},
+  fixIn:    {en:'Fixed income',  ar:'دخل ثابت',         de:'Fixe Einnahmen'},
+  restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
+  restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
+  salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
+  none:     {en:'Nothing this month', ar:'ما في شي هالشهر', de:'Nichts in diesem Monat'},
+  yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
+};
+function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
+
+// Recurring rules rendered as the rows they produce in the selected month.
+// Shape comes straight from state.recurring / state.fixedIncome / state.employees.
+function fixedRowsFor(type) {
+  var rows = [];
+  if(type === 'expense') {
+    (state.recurring || []).forEach(function(r) {
+      rows.push({name: r.name, amount: parseFloat(r.amount) || 0, vatRate: parseFloat(r.vatRate) || 0,
+                 day: parseInt(r.day, 10) || 1, fixed: true});
+    });
+    (state.employees || []).forEach(function(e) {
+      var sal = parseFloat(e.salary) || 0;
+      if(sal > 0) rows.push({name: hptx('salary') + ' · ' + (e.name || e.fullName || ''), amount: sal,
+                             vatRate: 0, day: 28, fixed: true});
+    });
+  } else {
+    (state.fixedIncome || []).forEach(function(fi) {
+      rows.push({name: fi.name, amount: parseFloat(fi.amount) || 0, vatRate: parseFloat(fi.vatRate) || 0,
+                 day: parseInt(fi.day, 10) || 1, fixed: true});
+    });
+  }
+  return rows.sort(function(a, b) { return a.day - b.day; });
+}
+
+function sumRows(rows) {
+  var brutto = 0, netto = 0;
+  rows.forEach(function(r) {
+    var v = vatBreakdown(r.amount, r.vatRate || 0);
+    brutto += v.brutto; netto += v.netto;
+  });
+  return {brutto: brutto, netto: netto, steuer: brutto - netto};
+}
+
+// Net for a whole year, using the same model the month cards use:
+// the year's transactions plus the fixed rows once per elapsed month.
+function yearNetTotal(y) {
+  var now = new Date();
+  var months = y < now.getFullYear() ? 12 : (y > now.getFullYear() ? 0 : now.getMonth() + 1);
+  var net = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || parseInt(tx.date.substring(0, 4), 10) !== y) return;
+    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
+    net += tx.type === 'income' ? n : -n;
+  });
+  net += (sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto) * months;
+  return net;
+}
+
+function setTxTab(t) {
+  state.txTab = t;
+  renderTxPanes();
+}
+
+function renderTxPanes() {
+  var host = document.getElementById('txPanes');
+  if(!host) return;
+  var type = state.txTab === 'income' ? 'income' : 'expense';
+
+  document.querySelectorAll('.tx-tab').forEach(function(b) {
+    var bt = b.getAttribute('data-t');
+    b.textContent = hptx(bt);
+    b.classList.toggle('active', bt === type);
+  });
+
+  var txs = getFiltered().filter(function(tx) { return tx.type === type; })
+              .map(function(tx) {
+                return {name: tx.name, amount: tx.amount, vatRate: tx.vatRate || 0,
+                        day: parseInt((tx.date || '').substring(8, 10), 10) || 1, tx: tx};
+              }).sort(function(a, b) { return a.day - b.day; });
+  var fixed = fixedRowsFor(type);
+  var sTx = sumRows(txs), sFix = sumRows(fixed);
+  var color = type === 'income' ? 'var(--income)' : 'var(--expense)';
+  var sign = type === 'income' ? '+' : '-';
+
+  var sums = document.getElementById('txSums');
+  if(sums) {
+    sums.innerHTML = '<div class="tx-sum">' + escHtml(hptx('netto')) + '<b>' + fmt(sTx.netto + sFix.netto) + '</b></div>'
+      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>';
+  }
+
+  function group(title, rows, total, isFixed) {
+    if(!rows.length) return '';
+    var h = '<div class="tx-grp"><div class="tx-grp-hdr"><span class="tx-grp-ttl">' + escHtml(title) + '</span>'
+          + '<span class="tx-grp-sum" style="color:' + color + '">' + sign + fmt(total) + '</span></div>';
+    rows.forEach(function(r, i) {
+      var dd = pad2(r.day) + '.' + pad2(state.month + 1) + '.' + state.year;
+      h += '<button type="button" class="tx-row' + (isFixed ? ' tx-row-fix' : '') + '"'
+         + (isFixed ? '' : ' data-tx="' + i + '"') + '>'
+         + '<span class="tx-row-nm">' + escHtml(r.name || '') + '</span>'
+         + '<span class="tx-row-dt">' + dd + '</span>'
+         + '<span class="tx-row-am" style="color:' + color + '">' + sign + fmt(r.amount) + '</span></button>';
+    });
+    return h + '</div>';
+  }
+
+  var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
+           + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
+  if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
+
+  var yn = yearNetTotal(state.year);
+  html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
+        + '<span class="year-net-v" style="color:' + (yn >= 0 ? 'var(--income)' : 'var(--expense)') + '">'
+        + (yn >= 0 ? '+' : '-') + fmt(Math.abs(yn)) + '</span></div>';
+
+  host.innerHTML = html;
+  host.querySelectorAll('[data-tx]').forEach(function(el) {
+    el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
+  });
+}
+
 function renderTxList(txs, showAll) {
   var list = document.getElementById('txList');
   if(!list) return;
@@ -10791,8 +10947,12 @@ function txSearchBlob(tx) {
 
 function filterTransactions(query) {
   var q = (query || '').toLowerCase();
+  var panes = document.getElementById('txPanes');
+  var list = document.getElementById('txList');
+  if(panes) panes.style.display = q ? 'none' : '';
+  if(list) list.style.display = q ? '' : 'none';
   if(!q) {
-    renderTxList(getFiltered());
+    renderTxPanes();
     return;
   }
   var filtered = state.transactions.filter(function(tx) {
