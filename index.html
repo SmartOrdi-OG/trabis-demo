@@ -116,6 +116,45 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
 
+/* HOME PICKER */
+#homePicker{padding:0}
+.hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto}
+.hp-fixed{flex:0 0 36%;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
+.hp-fixed-hd{font-size:12px;font-weight:700;color:var(--text2);padding:0 2px 8px;border-bottom:1.5px solid var(--border);margin-bottom:8px}
+.hp-grp{margin-bottom:7px}
+.hp-grp-btn{width:100%;display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;transition:all 0.18s}
+.hp-grp-btn:hover{border-color:var(--primary)}
+.hp-grp-btn.open{border-color:var(--primary);background:var(--primary-light)}
+.hp-grp-nm{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+.hp-grp-sum{flex:none;font-size:10.5px;font-weight:700;color:var(--expense);font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.hp-car{flex:none;font-size:9px;color:var(--text3);transition:transform 0.18s}
+.hp-grp-btn.open .hp-car{transform:rotate(90deg)}
+.hp-items{padding:4px 4px 2px 10px}
+.hp-item{width:100%;display:flex;align-items:baseline;gap:6px;padding:6px;border:none;background:none;border-radius:7px;color:inherit;font:inherit;text-align:start;cursor:pointer}
+.hp-item:hover{background:var(--card2)}
+.hp-item-nm{flex:1;min-width:0;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+.hp-item-am{flex:none;font-size:11px;font-weight:700;color:var(--expense);font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.hp-pick{flex:1;min-width:0;display:flex;flex-direction:column}
+.hp-years{display:flex;gap:6px;padding:12px 11px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1.5px solid var(--border)}
+.hp-years::-webkit-scrollbar{display:none}
+.hp-yr{flex:none;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer;transition:all 0.18s}
+.hp-yr:hover{border-color:var(--primary);color:var(--primary)}
+.hp-yr.sel{background:var(--primary);border-color:var(--primary);color:#fff}
+.hp-yr.future{border-style:dashed}
+.hp-months{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:72px;gap:8px;padding:11px;align-content:start}
+.hp-mo{background:var(--card);border:1.5px solid transparent;border-radius:12px;padding:8px 6px;box-shadow:var(--shadow);cursor:pointer;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.18s}
+.hp-mo:hover{border-color:var(--primary);transform:translateY(-1px)}
+.hp-mo-nm{font-size:13px;font-weight:700}
+.hp-mo-net{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.hp-mo-net.pos{color:var(--income)} .hp-mo-net.neg{color:var(--expense)} .hp-mo-net.nil{color:var(--text3)}
+.hp-mo.void{background:none;border:1.5px dashed var(--border);box-shadow:none;opacity:.65;cursor:default}
+.hp-mo.void:hover{transform:none;border-color:var(--border)}
+.hp-back-row{display:flex;align-items:center;gap:9px;padding:12px 16px 0;max-width:960px;margin:0 auto}
+.hp-back{width:30px;height:30px;flex:none;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.hp-back:hover{border-color:var(--primary);color:var(--primary)}
+.hp-back-lbl{font-size:15px;font-weight:700}
+@media (max-width:520px){.hp-fixed{flex:0 0 38%}}
+
 /* HOME INCOME/EXPENSE PANES */
 .tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
 .tx-tab{flex:1;padding:9px 0 7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;
@@ -2154,6 +2193,26 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- MAIN PAGE -->
 <div id="mainPage" class="scroll">
+  <!-- HOME PICKER: year → month -->
+  <div id="homePicker">
+    <div class="hp-wrap">
+      <div class="hp-fixed">
+        <div class="hp-fixed-hd" id="hpFixedHd">Fixed</div>
+        <div id="hpFixedBody"></div>
+      </div>
+      <div class="hp-pick">
+        <div class="hp-years" id="hpYears"></div>
+        <div class="hp-months" id="hpMonths"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="monthDetail" style="display:none">
+  <div class="hp-back-row">
+    <button type="button" class="hp-back" onclick="showHomePicker()" aria-label="Back">&#8592;</button>
+    <span class="hp-back-lbl" id="hpBackLbl"></span>
+  </div>
+
   <div id="dashboard-greeting" style="padding:12px 16px 0;font-size:14px;font-weight:600;color:var(--primary);display:none"></div>
 
   <!-- DASHBOARD SUMMARY CARDS -->
@@ -2259,6 +2318,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
 
 
+  </div>
 </div>
 
 <!-- REPORTS PAGE -->
@@ -2764,7 +2824,7 @@ var LANG = {
     clientBack: "Back", clientCall: "Call", clientEmailBtn: "Email", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
-      Fuel:"Fuel", Vehicle:"Vehicle", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
+      Fuel:"Fuel", Vehicle:"Vehicle", Government:"Government", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
       Customer:"Customer", Supplier:"Supplier",
     }
   },
@@ -2833,7 +2893,7 @@ var LANG = {
     clientBack: "رجوع", clientCall: "اتصال", clientEmailBtn: "إيميل", clientWhatsApp: "واتساب",
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
-      Fuel:"وقود", Vehicle:"عربية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
+      Fuel:"وقود", Vehicle:"عربية", Government:"جهات حكومية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
       Customer:"عميل", Supplier:"مورد",
     }
   },
@@ -2902,7 +2962,7 @@ var LANG = {
     clientBack: "Zurück", clientCall: "Anrufen", clientEmailBtn: "E-Mail", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
-      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
+      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Government:"Behörden", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
       Customer:"Kunde", Supplier:"Lieferant",
     }
   }
@@ -2925,6 +2985,7 @@ var state = {
   lang: localStorage.getItem('smartac_lang') || 'en',
   period: 'month',          // the home filter is always a single month now
   txTab: 'expense',         // which side of the month the home list is showing
+  homeView: 'picker',       // 'picker' = year/month chooser, 'month' = the month screen
   year: new Date().getFullYear(),
   month: new Date().getMonth(),
   customDateFilter: null,
@@ -2994,7 +3055,7 @@ function getCurrencyLabel(sym) {
 
 var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
-  expense: ['Fuel','Supplies','Rent','Salary','Utilities','Marketing','Other'],
+  expense: ['Fuel','Vehicle','Supplies','Rent','Salary','Government','Utilities','Marketing','Other'],
   debt: ['Customer','Supplier','Other'],
 };
 
@@ -3136,7 +3197,7 @@ var SVG_ICON_PATHS = {
 };
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
-  Fuel:'droplet', Vehicle:'truck', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
+  Fuel:'droplet', Vehicle:'truck', Government:'building', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
   Customer:'user', Supplier:'building',
 };
 function svgIcon(name, size) {
@@ -7014,15 +7075,15 @@ function goToDate(dateStr) {
   var y = parseInt((dateStr||'').substring(0,4),10), m = parseInt((dateStr||'').substring(5,7),10) - 1;
   if(!y || isNaN(m) || m < 0 || m > 11) return false;
   if(y === state.year && m === state.month) return false;
-  state.year = y; state.month = m;
-  setMonth(m);
+  state.year = y;
+  openMonthDetail(m);
   return true;
 }
 
 function updatePeriodBarVisibility(page) {
   var periodTabs = document.getElementById('periodTabs');
   if(!periodTabs) return;
-  periodTabs.style.display = (page === 'home' && !state.customDateFilter) ? 'flex' : 'none';
+  periodTabs.style.display = (page === 'home' && state.homeView === 'month' && !state.customDateFilter) ? 'flex' : 'none';
   var activeBar = document.getElementById('customDateActiveBar');
   if(activeBar) activeBar.style.display = (page === 'home' && state.customDateFilter) ? 'flex' : 'none';
 }
@@ -10502,6 +10563,7 @@ function calculateNetIncome(filteredTransactions) {
 }
 
 function renderHome() {
+  if(state.homeView === 'picker') { renderHomePicker(); return; }
   renderMonthTabs();
   renderTxPanes();
   try {
@@ -10846,20 +10908,23 @@ var HOMEP_L = {
   restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
   restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
   salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
-  none:     {en:'Nothing this month', ar:'ما في شي هالشهر', de:'Nichts in diesem Monat'},
+  none:     {en:'Nothing fixed yet', ar:'ما في دفعات ثابتة', de:'Noch keine Fixzahlungen'},
   docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
+  fixedHd:  {en:'Fixed costs',       ar:'الدفعات الثابتة',  de:'Fixkosten'},
   yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
 };
 function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
 
 // Recurring rules rendered as the rows they produce in the selected month.
 // Shape comes straight from state.recurring / state.fixedIncome / state.employees.
-function fixedRowsFor(type) {
+function fixedRowsFor(type, forYear, forMonth) {
   // checkRecurringDue() turns each rule into a real transaction once its day
   // arrives and stamps lastRecorded = 'YYYY-MM'. So a rule belongs in this group
   // only while it is still unbooked for the month on screen — otherwise it is
   // already sitting in the transactions group and would be counted twice.
-  var monthKey = state.year + '-' + pad2(state.month + 1);
+  var y = (forYear == null) ? state.year : forYear;
+  var m = (forMonth == null) ? state.month : forMonth;
+  var monthKey = y + '-' + pad2(m + 1);
   var now = new Date();
   var nowKey = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
   if(monthKey < nowKey) return [];   // past months: everything was booked at the time
@@ -10965,6 +11030,149 @@ function renderReceiptStrip(type) {
     }
     strip.appendChild(btn);
   });
+}
+
+
+// ── HOME PICKER ──
+var _hpOpenGroup = null;
+
+// Years offered on the picker: every year with data, the current one, and two
+// ahead — fixed commitments are known before the year starts.
+function pickerYears() {
+  var ys = {}, cur = new Date().getFullYear();
+  (state.transactions || []).forEach(function(tx) {
+    if(tx && tx.date) { var y = parseInt(tx.date.substring(0,4),10); if(y) ys[y] = 1; }
+  });
+  for(var i = 0; i <= 2; i++) ys[cur + i] = 1;
+  ys[state.year] = 1;
+  return Object.keys(ys).map(Number).sort(function(a,b){ return a-b; });
+}
+
+// Net for one month under the same model the month view uses: that month's
+// transactions, plus the fixed rules that have not been booked into them yet.
+function monthNetFor(y, m) {
+  var monthPrefix = y + '-' + pad2(m + 1);
+  var net = 0, seen = false;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || tx.date.substring(0,7) !== monthPrefix) return;
+    seen = true;
+    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
+    net += tx.type === 'income' ? n : -n;
+  });
+  var fIn = fixedRowsFor('income', y, m), fOut = fixedRowsFor('expense', y, m);
+  if(fIn.length || fOut.length) seen = true;
+  net += sumRows(fIn).netto - sumRows(fOut).netto;
+  return seen ? net : null;
+}
+
+function showHomePicker() {
+  state.homeView = 'picker';
+  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
+  if(hp) hp.style.display = '';
+  if(md) md.style.display = 'none';
+  updatePeriodBarVisibility('home');
+  renderHomePicker();
+}
+
+function openMonthDetail(m) {
+  state.month = m;
+  state.homeView = 'month';
+  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
+  if(hp) hp.style.display = 'none';
+  if(md) md.style.display = '';
+  updatePeriodBarVisibility('home');
+  renderHome();
+}
+
+function renderHomePicker() {
+  var names = monthNamesLocal();
+
+  var yb = document.getElementById('hpYears');
+  if(yb) {
+    var cur = new Date().getFullYear(), h = '';
+    pickerYears().forEach(function(y) {
+      h += '<button type="button" class="hp-yr' + (y === state.year ? ' sel' : '') +
+           (y > cur ? ' future' : '') + '" onclick="hpSetYear(' + y + ')">' + y + '</button>';
+    });
+    yb.innerHTML = h;
+    var sel = yb.querySelector('.sel');
+    if(sel) yb.scrollLeft = sel.offsetLeft - (yb.clientWidth - sel.offsetWidth) / 2;
+  }
+
+  var mb = document.getElementById('hpMonths');
+  if(mb) {
+    var h2 = '';
+    for(var m = 0; m < 12; m++) {
+      var net = monthNetFor(state.year, m);
+      var cls = (net === null || Math.abs(net) < 0.005) ? 'nil' : (net > 0 ? 'pos' : 'neg');
+      var txt = net === null ? '—' : (net > 0 ? '+' : (net < 0 ? '-' : '')) + fmt(Math.abs(net));
+      h2 += '<button type="button" class="hp-mo' + (net === null ? ' void' : '') + '"' +
+            (net === null ? '' : ' onclick="openMonthDetail(' + m + ')"') + '>' +
+            '<span class="hp-mo-nm">' + escHtml(names[m]) + '</span>' +
+            '<span class="hp-mo-net ' + cls + '">' + txt + '</span></button>';
+    }
+    mb.innerHTML = h2;
+  }
+
+  var lbl = document.getElementById('hpBackLbl');
+  if(lbl) lbl.textContent = periodLabelText();
+  var fh = document.getElementById('hpFixedHd');
+  if(fh) fh.textContent = hptx('fixedHd');
+
+  renderHomeFixed();
+}
+
+function hpSetYear(y) { state.year = y; renderHomePicker(); }
+
+// The fixed side, grouped by the category each rule already carries. Employee
+// salaries form their own group since they are not recurring rules.
+function renderHomeFixed() {
+  var host = document.getElementById('hpFixedBody');
+  if(!host) return;
+  var groups = {}, order = [];
+  function add(cat, name, amount) {
+    var a = parseFloat(amount) || 0;
+    if(a <= 0) return;
+    if(!groups[cat]) { groups[cat] = []; order.push(cat); }
+    groups[cat].push({name: name, amount: a});
+  }
+  (state.recurring || []).forEach(function(r) { add(r.category || 'Other', r.name, r.amount); });
+  (state.employees || []).forEach(function(e) {
+    add('Salary', (e.name || e.fullName || ''), e.salary);
+  });
+
+  if(!order.length) {
+    host.innerHTML = '<div style="padding:16px 4px;color:var(--text3);font-size:12.5px">' +
+                     escHtml(hptx('none')) + '</div>';
+    return;
+  }
+
+  var h = '';
+  order.forEach(function(cat) {
+    var items = groups[cat];
+    var sum = items.reduce(function(a, x) { return a + x.amount; }, 0);
+    var open = _hpOpenGroup === cat;
+    h += '<div class="hp-grp"><button type="button" class="hp-grp-btn' + (open ? ' open' : '') +
+         '" onclick="hpToggleGroup(\'' + cat.replace(/'/g, "\\'") + '\')">' +
+         '<span class="hp-car">&#9656;</span>' +
+         '<span class="hp-grp-nm">' + escHtml(tc(cat)) + '</span>' +
+         '<span class="hp-grp-sum">-' + fmt(sum) + '</span></button>';
+    if(open) {
+      h += '<div class="hp-items">';
+      items.forEach(function(x) {
+        h += '<div class="hp-item"><span class="hp-item-nm">' + escHtml(x.name) +
+             '</span><span class="hp-item-am">-' + fmt(x.amount) + '</span></div>';
+      });
+      h += '</div>';
+    }
+    h += '</div>';
+  });
+  host.innerHTML = h;
+}
+
+function hpToggleGroup(cat) {
+  _hpOpenGroup = (_hpOpenGroup === cat) ? null : cat;
+  renderHomeFixed();
 }
 
 function setTxTab(t) {
