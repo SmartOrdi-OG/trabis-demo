@@ -48,9 +48,13 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
 
 /* PERIOD TABS */
-.period-tabs{display:flex;gap:0;background:var(--bg);border-radius:14px;padding:4px;margin:0 0 4px}
-.period-tab{flex:1;padding:8px 0;border-radius:10px;border:none;background:none;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all 0.25s;letter-spacing:0.2px}
-.period-tab.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow)}
+.period-tabs{display:flex;align-items:flex-end;gap:7px;margin:0 0 4px;border-bottom:1.5px solid var(--border)}
+.year-chip{flex:none;align-self:center;margin-bottom:6px;padding:5px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer;transition:all 0.18s}
+.year-chip:hover{border-color:var(--primary);color:var(--primary)}
+.month-strip{flex:1;min-width:0;display:flex;align-items:flex-end;gap:2px}
+.mtab{flex:1;min-width:0;height:24px;margin-bottom:-1.5px;border:1.5px solid var(--border);border-bottom:none;border-radius:7px 7px 0 0;background:var(--bg);color:var(--text3);font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
+.mtab:hover{color:var(--primary);border-color:var(--primary)}
+.mtab.active{height:32px;background:var(--card);color:var(--primary);font-size:13px;font-weight:700}
 
 /* SUMMARY CARDS */
 .summary{padding:16px 16px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:960px;margin:0 auto}
@@ -111,6 +115,49 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.income{color:var(--green)}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
+
+/* HOME INCOME/EXPENSE PANES */
+.tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
+.tx-tab{flex:1;padding:9px 0 7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;
+  color:var(--text3);border-bottom:2.5px solid var(--border);transition:all 0.18s}
+.tx-tab:hover{color:var(--text2)}
+.tx-tab.active[data-t="income"]{color:var(--income);border-bottom-color:var(--income)}
+.tx-tab.active[data-t="expense"]{color:var(--expense);border-bottom-color:var(--expense)}
+.tx-sums{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
+.tx-sum{font-size:11px;color:var(--text3);font-weight:600}
+.tx-sum b{display:block;font-size:14px;font-weight:700;color:var(--text);margin-top:1px}
+.tx-grp{margin-bottom:16px}
+.tx-grp-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
+  padding-bottom:6px;margin-bottom:4px;border-bottom:1.5px solid var(--border)}
+.tx-grp-ttl{font-size:12px;font-weight:700;color:var(--text2)}
+.tx-grp-sum{font-size:12px;font-weight:700}
+.tx-row{display:flex;align-items:baseline;gap:8px;width:100%;padding:8px 6px;background:none;border:none;
+  border-radius:9px;color:inherit;font:inherit;text-align:start;cursor:pointer;transition:background 0.15s}
+.tx-row:hover{background:var(--card2)}
+.tx-row+.tx-row{border-top:1px solid var(--border)}
+.tx-row-nm{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+.tx-row-dt{flex:none;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
+.tx-row-am{flex:none;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.tx-row-fix .tx-row-dt{color:var(--primary)}
+.tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
+.tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
+.rcpt-cap-ttl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:0.3px}
+.rcpt-strip{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.rcpt-strip::-webkit-scrollbar{display:none}
+.rcpt{flex:none;width:78px;background:var(--card);border:1.5px solid transparent;border-radius:11px;padding:5px;
+  box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;color:inherit;font:inherit;text-align:start}
+.rcpt:hover{border-color:var(--primary);transform:translateY(-1px)}
+.rcpt-thumb{width:100%;height:80px;border-radius:7px;background:var(--card2);display:flex;align-items:center;
+  justify-content:center;overflow:hidden;color:var(--text3)}
+.rcpt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.rcpt-cap{font-size:9px;font-weight:600;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;
+  text-overflow:ellipsis;unicode-bidi:plaintext}
+.rcpt-amt{display:block;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;
+  unicode-bidi:isolate-override;direction:ltr}
+.year-net{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;
+  padding-top:10px;border-top:1.5px solid var(--border)}
+.year-net-l{font-size:12px;color:var(--text3);font-weight:600}
+.year-net-v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 
 /* DEBTS SECTION */
 .debt-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
@@ -2094,31 +2141,9 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button class="icon-btn" id="notif-bell-btn" onclick="toggleNotificationCenter()" style="position:relative"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;min-width:14px;height:14px;border-radius:7px;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span></button>
     </div>
   </div>
-  <div class="period-tabs" id="periodTabs" style="position:relative">
-    <button class="period-tab" onclick="setPeriod('today',this)" data-period="today">Today</button>
-    <button class="period-tab" onclick="setPeriod('week',this)" data-period="week">Week</button>
-    <button class="period-tab active" onclick="setPeriod('month',this)" data-period="month">Month</button>
-    <button class="period-tab" onclick="setPeriod('quarter',this)" data-period="quarter">Quarter</button>
-    <button class="period-tab" onclick="setPeriod('year',this)" data-period="year">Year</button>
-    <button class="period-tab" id="customPeriodBtn" onclick="toggleCustomDatePopover()" data-period="custom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Custom</button>
-    <div id="customDatePopover" style="display:none;position:absolute;top:100%;right:0;margin-top:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:16px;z-index:500;width:240px">
-      <div style="display:flex;gap:0;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:12px">
-        <button type="button" id="customModeSingleBtn" onclick="setCustomDateMode('single')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)">Single Day</button>
-        <button type="button" id="customModeRangeBtn" onclick="setCustomDateMode('range')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer">Date Range</button>
-      </div>
-      <div id="customSingleFields">
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateSingle" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-      </div>
-      <div id="customRangeFields" style="display:none">
-        <label id="customFromLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">From</label>
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateFrom" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-        <label id="customToLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">To</label>
-        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateTo" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
-      </div>
-      <div id="customDateError" style="display:none;color:var(--red);font-size:12px;margin-bottom:8px"></div>
-      <button type="button" id="customApplyBtn" onclick="applyCustomDateFilter()" style="width:100%;padding:10px 0;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px">Apply</button>
-      <button type="button" id="customCancelBtn" onclick="toggleCustomDatePopover()" style="width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer">Cancel</button>
-    </div>
+  <div class="period-tabs" id="periodTabs">
+    <button type="button" class="year-chip" id="yearChip" onclick="cycleYear()">2026</button>
+    <div class="month-strip" id="monthStrip"></div>
   </div>
   <div id="customDateActiveBar" style="display:none;align-items:center;gap:8px;margin:0 0 4px;padding:8px 12px;background:var(--bg);border-radius:14px">
     <span id="customDateActiveLabel" style="font-size:13px;font-weight:600;color:var(--text)"></span>
@@ -2219,16 +2244,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- TRANSACTIONS -->
   <div class="section">
-    <div class="section-hdr">
-      <div class="section-title">Recent Transactions</div>
-      <div class="see-all" onclick="openAllTxPage()">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
+    <div class="tx-tabs" id="txTabs">
+      <button type="button" class="tx-tab" data-t="income" onclick="setTxTab('income')">Income</button>
+      <button type="button" class="tx-tab active" data-t="expense" onclick="setTxTab('expense')">Expenses</button>
     </div>
-    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>
-    <div class="tx-list" id="txList">
-      <div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">
-        <span id="noTxMsg">No transactions yet.<br/>Tap + to add your first one!</span>
-      </div>
+    <div id="rcptStripWrap" style="display:none">
+      <div class="rcpt-cap-ttl" id="rcptStripTtl"></div>
+      <div class="rcpt-strip" id="rcptStrip"></div>
     </div>
+    <div class="tx-sums" id="txSums"></div>
+    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
+    <div id="txPanes"></div>
+    <div class="tx-list" id="txList" style="display:none"></div>
   </div>
 
 
@@ -2891,7 +2918,10 @@ var state = {
   debts: [],
   currency: '€',
   lang: localStorage.getItem('smartac_lang') || 'en',
-  period: 'month',
+  period: 'month',          // the home filter is always a single month now
+  txTab: 'expense',         // which side of the month the home list is showing
+  year: new Date().getFullYear(),
+  month: new Date().getMonth(),
   customDateFilter: null,
   reportPeriod: 'month',
   currentType: 'income',
@@ -3239,7 +3269,7 @@ function txDateMatchesFilter(txDate) {
   }
   if(state.period === 'today') return txDate === todayStr;
   if(state.period === 'week') { var w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
-  if(state.period === 'month') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
+  if(state.period === 'month') return d.getMonth()===state.month && d.getFullYear()===state.year;
   if(state.period === 'quarter') return Math.floor(d.getMonth()/3)===Math.floor(now.getMonth()/3) && d.getFullYear()===now.getFullYear();
   if(state.period === 'year') return d.getFullYear()===now.getFullYear();
   return true;
@@ -6924,20 +6954,61 @@ function renderComingSoonPage(pageId, labelKey) {
 }
 
 // ── PERIOD ──
-function setPeriod(p, btn) {
-  state.period = p;
-  state.customDateFilter = null;
-  closeCustomDatePopover();
-  renderCustomDateActiveBar();
-  document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
-  if(btn) btn.classList.add('active');
-  document.querySelectorAll('.period-tab').forEach(function(b){
-    if(b.getAttribute('data-period') === p) b.classList.add('active');
+function monthNamesLocal() { return KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en; }
+
+// Label for the active filter, e.g. "Juli 2026" — replaces the old t('month') wording.
+function periodLabelText() { return monthNamesLocal()[state.month] + ' ' + state.year; }
+
+// Years are derived from the data, never a fixed list: every year that has a
+// transaction, plus the current one, plus whatever is selected.
+function availableYears() {
+  var ys = {}, cur = new Date().getFullYear();
+  (state.transactions||[]).forEach(function(tx) {
+    if(tx && tx.date) { var y = parseInt(tx.date.substring(0,4),10); if(y) ys[y] = 1; }
   });
+  ys[cur] = 1; ys[state.year] = 1;
+  return Object.keys(ys).map(Number).sort(function(a,b){ return a-b; });
+}
+
+function renderMonthTabs() {
+  var strip = document.getElementById('monthStrip');
+  if(strip) {
+    var h = '';
+    for(var m = 0; m < 12; m++) {
+      h += '<button type="button" class="mtab' + (m === state.month ? ' active' : '') +
+           '" onclick="setMonth(' + m + ')" title="' + escHtml(monthNamesLocal()[m]) + '">' + (m+1) + '</button>';
+    }
+    strip.innerHTML = h;
+  }
+  var yc = document.getElementById('yearChip');
+  if(yc) yc.textContent = state.year;
+}
+
+function setMonth(m) {
+  state.month = m;
+  state.period = 'month';
+  state.customDateFilter = null;
+  renderCustomDateActiveBar();
+  renderMonthTabs();
   renderHome();
-  // If reports page is visible, refresh its chart too
   var rp = document.getElementById('reportsPage');
   if(rp && rp.style.display !== 'none') { renderReports(); renderChart(); }
+}
+
+function cycleYear() {
+  var ys = availableYears(), i = ys.indexOf(state.year);
+  state.year = ys[(i + 1) % ys.length];
+  setMonth(state.month);
+}
+
+// Jump the home filter to whatever month a date belongs to.
+function goToDate(dateStr) {
+  var y = parseInt((dateStr||'').substring(0,4),10), m = parseInt((dateStr||'').substring(5,7),10) - 1;
+  if(!y || isNaN(m) || m < 0 || m > 11) return false;
+  if(y === state.year && m === state.month) return false;
+  state.year = y; state.month = m;
+  setMonth(m);
+  return true;
 }
 
 function updatePeriodBarVisibility(page) {
@@ -7007,18 +7078,14 @@ function applyCustomDateFilter() {
   }
   if(err) err.style.display = 'none';
   closeCustomDatePopover();
-  document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
   renderCustomDateActiveBar();
   renderHome();
 }
 
 function clearCustomDateFilter() {
   state.customDateFilter = null;
-  state.period = 'today';
-  document.querySelectorAll('.period-tab').forEach(function(b){
-    b.classList.remove('active');
-    if(b.getAttribute('data-period') === 'today') b.classList.add('active');
-  });
+  state.period = 'month';
+  renderMonthTabs();
   renderCustomDateActiveBar();
   renderHome();
 }
@@ -7284,7 +7351,7 @@ function openVatBreakdown(type) {
   var totalNetto = 0, totalSteuer = 0, totalBrutto = 0;
   groupOrder.forEach(function(cat){ totalNetto += groups[cat].netto; totalSteuer += groups[cat].steuer; totalBrutto += groups[cat].brutto; });
 
-  var subtitle = state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period);
+  var subtitle = state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText();
 
   var cs = 'background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:16px';
   var h = '<div style="' + cs + '">';
@@ -8373,10 +8440,8 @@ function scanInvoicesSaveAll() {
   // to a custom range covering the saved dates so the user actually sees
   // what they just added instead of it silently vanishing from view.
   if(savedDates.length && !savedDates.every(txDateMatchesFilter)) {
-    var minDate = savedDates.reduce(function(a,b){ return b < a ? b : a; });
-    var maxDate = savedDates.reduce(function(a,b){ return b > a ? b : a; });
-    state.customDateFilter = minDate === maxDate ? {mode:'single', date:minDate} : {mode:'range', from:minDate, to:maxDate};
-    document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
+    // Show the month the invoice actually belongs to, not the one that happened to be open.
+    goToDate(savedDates.reduce(function(a,b){ return b < a ? b : a; }));
   }
 
   save();
@@ -10278,8 +10343,8 @@ function getPrevPeriodData() {
       return d > w2start && d <= w2end;
     }
     if(state.period === 'month') {
-      var pm = now.getMonth() === 0 ? 11 : now.getMonth()-1;
-      var py = now.getMonth() === 0 ? now.getFullYear()-1 : now.getFullYear();
+      var pm = state.month === 0 ? 11 : state.month-1;
+      var py = state.month === 0 ? state.year-1 : state.year;
       return d.getMonth()===pm && d.getFullYear()===py;
     }
     if(state.period === 'quarter') {
@@ -10388,6 +10453,8 @@ function calculateNetIncome(filteredTransactions) {
 }
 
 function renderHome() {
+  renderMonthTabs();
+  renderTxPanes();
   try {
   // Always reload from storage to ensure data is fresh: compare the
   // currently active session (read fresh, never cached) against whichever
@@ -10484,7 +10551,7 @@ function renderHome() {
   var total = state.transactions.length;
   if(netSubEl) netSubEl.textContent = total === 0
     ? t('noTx').split('\n')[0]
-    : txs.length + ' ' + t('transactions') + ' • ' + (state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period));
+    : txs.length + ' ' + t('transactions') + ' • ' + (state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText());
 
   var incomeChangeEl = document.getElementById('incomeChange');
   var expenseChangeEl = document.getElementById('expenseChange');
@@ -10718,6 +10785,203 @@ function closeTxDetail() {
   _currentTx = null;
 }
 
+
+// ── HOME INCOME / EXPENSE PANES ──
+var HOMEP_L = {
+  income:   {en:'Income',        ar:'الدخل',            de:'Einnahmen'},
+  expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
+  netto:    {en:'Net',           ar:'الصافي',           de:'Netto'},
+  vat:      {en:'VAT',           ar:'الضريبة',          de:'MwSt.'},
+  fixOut:   {en:'Fixed \u00b7 due',  ar:'دفعات ثابتة \u00b7 مستحقة', de:'Fixzahlungen \u00b7 offen'},
+  fixIn:    {en:'Fixed \u00b7 due',  ar:'دخل ثابت \u00b7 مستحق',    de:'Fixe Einnahmen \u00b7 offen'},
+  restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
+  restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
+  salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
+  none:     {en:'Nothing this month', ar:'ما في شي هالشهر', de:'Nichts in diesem Monat'},
+  docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
+  yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
+};
+function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
+
+// Recurring rules rendered as the rows they produce in the selected month.
+// Shape comes straight from state.recurring / state.fixedIncome / state.employees.
+function fixedRowsFor(type) {
+  // checkRecurringDue() turns each rule into a real transaction once its day
+  // arrives and stamps lastRecorded = 'YYYY-MM'. So a rule belongs in this group
+  // only while it is still unbooked for the month on screen — otherwise it is
+  // already sitting in the transactions group and would be counted twice.
+  var monthKey = state.year + '-' + pad2(state.month + 1);
+  var now = new Date();
+  var nowKey = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
+  if(monthKey < nowKey) return [];   // past months: everything was booked at the time
+
+  var rows = [];
+  function add(src, name, amount, vatRate, day) {
+    if(src.lastRecorded === monthKey) return;
+    var amt = parseFloat(amount) || 0;
+    if(amt <= 0) return;
+    rows.push({name: name, amount: amt, vatRate: parseFloat(vatRate) || 0,
+               day: parseInt(day, 10) || 1, fixed: true});
+  }
+  if(type === 'expense') {
+    (state.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
+    (state.employees || []).forEach(function(e) {
+      add(e, hptx('salary') + ' \u00b7 ' + (e.name || e.fullName || ''), e.salary, 0, 1);
+    });
+  } else {
+    (state.fixedIncome || []).forEach(function(fi) { add(fi, fi.name, fi.amount, fi.vatRate, fi.day); });
+  }
+  return rows.sort(function(a, b) { return a.day - b.day; });
+}
+
+function sumRows(rows) {
+  var brutto = 0, netto = 0;
+  rows.forEach(function(r) {
+    var v = vatBreakdown(r.amount, r.vatRate || 0);
+    brutto += v.brutto; netto += v.netto;
+  });
+  return {brutto: brutto, netto: netto, steuer: brutto - netto};
+}
+
+// Net for a whole year, using the same model the month cards use:
+// the year's transactions plus the fixed rows once per elapsed month.
+function yearNetTotal(y) {
+  // Booked months are already in state.transactions; only the rest of the
+  // current year is still carried by the unbooked rules.
+  var net = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || parseInt(tx.date.substring(0, 4), 10) !== y) return;
+    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
+    net += tx.type === 'income' ? n : -n;
+  });
+  var now = new Date();
+  if(y === now.getFullYear()) {
+    var openNet = sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto;
+    net += openNet;
+  }
+  return net;
+}
+
+// ── RECEIPT STRIP ──
+// The month's attachments, shown as the documents they are. Two storage paths
+// feed it: tx.invoice is an inline data URL, tx.receiptId points at a blob in
+// IndexedDB — so thumbnails for the latter resolve asynchronously.
+var _stripUrls = [];
+function releaseStripUrls() {
+  _stripUrls.forEach(function(u) { try { URL.revokeObjectURL(u); } catch(e) {} });
+  _stripUrls = [];
+}
+
+function renderReceiptStrip(type) {
+  var wrap = document.getElementById('rcptStripWrap');
+  var strip = document.getElementById('rcptStrip');
+  if(!wrap || !strip) return;
+  releaseStripUrls();
+
+  var docs = getFiltered().filter(function(tx) {
+    return tx.type === type && (tx.invoice || tx.receiptId);
+  });
+  if(!docs.length) { wrap.style.display = 'none'; strip.innerHTML = ''; return; }
+
+  var ttl = document.getElementById('rcptStripTtl');
+  if(ttl) ttl.textContent = hptx('docs');
+  wrap.style.display = '';
+
+  var fileIcon = svgIcon('fileText', 26);
+  strip.innerHTML = '';
+  docs.forEach(function(tx) {
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'rcpt';
+    btn.innerHTML = '<span class="rcpt-thumb">' + fileIcon + '</span>'
+      + '<span class="rcpt-cap">' + escHtml(tx.name || '') + '</span>'
+      + '<span class="rcpt-amt" style="color:' + (type === 'income' ? 'var(--income)' : 'var(--expense)') + '">'
+      + (type === 'income' ? '+' : '-') + fmt(tx.amount) + '</span>';
+    var thumb = btn.querySelector('.rcpt-thumb');
+
+    if(tx.invoice) {
+      if(String(tx.invoice).indexOf('data:image/') === 0) thumb.innerHTML = '<img alt="" src="' + tx.invoice + '"/>';
+      btn.onclick = function() { openInvoice(tx.invoice, tx.invoiceName || 'Invoice'); };
+    } else {
+      btn.onclick = function() {
+        receiptGet(tx.receiptId).then(function(rec) { if(rec) openReceiptViewer(rec); });
+      };
+      receiptGet(tx.receiptId).then(function(rec) {
+        if(!rec || !rec.blob || !thumb.isConnected) return;
+        if((rec.type || '').indexOf('image/') !== 0) return;   // PDFs keep the document icon
+        var u = URL.createObjectURL(rec.blob);
+        _stripUrls.push(u);
+        thumb.innerHTML = '<img alt="" src="' + u + '"/>';
+      }).catch(function() {});
+    }
+    strip.appendChild(btn);
+  });
+}
+
+function setTxTab(t) {
+  state.txTab = t;
+  renderTxPanes();
+}
+
+function renderTxPanes() {
+  var host = document.getElementById('txPanes');
+  if(!host) return;
+  var type = state.txTab === 'income' ? 'income' : 'expense';
+
+  document.querySelectorAll('.tx-tab').forEach(function(b) {
+    var bt = b.getAttribute('data-t');
+    b.textContent = hptx(bt);
+    b.classList.toggle('active', bt === type);
+  });
+
+  var txs = getFiltered().filter(function(tx) { return tx.type === type; })
+              .map(function(tx) {
+                return {name: tx.name, amount: tx.amount, vatRate: tx.vatRate || 0,
+                        day: parseInt((tx.date || '').substring(8, 10), 10) || 1, tx: tx};
+              }).sort(function(a, b) { return a.day - b.day; });
+  var fixed = fixedRowsFor(type);
+  var sTx = sumRows(txs), sFix = sumRows(fixed);
+  var color = type === 'income' ? 'var(--income)' : 'var(--expense)';
+  var sign = type === 'income' ? '+' : '-';
+
+  renderReceiptStrip(type);
+
+  var sums = document.getElementById('txSums');
+  if(sums) {
+    sums.innerHTML = '<div class="tx-sum">' + escHtml(hptx('netto')) + '<b>' + fmt(sTx.netto + sFix.netto) + '</b></div>'
+      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>';
+  }
+
+  function group(title, rows, total, isFixed) {
+    if(!rows.length) return '';
+    var h = '<div class="tx-grp"><div class="tx-grp-hdr"><span class="tx-grp-ttl">' + escHtml(title) + '</span>'
+          + '<span class="tx-grp-sum" style="color:' + color + '">' + sign + fmt(total) + '</span></div>';
+    rows.forEach(function(r, i) {
+      var dd = pad2(r.day) + '.' + pad2(state.month + 1) + '.' + state.year;
+      h += '<button type="button" class="tx-row' + (isFixed ? ' tx-row-fix' : '') + '"'
+         + (isFixed ? '' : ' data-tx="' + i + '"') + '>'
+         + '<span class="tx-row-nm">' + escHtml(r.name || '') + '</span>'
+         + '<span class="tx-row-dt">' + dd + '</span>'
+         + '<span class="tx-row-am" style="color:' + color + '">' + sign + fmt(r.amount) + '</span></button>';
+    });
+    return h + '</div>';
+  }
+
+  var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
+           + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
+  if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
+
+  var yn = yearNetTotal(state.year);
+  html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
+        + '<span class="year-net-v" style="color:' + (yn >= 0 ? 'var(--income)' : 'var(--expense)') + '">'
+        + (yn >= 0 ? '+' : '-') + fmt(Math.abs(yn)) + '</span></div>';
+
+  host.innerHTML = html;
+  host.querySelectorAll('[data-tx]').forEach(function(el) {
+    el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
+  });
+}
+
 function renderTxList(txs, showAll) {
   var list = document.getElementById('txList');
   if(!list) return;
@@ -10771,8 +11035,12 @@ function txSearchBlob(tx) {
 
 function filterTransactions(query) {
   var q = (query || '').toLowerCase();
+  var panes = document.getElementById('txPanes');
+  var list = document.getElementById('txList');
+  if(panes) panes.style.display = q ? 'none' : '';
+  if(list) list.style.display = q ? '' : 'none';
   if(!q) {
-    renderTxList(getFiltered());
+    renderTxPanes();
     return;
   }
   var filtered = state.transactions.filter(function(tx) {
@@ -10802,7 +11070,7 @@ function openAllTxPage() {
   html += '<div style="flex:1;font-size:16px;font-weight:700">' + titleLbl + '</div>';
   html += '</div>';
   html += '<div style="padding:16px">';
-  html += '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period)) + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText()) + '</div>';
   html += '<input type="text" id="allTxSearchInput" placeholder="' + escHtml(t('searchTx')) + '" oninput="filterAllTx(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>';
   html += '<div id="allTxList"></div>';
   html += '</div>';
@@ -11220,7 +11488,7 @@ function shareReport() {
   var expense = periodTxs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
   var periodLabels = {today:{en:'Today',ar:'اليوم',de:'Heute'},week:{en:'This Week',ar:'هذا الأسبوع',de:'Diese Woche'},month:{en:'This Month',ar:'هذا الشهر',de:'Diesen Monat'},year:{en:'This Year',ar:'هذا العام',de:'Dieses Jahr'}};
   var lang = state.lang;
-  var periodLabel = (periodLabels[state.period]&&periodLabels[state.period][lang])||'Period';
+  var periodLabel = periodLabelText();
   var text = periodLabel+'\n\n'+t('totalIncome')+': '+fmt(income)+'\n'+t('totalExpenses')+': '+fmt(expense)+'\n'+t('netProfit')+': '+fmt(income-expense)+'\n\nSent via Trabis';
   if(navigator.share) navigator.share({text:text});
   else { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text); showToast(t('reportCopied')||'Report copied!', 'success'); }
@@ -11407,13 +11675,7 @@ function applyLang() {
   var mqaInvoiceLbl = document.getElementById('mqa-lbl-invoice');
   if(mqaInvoiceLbl) mqaInvoiceLbl.textContent = {en:'Invoice', ar:'فاتورة', de:'Rechnung'}[state.lang] || 'Invoice';
 
-  // Update period tabs
-  ['today','week','month','quarter','year'].forEach(function(p,i) {
-    var tabs = document.querySelectorAll('.period-tab');
-    if(tabs[i]) tabs[i].textContent = t(p);
-  });
-  var customBtnEl = document.getElementById('customPeriodBtn');
-  if(customBtnEl) customBtnEl.innerHTML = svgIcon('calendar',12) + ' ' + escHtml(t('custom'));
+  renderMonthTabs();
   var modeSingleBtn = document.getElementById('customModeSingleBtn');
   if(modeSingleBtn) modeSingleBtn.textContent = t('singleDay');
   var modeRangeBtn = document.getElementById('customModeRangeBtn');
@@ -12592,7 +12854,7 @@ function exportData() {
   }
   function row() { return Array.prototype.slice.call(arguments).map(esc).join(','); }
 
-  var periodLabel = (l.periods && l.periods[state.period]) || state.period;
+  var periodLabel = periodLabelText();
   var lines = [];
 
   // ── Header ──
