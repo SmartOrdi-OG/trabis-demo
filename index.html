@@ -136,20 +136,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto;overflow:hidden}
 .hp-fixed{flex:0 0 36%;min-width:0;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
 .hp-fixed-hd{font-size:12px;font-weight:700;color:var(--text2);padding:0 2px 8px;border-bottom:1.5px solid var(--border);margin-bottom:8px}
-.hp-grp{margin-bottom:7px}
-.hp-grp-btn{width:100%;display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;transition:all 0.18s}
-.hp-grp-btn:hover{border-color:var(--primary)}
-.hp-grp-btn.open{border-color:var(--primary);background:var(--primary-light)}
-.hp-grp-nm{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
-.hp-grp-sum{flex:none;font-size:10.5px;font-weight:700;color:var(--expense);font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
-.hp-car{flex:none;font-size:9px;color:var(--text3);transition:transform 0.18s}
-.hp-grp-btn.open .hp-car{transform:rotate(90deg)}
-.hp-items{padding:4px 4px 2px 10px}
-.hp-item{width:100%;display:flex;align-items:baseline;gap:6px;padding:6px;border:none;background:none;border-radius:7px;color:inherit;font:inherit;text-align:start;cursor:pointer}
-.hp-item:hover{background:var(--card2)}
-.hp-item-nm{flex:1;min-width:0;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
-#hpOtherBody .hp-item-nm{white-space:normal;overflow:visible;line-height:1.4}
-.hp-item-am{flex:none;font-size:11px;font-weight:700;color:var(--expense);font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
 .hp-pick{flex:1;min-width:0;display:flex;flex-direction:column}
 .hp-years{display:flex;gap:6px;padding:12px 11px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1.5px solid var(--border)}
 .hp-years::-webkit-scrollbar{display:none}
@@ -180,12 +166,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
   .hp-months{gap:10px;padding:12px 14px 16px}
   .hp-mo-nm{font-size:16px}
   .hp-mo-hint{font-size:12px}
-  .hp-grp-btn{padding:11px 12px}
-  .hp-grp-nm{font-size:13px}
-  .hp-grp-sum{font-size:12px}
-  .hp-item{padding:9px 6px}
-  .hp-item-nm{font-size:12.5px}
-  .hp-item-am{font-size:12px}
   .hp-nav{padding:12px}
   .hp-nav-lbl{font-size:13px}
   .hp-back{width:38px;height:38px;font-size:17px}
@@ -2248,11 +2228,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div id="homePicker">
     <div class="hp-wrap">
       <div class="hp-fixed">
-        <div class="hp-fixed-hd" id="hpFixedHd">Fixed</div>
-        <div id="hpFixedBody"></div>
-        <div class="hp-fixed-hd" id="hpOtherHd" style="margin-top:16px">Other</div>
-        <div id="hpOtherBody"></div>
-        <div class="hp-fixed-hd" id="hpBizHd" style="margin-top:16px">Business</div>
+        <div class="hp-fixed-hd" id="hpBizHd">Business</div>
         <div id="hpBizBody"></div>
       </div>
       <div class="hp-pick">
@@ -11115,7 +11091,6 @@ function renderReceiptStrip(type) {
 
 
 // ── HOME PICKER ──
-var _hpOpenGroup = null;
 
 // Years offered on the picker: every year with data, the current one, and two
 // ahead — fixed commitments are known before the year starts.
@@ -11196,128 +11171,15 @@ function renderHomePicker() {
 
   var lbl = document.getElementById('hpBackLbl');
   if(lbl) lbl.textContent = periodLabelText();
-  var fh = document.getElementById('hpFixedHd');
-  if(fh) fh.textContent = hptx('fixedHd');
-  var oh = document.getElementById('hpOtherHd');
-  if(oh) oh.textContent = hptx('otherHd');
-
-  renderHomeFixed();
-  renderHomeOther();
   renderHomeBiz();
 }
 
 function hpSetYear(y) { state.year = y; renderHomePicker(); }
 
-// The fixed side, grouped by the category each rule already carries. Employee
-// salaries form their own group since they are not recurring rules.
-function renderHomeFixed() {
-  var host = document.getElementById('hpFixedBody');
-  if(!host) return;
-  var groups = {}, order = [];
-  function add(cat, name, amount) {
-    var a = parseFloat(amount) || 0;
-    if(a <= 0) return;
-    if(!groups[cat]) { groups[cat] = []; order.push(cat); }
-    groups[cat].push({name: name, amount: a});
-  }
-  (state.recurring || []).forEach(function(r) { add(r.category || 'Other', r.name, r.amount); });
-  (state.employees || []).forEach(function(e) {
-    add('Salary', (e.name || e.fullName || ''), e.salary);
-  });
-
-  if(!order.length) {
-    host.innerHTML = '<div style="padding:16px 4px;color:var(--text3);font-size:12.5px">' +
-                     escHtml(hptx('none')) + '</div>';
-    return;
-  }
-
-  var h = '';
-  order.forEach(function(cat) {
-    var items = groups[cat];
-    var sum = items.reduce(function(a, x) { return a + x.amount; }, 0);
-    var open = _hpOpenGroup === cat;
-    h += '<div class="hp-grp"><button type="button" class="hp-grp-btn' + (open ? ' open' : '') +
-         '" onclick="hpToggleGroup(\'' + cat.replace(/'/g, "\\'") + '\')">' +
-         '<span class="hp-car">&#9656;</span>' +
-         '<span class="hp-grp-nm">' + escHtml(tc(cat)) + '</span>' +
-         '<span class="hp-grp-sum">-' + fmt(sum) + '</span></button>';
-    if(open) {
-      h += '<div class="hp-items">';
-      items.forEach(function(x) {
-        h += '<div class="hp-item"><span class="hp-item-nm">' + escHtml(x.name) +
-             '</span><span class="hp-item-am">-' + fmt(x.amount) + '</span></div>';
-      });
-      h += '</div>';
-    }
-    h += '</div>';
-  });
-  host.innerHTML = h;
-}
 
 
-// Today's own figures — the sidebar's "Today" block is about the day, not the
-// month on screen, so it reads straight from the transactions.
-function todayTotals() {
-  var d = today(), inc = 0, exp = 0, n = 0;
-  (state.transactions || []).forEach(function(tx) {
-    if(!tx || !tx.date || tx.date.substring(0,10) !== d) return;
-    n++;
-    if(tx.type === 'income') inc += tx.amount; else if(tx.type === 'expense') exp += tx.amount;
-  });
-  return {income: inc, expense: exp, net: inc - exp, count: n};
-}
 
-function openDebts() {
-  if(typeof showNav === 'function') showNav('debts');
-}
 
-// The two blocks that sit under the fixed groups: today, and what is still owed.
-function renderHomeOther() {
-  var host = document.getElementById('hpOtherBody');
-  if(!host) return;
-  var tt = todayTotals();
-  var pend = (state.debts || []).filter(function(d) { return d && d.status !== 'paid'; });
-  var owesMe = pend.filter(function(d) { return d.type !== 'i-owe'; });
-  var iOwe   = pend.filter(function(d) { return d.type === 'i-owe'; });
-  var sum = function(a) { return a.reduce(function(s, d) { return s + (parseFloat(d.amount) || 0); }, 0); };
-  var net = sum(owesMe) - sum(iOwe);
-
-  function block(key, headAmount, headClass, open, body) {
-    var h = '<div class="hp-grp"><button type="button" class="hp-grp-btn' + (open ? ' open' : '') +
-            '" onclick="hpToggleGroup(\'' + key + '\')">' +
-            '<span class="hp-car">&#9656;</span>' +
-            '<span class="hp-grp-nm">' + escHtml(hptx(key === '__today' ? 'today' : 'debtsHd')) + '</span>' +
-            '<span class="hp-grp-sum" style="color:' + headClass + '">' + headAmount + '</span></button>';
-    if(open) h += '<div class="hp-items">' + body + '</div>';
-    return h + '</div>';
-  }
-
-  var todayBody = tt.count
-    ? '<div class="hp-item"><span class="hp-item-nm">' + escHtml(t('income')) + '</span>' +
-      '<span class="hp-item-am" style="color:var(--income)">+' + fmt(tt.income) + '</span></div>' +
-      '<div class="hp-item"><span class="hp-item-nm">' + escHtml(t('expenses') || t('expense')) + '</span>' +
-      '<span class="hp-item-am">-' + fmt(tt.expense) + '</span></div>'
-    : '<div class="hp-item"><span class="hp-item-nm" style="color:var(--text3)">' +
-      escHtml(hptx('noneToday')) + '</span></div>';
-
-  var debtsBody = pend.length
-    ? '<div class="hp-item"><span class="hp-item-nm">' + escHtml(hptx('owesMe')) + '</span>' +
-      '<span class="hp-item-am" style="color:var(--income)">+' + fmt(sum(owesMe)) + '</span></div>' +
-      '<div class="hp-item"><span class="hp-item-nm">' + escHtml(hptx('iOwe')) + '</span>' +
-      '<span class="hp-item-am">-' + fmt(sum(iOwe)) + '</span></div>' +
-      '<button type="button" class="hp-item" onclick="openDebts()"><span class="hp-item-nm" ' +
-      'style="color:var(--primary);font-weight:600">' + escHtml(hptx('seeAll')) + ' &rsaquo;</span></button>'
-    : '<div class="hp-item"><span class="hp-item-nm" style="color:var(--text3)">' +
-      escHtml(hptx('noDebts')) + '</span></div>';
-
-  host.innerHTML =
-      block('__today', (tt.net >= 0 ? '+' : '-') + fmt(Math.abs(tt.net)),
-            tt.count === 0 ? 'var(--text3)' : (tt.net >= 0 ? 'var(--income)' : 'var(--expense)'),
-            _hpOpenGroup === '__today', todayBody)
-    + block('__debts', (net >= 0 ? '+' : '-') + fmt(Math.abs(net)),
-            pend.length === 0 ? 'var(--text3)' : (net >= 0 ? 'var(--income)' : 'var(--expense)'),
-            _hpOpenGroup === '__debts', debtsBody);
-}
 
 
 // Everything booked in this year before the month on screen — the balance the
@@ -11383,11 +11245,6 @@ function renderHomeBiz() {
   if(bh) bh.textContent = hptx('bizHd');
 }
 
-function hpToggleGroup(cat) {
-  _hpOpenGroup = (_hpOpenGroup === cat) ? null : cat;
-  renderHomeFixed();
-  renderHomeOther();
-}
 
 function setTxTab(t) {
   state.txTab = t;
