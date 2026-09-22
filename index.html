@@ -133,6 +133,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-item{width:100%;display:flex;align-items:baseline;gap:6px;padding:6px;border:none;background:none;border-radius:7px;color:inherit;font:inherit;text-align:start;cursor:pointer}
 .hp-item:hover{background:var(--card2)}
 .hp-item-nm{flex:1;min-width:0;font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+#hpOtherBody .hp-item-nm{white-space:normal;overflow:visible;line-height:1.4}
 .hp-item-am{flex:none;font-size:11px;font-weight:700;color:var(--expense);font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
 .hp-pick{flex:1;min-width:0;display:flex;flex-direction:column}
 .hp-years{display:flex;gap:6px;padding:12px 11px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1.5px solid var(--border)}
@@ -145,7 +146,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-mo{background:var(--card);border:1.5px solid transparent;border-radius:12px;padding:8px 6px;box-shadow:var(--shadow);cursor:pointer;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.18s}
 .hp-mo:hover{border-color:var(--primary);transform:translateY(-1px)}
 .hp-mo-nm{font-size:13px;font-weight:700}
-.hp-mo-net{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.hp-mo-net{font-size:10.5px;font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;unicode-bidi:isolate-override;direction:ltr}
 .hp-mo-net.pos{color:var(--income)} .hp-mo-net.neg{color:var(--expense)} .hp-mo-net.nil{color:var(--text3)}
 .hp-mo.void{background:none;border:1.5px dashed var(--border);box-shadow:none;opacity:.65;cursor:default}
 .hp-mo.void:hover{transform:none;border-color:var(--border)}
@@ -2199,6 +2200,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <div class="hp-fixed">
         <div class="hp-fixed-hd" id="hpFixedHd">Fixed</div>
         <div id="hpFixedBody"></div>
+        <div class="hp-fixed-hd" id="hpOtherHd" style="margin-top:16px">Other</div>
+        <div id="hpOtherBody"></div>
       </div>
       <div class="hp-pick">
         <div class="hp-years" id="hpYears"></div>
@@ -10911,6 +10914,14 @@ var HOMEP_L = {
   none:     {en:'Nothing fixed yet', ar:'ما في دفعات ثابتة', de:'Noch keine Fixzahlungen'},
   docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
   fixedHd:  {en:'Fixed costs',       ar:'الدفعات الثابتة',  de:'Fixkosten'},
+  otherHd:  {en:'Other',             ar:'أخرى',             de:'Sonstiges'},
+  today:    {en:'Today',             ar:'ملخص اليوم',       de:'Heute'},
+  debtsHd:  {en:'Debts',             ar:'الديون',           de:'Schulden'},
+  owesMe:   {en:'Owed to you',       ar:'لك',               de:'Forderungen'},
+  iOwe:     {en:'You owe',           ar:'عليك',             de:'Verbindlichkeiten'},
+  noneToday:{en:'Nothing booked today', ar:'ما في حركات اليوم', de:'Heute noch nichts gebucht'},
+  noDebts:  {en:'No open debts',     ar:'ما في ديون مفتوحة', de:'Keine offenen Schulden'},
+  seeAll:   {en:'Open debts page',   ar:'افتح صفحة الديون', de:'Zur Schuldenseite'},
   yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
 };
 function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
@@ -11118,8 +11129,11 @@ function renderHomePicker() {
   if(lbl) lbl.textContent = periodLabelText();
   var fh = document.getElementById('hpFixedHd');
   if(fh) fh.textContent = hptx('fixedHd');
+  var oh = document.getElementById('hpOtherHd');
+  if(oh) oh.textContent = hptx('otherHd');
 
   renderHomeFixed();
+  renderHomeOther();
 }
 
 function hpSetYear(y) { state.year = y; renderHomePicker(); }
@@ -11170,9 +11184,75 @@ function renderHomeFixed() {
   host.innerHTML = h;
 }
 
+
+// Today's own figures — the sidebar's "Today" block is about the day, not the
+// month on screen, so it reads straight from the transactions.
+function todayTotals() {
+  var d = today(), inc = 0, exp = 0, n = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || tx.date.substring(0,10) !== d) return;
+    n++;
+    if(tx.type === 'income') inc += tx.amount; else if(tx.type === 'expense') exp += tx.amount;
+  });
+  return {income: inc, expense: exp, net: inc - exp, count: n};
+}
+
+function openDebts() {
+  if(typeof showNav === 'function') showNav('debts');
+}
+
+// The two blocks that sit under the fixed groups: today, and what is still owed.
+function renderHomeOther() {
+  var host = document.getElementById('hpOtherBody');
+  if(!host) return;
+  var tt = todayTotals();
+  var pend = (state.debts || []).filter(function(d) { return d && d.status !== 'paid'; });
+  var owesMe = pend.filter(function(d) { return d.type !== 'i-owe'; });
+  var iOwe   = pend.filter(function(d) { return d.type === 'i-owe'; });
+  var sum = function(a) { return a.reduce(function(s, d) { return s + (parseFloat(d.amount) || 0); }, 0); };
+  var net = sum(owesMe) - sum(iOwe);
+
+  function block(key, headAmount, headClass, open, body) {
+    var h = '<div class="hp-grp"><button type="button" class="hp-grp-btn' + (open ? ' open' : '') +
+            '" onclick="hpToggleGroup(\'' + key + '\')">' +
+            '<span class="hp-car">&#9656;</span>' +
+            '<span class="hp-grp-nm">' + escHtml(hptx(key === '__today' ? 'today' : 'debtsHd')) + '</span>' +
+            '<span class="hp-grp-sum" style="color:' + headClass + '">' + headAmount + '</span></button>';
+    if(open) h += '<div class="hp-items">' + body + '</div>';
+    return h + '</div>';
+  }
+
+  var todayBody = tt.count
+    ? '<div class="hp-item"><span class="hp-item-nm">' + escHtml(t('income')) + '</span>' +
+      '<span class="hp-item-am" style="color:var(--income)">+' + fmt(tt.income) + '</span></div>' +
+      '<div class="hp-item"><span class="hp-item-nm">' + escHtml(t('expenses') || t('expense')) + '</span>' +
+      '<span class="hp-item-am">-' + fmt(tt.expense) + '</span></div>'
+    : '<div class="hp-item"><span class="hp-item-nm" style="color:var(--text3)">' +
+      escHtml(hptx('noneToday')) + '</span></div>';
+
+  var debtsBody = pend.length
+    ? '<div class="hp-item"><span class="hp-item-nm">' + escHtml(hptx('owesMe')) + '</span>' +
+      '<span class="hp-item-am" style="color:var(--income)">+' + fmt(sum(owesMe)) + '</span></div>' +
+      '<div class="hp-item"><span class="hp-item-nm">' + escHtml(hptx('iOwe')) + '</span>' +
+      '<span class="hp-item-am">-' + fmt(sum(iOwe)) + '</span></div>' +
+      '<button type="button" class="hp-item" onclick="openDebts()"><span class="hp-item-nm" ' +
+      'style="color:var(--primary);font-weight:600">' + escHtml(hptx('seeAll')) + ' &rsaquo;</span></button>'
+    : '<div class="hp-item"><span class="hp-item-nm" style="color:var(--text3)">' +
+      escHtml(hptx('noDebts')) + '</span></div>';
+
+  host.innerHTML =
+      block('__today', (tt.net >= 0 ? '+' : '-') + fmt(Math.abs(tt.net)),
+            tt.count === 0 ? 'var(--text3)' : (tt.net >= 0 ? 'var(--income)' : 'var(--expense)'),
+            _hpOpenGroup === '__today', todayBody)
+    + block('__debts', (net >= 0 ? '+' : '-') + fmt(Math.abs(net)),
+            pend.length === 0 ? 'var(--text3)' : (net >= 0 ? 'var(--income)' : 'var(--expense)'),
+            _hpOpenGroup === '__debts', debtsBody);
+}
+
 function hpToggleGroup(cat) {
   _hpOpenGroup = (_hpOpenGroup === cat) ? null : cat;
   renderHomeFixed();
+  renderHomeOther();
 }
 
 function setTxTab(t) {
