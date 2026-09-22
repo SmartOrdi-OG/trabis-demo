@@ -122,7 +122,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-nav:hover .hp-nav-ico{color:var(--primary)}
 .hp-nav-lbl{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hp-nav-car{flex:none;font-size:13px;color:var(--text3)}
-.carry-card{max-width:960px;margin:12px auto 0;background:var(--card);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow)}
+.carry-card{max-width:928px;width:calc(100% - 32px);margin:12px auto 0;box-sizing:border-box;background:var(--card);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow)}
 .carry-title{font-size:11px;font-weight:700;letter-spacing:0.4px;color:var(--text3);margin-bottom:9px}
 .carry-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:4px 0}
 .carry-row.tot{border-top:1.5px solid var(--border);margin-top:4px;padding-top:8px}
@@ -157,7 +157,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-yr:hover{border-color:var(--primary);color:var(--primary)}
 .hp-yr.sel{background:var(--primary);border-color:var(--primary);color:#fff}
 .hp-yr.future{border-style:dashed}
-.hp-months{flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-auto-rows:72px;gap:8px;padding:11px;align-content:start}
+.hp-months{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:72px;gap:8px;padding:11px;align-content:start}
 .hp-mo{background:var(--card);border:1.5px solid transparent;border-radius:12px;padding:8px 6px;box-shadow:var(--shadow);cursor:pointer;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.18s}
 .hp-mo:hover{border-color:var(--primary);transform:translateY(-1px)}
 .hp-mo-nm{font-size:13px;font-weight:700}
@@ -169,7 +169,33 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .hp-back{width:30px;height:30px;flex:none;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
 .hp-back:hover{border-color:var(--primary);color:var(--primary)}
 .hp-back-lbl{font-size:15px;font-weight:700}
-@media (max-width:520px){.hp-fixed{flex:0 0 38%}}
+/* Matches the breakpoint where the app collapses to its 430px mobile shell,
+   so the picker stacks whenever it is living inside that narrow column. */
+@media (max-width:1023px){
+  /* Two columns leave ~130px for the group names, which cuts them down to one
+     letter. Stack instead: months first, groups underneath. */
+  .hp-wrap{flex-direction:column;overflow:visible}
+  .hp-pick{order:1}
+  .hp-fixed{order:2;flex:1 1 auto;border-inline-end:none;border-top:1.5px solid var(--border);padding:14px 14px 6px}
+  .hp-years{padding:12px 14px 10px}
+  .hp-months{grid-auto-rows:76px;padding:12px 14px 16px}
+  .hp-mo-nm{font-size:14px}
+  .hp-mo-net{font-size:11.5px}
+  .hp-grp-btn{padding:11px 12px}
+  .hp-grp-nm{font-size:13px}
+  .hp-grp-sum{font-size:12px}
+  .hp-item{padding:9px 6px}
+  .hp-item-nm{font-size:12.5px}
+  .hp-item-am{font-size:12px}
+  .hp-nav{padding:12px}
+  .hp-nav-lbl{font-size:13px}
+  .hp-back{width:38px;height:38px;font-size:17px}
+  .hp-back-row{padding:12px 14px 0}
+  /* 24px-tall month tabs are below a comfortable touch target */
+  .mtab{height:34px;font-size:12px}
+  .mtab.active{height:42px;font-size:14px}
+  .carry-row{padding:9px 0}
+}
 
 /* HOME INCOME/EXPENSE PANES */
 .tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
@@ -719,6 +745,14 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .mqa-card{display:flex}
   .section{max-width:100% !important}
   /* Landing page mobile centering */
+  /* The hero panel filled the whole first screen on a phone, so the sign-in
+     card sat below the fold. Keep the brand, drop the sales copy. */
+  .lp-left{padding:16px 20px 14px !important}
+  .lp-logo-wrap{margin-bottom:0}
+  .lp-logo-wrap img{width:48px;height:48px}
+  .lp-wordmark{font-size:26px;letter-spacing:-1px;margin-top:8px}
+  .lp-tagline{font-size:12px;margin-top:2px}
+  .lp-headline,.lp-desc,.lp-features,.lp-trusted{display:none}
   .lp-right{align-items:center;padding:20px 16px}
   .lp-lang-pills{justify-content:center}
   .lp-auth-card{width:90%;max-width:380px;margin:0 auto}
@@ -1476,6 +1510,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-sub" id="lp-sub-default">Sign in or create your account</div>
           <button class="lp-btn" id="lp-btn-signin" onclick="lpShowLoginForm()" style="margin-top:8px">Sign In</button>
           <button class="lp-btn-outline" id="lp-btn-create" onclick="lpShowRegisterForm()">Create Account</button>
+          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
+          <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
 
         </div>
 
@@ -1493,8 +1529,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <button class="lp-btn" id="lp-signin-btn" onclick="lpLogin()">Sign In</button>
           <div class="lp-divider" id="lp-or1">or</div>
           <button class="lp-link" id="lp-goto-register" onclick="lpShowRegisterForm()">Create Account</button>
-          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
-          <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
           <div style="text-align:center;margin-top:14px">
             <a href="buchhalter.html" style="font-size:12.5px;color:#94a3b8;text-decoration:none" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">Als Buchhalter anmelden</a>
           </div>
@@ -10593,6 +10627,8 @@ function calculateNetIncome(filteredTransactions) {
 function renderHome() {
   if(state.homeView === 'picker') { renderHomePicker(); return; }
   renderMonthTabs();
+  var backLbl = document.getElementById('hpBackLbl');
+  if(backLbl) backLbl.textContent = periodLabelText();
   renderCarryCard();
   renderTxPanes();
   try {
@@ -11321,7 +11357,9 @@ function renderCarryCard() {
   put('carryVatV', -c.vat);      // VAT collected is money owed on, so it reads as a deduction
   put('carryTotV', c.total);
   var card = document.getElementById('carryCard');
-  if(card) card.style.display = (state.month === 0) ? 'none' : '';   // January has no earlier month
+  // January has nothing before it, and an all-zero card is just noise on a phone
+  var empty = Math.abs(c.netto) < 0.005 && Math.abs(c.vat) < 0.005 && Math.abs(c.total) < 0.005;
+  if(card) card.style.display = (state.month === 0 || empty) ? 'none' : '';
 }
 
 // Straight shortcuts to the pages these things already live on.
