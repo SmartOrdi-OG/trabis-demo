@@ -118,8 +118,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 
 /* HOME PICKER */
 #homePicker{padding:0}
-.hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto}
-.hp-fixed{flex:0 0 36%;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
+.hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto;overflow:hidden}
+.hp-fixed{flex:0 0 36%;min-width:0;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
 .hp-fixed-hd{font-size:12px;font-weight:700;color:var(--text2);padding:0 2px 8px;border-bottom:1.5px solid var(--border);margin-bottom:8px}
 .hp-grp{margin-bottom:7px}
 .hp-grp-btn{width:100%;display:flex;align-items:center;gap:6px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;transition:all 0.18s}
@@ -1478,6 +1478,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <button class="lp-btn" id="lp-signin-btn" onclick="lpLogin()">Sign In</button>
           <div class="lp-divider" id="lp-or1">or</div>
           <button class="lp-link" id="lp-goto-register" onclick="lpShowRegisterForm()">Create Account</button>
+          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
+          <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
           <div style="text-align:center;margin-top:14px">
             <a href="buchhalter.html" style="font-size:12.5px;color:#94a3b8;text-decoration:none" onmouseover="this.style.color='#64748b'" onmouseout="this.style.color='#94a3b8'">Als Buchhalter anmelden</a>
           </div>
@@ -15504,6 +15506,7 @@ var LP_TEXT = {
     errWrong:'Incorrect username or password', errExists:'Username already taken',
     version:'Trabis v1.5 · Business Tracking System',
     gotoLogin:'Sign In', gotoRegister:'Create Account',
+    demoBtn:'Try the demo — no sign-up', demoNote:'Sample data on this device only. Nothing is sent anywhere.',
     fullName:'Full Name', email:'Email', phone:'Phone Number', country:'Country',
     confirmPass:'Confirm Password',
     showPw:'Show', hidePw:'Hide',
@@ -15534,6 +15537,7 @@ var LP_TEXT = {
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة', errExists:'اسم المستخدم مستخدم بالفعل',
     version:'Trabis v1.5 · نظام تتبع الأعمال',
     gotoLogin:'تسجيل الدخول', gotoRegister:'إنشاء حساب',
+    demoBtn:'جرّب الديمو — بدون تسجيل', demoNote:'بيانات تجريبية على هذا الجهاز فقط. ما بينبعت إشي لحدا.',
     fullName:'الاسم الكامل', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة',
     confirmPass:'تأكيد كلمة المرور',
     showPw:'إظهار', hidePw:'إخفاء',
@@ -15564,6 +15568,7 @@ var LP_TEXT = {
     errWrong:'Falscher Benutzername oder Passwort', errExists:'Benutzername bereits vergeben',
     version:'Trabis v1.5 · Geschäfts-Tracking-System',
     gotoLogin:'Anmelden', gotoRegister:'Konto erstellen',
+    demoBtn:'Demo ansehen — ohne Anmeldung', demoNote:'Beispieldaten nur auf diesem Gerät. Es wird nichts übertragen.',
     fullName:'Vollständiger Name', email:'E-Mail', phone:'Telefonnummer', country:'Land',
     confirmPass:'Passwort bestätigen',
     showPw:'Zeigen', hidePw:'Verbergen',
@@ -15584,6 +15589,7 @@ function lpUpdateText() {
     'lp-btn-signin':l.signIn,'lp-btn-create':l.createAcc,
     'lp-login-heading':l.loginH,'lp-login-sub':l.loginS,
     'lp-signin-btn':l.signIn,'lp-goto-register':l.gotoRegister,
+    'lp-demo-btn':l.demoBtn,'lp-demo-note':l.demoNote,
     'lp-or1':l.or,'lp-back-lbl1':l.back,
     'lp-reg-heading':l.regH,'lp-reg-sub':l.regS,
     'lp-goto-login':l.gotoLogin,
@@ -15831,6 +15837,85 @@ function lpRegister() {
   document.getElementById('lp-view-register').style.display='none';
   document.getElementById('lp-view-langsel').style.display='block';
   lpSelectLang(lpLang);
+}
+
+
+// ── DEMO ACCESS ──
+// One tap into a working app: no email, no password, no form. The account is
+// local to this browser like every other one, and is seeded once so the demo
+// actually has something to show.
+var DEMO_USER = 'demo';
+
+function lpDemoLogin() {
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  if(!accounts[DEMO_USER]) {
+    accounts[DEMO_USER] = {
+      password: btoa(unescape(encodeURIComponent('demo'))),
+      fullname: 'Demo', email: '', phone: '', country: '',
+      businessName: 'Alpen Transporte (Demo)',
+      createdAt: new Date().toISOString(), isNew: false, isDemo: true
+    };
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+  }
+  localStorage.setItem('smartac_session', DEMO_USER);
+  loadUserData();
+  if(!state.transactions.length) seedDemoData();
+  obSelectedLang = lpLang; state.lang = lpLang;
+  var lp = document.getElementById('landingPage');
+  if(lp) lp.style.display = 'none';
+  obFinishLogin(DEMO_USER);
+}
+
+// Enough of a business to exercise every part of the screen: three months of
+// trading, fixed rules in three different categories, staff, an open debt.
+function seedDemoData() {
+  var now = new Date(), Y = now.getFullYear(), M = now.getMonth();
+  function iso(monthsBack, day) {
+    var d = new Date(Y, M - monthsBack, day);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(day);
+  }
+  var id = Date.now();
+  function tx(o) { o.id = id++; state.transactions.push(o); }
+
+  state.businessType = 'transport';
+  state.currency = '€';
+  state.businessName = 'Alpen Transporte (Demo)';
+  state.businessAddress = 'Handelskai 94, 1200 Wien';
+  state.businessTaxId = 'ATU12345678';
+
+  [0, 1, 2].forEach(function(back) {
+    var f = 1 - back * 0.08;
+    tx({type:'income', name:'Frachtauftrag Wien–Linz', amount:Math.round(6420*f), vatRate:20,
+        category:'Sales', date:iso(back, 4), clientName:'Spedition Kern'});
+    tx({type:'income', name:'Frachtauftrag Graz',      amount:Math.round(3180*f), vatRate:20,
+        category:'Sales', date:iso(back, 12), clientName:'Hofer Logistik'});
+    tx({type:'income', name:'Innergem. Lieferung DE',  amount:Math.round(2640*f), vatRate:0,
+        category:'Sales', date:iso(back, 19), clientName:'Mayer & Söhne GmbH'});
+    tx({type:'expense', name:'Diesel',        amount:Math.round(1860*f), vatRate:20, category:'Fuel',    date:iso(back, 6)});
+    tx({type:'expense', name:'GO-Maut',       amount:Math.round(438*f),  vatRate:20, category:'Vehicle', date:iso(back, 9)});
+    tx({type:'expense', name:'Werkstatt LKW', amount:Math.round(620*f),  vatRate:20, category:'Vehicle', date:iso(back, 17)});
+  });
+
+  state.recurring = [
+    {id:id++, name:'Leasing Mercedes Sprinter', amount:894,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
+    {id:id++, name:'Leasing VW Crafter',        amount:812,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
+    {id:id++, name:'ÖGK',                       amount:1892, category:'Government', vatRate:0,  day:15, lastRecorded:null},
+    {id:id++, name:'SVS',                       amount:2146, category:'Government', vatRate:0,  day:1,  lastRecorded:null},
+    {id:id++, name:'Büromiete',                 amount:780,  category:'Rent',       vatRate:0,  day:1,  lastRecorded:null}
+  ];
+  state.employees = [
+    {id:id++, name:'Stefan Moser',  fullName:'Stefan Moser',  salary:2640, position:'Fahrer', lastRecorded:null},
+    {id:id++, name:'Ahmad Haddad',  fullName:'Ahmad Haddad',  salary:2480, position:'Fahrer', lastRecorded:null}
+  ];
+  state.debts = [
+    {id:id++, person:'Bau Nord GmbH', amount:1180, category:'Customer',
+     date:iso(1, 20), status:'pending', type:'owes-me'}
+  ];
+  state.clients = [
+    {id:id++, name:'Spedition Kern'}, {id:id++, name:'Hofer Logistik'}, {id:id++, name:'Mayer & Söhne GmbH'}
+  ];
+  state.year = Y; state.month = M;
+  save();
 }
 
 function lpPwCriteria(pass) {
