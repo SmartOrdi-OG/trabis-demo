@@ -2330,6 +2330,11 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <select id="uvaInterval" onchange="uvaIntervalChanged()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
       <select id="uvaPeriod" onchange="renderUva()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
     </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span id="vatBasisLbl" style="font-size:12px;color:var(--text3);font-weight:600;flex:none"></span>
+      <select id="vatBasis" onchange="vatBasisChanged()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px"></select>
+    </div>
+    <div id="vatBasisHint" style="font-size:11px;color:var(--text3);margin:-6px 0 12px;line-height:1.5"></div>
     <div id="uvaTable" style="font-size:13px"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="uvaExportPDF()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">PDF</button>
@@ -2924,6 +2929,7 @@ var state = {
   month: new Date().getMonth(),
   customDateFilter: null,
   reportPeriod: 'month',
+  vatBasis: 'ist',
   currentType: 'income',
   currentCat: 'Sales',
   debtTab: 'owes',
@@ -3159,6 +3165,7 @@ function save() {
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
   localStorage.setItem(uk('uvaInterval'), state.uvaInterval || 'quarter');
+  localStorage.setItem(uk('vatBasis'), state.vatBasis || 'ist');
   localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
   localStorage.setItem(uk('theme'), state.theme);
   localStorage.setItem(uk('fixed_income'), JSON.stringify(state.fixedIncome||[]));
@@ -3209,6 +3216,7 @@ function loadUserData() {
   state.installments = JSON.parse(localStorage.getItem(uk('installments')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.uvaInterval = localStorage.getItem(uk('uvaInterval')) || 'quarter';
+  state.vatBasis = localStorage.getItem(uk('vatBasis')) || 'ist';
   state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
   state.theme = localStorage.getItem(uk('theme')) || 'light';
   state.fixedIncome = JSON.parse(localStorage.getItem(uk('fixed_income')) || '[]');
@@ -7441,6 +7449,46 @@ var UVA_TXT = {
                ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
                de:'Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.'}
 };
+var VATBASIS_L = {
+  label: {en:'Basis',            ar:'أساس الاحتساب',        de:'Versteuerung'},
+  ist:   {en:'When paid (cash)', ar:'وقت التحصيل',          de:'Ist-Besteuerung'},
+  soll:  {en:'When invoiced',    ar:'وقت الكتابة',          de:'Soll-Besteuerung'},
+  istHint:  {en:'A sales invoice counts as income on the day it is paid.',
+             ar:'الفاتورة الصادرة بتتحسب دخل يوم ما تتحصّل.',
+             de:'Eine Ausgangsrechnung zählt am Zahlungstag als Einnahme.'},
+  sollHint: {en:'A sales invoice counts as income on its issue date, paid or not.',
+             ar:'الفاتورة الصادرة بتتحسب دخل بتاريخ إصدارها، اتحصّلت أو لأ.',
+             de:'Eine Ausgangsrechnung zählt am Rechnungsdatum als Einnahme, bezahlt oder nicht.'},
+  switched: {en:'Applies to invoices created from now on.',
+             ar:'بينطبق على الفواتير اللي بتتعمل من هلق وجاي.',
+             de:'Gilt für künftig erstellte Rechnungen.'},
+};
+function vbt(k) { return (VATBASIS_L[k] && (VATBASIS_L[k][state.lang] || VATBASIS_L[k].en)) || k; }
+
+// Which event puts a sales invoice on the books. Austrian businesses run one or
+// the other, never both — the choice has to be exclusive or invoices get counted
+// twice (once when written, once when paid).
+function vatBasisChanged() {
+  var sel = document.getElementById('vatBasis');
+  if(sel) { state.vatBasis = sel.value; save(); }
+  renderVatBasis();
+  showToast(vbt('switched'), 'success');
+}
+
+function renderVatBasis() {
+  var basis = state.vatBasis || 'ist';
+  var lbl = document.getElementById('vatBasisLbl');
+  if(lbl) lbl.textContent = vbt('label');
+  var sel = document.getElementById('vatBasis');
+  if(sel) {
+    sel.innerHTML = '<option value="ist">' + escHtml(vbt('ist')) + '</option>'
+                  + '<option value="soll">' + escHtml(vbt('soll')) + '</option>';
+    sel.value = basis;
+  }
+  var hint = document.getElementById('vatBasisHint');
+  if(hint) hint.textContent = vbt(basis === 'soll' ? 'sollHint' : 'istHint');
+}
+
 function uvat(k) { var lang = state.lang; return (UVA_TXT[k] && (UVA_TXT[k][lang] || UVA_TXT[k].en)) || k; }
 
 function uvaKeyForDate(dateStr, interval) {
@@ -7547,6 +7595,7 @@ function uvaAllPeriods(interval, transactions) {
 }
 
 function uvaPopulatePeriods() {
+  renderVatBasis();
   var interval = state.uvaInterval || 'quarter';
   var ivSel = document.getElementById('uvaInterval');
   if(ivSel) {
@@ -13389,7 +13438,9 @@ async function deleteReceivedInvoice(idx) {
   save(); renderInvoicesPage();
 }
 
-function handleInvoicePaid(inv) {
+// Books the income a sales invoice represents. Guarded by inv.incomeTxId so an
+// invoice can never be booked twice, whichever basis it was booked under.
+function bookInvoiceIncome(inv, bookDate) {
   if(inv.incomeTxId) return;
   var items = inv.items || [];
   var vatRate = inv.vatRate || 0;
@@ -13414,7 +13465,7 @@ function handleInvoicePaid(inv) {
       amount: g.amount * (1 + vatRate / 100),
       type: 'income',
       category: cat,
-      date: today(),
+      date: bookDate || today(),
       invoice: null,
       invoiceName: null,
       clientId: inv.clientId || null,
@@ -13425,9 +13476,15 @@ function handleInvoicePaid(inv) {
     });
   });
   inv.incomeTxId = firstTxId;
+}
 
+// Called when an invoice is actually paid: books the income if it is not on the
+// books yet (Ist-Besteuerung) and issues the payment receipt either way.
+function handleInvoicePaid(inv) {
+  bookInvoiceIncome(inv, today());
   if(!inv.autoReceiptId) {
-    var receiptId = Date.now() + order.length;
+    var items = inv.items || [];
+    var receiptId = Date.now() + 1;
     state.receipts.push({
       id: receiptId,
       number: 'REC-' + receiptId,
@@ -13796,6 +13853,8 @@ function saveIssuedInvoice() {
   _recalcInvoiceTotals();
   var inv = _collectInvoiceFormData('issued');
   state.issuedInvoices.push(inv);
+  // Soll-Besteuerung: the income belongs to the invoice date, not the payment.
+  if(state.vatBasis === 'soll') bookInvoiceIncome(inv, inv.issueDate);
   if(inv.status === 'Paid') handleInvoicePaid(inv);
   save();
   _activeInvoiceTab = 'issued';
