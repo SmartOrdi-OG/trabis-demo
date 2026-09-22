@@ -116,6 +116,21 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
 
+.hp-nav{width:100%;display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;margin-bottom:7px;transition:all 0.18s}
+.hp-nav:hover{border-color:var(--primary);color:var(--primary)}
+.hp-nav-ico{flex:none;display:flex;color:var(--text3)}
+.hp-nav:hover .hp-nav-ico{color:var(--primary)}
+.hp-nav-lbl{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hp-nav-car{flex:none;font-size:13px;color:var(--text3)}
+.carry-card{max-width:960px;margin:12px auto 0;background:var(--card);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow)}
+.carry-title{font-size:11px;font-weight:700;letter-spacing:0.4px;color:var(--text3);margin-bottom:9px}
+.carry-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:4px 0}
+.carry-row.tot{border-top:1.5px solid var(--border);margin-top:4px;padding-top:8px}
+.carry-l{font-size:12.5px;color:var(--text2)}
+.carry-row.tot .carry-l{font-weight:700;color:var(--text)}
+.carry-v{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.carry-row.tot .carry-v{font-size:16px}
+
 /* HOME PICKER */
 #homePicker{padding:0}
 .hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto;overflow:hidden}
@@ -2204,6 +2219,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div id="hpFixedBody"></div>
         <div class="hp-fixed-hd" id="hpOtherHd" style="margin-top:16px">Other</div>
         <div id="hpOtherBody"></div>
+        <div class="hp-fixed-hd" id="hpBizHd" style="margin-top:16px">Business</div>
+        <div id="hpBizBody"></div>
       </div>
       <div class="hp-pick">
         <div class="hp-years" id="hpYears"></div>
@@ -2216,6 +2233,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div class="hp-back-row">
     <button type="button" class="hp-back" onclick="showHomePicker()" aria-label="Back">&#8592;</button>
     <span class="hp-back-lbl" id="hpBackLbl"></span>
+  </div>
+  <div class="carry-card" id="carryCard">
+    <div class="carry-title" id="carryTitle">Saldo of past months</div>
+    <div class="carry-row"><span class="carry-l" id="carryNetL">Netto</span><span class="carry-v" id="carryNetV">-</span></div>
+    <div class="carry-row"><span class="carry-l" id="carryVatL">Steuer</span><span class="carry-v" id="carryVatV">-</span></div>
+    <div class="carry-row tot"><span class="carry-l" id="carryTotL">Total</span><span class="carry-v" id="carryTotV">-</span></div>
   </div>
 
   <div id="dashboard-greeting" style="padding:12px 16px 0;font-size:14px;font-weight:600;color:var(--primary);display:none"></div>
@@ -10570,6 +10593,7 @@ function calculateNetIncome(filteredTransactions) {
 function renderHome() {
   if(state.homeView === 'picker') { renderHomePicker(); return; }
   renderMonthTabs();
+  renderCarryCard();
   renderTxPanes();
   try {
   // Always reload from storage to ensure data is fresh: compare the
@@ -10917,6 +10941,15 @@ var HOMEP_L = {
   docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
   fixedHd:  {en:'Fixed costs',       ar:'الدفعات الثابتة',  de:'Fixkosten'},
   otherHd:  {en:'Other',             ar:'أخرى',             de:'Sonstiges'},
+  bizHd:    {en:'Business',          ar:'الشركة',           de:'Betrieb'},
+  navFleet: {en:'Fleet',             ar:'الأسطول',          de:'Fuhrpark'},
+  navCont:  {en:'Contacts',          ar:'جهات الاتصال',     de:'Kontakte'},
+  navEmp:   {en:'Employees',         ar:'الموظفين',         de:'Mitarbeiter'},
+  navLog:   {en:'Daily Log',         ar:'سجل الأعمال',      de:'Tagesprotokoll'},
+  carryHd:  {en:'Saldo of past months', ar:'رصيد الشهور السابقة', de:'Saldo der Vormonate'},
+  carryNet: {en:'Netto',             ar:'الصافي',           de:'Netto'},
+  carryVat: {en:'Steuer (MwSt)',     ar:'الضريبة',          de:'Steuer (MwSt)'},
+  carryTot: {en:'Total',             ar:'الإجمالي',         de:'Total'},
   today:    {en:'Today',             ar:'ملخص اليوم',       de:'Heute'},
   debtsHd:  {en:'Debts',             ar:'الديون',           de:'Schulden'},
   owesMe:   {en:'Owed to you',       ar:'لك',               de:'Forderungen'},
@@ -11136,6 +11169,7 @@ function renderHomePicker() {
 
   renderHomeFixed();
   renderHomeOther();
+  renderHomeBiz();
 }
 
 function hpSetYear(y) { state.year = y; renderHomePicker(); }
@@ -11249,6 +11283,68 @@ function renderHomeOther() {
     + block('__debts', (net >= 0 ? '+' : '-') + fmt(Math.abs(net)),
             pend.length === 0 ? 'var(--text3)' : (net >= 0 ? 'var(--income)' : 'var(--expense)'),
             _hpOpenGroup === '__debts', debtsBody);
+}
+
+
+// Everything booked in this year before the month on screen — the balance the
+// month opens with, rather than a figure for the month itself.
+function carryInTotals(y, m) {
+  var netto = 0, vat = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date) return;
+    var ty = parseInt(tx.date.substring(0,4), 10);
+    var tm = parseInt(tx.date.substring(5,7), 10) - 1;
+    if(ty !== y || tm >= m) return;
+    var v = vatBreakdown(tx.amount, tx.vatRate || 0);
+    if(tx.type === 'income')      { netto += v.netto; vat += v.steuer; }
+    else if(tx.type === 'expense'){ netto -= v.netto; vat -= v.steuer; }
+  });
+  return {netto: netto, vat: vat, total: netto - vat};
+}
+
+function renderCarryCard() {
+  var c = carryInTotals(state.year, state.month);
+  function put(id, v, neutral) {
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = (Math.abs(v) < 0.005 ? '' : (v > 0 ? '+' : '-')) + fmt(Math.abs(v));
+    el.style.color = neutral ? 'var(--text)' :
+      (Math.abs(v) < 0.005 ? 'var(--text3)' : (v > 0 ? 'var(--income)' : 'var(--expense)'));
+  }
+  var ttl = document.getElementById('carryTitle');
+  if(ttl) ttl.textContent = hptx('carryHd');
+  ['carryNetL:carryNet','carryVatL:carryVat','carryTotL:carryTot'].forEach(function(pair) {
+    var p = pair.split(':'), el = document.getElementById(p[0]);
+    if(el) el.textContent = hptx(p[1]);
+  });
+  put('carryNetV', c.netto);
+  put('carryVatV', -c.vat);      // VAT collected is money owed on, so it reads as a deduction
+  put('carryTotV', c.total);
+  var card = document.getElementById('carryCard');
+  if(card) card.style.display = (state.month === 0) ? 'none' : '';   // January has no earlier month
+}
+
+// Straight shortcuts to the pages these things already live on.
+function renderHomeBiz() {
+  var host = document.getElementById('hpBizBody');
+  if(!host) return;
+  var items = [
+    {view:'fleet',     label:'navFleet', icon:'truck',     show: state.businessType === 'transport'},
+    {view:'contacts',  label:'navCont',  icon:'building',  show: true},
+    {view:'employees', label:'navEmp',   icon:'users',     show: true},
+    {view:'agenda',    label:'navLog',   icon:'checklist', show: true}
+  ];
+  var h = '';
+  items.forEach(function(it) {
+    if(!it.show) return;
+    h += '<button type="button" class="hp-nav" onclick="showNav(\'' + it.view + '\')">' +
+         '<span class="hp-nav-ico">' + svgIcon(it.icon, 15) + '</span>' +
+         '<span class="hp-nav-lbl">' + escHtml(hptx(it.label)) + '</span>' +
+         '<span class="hp-nav-car">&rsaquo;</span></button>';
+  });
+  host.innerHTML = h;
+  var bh = document.getElementById('hpBizHd');
+  if(bh) bh.textContent = hptx('bizHd');
 }
 
 function hpToggleGroup(cat) {
