@@ -202,19 +202,39 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-row-fix .tx-row-dt{color:var(--primary)}
 .tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
 .tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
-.rcpt-cap-ttl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:0.3px}
-.rcpt-strip{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.rcpt-strip::-webkit-scrollbar{display:none}
-.rcpt{flex:none;width:78px;background:var(--card);border:1.5px solid transparent;border-radius:11px;padding:5px;
-  box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;color:inherit;font:inherit;text-align:start}
-.rcpt:hover{border-color:var(--primary);transform:translateY(-1px)}
-.rcpt-thumb{width:100%;height:80px;border-radius:7px;background:var(--card2);display:flex;align-items:center;
-  justify-content:center;overflow:hidden;color:var(--text3)}
+.rcpt-cap-ttl{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px;flex-shrink:0}
+.tx-split{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
+.rcpt-col{position:sticky;top:8px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;min-width:0}
+.rcpt-col-scroll{overflow-y:auto;flex:1;min-height:60px;padding:1px 6px 4px 1px;scrollbar-width:thin}
+.rcpt-strip{display:flex;flex-direction:column;gap:12px}
+.rcpt{position:relative;width:100%;padding:0;background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;
+  cursor:pointer;transition:border-color 0.18s;color:inherit;font:inherit;text-align:start;display:block}
+.rcpt:hover{border-color:var(--primary)}
+.rcpt-num{position:absolute;top:8px;inset-inline-start:8px;z-index:1;width:22px;height:22px;border-radius:50%;background:var(--card);
+  border:1.5px solid var(--border);color:var(--text2);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rcpt-thumb{width:100%;height:110px;background:var(--card2);display:flex;align-items:center;justify-content:center;overflow:hidden;color:var(--text3)}
 .rcpt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.rcpt-cap{font-size:9px;font-weight:600;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;unicode-bidi:plaintext}
-.rcpt-amt{display:block;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;
-  unicode-bidi:isolate-override;direction:ltr}
+.rcpt-capbar{display:flex;justify-content:space-between;align-items:center;gap:6px;padding:9px 12px;border-top:1px solid var(--border)}
+.rcpt-cap{min-width:0;font-size:12.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
+.rcpt-amt{flex:none;font-size:12.5px;font-weight:800;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.rcpt-empty{font-size:12.5px;color:var(--text3);padding:6px 2px}
+.rcpt-actions{display:flex;flex-direction:column;gap:10px;flex-shrink:0;padding-top:10px}
+.rcpt-add-wrap{position:relative}
+.rcpt-add-btn{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;height:84px;border:1.5px dashed var(--border);border-radius:14px;color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;background:none;font-family:inherit}
+.rcpt-add-btn:hover{border-color:var(--primary);color:var(--primary)}
+.rcpt-add-circle{width:32px;height:32px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;line-height:1}
+.rcpt-add-btn.green .rcpt-add-circle{background:var(--green)}
+.rcpt-add-menu{display:none;position:absolute;bottom:calc(100% + 6px);inset-inline:0;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);z-index:30;overflow:hidden}
+.rcpt-add-menu.open{display:block}
+.rcpt-add-menu button{display:flex;align-items:center;gap:8px;width:100%;padding:11px 12px;border:none;background:none;color:var(--text);font-size:12.5px;font-weight:600;cursor:pointer;text-align:start;font-family:inherit}
+.rcpt-add-menu button:hover{background:var(--card2)}
+.rcpt-add-menu button+button{border-top:1px solid var(--border)}
+@media (max-width:1023px){
+  .tx-split{grid-template-columns:128px minmax(0,1fr);gap:12px}
+  .rcpt-col{top:4px}
+  .rcpt-capbar{flex-direction:column;align-items:flex-start;gap:1px;padding:8px 10px}
+  .rcpt-thumb{height:92px}
+}
 .year-net{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;
   padding-top:10px;border-top:1.5px solid var(--border)}
 .year-net-l{font-size:12px;color:var(--text3);font-weight:600}
@@ -2349,14 +2369,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button type="button" class="tx-tab" data-t="income" onclick="setTxTab('income')">Income</button>
       <button type="button" class="tx-tab active" data-t="expense" onclick="setTxTab('expense')">Expenses</button>
     </div>
-    <div id="rcptStripWrap" style="display:none">
-      <div class="rcpt-cap-ttl" id="rcptStripTtl"></div>
-      <div class="rcpt-strip" id="rcptStrip"></div>
+    <div class="tx-split">
+      <div class="rcpt-col" id="rcptStripWrap">
+        <div class="rcpt-cap-ttl" id="rcptStripTtl"></div>
+        <div class="rcpt-col-scroll"><div class="rcpt-strip" id="rcptStrip"></div></div>
+        <div class="rcpt-actions" id="rcptActions"></div>
+      </div>
+      <div class="tx-main" style="min-width:0">
+        <div class="tx-sums" id="txSums"></div>
+        <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
+        <div id="txPanes"></div>
+        <div class="tx-list" id="txList" style="display:none"></div>
+      </div>
     </div>
-    <div class="tx-sums" id="txSums"></div>
-    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
-    <div id="txPanes"></div>
-    <div class="tx-list" id="txList" style="display:none"></div>
   </div>
 
 
@@ -10966,6 +10991,11 @@ var HOMEP_L = {
   navLog:   {en:'Daily Log',         ar:'سجل الأعمال',      de:'Tagesprotokoll'},
   navGov:   {en:'Government Entities', ar:'الجهات الحكومية', de:'Behörden'},
   navPrj:   {en:'Projects',          ar:'المشاريع',         de:'Projekte'},
+  addInv:   {en:'Add invoice',       ar:'إضافة فاتورة',     de:'Beleg hinzufügen'},
+  upFile:   {en:'Upload file (PDF or photo)', ar:'رفع ملف (PDF أو صورة)', de:'Datei hochladen (PDF oder Foto)'},
+  takePhoto:{en:'Take photo',        ar:'تصوير فاتورة',     de:'Foto aufnehmen'},
+  createInv:{en:'Create invoice',    ar:'إنشاء فاتورة',     de:'Rechnung erstellen'},
+  noDocs:   {en:'No invoices yet',   ar:'لا توجد فواتير بعد', de:'Noch keine Belege'},
   carryHd:  {en:'Saldo of past months', ar:'رصيد الشهور السابقة', de:'Saldo der Vormonate'},
   carryNet: {en:'Netto',             ar:'الصافي',           de:'Netto'},
   carryVat: {en:'Steuer (MwSt)',     ar:'الضريبة',          de:'Steuer (MwSt)'},
@@ -11061,22 +11091,22 @@ function renderReceiptStrip(type) {
   var docs = getFiltered().filter(function(tx) {
     return tx.type === type && (tx.invoice || tx.receiptId);
   });
-  if(!docs.length) { wrap.style.display = 'none'; strip.innerHTML = ''; return; }
-
   var ttl = document.getElementById('rcptStripTtl');
-  if(ttl) ttl.textContent = hptx('docs');
-  wrap.style.display = '';
+  if(ttl) ttl.textContent = hptx('docs') + ' (' + docs.length + ')';
+  renderRcptActions(type);
 
   var fileIcon = svgIcon('fileText', 26);
   strip.innerHTML = '';
-  docs.forEach(function(tx) {
+  if(!docs.length) { strip.innerHTML = '<div class="rcpt-empty">' + escHtml(hptx('noDocs')) + '</div>'; return; }
+  docs.forEach(function(tx, idx) {
     var btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'rcpt';
-    btn.innerHTML = '<span class="rcpt-thumb">' + fileIcon + '</span>'
-      + '<span class="rcpt-cap">' + escHtml(tx.name || '') + '</span>'
+    btn.innerHTML = '<span class="rcpt-num">' + (idx + 1) + '</span>'
+      + '<span class="rcpt-thumb">' + fileIcon + '</span>'
+      + '<span class="rcpt-capbar"><span class="rcpt-cap">' + escHtml(tx.name || '') + '</span>'
       + '<span class="rcpt-amt" style="color:' + (type === 'income' ? 'var(--income)' : 'var(--expense)') + '">'
-      + (type === 'income' ? '+' : '-') + fmt(tx.amount) + '</span>';
+      + (type === 'income' ? '+' : '-') + fmt(tx.amount) + '</span></span>';
     var thumb = btn.querySelector('.rcpt-thumb');
 
     if(tx.invoice) {
@@ -11096,6 +11126,39 @@ function renderReceiptStrip(type) {
     }
     strip.appendChild(btn);
   });
+}
+
+// Pinned under the invoice list: add a file / photo, and (income) create an invoice.
+function renderRcptActions(type) {
+  var host = document.getElementById('rcptActions');
+  if(!host) return;
+  var h = '<div class="rcpt-add-wrap">'
+    + '<button type="button" class="rcpt-add-btn" onclick="rcptToggleMenu(event)"><span class="rcpt-add-circle">+</span>' + escHtml(hptx('addInv')) + '</button>'
+    + '<div class="rcpt-add-menu" id="rcptAddMenu">'
+    +   '<button type="button" onclick="rcptAddFile(\'' + type + '\',\'upload\')">' + svgIcon('upload', 16) + '<span>' + escHtml(hptx('upFile')) + '</span></button>'
+    +   '<button type="button" onclick="rcptAddFile(\'' + type + '\',\'camera\')">' + svgIcon('camera', 16) + '<span>' + escHtml(hptx('takePhoto')) + '</span></button>'
+    + '</div></div>';
+  if(type === 'income') {
+    h += '<button type="button" class="rcpt-add-btn green" onclick="openIssuedInvoiceForm()"><span class="rcpt-add-circle">' + svgIcon('file', 16) + '</span>' + escHtml(hptx('createInv')) + '</button>';
+  }
+  host.innerHTML = h;
+}
+function rcptToggleMenu(e) {
+  if(e) e.stopPropagation();
+  var m = document.getElementById('rcptAddMenu');
+  if(m) m.classList.toggle('open');
+}
+function rcptCloseMenu() {
+  var m = document.getElementById('rcptAddMenu');
+  if(m) m.classList.remove('open');
+}
+document.addEventListener('click', rcptCloseMenu);
+function rcptAddFile(type, mode) {
+  rcptCloseMenu();
+  _scanInv = { type: type, files: [] };
+  scanInvoicesOpenCapture();
+  var b = document.getElementById(mode === 'camera' ? 'scanCapCameraBtn' : 'scanCapUploadBtn');
+  if(b) b.click();
 }
 
 
