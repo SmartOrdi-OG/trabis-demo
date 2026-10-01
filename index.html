@@ -116,6 +116,66 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
 
+.hp-nav{width:100%;display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;margin-bottom:7px;transition:all 0.18s}
+.hp-nav:hover{border-color:var(--primary);color:var(--primary)}
+.hp-nav-ico{flex:none;display:flex;color:var(--text3)}
+.hp-nav:hover .hp-nav-ico{color:var(--primary)}
+.hp-nav-lbl{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hp-nav-car{flex:none;font-size:13px;color:var(--text3)}
+.carry-card{max-width:928px;width:calc(100% - 32px);margin:12px auto 0;box-sizing:border-box;background:var(--card);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow)}
+.carry-title{font-size:11px;font-weight:700;letter-spacing:0.4px;color:var(--text3);margin-bottom:9px}
+.carry-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:4px 0}
+.carry-row.tot{border-top:1.5px solid var(--border);margin-top:4px;padding-top:8px}
+.carry-l{font-size:12.5px;color:var(--text2)}
+.carry-row.tot .carry-l{font-weight:700;color:var(--text)}
+.carry-v{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.carry-row.tot .carry-v{font-size:16px}
+
+/* HOME PICKER */
+#homePicker{padding:0}
+.hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto;overflow:hidden}
+.hp-fixed{flex:0 0 36%;min-width:0;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
+.hp-fixed-hd{font-size:12px;font-weight:700;color:var(--text2);padding:0 2px 8px;border-bottom:1.5px solid var(--border);margin-bottom:8px}
+.hp-pick{flex:1;min-width:0;display:flex;flex-direction:column}
+.hp-years{display:flex;gap:6px;padding:12px 11px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1.5px solid var(--border)}
+.hp-years::-webkit-scrollbar{display:none}
+.hp-yr{flex:none;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer;transition:all 0.18s}
+.hp-yr:hover{border-color:var(--primary);color:var(--primary)}
+.hp-yr.sel{background:var(--primary);border-color:var(--primary);color:#fff}
+.hp-yr.future{border-style:dashed}
+.hp-months{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:11px;align-content:start}
+.hp-mo{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:24px 8px;box-shadow:var(--shadow);cursor:pointer;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.18s}
+.hp-mo:hover{border-color:var(--primary);transform:translateY(-1px)}
+.hp-mo-nm{font-size:15px;font-weight:700}
+.hp-mo-hint{font-size:11px;font-weight:700;color:var(--text3);line-height:1}
+.hp-mo.void{background:var(--card2);border:1.5px dashed var(--border);box-shadow:none;opacity:.65;cursor:default}
+.hp-mo.void:hover{transform:none;border-color:var(--border)}
+.hp-back-row{display:flex;align-items:center;gap:9px;padding:12px 16px 0;max-width:960px;margin:0 auto}
+.hp-back{width:30px;height:30px;flex:none;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
+.hp-back:hover{border-color:var(--primary);color:var(--primary)}
+.hp-back-lbl{font-size:15px;font-weight:700}
+/* Matches the breakpoint where the app collapses to its 430px mobile shell,
+   so the picker stacks whenever it is living inside that narrow column. */
+@media (max-width:1023px){
+  /* Two columns leave ~130px for the group names, which cuts them down to one
+     letter. Stack instead: months first, groups underneath. */
+  .hp-wrap{flex-direction:column;overflow:visible}
+  .hp-pick{order:1}
+  .hp-fixed{order:2;flex:1 1 auto;border-inline-end:none;border-top:1.5px solid var(--border);padding:14px 14px 6px}
+  .hp-years{padding:12px 14px 10px}
+  .hp-months{gap:10px;padding:12px 14px 16px}
+  .hp-mo-nm{font-size:16px}
+  .hp-mo-hint{font-size:12px}
+  .hp-nav{padding:12px}
+  .hp-nav-lbl{font-size:13px}
+  .hp-back{width:38px;height:38px;font-size:17px}
+  .hp-back-row{padding:12px 14px 0}
+  /* 24px-tall month tabs are below a comfortable touch target */
+  .mtab{height:34px;font-size:12px}
+  .mtab.active{height:42px;font-size:14px}
+  .carry-row{padding:9px 0}
+}
+
 /* HOME INCOME/EXPENSE PANES */
 .tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
 .tx-tab{flex:1;padding:9px 0 7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;
@@ -664,6 +724,14 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .mqa-card{display:flex}
   .section{max-width:100% !important}
   /* Landing page mobile centering */
+  /* The hero panel filled the whole first screen on a phone, so the sign-in
+     card sat below the fold. Keep the brand, drop the sales copy. */
+  .lp-left{padding:16px 20px 14px !important}
+  .lp-logo-wrap{margin-bottom:0}
+  .lp-logo-wrap img{width:48px;height:48px}
+  .lp-wordmark{font-size:26px;letter-spacing:-1px;margin-top:8px}
+  .lp-tagline{font-size:12px;margin-top:2px}
+  .lp-headline,.lp-desc,.lp-features,.lp-trusted{display:none}
   .lp-right{align-items:center;padding:20px 16px}
   .lp-lang-pills{justify-content:center}
   .lp-auth-card{width:90%;max-width:380px;margin:0 auto}
@@ -1421,6 +1489,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-sub" id="lp-sub-default">Sign in or create your account</div>
           <button class="lp-btn" id="lp-btn-signin" onclick="lpShowLoginForm()" style="margin-top:8px">Sign In</button>
           <button class="lp-btn-outline" id="lp-btn-create" onclick="lpShowRegisterForm()">Create Account</button>
+          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
+          <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
 
         </div>
 
@@ -2154,6 +2224,32 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- MAIN PAGE -->
 <div id="mainPage" class="scroll">
+  <!-- HOME PICKER: year → month -->
+  <div id="homePicker">
+    <div class="hp-wrap">
+      <div class="hp-fixed">
+        <div class="hp-fixed-hd" id="hpBizHd">Business</div>
+        <div id="hpBizBody"></div>
+      </div>
+      <div class="hp-pick">
+        <div class="hp-years" id="hpYears"></div>
+        <div class="hp-months" id="hpMonths"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="monthDetail" style="display:none">
+  <div class="hp-back-row">
+    <button type="button" class="hp-back" onclick="showHomePicker()" aria-label="Back">&#8592;</button>
+    <span class="hp-back-lbl" id="hpBackLbl"></span>
+  </div>
+  <div class="carry-card" id="carryCard">
+    <div class="carry-title" id="carryTitle">Saldo of past months</div>
+    <div class="carry-row"><span class="carry-l" id="carryNetL">Netto</span><span class="carry-v" id="carryNetV">-</span></div>
+    <div class="carry-row"><span class="carry-l" id="carryVatL">Steuer</span><span class="carry-v" id="carryVatV">-</span></div>
+    <div class="carry-row tot"><span class="carry-l" id="carryTotL">Total</span><span class="carry-v" id="carryTotV">-</span></div>
+  </div>
+
   <div id="dashboard-greeting" style="padding:12px 16px 0;font-size:14px;font-weight:600;color:var(--primary);display:none"></div>
 
   <!-- DASHBOARD SUMMARY CARDS -->
@@ -2259,6 +2355,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
 
 
+  </div>
 </div>
 
 <!-- REPORTS PAGE -->
@@ -2764,7 +2861,7 @@ var LANG = {
     clientBack: "Back", clientCall: "Call", clientEmailBtn: "Email", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
-      Fuel:"Fuel", Vehicle:"Vehicle", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
+      Fuel:"Fuel", Vehicle:"Vehicle", Government:"Government", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
       Customer:"Customer", Supplier:"Supplier",
     }
   },
@@ -2833,7 +2930,7 @@ var LANG = {
     clientBack: "رجوع", clientCall: "اتصال", clientEmailBtn: "إيميل", clientWhatsApp: "واتساب",
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
-      Fuel:"وقود", Vehicle:"عربية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
+      Fuel:"وقود", Vehicle:"عربية", Government:"جهات حكومية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
       Customer:"عميل", Supplier:"مورد",
     }
   },
@@ -2902,7 +2999,7 @@ var LANG = {
     clientBack: "Zurück", clientCall: "Anrufen", clientEmailBtn: "E-Mail", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
-      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
+      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Government:"Behörden", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
       Customer:"Kunde", Supplier:"Lieferant",
     }
   }
@@ -2925,6 +3022,7 @@ var state = {
   lang: localStorage.getItem('smartac_lang') || 'en',
   period: 'month',          // the home filter is always a single month now
   txTab: 'expense',         // which side of the month the home list is showing
+  homeView: 'picker',       // 'picker' = year/month chooser, 'month' = the month screen
   year: new Date().getFullYear(),
   month: new Date().getMonth(),
   customDateFilter: null,
@@ -2994,7 +3092,7 @@ function getCurrencyLabel(sym) {
 
 var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
-  expense: ['Fuel','Supplies','Rent','Salary','Utilities','Marketing','Other'],
+  expense: ['Fuel','Vehicle','Supplies','Rent','Salary','Government','Utilities','Marketing','Other'],
   debt: ['Customer','Supplier','Other'],
 };
 
@@ -3136,7 +3234,7 @@ var SVG_ICON_PATHS = {
 };
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
-  Fuel:'droplet', Vehicle:'truck', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
+  Fuel:'droplet', Vehicle:'truck', Government:'building', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
   Customer:'user', Supplier:'building',
 };
 function svgIcon(name, size) {
@@ -7014,15 +7112,15 @@ function goToDate(dateStr) {
   var y = parseInt((dateStr||'').substring(0,4),10), m = parseInt((dateStr||'').substring(5,7),10) - 1;
   if(!y || isNaN(m) || m < 0 || m > 11) return false;
   if(y === state.year && m === state.month) return false;
-  state.year = y; state.month = m;
-  setMonth(m);
+  state.year = y;
+  openMonthDetail(m);
   return true;
 }
 
 function updatePeriodBarVisibility(page) {
   var periodTabs = document.getElementById('periodTabs');
   if(!periodTabs) return;
-  periodTabs.style.display = (page === 'home' && !state.customDateFilter) ? 'flex' : 'none';
+  periodTabs.style.display = (page === 'home' && state.homeView === 'month' && !state.customDateFilter) ? 'flex' : 'none';
   var activeBar = document.getElementById('customDateActiveBar');
   if(activeBar) activeBar.style.display = (page === 'home' && state.customDateFilter) ? 'flex' : 'none';
 }
@@ -10502,7 +10600,11 @@ function calculateNetIncome(filteredTransactions) {
 }
 
 function renderHome() {
+  if(state.homeView === 'picker') { renderHomePicker(); return; }
   renderMonthTabs();
+  var backLbl = document.getElementById('hpBackLbl');
+  if(backLbl) backLbl.textContent = periodLabelText();
+  renderCarryCard();
   renderTxPanes();
   try {
   // Always reload from storage to ensure data is fresh: compare the
@@ -10846,20 +10948,40 @@ var HOMEP_L = {
   restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
   restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
   salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
-  none:     {en:'Nothing this month', ar:'ما في شي هالشهر', de:'Nichts in diesem Monat'},
+  none:     {en:'Nothing fixed yet', ar:'ما في دفعات ثابتة', de:'Noch keine Fixzahlungen'},
   docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
+  fixedHd:  {en:'Fixed costs',       ar:'الدفعات الثابتة',  de:'Fixkosten'},
+  otherHd:  {en:'Other',             ar:'أخرى',             de:'Sonstiges'},
+  bizHd:    {en:'Business',          ar:'الشركة',           de:'Betrieb'},
+  navFleet: {en:'Fleet',             ar:'الأسطول',          de:'Fuhrpark'},
+  navCont:  {en:'Contacts',          ar:'جهات الاتصال',     de:'Kontakte'},
+  navEmp:   {en:'Employees',         ar:'الموظفين',         de:'Mitarbeiter'},
+  navLog:   {en:'Daily Log',         ar:'سجل الأعمال',      de:'Tagesprotokoll'},
+  carryHd:  {en:'Saldo of past months', ar:'رصيد الشهور السابقة', de:'Saldo der Vormonate'},
+  carryNet: {en:'Netto',             ar:'الصافي',           de:'Netto'},
+  carryVat: {en:'Steuer (MwSt)',     ar:'الضريبة',          de:'Steuer (MwSt)'},
+  carryTot: {en:'Total',             ar:'الإجمالي',         de:'Total'},
+  today:    {en:'Today',             ar:'ملخص اليوم',       de:'Heute'},
+  debtsHd:  {en:'Debts',             ar:'الديون',           de:'Schulden'},
+  owesMe:   {en:'Owed to you',       ar:'لك',               de:'Forderungen'},
+  iOwe:     {en:'You owe',           ar:'عليك',             de:'Verbindlichkeiten'},
+  noneToday:{en:'Nothing booked today', ar:'ما في حركات اليوم', de:'Heute noch nichts gebucht'},
+  noDebts:  {en:'No open debts',     ar:'ما في ديون مفتوحة', de:'Keine offenen Schulden'},
+  seeAll:   {en:'Open debts page',   ar:'افتح صفحة الديون', de:'Zur Schuldenseite'},
   yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
 };
 function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
 
 // Recurring rules rendered as the rows they produce in the selected month.
 // Shape comes straight from state.recurring / state.fixedIncome / state.employees.
-function fixedRowsFor(type) {
+function fixedRowsFor(type, forYear, forMonth) {
   // checkRecurringDue() turns each rule into a real transaction once its day
   // arrives and stamps lastRecorded = 'YYYY-MM'. So a rule belongs in this group
   // only while it is still unbooked for the month on screen — otherwise it is
   // already sitting in the transactions group and would be counted twice.
-  var monthKey = state.year + '-' + pad2(state.month + 1);
+  var y = (forYear == null) ? state.year : forYear;
+  var m = (forMonth == null) ? state.month : forMonth;
+  var monthKey = y + '-' + pad2(m + 1);
   var now = new Date();
   var nowKey = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
   if(monthKey < nowKey) return [];   // past months: everything was booked at the time
@@ -10966,6 +11088,163 @@ function renderReceiptStrip(type) {
     strip.appendChild(btn);
   });
 }
+
+
+// ── HOME PICKER ──
+
+// Years offered on the picker: every year with data, the current one, and two
+// ahead — fixed commitments are known before the year starts.
+function pickerYears() {
+  var ys = {}, cur = new Date().getFullYear();
+  (state.transactions || []).forEach(function(tx) {
+    if(tx && tx.date) { var y = parseInt(tx.date.substring(0,4),10); if(y) ys[y] = 1; }
+  });
+  for(var i = 0; i <= 2; i++) ys[cur + i] = 1;
+  ys[state.year] = 1;
+  return Object.keys(ys).map(Number).sort(function(a,b){ return a-b; });
+}
+
+// Net for one month under the same model the month view uses: that month's
+// transactions, plus the fixed rules that have not been booked into them yet.
+function monthNetFor(y, m) {
+  var monthPrefix = y + '-' + pad2(m + 1);
+  var net = 0, seen = false;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || tx.date.substring(0,7) !== monthPrefix) return;
+    seen = true;
+    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
+    net += tx.type === 'income' ? n : -n;
+  });
+  var fIn = fixedRowsFor('income', y, m), fOut = fixedRowsFor('expense', y, m);
+  if(fIn.length || fOut.length) seen = true;
+  net += sumRows(fIn).netto - sumRows(fOut).netto;
+  return seen ? net : null;
+}
+
+function showHomePicker() {
+  state.homeView = 'picker';
+  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
+  if(hp) hp.style.display = '';
+  if(md) md.style.display = 'none';
+  updatePeriodBarVisibility('home');
+  renderHomePicker();
+}
+
+function openMonthDetail(m) {
+  state.month = m;
+  state.homeView = 'month';
+  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
+  if(hp) hp.style.display = 'none';
+  if(md) md.style.display = '';
+  updatePeriodBarVisibility('home');
+  renderHome();
+}
+
+function renderHomePicker() {
+  var names = monthNamesLocal();
+
+  var yb = document.getElementById('hpYears');
+  if(yb) {
+    var cur = new Date().getFullYear(), h = '';
+    pickerYears().forEach(function(y) {
+      h += '<button type="button" class="hp-yr' + (y === state.year ? ' sel' : '') +
+           (y > cur ? ' future' : '') + '" onclick="hpSetYear(' + y + ')">' + y + '</button>';
+    });
+    yb.innerHTML = h;
+    var sel = yb.querySelector('.sel');
+    if(sel) yb.scrollLeft = sel.offsetLeft - (yb.clientWidth - sel.offsetWidth) / 2;
+  }
+
+  var mb = document.getElementById('hpMonths');
+  if(mb) {
+    var h2 = '';
+    for(var m = 0; m < 12; m++) {
+      // The card carries the month name only. Figures live inside the month.
+      var net = monthNetFor(state.year, m);
+      h2 += '<button type="button" class="hp-mo' + (net === null ? ' void' : '') + '"' +
+            (net === null ? '' : ' onclick="openMonthDetail(' + m + ')"') + '>' +
+            '<span class="hp-mo-nm">' + escHtml(names[m]) + '</span>' +
+            (net === null ? '<span class="hp-mo-hint">&#8212;</span>' : '') + '</button>';
+    }
+    mb.innerHTML = h2;
+  }
+
+  var lbl = document.getElementById('hpBackLbl');
+  if(lbl) lbl.textContent = periodLabelText();
+  renderHomeBiz();
+}
+
+function hpSetYear(y) { state.year = y; renderHomePicker(); }
+
+
+
+
+
+
+
+// Everything booked in this year before the month on screen — the balance the
+// month opens with, rather than a figure for the month itself.
+function carryInTotals(y, m) {
+  var netto = 0, vat = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date) return;
+    var ty = parseInt(tx.date.substring(0,4), 10);
+    var tm = parseInt(tx.date.substring(5,7), 10) - 1;
+    if(ty !== y || tm >= m) return;
+    var v = vatBreakdown(tx.amount, tx.vatRate || 0);
+    if(tx.type === 'income')      { netto += v.netto; vat += v.steuer; }
+    else if(tx.type === 'expense'){ netto -= v.netto; vat -= v.steuer; }
+  });
+  return {netto: netto, vat: vat, total: netto - vat};
+}
+
+function renderCarryCard() {
+  var c = carryInTotals(state.year, state.month);
+  function put(id, v, neutral) {
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = (Math.abs(v) < 0.005 ? '' : (v > 0 ? '+' : '-')) + fmt(Math.abs(v));
+    el.style.color = neutral ? 'var(--text)' :
+      (Math.abs(v) < 0.005 ? 'var(--text3)' : (v > 0 ? 'var(--income)' : 'var(--expense)'));
+  }
+  var ttl = document.getElementById('carryTitle');
+  if(ttl) ttl.textContent = hptx('carryHd');
+  ['carryNetL:carryNet','carryVatL:carryVat','carryTotL:carryTot'].forEach(function(pair) {
+    var p = pair.split(':'), el = document.getElementById(p[0]);
+    if(el) el.textContent = hptx(p[1]);
+  });
+  put('carryNetV', c.netto);
+  put('carryVatV', -c.vat);      // VAT collected is money owed on, so it reads as a deduction
+  put('carryTotV', c.total);
+  var card = document.getElementById('carryCard');
+  // January has nothing before it, and an all-zero card is just noise on a phone
+  var empty = Math.abs(c.netto) < 0.005 && Math.abs(c.vat) < 0.005 && Math.abs(c.total) < 0.005;
+  if(card) card.style.display = (state.month === 0 || empty) ? 'none' : '';
+}
+
+// Straight shortcuts to the pages these things already live on.
+function renderHomeBiz() {
+  var host = document.getElementById('hpBizBody');
+  if(!host) return;
+  var items = [
+    {view:'fleet',     label:'navFleet', icon:'truck',     show: state.businessType === 'transport'},
+    {view:'contacts',  label:'navCont',  icon:'building',  show: true},
+    {view:'employees', label:'navEmp',   icon:'users',     show: true},
+    {view:'agenda',    label:'navLog',   icon:'checklist', show: true}
+  ];
+  var h = '';
+  items.forEach(function(it) {
+    if(!it.show) return;
+    h += '<button type="button" class="hp-nav" onclick="showNav(\'' + it.view + '\')">' +
+         '<span class="hp-nav-ico">' + svgIcon(it.icon, 15) + '</span>' +
+         '<span class="hp-nav-lbl">' + escHtml(hptx(it.label)) + '</span>' +
+         '<span class="hp-nav-car">&rsaquo;</span></button>';
+  });
+  host.innerHTML = h;
+  var bh = document.getElementById('hpBizHd');
+  if(bh) bh.textContent = hptx('bizHd');
+}
+
 
 function setTxTab(t) {
   state.txTab = t;
@@ -15216,6 +15495,7 @@ var LP_TEXT = {
     errWrong:'Incorrect username or password', errExists:'Username already taken',
     version:'Trabis v1.5 · Business Tracking System',
     gotoLogin:'Sign In', gotoRegister:'Create Account',
+    demoBtn:'Try the demo — no sign-up', demoNote:'Sample data on this device only. Nothing is sent anywhere.',
     fullName:'Full Name', email:'Email', phone:'Phone Number', country:'Country',
     confirmPass:'Confirm Password',
     showPw:'Show', hidePw:'Hide',
@@ -15246,6 +15526,7 @@ var LP_TEXT = {
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة', errExists:'اسم المستخدم مستخدم بالفعل',
     version:'Trabis v1.5 · نظام تتبع الأعمال',
     gotoLogin:'تسجيل الدخول', gotoRegister:'إنشاء حساب',
+    demoBtn:'جرّب الديمو — بدون تسجيل', demoNote:'بيانات تجريبية على هذا الجهاز فقط. ما بينبعت إشي لحدا.',
     fullName:'الاسم الكامل', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة',
     confirmPass:'تأكيد كلمة المرور',
     showPw:'إظهار', hidePw:'إخفاء',
@@ -15276,6 +15557,7 @@ var LP_TEXT = {
     errWrong:'Falscher Benutzername oder Passwort', errExists:'Benutzername bereits vergeben',
     version:'Trabis v1.5 · Geschäfts-Tracking-System',
     gotoLogin:'Anmelden', gotoRegister:'Konto erstellen',
+    demoBtn:'Demo ansehen — ohne Anmeldung', demoNote:'Beispieldaten nur auf diesem Gerät. Es wird nichts übertragen.',
     fullName:'Vollständiger Name', email:'E-Mail', phone:'Telefonnummer', country:'Land',
     confirmPass:'Passwort bestätigen',
     showPw:'Zeigen', hidePw:'Verbergen',
@@ -15296,6 +15578,7 @@ function lpUpdateText() {
     'lp-btn-signin':l.signIn,'lp-btn-create':l.createAcc,
     'lp-login-heading':l.loginH,'lp-login-sub':l.loginS,
     'lp-signin-btn':l.signIn,'lp-goto-register':l.gotoRegister,
+    'lp-demo-btn':l.demoBtn,'lp-demo-note':l.demoNote,
     'lp-or1':l.or,'lp-back-lbl1':l.back,
     'lp-reg-heading':l.regH,'lp-reg-sub':l.regS,
     'lp-goto-login':l.gotoLogin,
@@ -15543,6 +15826,85 @@ function lpRegister() {
   document.getElementById('lp-view-register').style.display='none';
   document.getElementById('lp-view-langsel').style.display='block';
   lpSelectLang(lpLang);
+}
+
+
+// ── DEMO ACCESS ──
+// One tap into a working app: no email, no password, no form. The account is
+// local to this browser like every other one, and is seeded once so the demo
+// actually has something to show.
+var DEMO_USER = 'demo';
+
+function lpDemoLogin() {
+  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
+  if(!accounts[DEMO_USER]) {
+    accounts[DEMO_USER] = {
+      password: btoa(unescape(encodeURIComponent('demo'))),
+      fullname: 'Demo', email: '', phone: '', country: '',
+      businessName: 'Alpen Transporte (Demo)',
+      createdAt: new Date().toISOString(), isNew: false, isDemo: true
+    };
+    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
+  }
+  localStorage.setItem('smartac_session', DEMO_USER);
+  loadUserData();
+  if(!state.transactions.length) seedDemoData();
+  obSelectedLang = lpLang; state.lang = lpLang;
+  var lp = document.getElementById('landingPage');
+  if(lp) lp.style.display = 'none';
+  obFinishLogin(DEMO_USER);
+}
+
+// Enough of a business to exercise every part of the screen: three months of
+// trading, fixed rules in three different categories, staff, an open debt.
+function seedDemoData() {
+  var now = new Date(), Y = now.getFullYear(), M = now.getMonth();
+  function iso(monthsBack, day) {
+    var d = new Date(Y, M - monthsBack, day);
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(day);
+  }
+  var id = Date.now();
+  function tx(o) { o.id = id++; state.transactions.push(o); }
+
+  state.businessType = 'transport';
+  state.currency = '€';
+  state.businessName = 'Alpen Transporte (Demo)';
+  state.businessAddress = 'Handelskai 94, 1200 Wien';
+  state.businessTaxId = 'ATU12345678';
+
+  [0, 1, 2].forEach(function(back) {
+    var f = 1 - back * 0.08;
+    tx({type:'income', name:'Frachtauftrag Wien–Linz', amount:Math.round(6420*f), vatRate:20,
+        category:'Sales', date:iso(back, 4), clientName:'Spedition Kern'});
+    tx({type:'income', name:'Frachtauftrag Graz',      amount:Math.round(3180*f), vatRate:20,
+        category:'Sales', date:iso(back, 12), clientName:'Hofer Logistik'});
+    tx({type:'income', name:'Innergem. Lieferung DE',  amount:Math.round(2640*f), vatRate:0,
+        category:'Sales', date:iso(back, 19), clientName:'Mayer & Söhne GmbH'});
+    tx({type:'expense', name:'Diesel',        amount:Math.round(1860*f), vatRate:20, category:'Fuel',    date:iso(back, 6)});
+    tx({type:'expense', name:'GO-Maut',       amount:Math.round(438*f),  vatRate:20, category:'Vehicle', date:iso(back, 9)});
+    tx({type:'expense', name:'Werkstatt LKW', amount:Math.round(620*f),  vatRate:20, category:'Vehicle', date:iso(back, 17)});
+  });
+
+  state.recurring = [
+    {id:id++, name:'Leasing Mercedes Sprinter', amount:894,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
+    {id:id++, name:'Leasing VW Crafter',        amount:812,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
+    {id:id++, name:'ÖGK',                       amount:1892, category:'Government', vatRate:0,  day:15, lastRecorded:null},
+    {id:id++, name:'SVS',                       amount:2146, category:'Government', vatRate:0,  day:1,  lastRecorded:null},
+    {id:id++, name:'Büromiete',                 amount:780,  category:'Rent',       vatRate:0,  day:1,  lastRecorded:null}
+  ];
+  state.employees = [
+    {id:id++, name:'Stefan Moser',  fullName:'Stefan Moser',  salary:2640, position:'Fahrer', lastRecorded:null},
+    {id:id++, name:'Ahmad Haddad',  fullName:'Ahmad Haddad',  salary:2480, position:'Fahrer', lastRecorded:null}
+  ];
+  state.debts = [
+    {id:id++, person:'Bau Nord GmbH', amount:1180, category:'Customer',
+     date:iso(1, 20), status:'pending', type:'owes-me'}
+  ];
+  state.clients = [
+    {id:id++, name:'Spedition Kern'}, {id:id++, name:'Hofer Logistik'}, {id:id++, name:'Mayer & Söhne GmbH'}
+  ];
+  state.year = Y; state.month = M;
+  save();
 }
 
 function lpPwCriteria(pass) {
