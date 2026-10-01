@@ -1,5 +1,5 @@
 {
   "redirects": [
-    { "source": "/", "destination": "/preview.html", "permanent": false }
+    { "source": "/", "destination": "/trabis.html", "permanent": false }
   ]
 }

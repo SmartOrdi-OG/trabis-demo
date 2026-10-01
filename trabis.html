@@ -314,6 +314,53 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .prj-empty{font-size:13px;color:var(--text3);padding:6px 0}
 .prj-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .prj-two .wt-input[type=number]{height:44px}
+/* ── ARTIFACT SHELL: the app wears the approved design, nothing else is shown ── */
+body.art .hdr,body.art #sidebarNav,body.art .bnav,body.art #fab,body.art #fabScan,body.art .sidebar-toggle-btn,body.art #sidebarHoverZone,body.art #sidebarOverlay,body.art #inAppNotifContainer{display:none !important}
+body.art #mainPage,body.art #reportsPage,body.art #debtsPage,body.art #settingsPage,body.art #invoicesPage,body.art #clientsPage,body.art #suppliersPage,body.art #fixedPage,body.art #employeesPage,body.art #helpPage,body.art #fleetPage,body.art #assetsPage,body.art #inventoryPage,body.art #kalenderPage,body.art #notizenPage,body.art #archivePage,body.art #contactsPage,body.art #agendaPage,body.art #govPage,body.art #projectsPage{margin-left:auto !important;margin-right:auto !important;max-width:1180px;padding-bottom:60px}
+.art-topbar{display:none;align-items:center;justify-content:space-between;padding:16px 28px;background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:90}
+body.art .art-topbar{display:flex}
+.art-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.art-mark{width:38px;height:38px;border-radius:11px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,var(--primary),var(--accent));display:flex;align-items:center;justify-content:center}
+.art-mark img{width:100%;height:100%;object-fit:cover;display:block}
+.art-brand-name{font-size:16px;font-weight:800;letter-spacing:-0.2px;line-height:1.2}
+.art-brand-sub{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.art-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.art-pill{padding:6px 12px;border-radius:8px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+.art-pill.active{background:var(--primary-light);color:var(--primary);border-color:var(--primary)}
+.art-ibtn{width:34px;height:34px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.art-ibtn.active{border-color:var(--primary);color:var(--primary)}
+@media (max-width:720px){.art-topbar{padding:14px 16px}}
+/* ── ARTIFACT SHELL: home + month screen ── */
+body.art #homePicker,body.art #monthDetail{max-width:1180px;margin:0 auto;padding:22px 28px 60px}
+body.art .hp-wrap{max-width:none;padding:0;grid-template-columns:minmax(0,1fr) 280px;gap:22px}
+body.art .hp-back-row{padding:0;margin:0 0 18px;max-width:none;gap:12px}
+body.art .hp-back{width:34px;height:34px;border-radius:9px;font-size:16px}
+body.art .hp-back-lbl{display:flex;align-items:center;gap:12px;font-size:19px;font-weight:800}
+.art-ychip{font-size:12px;font-weight:700;color:var(--text2);background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:4px 10px}
+body.art #dashboard-greeting,body.art #dashCards,body.art .quick-add,body.art .mobile-quick-add,body.art #dailySummaryCard,body.art #budgetDashboard,body.art #txSearchInput,body.art .year-net{display:none !important}
+body.art .carry-card{display:grid !important;grid-template-columns:repeat(3,1fr);gap:10px;max-width:none;width:auto;margin:0 0 20px;padding:16px 20px;border:1px solid var(--border);border-radius:16px;box-shadow:none}
+body.art .carry-title{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3);margin:0 0 2px}
+body.art .carry-row,body.art .carry-row.tot{flex-direction:column;align-items:flex-start;gap:2px;padding:0;margin:0;border:none}
+body.art .carry-l,body.art .carry-row.tot .carry-l{font-size:11.5px;font-weight:400;color:var(--text3)}
+body.art .carry-v,body.art .carry-row.tot .carry-v{font-size:17px;font-weight:800}
+body.art .section{padding:0;margin:0;max-width:none;width:auto}
+body.art .tx-tabs{display:flex;gap:6px;background:var(--card2);padding:4px;border-radius:12px;margin-bottom:18px;width:fit-content}
+body.art .tx-tab{flex:none;padding:9px 22px;border:none;border-radius:9px;background:none;font-size:13.5px;font-weight:700;color:var(--text2)}
+body.art .tx-tab.active[data-t="income"]{background:var(--card);color:var(--green);box-shadow:var(--shadow);border:none}
+body.art .tx-tab.active[data-t="expense"]{background:var(--card);color:var(--red);box-shadow:var(--shadow);border:none}
+body.art .tx-sums{display:block;margin-bottom:0}
+body.art .tx-sum{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;font-size:13.5px;font-weight:400;color:var(--text2)}
+body.art .tx-sum b{display:inline;margin:0;font-size:13.5px;font-weight:700;color:var(--text)}
+body.art .tx-grp-hdr{border-bottom:none;border-top:1.5px solid var(--border);padding:12px 0 8px;margin:6px 0 0}
+body.art .tx-grp-ttl{font-size:14px;font-weight:800;color:var(--text)}
+body.art .tx-grp-sum{font-size:14px;font-weight:800}
+body.art .tx-row{padding:10px 6px;border-bottom:1px solid var(--border)}
+body.art .tx-row+.tx-row{border-top:none}
+body.art .tx-row-nm{font-size:13.5px;font-weight:700}
+@media (max-width:1023px){
+  body.art #homePicker,body.art #monthDetail{padding:16px 16px 60px}
+  body.art .hp-wrap{grid-template-columns:minmax(0,1fr) 40%;gap:10px}
+}
 .rcpt-cap-ttl{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px;flex-shrink:0}
 .tx-split{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
 .rcpt-col{position:sticky;top:8px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;min-width:0}
@@ -2334,6 +2381,18 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   </div>
 </div>
 
+<div class="art-topbar" id="artTopbar">
+  <div class="art-brand" style="cursor:pointer" onclick="showNav('home')">
+    <div class="art-mark"><img id="artLogo" alt="" src=""></div>
+    <div style="min-width:0"><div class="art-brand-name">Trabis</div><div class="art-brand-sub" id="artBizSub"></div></div>
+  </div>
+  <div class="art-actions">
+    <button type="button" class="art-pill" id="artLangDe" onclick="setLang('de')">DE</button>
+    <button type="button" class="art-pill" id="artLangEn" onclick="setLang('en')">EN</button>
+    <button type="button" class="art-ibtn" id="artHelpBtn" aria-label="Help" onclick="showNav('help')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></button>
+    <button type="button" class="art-ibtn" id="artSetBtn" aria-label="Settings" onclick="showNav('settings')"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
+  </div>
+</div>
 <!-- HEADER -->
 <div class="hdr">
   <div class="hdr-top">
@@ -2599,7 +2658,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- DEBTS PAGE -->
 <div id="debtsPage" class="debts-page">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-    <button type="button" class="more-back-btn" onclick="openMoreMenu()"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button type="button" class="more-back-btn" onclick="showNav('home')"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div style="font-size:18px;font-weight:700" id="debts-page-title">Debts</div>
   </div>
   <div id="debtsList"></div>
@@ -2608,7 +2667,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <!-- SETTINGS PAGE -->
 <div id="settingsPage" class="settings-page">
   <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
-    <button type="button" class="more-back-btn" onclick="openMoreMenu()"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+    <button type="button" class="more-back-btn" onclick="showNav('home')"><svg class="ico-chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
     <div id="settings-title" style="font-size:18px;font-weight:700">Settings</div>
   </div>
 
@@ -3553,6 +3612,8 @@ function getFiltered() {
 
 // ── NAV ──
 function showNav(page) {
+  window._artPage = page;
+  setTimeout(artSyncTopbar, 0);
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   if(page === 'inventory' && state.businessType !== 'retail' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
@@ -3610,7 +3671,7 @@ function showNav(page) {
 
 // ── MORE MENU (mobile) ──
 function moreBackBtnHtml() {
-  return '<button type="button" class="more-back-btn" onclick="openMoreMenu()">' + svgIcon('chevronLeft', 20) + '</button>';
+  return '<button type="button" class="more-back-btn" onclick="showNav(\'home\')">' + svgIcon('chevronLeft', 20) + '</button>';
 }
 function moreMenuItemHtml(id, iconName, label) {
   return '<div id="' + id + '" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--border);font-size:15px;color:var(--text);background:var(--card);border-radius:12px;margin-bottom:6px;cursor:pointer">'
@@ -10685,6 +10746,7 @@ function onModalProductChange() {
 function refreshClientDropdown() {
   var sel = document.getElementById('modal-client');
   if(!sel) return;
+  syncContactsAsClients();
   var lang = state.lang;
   var noCliTx = {en:'— No client —', ar:'— بدون عميل —', de:'— Kein Kunde —'};
   var currentVal = sel.value;
@@ -11067,7 +11129,7 @@ function renderHome() {
   if(state.homeView === 'picker') { renderHomePicker(); return; }
   renderMonthTabs();
   var backLbl = document.getElementById('hpBackLbl');
-  if(backLbl) backLbl.textContent = periodLabelText();
+  if(backLbl) backLbl.innerHTML = artMonthTitleHtml();
   renderCarryCard();
   renderTxPanes();
   try {
@@ -11405,8 +11467,8 @@ function closeTxDetail() {
 var HOMEP_L = {
   income:   {en:'Income',        ar:'الدخل',            de:'Einnahmen'},
   expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
-  netto:    {en:'Net',           ar:'الصافي',           de:'Netto'},
-  vat:      {en:'VAT',           ar:'الضريبة',          de:'MwSt.'},
+  netto:    {en:'Total net',     ar:'إجمالي الصافي',    de:'Netto gesamt'},
+  vat:      {en:'Total VAT',     ar:'إجمالي الضريبة',   de:'MwSt. gesamt'},
   fixOut:   {en:'Fixed \u00b7 due',  ar:'دفعات ثابتة \u00b7 مستحقة', de:'Fixzahlungen \u00b7 offen'},
   fixIn:    {en:'Fixed \u00b7 due',  ar:'دخل ثابت \u00b7 مستحق',    de:'Fixe Einnahmen \u00b7 offen'},
   restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
@@ -11593,6 +11655,25 @@ function rcptAddFile(type, mode) {
   if(b) b.click();
 }
 
+
+// ── ARTIFACT SHELL ──
+function artMonthTitleHtml() {
+  return '<span>' + escHtml(monthNamesLocal()[state.month]) + '</span><span class="art-ychip">' + state.year + '</span>';
+}
+function artSyncTopbar() {
+  var logo = document.querySelector('.hdr .trabis-logo-img'), img = document.getElementById('artLogo');
+  if(logo && img && img.getAttribute('src') !== logo.getAttribute('src')) img.setAttribute('src', logo.getAttribute('src'));
+  var sub = document.getElementById('artBizSub');
+  if(sub) sub.textContent = state.businessName || '';
+  var de = document.getElementById('artLangDe'), en = document.getElementById('artLangEn');
+  if(de) de.classList.toggle('active', state.lang === 'de');
+  if(en) en.classList.toggle('active', state.lang === 'en');
+  var cur = window._artPage || 'home';
+  var hb = document.getElementById('artHelpBtn'), sb = document.getElementById('artSetBtn');
+  if(hb) hb.classList.toggle('active', cur === 'help');
+  if(sb) sb.classList.toggle('active', cur === 'settings');
+}
+document.body.classList.add('art');
 
 // ── GOVERNMENT ENTITIES ──
 // Government contacts (SVS, ÖGK, Finanzamt, ...) with a running counter of what was paid to
@@ -12059,7 +12140,7 @@ function renderHomePicker() {
   }
 
   var lbl = document.getElementById('hpBackLbl');
-  if(lbl) lbl.textContent = periodLabelText();
+  if(lbl) lbl.innerHTML = artMonthTitleHtml();
   renderHomeBiz();
 }
 
@@ -12115,7 +12196,7 @@ function renderCarryCard() {
   var card = document.getElementById('carryCard');
   // January has nothing before it, and an all-zero card is just noise on a phone
   var empty = Math.abs(c.netto) < 0.005 && Math.abs(c.vat) < 0.005 && Math.abs(c.total) < 0.005;
-  if(card) card.style.display = (state.month === 0 || empty) ? 'none' : '';
+  if(card) card.style.display = '';
 }
 
 // Straight shortcuts to the pages these things already live on.
@@ -12859,6 +12940,7 @@ function setLang(val) {
 
 function applyLang() {
   var isRTL = state.lang === 'ar';
+  setTimeout(artSyncTopbar, 0);
   document.documentElement.lang = state.lang;
   document.documentElement.dir = isRTL ? 'rtl' : 'ltr';
   if(isRTL) { document.body.classList.add('lang-ar'); } else { document.body.classList.remove('lang-ar'); }
@@ -14733,7 +14815,22 @@ function toggleReceivedInvoiceStatus(idx) {
   renderInvoicesPage();
 }
 
+// The invoice form picks its client from Contacts: every non-government contact is
+// mirrored into state.clients (same id) so printing/PDF keep working unchanged.
+function syncContactsAsClients() {
+  state.clients = state.clients || [];
+  var have = {}, added = false;
+  state.clients.forEach(function(c) { have[c.id] = 1; });
+  (state.contacts || []).forEach(function(c) {
+    if(!c || c.type === 'government' || have[c.id]) return;
+    state.clients.push({id: c.id, name: c.name, company: c.type === 'company' ? c.name : '', phone: c.phone || '', email: c.email || '', country: '', address: '', notes: c.notes || '', since: ''});
+    added = true;
+  });
+  if(added) save();
+}
+
 function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, type) {
+  if(type === 'issued' || type === 'receipt') syncContactsAsClients();
   var existing = document.getElementById('inv_overlay');
   if(existing) existing.parentNode.removeChild(existing);
 
@@ -14741,7 +14838,7 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
   var invNum = numberPrefix + Date.now();
   var clientOptions = '';
   if(type === 'issued' || type === 'receipt') {
-    var noCliMsg = {en:'No clients yet — add from Clients page', ar:'لا يوجد عملاء بعد — أضف من صفحة العملاء', de:'Noch keine Kunden — füge über die Kundenseite hinzu'}[state.lang] || 'No clients yet — add from Clients page';
+    var noCliMsg = {en:'No clients yet — add one in Contacts', ar:'لا يوجد عملاء بعد — أضف واحد من جهات الاتصال', de:'Noch keine Kunden — in Kontakte hinzufügen'}[state.lang] || 'No clients yet — add one in Contacts';
     var selCliMsg = {en:'Select client', ar:'اختر العميل', de:'Kunde wählen'}[state.lang] || 'Select client';
     if(!state.clients || !state.clients.length) {
       clientOptions = '<option value="">' + noCliMsg + '</option>';
@@ -14841,6 +14938,7 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
   html += '<button id="invov_save" style="flex:1;padding:14px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer">' + itx('saveLbl') + '</button>';
   if(type !== 'receipt') {
     html += '<button id="invov_print" style="flex:1;padding:14px;border-radius:12px;border:1px solid var(--primary);background:transparent;color:var(--primary);font-size:15px;font-weight:700;cursor:pointer">' + itx('printPreview') + '</button>';
+    html += '<button id="invov_pdf" style="flex:1;padding:14px;border-radius:12px;border:1px solid var(--primary);background:transparent;color:var(--primary);font-size:15px;font-weight:700;cursor:pointer">' + ({en:'Download PDF', ar:'تحميل PDF', de:'PDF herunterladen'}[state.lang] || 'Download PDF') + '</button>';
   }
   html += '</div>';
   html += '</div>';
@@ -14870,6 +14968,8 @@ function _buildInvoiceOverlay(titleText, numberPrefix, extraFields, saveFunc, ty
   if(type !== 'receipt') {
     var ppBtn = document.getElementById('invov_print');
     if(ppBtn) ppBtn.onclick = function(){ printInvoice(_collectInvoiceFormData(type), type); };
+    var pdfBtn = document.getElementById('invov_pdf');
+    if(pdfBtn) pdfBtn.onclick = function(){ _recalcInvoiceTotals(); downloadInvoicePDF(_collectInvoiceFormData(type), type); };
   }
   _recalcInvoiceTotals();
 }
@@ -15039,13 +15139,24 @@ function saveIssuedInvoice() {
   var inv = _collectInvoiceFormData('issued');
   state.issuedInvoices.push(inv);
   // Soll-Besteuerung: the income belongs to the invoice date, not the payment.
-  if(state.vatBasis === 'soll') bookInvoiceIncome(inv, inv.issueDate);
+  // In the new shell there is no invoices list to mark an invoice paid later, so an invoice
+  // created from the month screen counts as income on its issue date (bookInvoiceIncome is
+  // guarded by incomeTxId, so a later payment can never double-count it).
+  if(state.vatBasis === 'soll' || document.body.classList.contains('art')) bookInvoiceIncome(inv, inv.issueDate);
   if(inv.status === 'Paid') handleInvoicePaid(inv);
   save();
   _activeInvoiceTab = 'issued';
   var ov = document.getElementById('inv_overlay');
   if(ov) ov.parentNode.removeChild(ov);
   renderInvoicesPage();
+  if(document.body.classList.contains('art')) {
+    var iy = parseInt((inv.issueDate || '').substring(0, 4), 10), im = parseInt((inv.issueDate || '').substring(5, 7), 10) - 1;
+    if(iy && im >= 0) { state.year = iy; state.month = im; }
+    state.txTab = 'income';
+    state.homeView = 'month';
+    showNav('home');
+    openMonthDetail(state.month);
+  }
 }
 
 function saveReceipt() {
@@ -18237,6 +18348,7 @@ function updatePrivacyTexts() {
 // ═══════════════ BUSINESS NAME DISPLAY ═══════════════
 function updateBusinessNameDisplay() {
   var biz = state.businessName || '';
+  setTimeout(artSyncTopbar, 0);
   var snavBiz = document.getElementById('snav-biz-name');
   if(snavBiz) snavBiz.textContent = biz;
   var hdrBiz = document.getElementById('hdr-biz-name');
