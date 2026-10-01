@@ -214,6 +214,44 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .ts-note{font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5}
 .ts-toast{pointer-events:none;position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:10100;box-shadow:var(--shadow)}
 
+/* ── projects ── */
+.prj-toolbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap}
+.prj-chips{display:flex;gap:6px;flex-wrap:wrap}
+.prj-chip{padding:7px 13px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.prj-chip.active{background:var(--primary);border-color:var(--primary);color:#fff}
+.prj-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;margin-bottom:12px;cursor:pointer}
+.prj-card:hover{border-color:var(--primary)}
+.prj-card-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.prj-title{font-size:15.5px;font-weight:800}
+.prj-desc{font-size:12.5px;color:var(--text2);margin-top:3px;line-height:1.45}
+.prj-meta{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--text2)}
+.prj-meta b{color:var(--text);font-variant-numeric:tabular-nums}
+.prj-bar{height:7px;border-radius:4px;background:var(--border);overflow:hidden;margin-top:12px}
+.prj-bar>i{display:block;height:100%;background:var(--primary);border-radius:4px}
+.prj-bar.green>i{background:var(--green)}
+.prj-bar.red>i{background:var(--red)}
+.prj-task{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)}
+.prj-task:last-of-type{border-bottom:none}
+.prj-check{width:22px;height:22px;border-radius:7px;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;background:var(--card);color:#fff;font-size:13px;line-height:1;padding:0}
+.prj-check.on{background:var(--green);border-color:var(--green)}
+.prj-task-t{flex:1;font-size:13.5px;min-width:0}
+.prj-task.done .prj-task-t{text-decoration:line-through;color:var(--text3)}
+.prj-task-due{font-size:11.5px;color:var(--text3);font-variant-numeric:tabular-nums;white-space:nowrap}
+.prj-x{background:none;border:none;color:var(--text3);cursor:pointer;font-size:16px;padding:2px 4px;font-family:inherit}
+.prj-add{display:flex;gap:8px;margin-top:12px;align-items:stretch}
+.prj-add .ts-input{height:42px}
+.prj-add .ts-btn{padding:0 16px;white-space:nowrap}
+.prj-note{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;margin-bottom:8px}
+.prj-note-d{font-size:11px;color:var(--text3);font-weight:700;margin-bottom:3px}
+.prj-note-t{font-size:13.5px;line-height:1.5;white-space:pre-wrap}
+.prj-file{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:13.5px}
+.prj-file:last-of-type{border-bottom:none}
+.prj-file span:nth-child(2){flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.prj-link{padding:7px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.prj-link.on{background:var(--primary-light);border-color:var(--primary);color:var(--primary)}
+.prj-empty{font-size:13px;color:var(--text3);padding:6px 0}
+.prj-two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+
 @media (max-width:720px){
   /* keep the photo-strip / numbers split side-by-side on mobile too, just narrower */
   .tx-layout{grid-template-columns:128px 1fr;gap:12px}
@@ -295,6 +333,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
             <button class="biz-item" onclick="showView('employees')">
               <div class="biz-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
               <div class="biz-label">Employees</div>
+              <div class="biz-chevron">›</div>
+            </button>
+            <button class="biz-item" onclick="showView('projects')">
+              <div class="biz-icon"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg></div>
+              <div class="biz-label">Projects</div>
               <div class="biz-chevron">›</div>
             </button>
             <button class="biz-item" onclick="showView('log')">
@@ -421,6 +464,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
           <div class="doc-row"><span class="doc-chip">📄 Dienstvertrag</span><span class="doc-chip">📄 Ärztliche Bestätigung</span><span class="doc-chip ts-open" onclick="openTimesheet('e2')">⏱ Timesheet &amp; Vacation</span></div>
         </div>
       </div>
+    </section>
+
+    <!-- ══════════ PROJECTS ══════════ -->
+    <section class="view" id="view-projects">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+        <button class="icon-btn" onclick="showView('home')" aria-label="Back">‹</button>
+        <div style="font-size:18px;font-weight:800">Projects</div>
+      </div>
+      <div id="prjList"></div>
     </section>
 
     <!-- ══════════ DAILY LOG ══════════ -->
@@ -1501,6 +1553,222 @@ function tsExportPdf(){
   doc.save('Stundenzettel_' + emp.name.replace(/\s+/g, '_') + '_' + s.y + '-' + tsPad(s.m + 1) + '.pdf');
   tsToast('PDF exported');
 }
+
+/* ══════════ Projects (planning space for company projects) ══════════ */
+var PRJ_STATUS = { planning: 'Planning', active: 'In progress', done: 'Done' };
+var PRJ_LINK_OPTIONS = ['Finanzamt Linz', 'SVS', 'Wirtschaftskammer', 'Arbeiterkammer', 'Müller Spedition', 'Shell Tankstelle Linz', 'Stefan Moser', 'Lena Brandt', 'Mercedes Sprinter', 'MAN TGX'];
+var PRJ_DATA = [
+  { id: 'p1', title: 'Heavy-transport licence (Konzession)', desc: 'Prepare the papers and permits needed to carry heavy loads.', status: 'active', deadline: '2026-12-15', budget: 4500,
+    tasks: [
+      { t: 'Collect company documents (Firmenbuch, Gewerbeschein)', done: true, due: '2026-09-20' },
+      { t: 'Proof of reliability (Zuverlässigkeit)', done: true, due: '2026-10-05' },
+      { t: 'Book the exam date at the Wirtschaftskammer', done: false, due: '2026-10-20' },
+      { t: 'Submit the application', done: false, due: '2026-11-15' },
+      { t: 'Pay the licence fees', done: false, due: '2026-12-01' }
+    ],
+    costs: [{ name: 'Application fee', amt: 380 }, { name: 'Exam + course', amt: 1200 }, { name: 'Consultant', amt: 900 }],
+    notes: [{ d: '2026-09-28', t: 'Called the WKO — exam slots in November are filling up, book early.' }, { d: '2026-09-12', t: 'Need a clean criminal-record extract for the managing director.' }],
+    files: ['Antrag-Entwurf.pdf', 'Firmenbuchauszug.pdf'], links: ['Wirtschaftskammer', 'Finanzamt Linz'] },
+  { id: 'p2', title: 'Replace the MAN TGX', desc: 'Compare offers and decide between buying and leasing.', status: 'planning', deadline: '2027-03-31', budget: 95000,
+    tasks: [
+      { t: 'Ask three dealers for offers', done: false, due: '2026-11-10' },
+      { t: 'Compare leasing vs. buying with the accountant', done: false, due: '2026-12-01' },
+      { t: 'Check the financing options', done: false, due: '2027-01-15' }
+    ],
+    costs: [], notes: [{ d: '2026-09-30', t: 'Current truck has 640,000 km — §57a due in October.' }], files: [], links: ['MAN TGX', 'Stefan Moser'] },
+  { id: 'p3', title: 'Hire a second dispatcher', desc: '', status: 'planning', deadline: '2027-01-31', budget: 0,
+    tasks: [{ t: 'Write the job description', done: true, due: '2026-10-02' }, { t: 'Post the ad (AMS + online)', done: false, due: '2026-10-15' }],
+    costs: [], notes: [], files: [], links: ['Lena Brandt'] },
+  { id: 'p4', title: 'Switch the fuel-card provider', desc: 'Moved to Shell for the better monthly invoice.', status: 'done', deadline: '2026-08-31', budget: 300,
+    tasks: [{ t: 'Compare providers', done: true, due: '2026-08-05' }, { t: 'Sign the contract', done: true, due: '2026-08-20' }],
+    costs: [{ name: 'Setup fee', amt: 150 }], notes: [], files: ['Tankkarte-Vertrag.pdf'], links: ['Shell Tankstelle Linz'] }
+];
+var PRJ_FILTER = 'all';
+var PRJ_OPEN = null;
+
+function escAttr(s){ return escHtmlLite(s).replace(/"/g, '&quot;'); }
+function prjFmtDate(iso){ return iso ? iso.split('-').reverse().join('.') : '—'; }
+function prjDaysLeft(iso){
+  if(!iso) return null;
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  var p = iso.split('-');
+  return Math.round((new Date(+p[0], +p[1] - 1, +p[2]) - t) / 86400000);
+}
+function prjDeadlineLabel(p){
+  var n = prjDaysLeft(p.deadline);
+  if(n === null) return 'No deadline';
+  if(p.status === 'done') return prjFmtDate(p.deadline);
+  if(n < 0) return prjFmtDate(p.deadline) + ' · ' + (-n) + ' d overdue';
+  if(n === 0) return prjFmtDate(p.deadline) + ' · today';
+  return prjFmtDate(p.deadline) + ' · in ' + n + ' d';
+}
+function prjStats(p){
+  var done = p.tasks.filter(function(t){ return t.done; }).length;
+  var spent = p.costs.reduce(function(s, c){ return s + c.amt; }, 0);
+  return { done: done, total: p.tasks.length, pct: p.tasks.length ? Math.round(done / p.tasks.length * 100) : 0, spent: spent };
+}
+function prjBadge(st){
+  var cls = st === 'done' ? 'ok' : (st === 'active' ? 'gov' : 'warn');
+  return '<span class="badge ' + cls + '">' + PRJ_STATUS[st] + '</span>';
+}
+function prjGet(id){ return PRJ_DATA.filter(function(p){ return p.id === id; })[0]; }
+
+function renderProjects(){
+  var counts = { all: PRJ_DATA.length, planning: 0, active: 0, done: 0 };
+  PRJ_DATA.forEach(function(p){ counts[p.status]++; });
+  var chips = [['all', 'All'], ['planning', 'Planning'], ['active', 'In progress'], ['done', 'Done']].map(function(c){
+    return '<button class="prj-chip' + (PRJ_FILTER === c[0] ? ' active' : '') + '" onclick="prjSetFilter(\'' + c[0] + '\')">' + c[1] + ' ' + counts[c[0]] + '</button>';
+  }).join('');
+  var list = PRJ_DATA.filter(function(p){ return PRJ_FILTER === 'all' || p.status === PRJ_FILTER; });
+  var cards = list.map(function(p){
+    var s = prjStats(p), over = p.budget > 0 && s.spent > p.budget;
+    return '<div class="prj-card" onclick="openProject(\'' + p.id + '\')">'
+      + '<div class="prj-card-top"><div><div class="prj-title">' + escHtmlLite(p.title) + '</div>' + (p.desc ? '<div class="prj-desc">' + escHtmlLite(p.desc) + '</div>' : '') + '</div>' + prjBadge(p.status) + '</div>'
+      + '<div class="prj-bar' + (p.status === 'done' ? ' green' : '') + '"><i style="width:' + (p.status === 'done' ? 100 : s.pct) + '%"></i></div>'
+      + '<div class="prj-meta"><span>Tasks <b>' + s.done + '/' + s.total + '</b></span><span>Deadline <b>' + prjDeadlineLabel(p) + '</b></span>'
+      + (p.budget > 0 ? '<span>Budget <b' + (over ? ' style="color:var(--red)"' : '') + '>' + fmtEUR(s.spent) + ' / ' + fmtEUR(p.budget) + '</b></span>' : '')
+      + '<span>📎 <b>' + p.files.length + '</b></span></div>'
+      + (p.links.length ? '<div class="doc-row">' + p.links.map(function(l){ return '<span class="doc-chip">' + escHtmlLite(l) + '</span>'; }).join('') + '</div>' : '')
+      + '</div>';
+  }).join('') || '<div class="prj-empty">No projects here yet.</div>';
+  document.getElementById('prjList').innerHTML = '<div class="prj-toolbar"><div class="prj-chips">' + chips + '</div><button class="ts-btn" onclick="prjNew()">+ New project</button></div>' + cards;
+}
+function prjSetFilter(f){ PRJ_FILTER = f; renderProjects(); }
+function prjNew(){
+  var p = { id: 'p' + Date.now(), title: 'New project', desc: '', status: 'planning', deadline: '', budget: 0, tasks: [], costs: [], notes: [], files: [], links: [] };
+  PRJ_DATA.unshift(p);
+  PRJ_FILTER = 'all';
+  openProject(p.id);
+}
+
+function openProject(id){
+  PRJ_OPEN = id;
+  var ov = document.getElementById('prjOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'prjOverlay';
+    ov.className = 'ov-screen';
+    ov.innerHTML = '<div class="ov-hdr"><button class="ov-back" onclick="closeProject()">‹ Projects</button><div class="ov-title">Project</div></div><div id="prjBody"></div>';
+    document.body.appendChild(ov);
+  }
+  renderProject();
+}
+function closeProject(){
+  var ov = document.getElementById('prjOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+  PRJ_OPEN = null;
+  renderProjects();
+}
+var PRJ_ICO = {
+  task: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  money: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>',
+  note: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>',
+  clip: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.4 11 12.2 20.2a5.5 5.5 0 0 1-7.8-7.8l9.2-9.2a3.7 3.7 0 0 1 5.2 5.2l-9.2 9.2a1.8 1.8 0 0 1-2.6-2.6l8.5-8.5"/></svg>',
+  link: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg>'
+};
+function prjSectionHd(icon, color, title, sub){
+  return '<div class="ts-card-hd"><div class="ts-ico ' + color + '">' + PRJ_ICO[icon] + '</div><div><span class="ts-card-title">' + title + '</span>' + (sub ? '<span class="ts-card-sub">' + sub + '</span>' : '') + '</div></div>';
+}
+function renderProject(){
+  var p = prjGet(PRJ_OPEN);
+  if(!p) return;
+  var s = prjStats(p), over = p.budget > 0 && s.spent > p.budget;
+  var statusChips = ['planning', 'active', 'done'].map(function(k){
+    return '<button class="prj-chip' + (p.status === k ? ' active' : '') + '" onclick="prjSetStatus(\'' + k + '\')">' + PRJ_STATUS[k] + '</button>';
+  }).join('');
+
+  var tasks = p.tasks.map(function(t, i){
+    return '<div class="prj-task' + (t.done ? ' done' : '') + '"><button class="prj-check' + (t.done ? ' on' : '') + '" onclick="prjToggleTask(' + i + ')" aria-label="Toggle">' + (t.done ? '✓' : '') + '</button>'
+      + '<div class="prj-task-t">' + escHtmlLite(t.t) + '</div>' + (t.due ? '<div class="prj-task-due">' + prjFmtDate(t.due).slice(0, 5) + '</div>' : '')
+      + '<button class="prj-x" onclick="prjDel(\'tasks\',' + i + ')" aria-label="Remove">×</button></div>';
+  }).join('') || '<div class="prj-empty">No steps yet — add the first one below.</div>';
+
+  var costs = p.costs.map(function(c, i){
+    return '<div class="prj-task"><div class="prj-task-t">' + escHtmlLite(c.name) + '</div><b style="font-variant-numeric:tabular-nums">' + fmtEUR(c.amt) + '</b><button class="prj-x" onclick="prjDel(\'costs\',' + i + ')" aria-label="Remove">×</button></div>';
+  }).join('') || '<div class="prj-empty">No planned costs yet.</div>';
+
+  var notes = p.notes.map(function(n, i){
+    return '<div class="prj-note"><div class="prj-note-d">' + prjFmtDate(n.d) + ' <button class="prj-x" style="float:right" onclick="prjDel(\'notes\',' + i + ')" aria-label="Remove">×</button></div><div class="prj-note-t">' + escHtmlLite(n.t) + '</div></div>';
+  }).join('') || '<div class="prj-empty">No notes yet.</div>';
+
+  var files = p.files.map(function(f, i){
+    return '<div class="prj-file"><span>' + (/\.pdf$/i.test(f) ? '📄' : '🖼️') + '</span><span>' + escHtmlLite(f) + '</span><button class="prj-x" onclick="prjDel(\'files\',' + i + ')" aria-label="Remove">×</button></div>';
+  }).join('') || '<div class="prj-empty">No files yet.</div>';
+
+  var links = PRJ_LINK_OPTIONS.map(function(l){
+    return '<button class="prj-link' + (p.links.indexOf(l) >= 0 ? ' on' : '') + '" onclick="prjToggleLink(this)" data-l="' + escAttr(l) + '">' + escHtmlLite(l) + '</button>';
+  }).join(' ');
+
+  var html = '<div class="ts-body">'
+    + '<div class="ts-card"><div class="ts-card-body">'
+    +   '<div class="ts-field"><div class="ts-lbl">Project name</div><input class="ts-input" style="font-weight:800;font-size:16px" value="' + escAttr(p.title) + '" oninput="prjSetField(\'title\',this.value)"></div>'
+    +   '<div class="ts-field"><div class="ts-lbl">Goal / description</div><textarea class="ts-input" rows="2" oninput="prjSetField(\'desc\',this.value)" placeholder="What is this project about?">' + escHtmlLite(p.desc) + '</textarea></div>'
+    +   '<div class="ts-field"><div class="ts-lbl">Status</div><div class="prj-chips">' + statusChips + '</div></div>'
+    +   '<div class="prj-two"><div><div class="ts-lbl">Deadline</div><input class="ts-input" type="date" value="' + p.deadline + '" onchange="prjSetField(\'deadline\',this.value,true)"></div>'
+    +   '<div><div class="ts-lbl">Budget (€)</div><input class="ts-input" type="number" min="0" step="100" value="' + (p.budget || '') + '" placeholder="0" onchange="prjSetField(\'budget\',parseFloat(this.value)||0,true)"></div></div>'
+    +   '<div class="prj-bar' + (p.status === 'done' ? ' green' : '') + '" style="margin-top:16px"><i style="width:' + (p.status === 'done' ? 100 : s.pct) + '%"></i></div>'
+    +   '<div class="prj-meta"><span>Progress <b>' + (p.status === 'done' ? 100 : s.pct) + '%</b></span><span>Deadline <b>' + prjDeadlineLabel(p) + '</b></span></div>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + prjSectionHd('task', 'green', 'Steps', s.done + ' / ' + s.total + ' done') + '<div class="ts-card-body">' + tasks
+    +   '<div class="prj-add"><input class="ts-input" id="prjNewTask" placeholder="Add a step…" onkeydown="if(event.key===\'Enter\')prjAddTask()"><input class="ts-input" id="prjNewTaskDue" type="date" style="max-width:130px"><button class="ts-btn" onclick="prjAddTask()">Add</button></div>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + prjSectionHd('money', 'amber', 'Planned costs', p.budget > 0 ? fmtEUR(s.spent) + ' of ' + fmtEUR(p.budget) : '') + '<div class="ts-card-body">' + costs
+    +   (p.budget > 0 ? '<div class="prj-bar' + (over ? ' red' : '') + '"><i style="width:' + Math.min(100, Math.round(s.spent / p.budget * 100)) + '%"></i></div>' : '')
+    +   '<div class="prj-add"><input class="ts-input" id="prjNewCost" placeholder="Cost item…"><input class="ts-input" id="prjNewCostAmt" type="number" min="0" placeholder="€" style="max-width:96px"><button class="ts-btn" onclick="prjAddCost()">Add</button></div>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + prjSectionHd('note', 'blue', 'Notes') + '<div class="ts-card-body">' + notes
+    +   '<textarea class="ts-input" id="prjNewNote" rows="2" placeholder="Write a note…" style="margin-top:8px"></textarea><div style="margin-top:8px"><button class="ts-btn" onclick="prjAddNote()">Save note</button></div>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + prjSectionHd('clip', 'violet', 'Files') + '<div class="ts-card-body">' + files
+    +   '<input type="file" id="prjFileIn" accept="image/*,application/pdf" style="display:none" onchange="prjAddFile(this)">'
+    +   '<div style="margin-top:10px"><button class="ts-btn ghost" onclick="document.getElementById(\'prjFileIn\').click()">＋ Upload PDF or photo</button></div>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + prjSectionHd('link', 'blue', 'Linked to', 'who is involved') + '<div class="ts-card-body"><div class="prj-chips">' + links + '</div></div></div>'
+    + '</div>';
+  var body = document.getElementById('prjBody');
+  var keep = body.scrollTop, ovEl = document.getElementById('prjOverlay'), keepOv = ovEl.scrollTop;
+  body.innerHTML = html;
+  ovEl.scrollTop = keepOv; body.scrollTop = keep;
+}
+function prjSetField(f, v, rerender){ var p = prjGet(PRJ_OPEN); p[f] = v; if(rerender) renderProject(); }
+function prjSetStatus(st){ prjGet(PRJ_OPEN).status = st; renderProject(); }
+function prjToggleTask(i){ var t = prjGet(PRJ_OPEN).tasks[i]; t.done = !t.done; renderProject(); }
+function prjDel(kind, i){ prjGet(PRJ_OPEN)[kind].splice(i, 1); renderProject(); }
+function prjAddTask(){
+  var el = document.getElementById('prjNewTask'), due = document.getElementById('prjNewTaskDue').value;
+  if(!el.value.trim()) return;
+  prjGet(PRJ_OPEN).tasks.push({ t: el.value.trim(), done: false, due: due });
+  renderProject();
+}
+function prjAddCost(){
+  var n = document.getElementById('prjNewCost').value.trim(), a = parseFloat(document.getElementById('prjNewCostAmt').value);
+  if(!n || isNaN(a)) return;
+  prjGet(PRJ_OPEN).costs.push({ name: n, amt: a });
+  renderProject();
+}
+function prjAddNote(){
+  var el = document.getElementById('prjNewNote');
+  if(!el.value.trim()) return;
+  prjGet(PRJ_OPEN).notes.unshift({ d: todayISO(), t: el.value.trim() });
+  renderProject();
+}
+function prjAddFile(input){
+  if(input.files && input.files[0]) prjGet(PRJ_OPEN).files.push(input.files[0].name);
+  input.value = '';
+  renderProject();
+}
+function prjToggleLink(btn){
+  var p = prjGet(PRJ_OPEN), l = btn.getAttribute('data-l'), i = p.links.indexOf(l);
+  if(i >= 0) p.links.splice(i, 1); else p.links.push(l);
+  renderProject();
+}
+
+renderProjects();
 </script>
 </body>
 </html>
