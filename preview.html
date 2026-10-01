@@ -157,6 +157,59 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .ov-step-num{flex-shrink:0;width:22px;height:22px;border-radius:50%;background:var(--primary);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
 .ov-step-txt{font-size:13px;color:var(--text2);line-height:1.6;padding-top:2px}
 
+/* ── timesheet & vacation screen ── */
+.ts-open{cursor:pointer;color:var(--primary);border-color:var(--primary)}
+.ts-body{padding:16px;max-width:600px;margin:0 auto 40px}
+.ts-sub{font-size:13.5px;color:var(--text2);margin:0 0 16px;line-height:1.5}
+.ts-card{background:var(--card);border:1px solid var(--border);border-radius:16px;margin-bottom:14px;overflow:hidden;box-shadow:var(--shadow)}
+.ts-card-hd{display:flex;align-items:center;gap:12px;padding:13px 16px;background:var(--card2);border-bottom:1px solid var(--border)}
+.ts-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.ts-ico.blue{background:var(--primary-light);color:var(--primary)}
+.ts-ico.green{background:var(--green-light);color:var(--green)}
+.ts-ico.amber{background:var(--orange-light);color:var(--orange)}
+.ts-ico.violet{background:rgba(124,58,237,.14);color:#7c3aed}
+.ts-card-title{font-size:14.5px;font-weight:800}
+.ts-card-sub{font-size:12px;color:var(--text3);font-weight:600;margin-left:4px}
+.ts-card-body{padding:16px}
+.ts-lbl{font-size:10.5px;font-weight:800;letter-spacing:.07em;color:var(--text3);text-transform:uppercase;margin-bottom:6px}
+.ts-input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:inherit;min-width:0}
+.ts-input:focus{outline:none;border-color:var(--primary)}
+.ts-field{margin-bottom:14px}
+.ts-grid3 .ts-input{height:44px}
+.ts-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.ts-btn{padding:12px 18px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.ts-btn.ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2)}
+.ts-btn.block{width:100%}
+.ts-month-nav{display:flex;align-items:center;gap:8px}
+.ts-month-nav .lbl{flex:1;text-align:center;font-weight:800;font-size:14.5px;padding:9px 6px;border:1.5px solid var(--border);border-radius:10px;background:var(--card)}
+.ts-th{display:grid;grid-template-columns:54px 34px 1fr;gap:8px;padding:12px 16px;background:var(--card2);font-size:10.5px;font-weight:800;letter-spacing:.07em;color:var(--text2);text-transform:uppercase;border-bottom:1px solid var(--border)}
+.ts-row{padding:10px 16px;border-bottom:1px solid var(--border)}
+.ts-row:last-child{border-bottom:none}
+.ts-row.wk{background:var(--card2)}
+.ts-row.st-urlaub{background:var(--primary-light)}
+.ts-row.st-krank{background:var(--red-light)}
+.ts-row.st-feiertag{background:rgba(124,58,237,.10)}
+.ts-row-top{display:grid;grid-template-columns:54px 34px 1fr;gap:8px;align-items:center}
+.ts-date{font-weight:800;font-size:14px;font-variant-numeric:tabular-nums}
+.ts-wd{font-size:13px;color:var(--text2)}
+.ts-row .ts-input{padding:8px 10px;font-size:13.5px}
+.ts-times{display:grid;grid-template-columns:1fr 1fr 58px 62px;gap:6px;align-items:center;margin-top:8px}
+.ts-times input[type=time]::-webkit-calendar-picker-indicator{display:none}
+.ts-times input[type=time]{text-align:center}
+.ts-times .ts-input{padding:7px 4px;font-size:13px}
+.ts-hrs{font-size:12.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
+.ts-hol{font-size:11px;font-weight:700;color:#7c3aed;margin-top:5px}
+.ts-kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px;color:var(--text2)}
+.ts-kv b{color:var(--text);font-variant-numeric:tabular-nums}
+.ts-kv input{width:84px;text-align:right;padding:6px 8px}
+.ts-big-wrap{text-align:center;padding-top:14px;margin-top:6px;border-top:1px solid var(--border)}
+.ts-big-lbl{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--text3);text-transform:uppercase}
+.ts-big{font-size:36px;font-weight:800;color:var(--primary);font-variant-numeric:tabular-nums;margin-top:6px}
+.ts-big small{font-size:14px;font-weight:600;color:var(--text3);margin-left:4px}
+.ts-big.neg{color:var(--red)}
+.ts-note{font-size:12px;color:var(--text3);margin-top:8px;line-height:1.5}
+.ts-toast{pointer-events:none;position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--text);color:var(--bg);padding:11px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:10100;box-shadow:var(--shadow)}
+
 @media (max-width:720px){
   /* keep the photo-strip / numbers split side-by-side on mobile too, just narrower */
   .tx-layout{grid-template-columns:128px 1fr;gap:12px}
@@ -353,15 +406,15 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
       <div class="card">
         <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="card-body">
-          <div class="card-title-row"><div><div class="card-name">Stefan Moser</div><div class="card-meta">Fahrer · seit 03/2022</div></div><span class="badge ok">Active</span></div>
-          <div class="doc-row"><span class="doc-chip">📄 Führerschein C+E — exp. 06/2028</span><span class="doc-chip">📄 Dienstvertrag</span></div>
+          <div class="card-title-row"><div><div class="card-name">Stefan Moser</div><div class="card-meta">Fahrer · seit 10/2025</div></div><span class="badge ok">Active</span></div>
+          <div class="doc-row"><span class="doc-chip">📄 Führerschein C+E — exp. 06/2028</span><span class="doc-chip">📄 Dienstvertrag</span><span class="doc-chip ts-open" onclick="openTimesheet('e1')">⏱ Timesheet &amp; Vacation</span></div>
         </div>
       </div>
       <div class="card">
         <div class="card-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
         <div class="card-body">
-          <div class="card-title-row"><div><div class="card-name">Lena Brandt</div><div class="card-meta">Disposition · seit 11/2023</div></div><span class="badge warn">Krankenstand</span></div>
-          <div class="doc-row"><span class="doc-chip">📄 Dienstvertrag</span><span class="doc-chip">📄 Ärztliche Bestätigung</span></div>
+          <div class="card-title-row"><div><div class="card-name">Lena Brandt</div><div class="card-meta">Disposition · seit 05/2026</div></div><span class="badge warn">Krankenstand</span></div>
+          <div class="doc-row"><span class="doc-chip">📄 Dienstvertrag</span><span class="doc-chip">📄 Ärztliche Bestätigung</span><span class="doc-chip ts-open" onclick="openTimesheet('e2')">⏱ Timesheet &amp; Vacation</span></div>
         </div>
       </div>
     </section>
@@ -1096,6 +1149,353 @@ function openHelpDetail(idx){
 function closeHelpDetail(){
   var ov = document.getElementById('helpDetailOverlay');
   if(ov) ov.parentNode.removeChild(ov);
+}
+
+/* ══════════ Timesheet & Vacation (employee work hours) ══════════ */
+var TS_EMPLOYEES = [
+  { id: 'e1', name: 'Stefan Moser', role: 'Fahrer', hired: '2025-10-01', factor: 2.08 },
+  { id: 'e2', name: 'Lena Brandt', role: 'Disposition', hired: '2026-05-01', factor: 2.08 }
+];
+var TS_DATA = {};
+var TS_WD = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
+var TS_STATUS = [
+  { v: '', label: '—' },
+  { v: 'urlaub', label: '🌴 Urlaub' },
+  { v: 'krank', label: '🤒 Krank' },
+  { v: 'feiertag', label: '🎉 Feiertag' }
+];
+var TS_STATE = { emp: 'e1', y: REAL_YEAR, m: REAL_MONTH_IDX };
+
+function tsPad(n){ return (n < 10 ? '0' : '') + n; }
+function tsDe(n, dec){ return (Math.round(n * Math.pow(10, dec)) / Math.pow(10, dec)).toFixed(dec).replace('.', ','); }
+function tsEmp(id){ return TS_EMPLOYEES.filter(function(e){ return e.id === id; })[0]; }
+function tsKey(empId, y, m){ return empId + '|' + y + '-' + tsPad(m + 1); }
+function tsDaysIn(y, m){ return new Date(y, m + 1, 0).getDate(); }
+
+function tsEaster(y){
+  var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+  var f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  var h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+  var l = (32 + 2 * e + 2 * i - h - k) % 7, mm = Math.floor((a + 11 * h + 22 * l) / 451);
+  var month = Math.floor((h + l - 7 * mm + 114) / 31), day = ((h + l - 7 * mm + 114) % 31) + 1;
+  return new Date(y, month - 1, day);
+}
+var TS_FIXED_HOL = { '0-1': 'Neujahr', '0-6': 'Heilige Drei Könige', '4-1': 'Staatsfeiertag', '7-15': 'Mariä Himmelfahrt', '9-26': 'Nationalfeiertag', '10-1': 'Allerheiligen', '11-8': 'Mariä Empfängnis', '11-25': 'Christtag', '11-26': 'Stefanitag' };
+function tsHolidayName(y, m, d){
+  var fixed = TS_FIXED_HOL[m + '-' + d];
+  if(fixed) return fixed;
+  var easter = tsEaster(y), t = new Date(y, m, d).getTime(), day = 86400000;
+  var moving = [[1, 'Ostermontag'], [39, 'Christi Himmelfahrt'], [50, 'Pfingstmontag'], [60, 'Fronleichnam']];
+  for(var i = 0; i < moving.length; i++){
+    if(new Date(easter.getFullYear(), easter.getMonth(), easter.getDate() + moving[i][0]).getTime() === t) return moving[i][1];
+  }
+  return '';
+}
+
+function tsGetDay(empId, y, m, d){
+  var bucket = TS_DATA[tsKey(empId, y, m)];
+  if(bucket && bucket[d]) return bucket[d];
+  return { st: tsHolidayName(y, m, d) ? 'feiertag' : '', from: '', to: '', brk: '' };
+}
+function tsEnsureDay(empId, y, m, d){
+  var key = tsKey(empId, y, m);
+  if(!TS_DATA[key]) TS_DATA[key] = {};
+  if(!TS_DATA[key][d]){
+    var base = tsGetDay(empId, y, m, d);
+    TS_DATA[key][d] = { st: base.st, from: base.from, to: base.to, brk: base.brk };
+  }
+  return TS_DATA[key][d];
+}
+function tsHours(e){
+  if(e.st !== '' || !e.from || !e.to) return 0;
+  var a = e.from.split(':'), b = e.to.split(':');
+  var mins = (parseInt(b[0], 10) * 60 + parseInt(b[1], 10)) - (parseInt(a[0], 10) * 60 + parseInt(a[1], 10));
+  var h = mins / 60 - (parseFloat(e.brk) || 0);
+  return h > 0 ? h : 0;
+}
+
+function tsMonthStats(empId, y, m){
+  var s = { hours: 0, workDays: 0, urlaub: 0, krank: 0, feiertag: 0 };
+  for(var d = 1; d <= tsDaysIn(y, m); d++){
+    var e = tsGetDay(empId, y, m, d);
+    if(e.st === 'urlaub') s.urlaub++;
+    else if(e.st === 'krank') s.krank++;
+    else if(e.st === 'feiertag') s.feiertag++;
+    else { var h = tsHours(e); if(h > 0){ s.hours += h; s.workDays++; } }
+  }
+  return s;
+}
+function tsVacation(emp, y, m){
+  var hp = emp.hired.split('-'), hy = parseInt(hp[0], 10), hm = parseInt(hp[1], 10) - 1;
+  var months = Math.max(0, (y - hy) * 12 + (m - hm) + 1);
+  var used = 0;
+  Object.keys(TS_DATA).forEach(function(key){
+    if(key.indexOf(emp.id + '|') !== 0) return;
+    var ym = key.split('|')[1].split('-'), ky = parseInt(ym[0], 10), km = parseInt(ym[1], 10) - 1;
+    var afterHire = (ky - hy) * 12 + (km - hm) >= 0;
+    var beforeEnd = (ky - y) * 12 + (km - m) <= 0;
+    if(!afterHire || !beforeEnd) return;
+    var bucket = TS_DATA[key];
+    Object.keys(bucket).forEach(function(d){ if(bucket[d].st === 'urlaub') used++; });
+  });
+  var entitled = months * emp.factor;
+  return { months: months, used: used, entitled: entitled, rest: entitled - used };
+}
+
+/* sample data so the screen opens with something to look at */
+(function seedTimesheets(){
+  function work(emp, y, m, from, to, last){
+    for(var d = 1; d <= (last || tsDaysIn(y, m)); d++){
+      var wd = new Date(y, m, d).getDay();
+      if(wd === 0 || wd === 6 || tsHolidayName(y, m, d)) continue;
+      var e = tsEnsureDay(emp, y, m, d);
+      if(e.st === '') { e.from = from; e.to = to; e.brk = '0.5'; }
+    }
+  }
+  function mark(emp, y, m, days, st){ days.forEach(function(d){ var e = tsEnsureDay(emp, y, m, d); e.st = st; e.from = ''; e.to = ''; e.brk = ''; }); }
+  mark('e1', 2026, 7, [10, 11, 12, 13, 14], 'urlaub');
+  mark('e1', 2026, 8, [1, 2, 3, 4], 'urlaub');
+  work('e1', 2026, 7, '08:00', '17:00');
+  work('e1', 2026, 8, '08:00', '17:00', 18);
+  mark('e2', 2026, 6, [27, 28], 'urlaub');
+  mark('e2', 2026, 8, [21, 22, 23, 24, 25], 'krank');
+  work('e2', 2026, 8, '07:30', '16:00');
+})();
+
+function tsToast(msg){
+  var t = document.createElement('div');
+  t.className = 'ts-toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function(){ if(t.parentNode) t.parentNode.removeChild(t); }, 2600);
+}
+
+var TS_ICONS = {
+  cal: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
+  clock: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  bolt: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+  doc: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>',
+  dl: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="M7 10l5 5 5-5"/><path d="M12 15V3"/></svg>',
+  users: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>'
+};
+function tsCardHd(icon, color, title, sub){
+  return '<div class="ts-card-hd"><div class="ts-ico ' + color + '">' + TS_ICONS[icon] + '</div><div><span class="ts-card-title">' + title + '</span>' + (sub ? '<span class="ts-card-sub">' + sub + '</span>' : '') + '</div></div>';
+}
+
+function tsRowHtml(d){
+  var s = TS_STATE, e = tsGetDay(s.emp, s.y, s.m, d);
+  var wd = new Date(s.y, s.m, d).getDay(), hol = tsHolidayName(s.y, s.m, d);
+  var cls = 'ts-row' + ((wd === 0 || wd === 6) ? ' wk' : '') + (e.st ? ' st-' + e.st : '');
+  var opts = TS_STATUS.map(function(o){ return '<option value="' + o.v + '"' + (o.v === e.st ? ' selected' : '') + '>' + o.label + '</option>'; }).join('');
+  var h = '<div class="' + cls + '" id="tsRow_' + d + '"><div class="ts-row-top">'
+    + '<div class="ts-date">' + tsPad(d) + '.' + tsPad(s.m + 1) + '.</div><div class="ts-wd">' + TS_WD[wd] + '</div>'
+    + '<select class="ts-input" onchange="tsSetStatus(' + d + ',this.value)">' + opts + '</select></div>';
+  if(e.st === ''){
+    h += '<div class="ts-times">'
+      + '<input class="ts-input" type="time" value="' + e.from + '" aria-label="From" onchange="tsSetField(' + d + ',\'from\',this.value)">'
+      + '<input class="ts-input" type="time" value="' + e.to + '" aria-label="To" onchange="tsSetField(' + d + ',\'to\',this.value)">'
+      + '<input class="ts-input" type="number" min="0" step="0.25" placeholder="0.5" value="' + e.brk + '" aria-label="Break (h)" oninput="tsSetField(' + d + ',\'brk\',this.value)">'
+      + '<div class="ts-hrs" id="tsHrs_' + d + '">' + (tsHours(e) > 0 ? tsDe(tsHours(e), 2) + ' h' : '–') + '</div></div>';
+  }
+  if(hol) h += '<div class="ts-hol">🎉 ' + hol + '</div>';
+  return h + '</div>';
+}
+
+function renderTimesheet(){
+  var s = TS_STATE, emp = tsEmp(s.emp);
+  var empOpts = TS_EMPLOYEES.map(function(e){ return '<option value="' + e.id + '"' + (e.id === s.emp ? ' selected' : '') + '>' + e.name + '</option>'; }).join('');
+  var rows = '';
+  for(var d = 1; d <= tsDaysIn(s.y, s.m); d++) rows += tsRowHtml(d);
+  var html = '<div class="ts-body">'
+    + '<h2 style="margin:6px 0 6px;font-size:22px">Timesheet &amp; Vacation</h2>'
+    + '<p class="ts-sub">Record working hours and leave. Vacation is calculated automatically from the hire date.</p>'
+
+    + '<div class="ts-card"><div class="ts-card-body">'
+    +   '<div class="ts-field"><div class="ts-lbl">Employee</div><select class="ts-input" onchange="tsPickEmp(this.value)">' + empOpts + '</select></div>'
+    +   '<div class="ts-field"><div class="ts-lbl">Period</div><div class="ts-month-nav"><button class="icon-btn" onclick="tsShiftMonth(-1)" aria-label="Previous month">‹</button><div class="lbl">' + MONTH_FULL[s.m] + ' ' + s.y + '</div><button class="icon-btn" onclick="tsShiftMonth(1)" aria-label="Next month">›</button></div></div>'
+    +   '<button class="ts-btn" onclick="closeTimesheet();showView(\'employees\')">' + TS_ICONS.users + ' Manage staff</button>'
+    + '</div></div>'
+
+    + '<div class="ts-card">' + tsCardHd('bolt', 'amber', 'Quick entry', 'Mon – Fri') + '<div class="ts-card-body">'
+    +   '<div class="ts-grid3"><div><div class="ts-lbl">From</div><input class="ts-input" type="time" id="tsQFrom" value="08:00"></div>'
+    +   '<div><div class="ts-lbl">To</div><input class="ts-input" type="time" id="tsQTo" value="17:00"></div>'
+    +   '<div><div class="ts-lbl">Break (h)</div><input class="ts-input" type="number" id="tsQBrk" min="0" step="0.25" value="0.5"></div></div>'
+    +   '<button class="ts-btn" onclick="tsApplyQuick()">Apply</button>'
+    +   '<div class="ts-note">Fills every Monday–Friday of the month that is not vacation, sick leave or a public holiday.</div>'
+    + '</div></div>'
+
+    + '<div class="ts-card" style="margin-bottom:14px"><div class="ts-th"><div>Date</div><div>Day</div><div>Status</div></div><div id="tsRows">' + rows + '</div></div>'
+
+    + '<div class="ts-card">' + tsCardHd('cal', 'blue', 'Vacation entitlement') + '<div class="ts-card-body" id="tsVac"></div></div>'
+    + '<div class="ts-card">' + tsCardHd('clock', 'green', 'Month total') + '<div class="ts-card-body" id="tsTotal"></div></div>'
+
+    + '<div class="ts-card">' + tsCardHd('doc', 'violet', 'Export') + '<div class="ts-card-body">'
+    +   '<div class="ts-sub" style="margin-bottom:14px">A neat A4 sheet with every day of <b>' + MONTH_FULL[s.m] + ' ' + s.y + '</b> — hours, vacation, sick leave and holidays — plus the vacation balance.</div>'
+    +   '<button class="ts-btn block" onclick="tsExportPdf()">' + TS_ICONS.dl + ' Export PDF</button>'
+    + '</div></div>'
+    + '</div>';
+  document.getElementById('tsOverlayBody').innerHTML = html;
+  tsUpdateSummary();
+}
+
+function tsUpdateSummary(){
+  var s = TS_STATE, emp = tsEmp(s.emp), st = tsMonthStats(s.emp, s.y, s.m), v = tsVacation(emp, s.y, s.m);
+  var vacEl = document.getElementById('tsVac'), totEl = document.getElementById('tsTotal');
+  if(!vacEl || !totEl) return;
+  vacEl.innerHTML = '<div class="ts-kv"><span>Hire date</span><b>' + emp.hired.split('-').reverse().join('.') + '</b></div>'
+    + '<div class="ts-kv"><span>Counted months</span><b>' + v.months + '</b></div>'
+    + '<div class="ts-kv"><span>Factor / month</span><span><input class="ts-input" type="number" min="0" step="0.01" value="' + emp.factor + '" onchange="tsSetFactor(this.value)"> <b>d</b></span></div>'
+    + '<div class="ts-kv"><span>Entitlement</span><b>' + tsDe(v.entitled, 2) + ' d</b></div>'
+    + '<div class="ts-kv"><span>Vacation days used</span><b>' + v.used + '</b></div>'
+    + '<div class="ts-big-wrap"><div class="ts-big-lbl">Remaining</div><div class="ts-big' + (v.rest < 0 ? ' neg' : '') + '">' + tsDe(v.rest, 2) + '<small>Tage</small></div></div>'
+    + (v.months === 0 ? '<div class="ts-note">This month is before the hire date — nothing accrued yet.</div>' : '');
+  totEl.innerHTML = '<div style="text-align:center"><div class="ts-big" style="margin-top:0">' + tsDe(st.hours, 2) + ' <small>h</small></div><div class="ts-big-lbl" style="margin-top:6px">Net working hours</div></div>'
+    + '<div class="ts-kv" style="margin-top:12px;border-top:1px solid var(--border)"><span>Working days</span><b>' + st.workDays + '</b></div>'
+    + '<div class="ts-kv"><span>Vacation / Sick / Holidays</span><b>' + st.urlaub + ' / ' + st.krank + ' / ' + st.feiertag + '</b></div>';
+}
+
+function openTimesheet(empId){
+  TS_STATE.emp = empId || TS_STATE.emp;
+  var ov = document.getElementById('tsOverlay');
+  if(!ov){
+    ov = document.createElement('div');
+    ov.id = 'tsOverlay';
+    ov.className = 'ov-screen';
+    ov.innerHTML = '<div class="ov-hdr"><button class="ov-back" onclick="closeTimesheet()">‹ Back</button><div class="ov-title">Timesheet &amp; Vacation</div></div><div id="tsOverlayBody"></div>';
+    document.body.appendChild(ov);
+  }
+  renderTimesheet();
+}
+function closeTimesheet(){
+  var ov = document.getElementById('tsOverlay');
+  if(ov) ov.parentNode.removeChild(ov);
+}
+function tsPickEmp(id){ TS_STATE.emp = id; renderTimesheet(); }
+function tsShiftMonth(delta){
+  var d = new Date(TS_STATE.y, TS_STATE.m + delta, 1);
+  TS_STATE.y = d.getFullYear(); TS_STATE.m = d.getMonth();
+  renderTimesheet();
+}
+function tsSetStatus(d, st){
+  var e = tsEnsureDay(TS_STATE.emp, TS_STATE.y, TS_STATE.m, d);
+  e.st = st;
+  if(st !== '') { e.from = ''; e.to = ''; e.brk = ''; }
+  var row = document.getElementById('tsRow_' + d);
+  if(row){ var tmp = document.createElement('div'); tmp.innerHTML = tsRowHtml(d); row.parentNode.replaceChild(tmp.firstChild, row); }
+  tsUpdateSummary();
+}
+function tsSetField(d, field, value){
+  var e = tsEnsureDay(TS_STATE.emp, TS_STATE.y, TS_STATE.m, d);
+  e[field] = value;
+  var el = document.getElementById('tsHrs_' + d);
+  if(el) el.textContent = tsHours(e) > 0 ? tsDe(tsHours(e), 2) + ' h' : '–';
+  tsUpdateSummary();
+}
+function tsSetFactor(v){
+  var f = parseFloat(v);
+  if(!isNaN(f) && f >= 0) tsEmp(TS_STATE.emp).factor = f;
+  tsUpdateSummary();
+}
+function tsApplyQuick(){
+  var from = document.getElementById('tsQFrom').value, to = document.getElementById('tsQTo').value, brk = document.getElementById('tsQBrk').value;
+  if(!from || !to){ tsToast('Enter from and to first'); return; }
+  var s = TS_STATE, n = 0;
+  for(var d = 1; d <= tsDaysIn(s.y, s.m); d++){
+    var wd = new Date(s.y, s.m, d).getDay();
+    if(wd === 0 || wd === 6) continue;
+    var e = tsEnsureDay(s.emp, s.y, s.m, d);
+    if(e.st !== '') continue;
+    e.from = from; e.to = to; e.brk = brk; n++;
+  }
+  renderTimesheet();
+  tsToast('Applied to ' + n + ' working days');
+}
+
+function tsExportPdf(){
+  if(!window.jspdf){ tsToast('PDF library not loaded — check your connection'); return; }
+  var s = TS_STATE, emp = tsEmp(s.emp), st = tsMonthStats(s.emp, s.y, s.m), v = tsVacation(emp, s.y, s.m);
+  var doc = new window.jspdf.jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+  var L = 14, W = 182;
+
+  doc.setFillColor(26, 127, 212); doc.rect(0, 0, 210, 28, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(18);
+  doc.text('Stundenzettel & Urlaub', L, 13);
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.text('Alpen Transporte', L, 21);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12);
+  doc.text(MONTH_FULL[s.m] + ' ' + s.y, 210 - L, 13, { align: 'right' });
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
+  doc.text('Trabis', 210 - L, 21, { align: 'right' });
+
+  doc.setTextColor(26, 42, 58); doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold'); doc.text('Mitarbeiter:', L, 38); doc.setFont('helvetica', 'normal'); doc.text(emp.name, L + 26, 38);
+  doc.setFont('helvetica', 'bold'); doc.text('Position:', L, 44); doc.setFont('helvetica', 'normal'); doc.text(emp.role, L + 26, 44);
+  doc.setFont('helvetica', 'bold'); doc.text('Eintritt:', 110, 38); doc.setFont('helvetica', 'normal'); doc.text(emp.hired.split('-').reverse().join('.'), 110 + 20, 38);
+  doc.setFont('helvetica', 'bold'); doc.text('Zeitraum:', 110, 44); doc.setFont('helvetica', 'normal'); doc.text(MONTH_FULL[s.m] + ' ' + s.y, 110 + 20, 44);
+
+  var cols = [{ t: 'Datum', w: 24, a: 'l' }, { t: 'Tag', w: 14, a: 'l' }, { t: 'Status', w: 34, a: 'l' }, { t: 'Von', w: 26, a: 'c' }, { t: 'Bis', w: 26, a: 'c' }, { t: 'Pause', w: 24, a: 'c' }, { t: 'Stunden', w: 34, a: 'r' }];
+  var y = 50, rh = 6;
+  function cellText(txt, ci, yy){
+    var x = L; for(var i = 0; i < ci; i++) x += cols[i].w;
+    var c = cols[ci];
+    if(c.a === 'l') doc.text(txt, x + 2, yy); else if(c.a === 'c') doc.text(txt, x + c.w / 2, yy, { align: 'center' }); else doc.text(txt, x + c.w - 2, yy, { align: 'right' });
+  }
+  doc.setFillColor(26, 42, 58); doc.rect(L, y, W, 7, 'F');
+  doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9);
+  cols.forEach(function(c, i){ cellText(c.t, i, y + 4.8); });
+  y += 7;
+
+  var labels = { '': '', urlaub: 'Urlaub', krank: 'Krankenstand', feiertag: 'Feiertag' };
+  var fills = { urlaub: [219, 234, 254], krank: [254, 226, 226], feiertag: [237, 233, 254] };
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  for(var d = 1; d <= tsDaysIn(s.y, s.m); d++){
+    var e = tsGetDay(s.emp, s.y, s.m, d), wd = new Date(s.y, s.m, d).getDay(), hol = tsHolidayName(s.y, s.m, d);
+    var fill = fills[e.st] || ((wd === 0 || wd === 6) ? [241, 245, 249] : null);
+    if(fill){ doc.setFillColor(fill[0], fill[1], fill[2]); doc.rect(L, y, W, rh, 'F'); }
+    doc.setDrawColor(226, 232, 240); doc.line(L, y + rh, L + W, y + rh);
+    doc.setTextColor(26, 42, 58);
+    var h = tsHours(e);
+    cellText(tsPad(d) + '.' + tsPad(s.m + 1) + '.', 0, y + 4.2);
+    cellText(TS_WD[wd], 1, y + 4.2);
+    cellText(labels[e.st] || (hol ? hol : ''), 2, y + 4.2);
+    if(e.st === ''){
+      cellText(e.from || '', 3, y + 4.2); cellText(e.to || '', 4, y + 4.2);
+      cellText(e.from && e.to ? tsDe(parseFloat(e.brk) || 0, 2) : '', 5, y + 4.2);
+      cellText(h > 0 ? tsDe(h, 2) : '', 6, y + 4.2);
+    }
+    y += rh;
+  }
+  doc.setDrawColor(26, 42, 58); doc.line(L, y, L + W, y);
+
+  y += 6;
+  var bw = (W - 8) / 3, bh = 30;
+  function box(x, title){
+    doc.setFillColor(245, 251, 255); doc.setDrawColor(204, 228, 247); doc.roundedRect(x, y, bw, bh, 2, 2, 'FD');
+    doc.setTextColor(138, 171, 184); doc.setFont('helvetica', 'bold'); doc.setFontSize(7.5); doc.text(title, x + 4, y + 6);
+  }
+  box(L, 'NETTO-ARBEITSSTUNDEN');
+  doc.setTextColor(26, 127, 212); doc.setFontSize(18); doc.text(tsDe(st.hours, 2) + ' h', L + 4, y + 17);
+  doc.setTextColor(74, 106, 138); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5); doc.text(st.workDays + ' Arbeitstage', L + 4, y + 25);
+
+  box(L + bw + 4, 'ABWESENHEIT (MONAT)');
+  doc.setTextColor(26, 42, 58); doc.setFont('helvetica', 'normal'); doc.setFontSize(9);
+  doc.text('Urlaub: ' + st.urlaub + ' Tage', L + bw + 8, y + 13);
+  doc.text('Krankenstand: ' + st.krank + ' Tage', L + bw + 8, y + 19);
+  doc.text('Feiertage: ' + st.feiertag, L + bw + 8, y + 25);
+
+  box(L + (bw + 4) * 2, 'URLAUBSANSPRUCH');
+  var bx = L + (bw + 4) * 2 + 4;
+  doc.setTextColor(26, 42, 58); doc.setFont('helvetica', 'normal'); doc.setFontSize(8.5);
+  doc.text(v.months + ' Mon. x ' + tsDe(emp.factor, 2) + ' = ' + tsDe(v.entitled, 2) + ' T.', bx, y + 12);
+  doc.text('Verbraucht: ' + v.used + ' T.', bx, y + 17.5);
+  doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.setTextColor(v.rest < 0 ? 220 : 26, v.rest < 0 ? 38 : 127, v.rest < 0 ? 38 : 212);
+  doc.text('Rest: ' + tsDe(v.rest, 2) + ' Tage', bx, y + 25);
+
+  doc.setTextColor(138, 171, 184); doc.setFont('helvetica', 'normal'); doc.setFontSize(7.5);
+  doc.text('Erstellt mit Trabis am ' + new Date().toLocaleDateString('de-AT'), L, 290);
+
+  doc.save('Stundenzettel_' + emp.name.replace(/\s+/g, '_') + '_' + s.y + '-' + tsPad(s.m + 1) + '.pdf');
+  tsToast('PDF exported');
 }
 </script>
 </body>
