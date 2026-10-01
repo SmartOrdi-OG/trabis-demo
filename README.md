@@ -22,7 +22,7 @@ Two HTML files make up the product:
 | `preview.html` | Static design mockup with demo data only, reachable at `/preview.html`. |
 | `buchhalter.html` | Read-only accountant portal (reads the same browser storage). |
 
-`vercel.json` redirects `/` to `/trabis.html` (a rewrite does not work because Vercel serves the existing `index.html` first).
+`vercel.json` redirects `/` to `/preview.html` (a rewrite does not work because Vercel serves the existing `index.html` first).
 
 ## Tech stack
 
