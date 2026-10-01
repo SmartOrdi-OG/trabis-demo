@@ -34,7 +34,6 @@
   --income:#16a34a;
   --expense:#dc2626;
 }
-html,body{overscroll-behavior-y:none}
 body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
 /* HEADER */
 .hdr{background:var(--card);padding:16px 20px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
@@ -2950,6 +2949,7 @@ function showNav(page) {
   if(!pages[page]) { showNav('home'); return; }
   closeMoreMenu();
   syncScrollLock();
+  window.scrollTo(0, 0);
   Object.keys(pages).forEach(function(n) {
     document.getElementById(pages[n]).style.display = 'none';
     var navEl = document.getElementById('nav-'+n);
@@ -9493,6 +9493,7 @@ function monthNetFor(y, m) {
 }
 
 function showHomePicker() {
+  window.scrollTo(0, 0);
   state.homeView = 'picker';
   var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
   if(hp) hp.style.display = '';
@@ -9502,6 +9503,7 @@ function showHomePicker() {
 }
 
 function openMonthDetail(m) {
+  window.scrollTo(0, 0);
   state.month = m;
   state.homeView = 'month';
   var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
