@@ -48,13 +48,9 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .icon-btn{width:36px;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--card);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px}
 
 /* PERIOD TABS */
-.period-tabs{display:flex;align-items:flex-end;gap:7px;margin:0 0 4px;border-bottom:1.5px solid var(--border)}
-.year-chip{flex:none;align-self:center;margin-bottom:6px;padding:5px 12px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer;transition:all 0.18s}
-.year-chip:hover{border-color:var(--primary);color:var(--primary)}
-.month-strip{flex:1;min-width:0;display:flex;align-items:flex-end;gap:2px}
-.mtab{flex:1;min-width:0;height:24px;margin-bottom:-1.5px;border:1.5px solid var(--border);border-bottom:none;border-radius:7px 7px 0 0;background:var(--bg);color:var(--text3);font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s}
-.mtab:hover{color:var(--primary);border-color:var(--primary)}
-.mtab.active{height:32px;background:var(--card);color:var(--primary);font-size:13px;font-weight:700}
+.period-tabs{display:flex;gap:0;background:var(--bg);border-radius:14px;padding:4px;margin:0 0 4px}
+.period-tab{flex:1;padding:8px 0;border-radius:10px;border:none;background:none;font-size:12px;font-weight:600;color:var(--text3);cursor:pointer;transition:all 0.25s;letter-spacing:0.2px}
+.period-tab.active{background:var(--card);color:var(--primary);font-weight:600;box-shadow:var(--shadow)}
 
 /* SUMMARY CARDS */
 .summary{padding:16px 16px 0;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:960px;margin:0 auto}
@@ -115,109 +111,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-amount.income{color:var(--green)}
 .tx-amount.expense{color:var(--red)}
 .tx-amount.debt{color:var(--orange)}
-
-.hp-nav{width:100%;display:flex;align-items:center;gap:8px;padding:9px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;cursor:pointer;text-align:start;margin-bottom:7px;transition:all 0.18s}
-.hp-nav:hover{border-color:var(--primary);color:var(--primary)}
-.hp-nav-ico{flex:none;display:flex;color:var(--text3)}
-.hp-nav:hover .hp-nav-ico{color:var(--primary)}
-.hp-nav-lbl{flex:1;min-width:0;font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.hp-nav-car{flex:none;font-size:13px;color:var(--text3)}
-.carry-card{max-width:928px;width:calc(100% - 32px);margin:12px auto 0;box-sizing:border-box;background:var(--card);border-radius:16px;padding:13px 16px;box-shadow:var(--shadow)}
-.carry-title{font-size:11px;font-weight:700;letter-spacing:0.4px;color:var(--text3);margin-bottom:9px}
-.carry-row{display:flex;align-items:baseline;justify-content:space-between;gap:10px;padding:4px 0}
-.carry-row.tot{border-top:1.5px solid var(--border);margin-top:4px;padding-top:8px}
-.carry-l{font-size:12.5px;color:var(--text2)}
-.carry-row.tot .carry-l{font-weight:700;color:var(--text)}
-.carry-v{font-size:13.5px;font-weight:700;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
-.carry-row.tot .carry-v{font-size:16px}
-
-/* HOME PICKER */
-#homePicker{padding:0}
-.hp-wrap{display:flex;align-items:stretch;max-width:960px;margin:0 auto;overflow:hidden}
-.hp-fixed{flex:0 0 36%;min-width:0;border-inline-end:1.5px solid var(--border);padding:12px 10px;align-self:stretch}
-.hp-fixed-hd{font-size:12px;font-weight:700;color:var(--text2);padding:0 2px 8px;border-bottom:1.5px solid var(--border);margin-bottom:8px}
-.hp-pick{flex:1;min-width:0;display:flex;flex-direction:column}
-.hp-years{display:flex;gap:6px;padding:12px 11px 10px;overflow-x:auto;scrollbar-width:none;border-bottom:1.5px solid var(--border)}
-.hp-years::-webkit-scrollbar{display:none}
-.hp-yr{flex:none;padding:7px 10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer;transition:all 0.18s}
-.hp-yr:hover{border-color:var(--primary);color:var(--primary)}
-.hp-yr.sel{background:var(--primary);border-color:var(--primary);color:#fff}
-.hp-yr.future{border-style:dashed}
-.hp-months{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;padding:11px;align-content:start}
-.hp-mo{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:24px 8px;box-shadow:var(--shadow);cursor:pointer;color:inherit;font:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:all 0.18s}
-.hp-mo:hover{border-color:var(--primary);transform:translateY(-1px)}
-.hp-mo-nm{font-size:15px;font-weight:700}
-.hp-mo-hint{font-size:11px;font-weight:700;color:var(--text3);line-height:1}
-.hp-mo.void{background:var(--card2);border:1.5px dashed var(--border);box-shadow:none;opacity:.65;cursor:default}
-.hp-mo.void:hover{transform:none;border-color:var(--border)}
-.hp-back-row{display:flex;align-items:center;gap:9px;padding:12px 16px 0;max-width:960px;margin:0 auto}
-.hp-back{width:30px;height:30px;flex:none;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.18s}
-.hp-back:hover{border-color:var(--primary);color:var(--primary)}
-.hp-back-lbl{font-size:15px;font-weight:700}
-/* Matches the breakpoint where the app collapses to its 430px mobile shell,
-   so the picker stacks whenever it is living inside that narrow column. */
-@media (max-width:1023px){
-  /* Two columns leave ~130px for the group names, which cuts them down to one
-     letter. Stack instead: months first, groups underneath. */
-  .hp-wrap{flex-direction:column;overflow:visible}
-  .hp-pick{order:1}
-  .hp-fixed{order:2;flex:1 1 auto;border-inline-end:none;border-top:1.5px solid var(--border);padding:14px 14px 6px}
-  .hp-years{padding:12px 14px 10px}
-  .hp-months{gap:10px;padding:12px 14px 16px}
-  .hp-mo-nm{font-size:16px}
-  .hp-mo-hint{font-size:12px}
-  .hp-nav{padding:12px}
-  .hp-nav-lbl{font-size:13px}
-  .hp-back{width:38px;height:38px;font-size:17px}
-  .hp-back-row{padding:12px 14px 0}
-  /* 24px-tall month tabs are below a comfortable touch target */
-  .mtab{height:34px;font-size:12px}
-  .mtab.active{height:42px;font-size:14px}
-  .carry-row{padding:9px 0}
-}
-
-/* HOME INCOME/EXPENSE PANES */
-.tx-tabs{display:flex;align-items:flex-end;gap:4px;margin-bottom:10px}
-.tx-tab{flex:1;padding:9px 0 7px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:700;
-  color:var(--text3);border-bottom:2.5px solid var(--border);transition:all 0.18s}
-.tx-tab:hover{color:var(--text2)}
-.tx-tab.active[data-t="income"]{color:var(--income);border-bottom-color:var(--income)}
-.tx-tab.active[data-t="expense"]{color:var(--expense);border-bottom-color:var(--expense)}
-.tx-sums{display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap}
-.tx-sum{font-size:11px;color:var(--text3);font-weight:600}
-.tx-sum b{display:block;font-size:14px;font-weight:700;color:var(--text);margin-top:1px}
-.tx-grp{margin-bottom:16px}
-.tx-grp-hdr{display:flex;align-items:baseline;justify-content:space-between;gap:8px;
-  padding-bottom:6px;margin-bottom:4px;border-bottom:1.5px solid var(--border)}
-.tx-grp-ttl{font-size:12px;font-weight:700;color:var(--text2)}
-.tx-grp-sum{font-size:12px;font-weight:700}
-.tx-row{display:flex;align-items:baseline;gap:8px;width:100%;padding:8px 6px;background:none;border:none;
-  border-radius:9px;color:inherit;font:inherit;text-align:start;cursor:pointer;transition:background 0.15s}
-.tx-row:hover{background:var(--card2)}
-.tx-row+.tx-row{border-top:1px solid var(--border)}
-.tx-row-nm{flex:1;min-width:0;font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;unicode-bidi:plaintext}
-.tx-row-dt{flex:none;font-size:11px;color:var(--text3);font-variant-numeric:tabular-nums}
-.tx-row-am{flex:none;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
-.tx-row-fix .tx-row-dt{color:var(--primary)}
-.tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
-.tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
-.rcpt-cap-ttl{font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px;letter-spacing:0.3px}
-.rcpt-strip{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.rcpt-strip::-webkit-scrollbar{display:none}
-.rcpt{flex:none;width:78px;background:var(--card);border:1.5px solid transparent;border-radius:11px;padding:5px;
-  box-shadow:var(--shadow);cursor:pointer;transition:all 0.18s;color:inherit;font:inherit;text-align:start}
-.rcpt:hover{border-color:var(--primary);transform:translateY(-1px)}
-.rcpt-thumb{width:100%;height:80px;border-radius:7px;background:var(--card2);display:flex;align-items:center;
-  justify-content:center;overflow:hidden;color:var(--text3)}
-.rcpt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.rcpt-cap{font-size:9px;font-weight:600;color:var(--text2);margin-top:4px;white-space:nowrap;overflow:hidden;
-  text-overflow:ellipsis;unicode-bidi:plaintext}
-.rcpt-amt{display:block;font-size:10px;font-weight:700;font-variant-numeric:tabular-nums;
-  unicode-bidi:isolate-override;direction:ltr}
-.year-net{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;
-  padding-top:10px;border-top:1.5px solid var(--border)}
-.year-net-l{font-size:12px;color:var(--text3);font-weight:600}
-.year-net-v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
 
 /* DEBTS SECTION */
 .debt-item{background:var(--card);border-radius:14px;padding:12px 14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow)}
@@ -724,14 +617,6 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .mqa-card{display:flex}
   .section{max-width:100% !important}
   /* Landing page mobile centering */
-  /* The hero panel filled the whole first screen on a phone, so the sign-in
-     card sat below the fold. Keep the brand, drop the sales copy. */
-  .lp-left{padding:16px 20px 14px !important}
-  .lp-logo-wrap{margin-bottom:0}
-  .lp-logo-wrap img{width:48px;height:48px}
-  .lp-wordmark{font-size:26px;letter-spacing:-1px;margin-top:8px}
-  .lp-tagline{font-size:12px;margin-top:2px}
-  .lp-headline,.lp-desc,.lp-features,.lp-trusted{display:none}
   .lp-right{align-items:center;padding:20px 16px}
   .lp-lang-pills{justify-content:center}
   .lp-auth-card{width:90%;max-width:380px;margin:0 auto}
@@ -1489,8 +1374,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-sub" id="lp-sub-default">Sign in or create your account</div>
           <button class="lp-btn" id="lp-btn-signin" onclick="lpShowLoginForm()" style="margin-top:8px">Sign In</button>
           <button class="lp-btn-outline" id="lp-btn-create" onclick="lpShowRegisterForm()">Create Account</button>
-          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
-          <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
 
         </div>
 
@@ -2211,9 +2094,31 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <button class="icon-btn" id="notif-bell-btn" onclick="toggleNotificationCenter()" style="position:relative"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span id="notif-badge" style="display:none;position:absolute;top:-2px;right:-2px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;min-width:14px;height:14px;border-radius:7px;align-items:center;justify-content:center;padding:0 3px;line-height:1"></span></button>
     </div>
   </div>
-  <div class="period-tabs" id="periodTabs">
-    <button type="button" class="year-chip" id="yearChip" onclick="cycleYear()">2026</button>
-    <div class="month-strip" id="monthStrip"></div>
+  <div class="period-tabs" id="periodTabs" style="position:relative">
+    <button class="period-tab" onclick="setPeriod('today',this)" data-period="today">Today</button>
+    <button class="period-tab" onclick="setPeriod('week',this)" data-period="week">Week</button>
+    <button class="period-tab active" onclick="setPeriod('month',this)" data-period="month">Month</button>
+    <button class="period-tab" onclick="setPeriod('quarter',this)" data-period="quarter">Quarter</button>
+    <button class="period-tab" onclick="setPeriod('year',this)" data-period="year">Year</button>
+    <button class="period-tab" id="customPeriodBtn" onclick="toggleCustomDatePopover()" data-period="custom"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg> Custom</button>
+    <div id="customDatePopover" style="display:none;position:absolute;top:100%;right:0;margin-top:6px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:16px;z-index:500;width:240px">
+      <div style="display:flex;gap:0;background:var(--bg);border-radius:10px;padding:3px;margin-bottom:12px">
+        <button type="button" id="customModeSingleBtn" onclick="setCustomDateMode('single')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:var(--card);color:var(--primary);font-size:12px;font-weight:600;cursor:pointer;box-shadow:var(--shadow)">Single Day</button>
+        <button type="button" id="customModeRangeBtn" onclick="setCustomDateMode('range')" style="flex:1;padding:7px 0;border-radius:8px;border:none;background:none;color:var(--text3);font-size:12px;font-weight:600;cursor:pointer">Date Range</button>
+      </div>
+      <div id="customSingleFields">
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateSingle" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
+      </div>
+      <div id="customRangeFields" style="display:none">
+        <label id="customFromLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">From</label>
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateFrom" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
+        <label id="customToLbl" style="display:block;font-size:11px;color:var(--text3);margin-bottom:4px">To</label>
+        <div class="date-fix-wrap" style="height:42px;margin-bottom:8px"><input type="date" id="customDateTo" style="position:absolute;inset:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;height:100%;box-sizing:border-box;margin-bottom:0"></div>
+      </div>
+      <div id="customDateError" style="display:none;color:var(--red);font-size:12px;margin-bottom:8px"></div>
+      <button type="button" id="customApplyBtn" onclick="applyCustomDateFilter()" style="width:100%;padding:10px 0;border-radius:10px;border:none;background:var(--green);color:#fff;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:8px">Apply</button>
+      <button type="button" id="customCancelBtn" onclick="toggleCustomDatePopover()" style="width:100%;background:none;border:none;color:var(--text3);font-size:13px;cursor:pointer">Cancel</button>
+    </div>
   </div>
   <div id="customDateActiveBar" style="display:none;align-items:center;gap:8px;margin:0 0 4px;padding:8px 12px;background:var(--bg);border-radius:14px">
     <span id="customDateActiveLabel" style="font-size:13px;font-weight:600;color:var(--text)"></span>
@@ -2224,32 +2129,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
 <!-- MAIN PAGE -->
 <div id="mainPage" class="scroll">
-  <!-- HOME PICKER: year → month -->
-  <div id="homePicker">
-    <div class="hp-wrap">
-      <div class="hp-fixed">
-        <div class="hp-fixed-hd" id="hpBizHd">Business</div>
-        <div id="hpBizBody"></div>
-      </div>
-      <div class="hp-pick">
-        <div class="hp-years" id="hpYears"></div>
-        <div class="hp-months" id="hpMonths"></div>
-      </div>
-    </div>
-  </div>
-
-  <div id="monthDetail" style="display:none">
-  <div class="hp-back-row">
-    <button type="button" class="hp-back" onclick="showHomePicker()" aria-label="Back">&#8592;</button>
-    <span class="hp-back-lbl" id="hpBackLbl"></span>
-  </div>
-  <div class="carry-card" id="carryCard">
-    <div class="carry-title" id="carryTitle">Saldo of past months</div>
-    <div class="carry-row"><span class="carry-l" id="carryNetL">Netto</span><span class="carry-v" id="carryNetV">-</span></div>
-    <div class="carry-row"><span class="carry-l" id="carryVatL">Steuer</span><span class="carry-v" id="carryVatV">-</span></div>
-    <div class="carry-row tot"><span class="carry-l" id="carryTotL">Total</span><span class="carry-v" id="carryTotV">-</span></div>
-  </div>
-
   <div id="dashboard-greeting" style="padding:12px 16px 0;font-size:14px;font-weight:600;color:var(--primary);display:none"></div>
 
   <!-- DASHBOARD SUMMARY CARDS -->
@@ -2340,22 +2219,19 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <!-- TRANSACTIONS -->
   <div class="section">
-    <div class="tx-tabs" id="txTabs">
-      <button type="button" class="tx-tab" data-t="income" onclick="setTxTab('income')">Income</button>
-      <button type="button" class="tx-tab active" data-t="expense" onclick="setTxTab('expense')">Expenses</button>
+    <div class="section-hdr">
+      <div class="section-title">Recent Transactions</div>
+      <div class="see-all" onclick="openAllTxPage()">See all <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><polyline points="9 18 15 12 9 6"/></svg></div>
     </div>
-    <div id="rcptStripWrap" style="display:none">
-      <div class="rcpt-cap-ttl" id="rcptStripTtl"></div>
-      <div class="rcpt-strip" id="rcptStrip"></div>
+    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>
+    <div class="tx-list" id="txList">
+      <div style="text-align:center;padding:30px;color:var(--text3);font-size:14px">
+        <span id="noTxMsg">No transactions yet.<br/>Tap + to add your first one!</span>
+      </div>
     </div>
-    <div class="tx-sums" id="txSums"></div>
-    <input type="text" id="txSearchInput" placeholder="Search transactions..." oninput="filterTransactions(this.value)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;margin-bottom:12px;outline:none">
-    <div id="txPanes"></div>
-    <div class="tx-list" id="txList" style="display:none"></div>
   </div>
 
 
-  </div>
 </div>
 
 <!-- REPORTS PAGE -->
@@ -2427,11 +2303,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <select id="uvaInterval" onchange="uvaIntervalChanged()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
       <select id="uvaPeriod" onchange="renderUva()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;box-sizing:border-box"></select>
     </div>
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
-      <span id="vatBasisLbl" style="font-size:12px;color:var(--text3);font-weight:600;flex:none"></span>
-      <select id="vatBasis" onchange="vatBasisChanged()" style="flex:1;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px"></select>
-    </div>
-    <div id="vatBasisHint" style="font-size:11px;color:var(--text3);margin:-6px 0 12px;line-height:1.5"></div>
     <div id="uvaTable" style="font-size:13px"></div>
     <div style="display:flex;gap:8px;margin-top:14px">
       <button onclick="uvaExportPDF()" style="flex:1;padding:11px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;font-weight:700;cursor:pointer">PDF</button>
@@ -2861,7 +2732,7 @@ var LANG = {
     clientBack: "Back", clientCall: "Call", clientEmailBtn: "Email", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Sales", Service:"Service", Rent:"Rent", Investment:"Investment", Other:"Other",
-      Fuel:"Fuel", Vehicle:"Vehicle", Government:"Government", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
+      Fuel:"Fuel", Vehicle:"Vehicle", Supplies:"Supplies", Salary:"Salary", Utilities:"Utilities", Marketing:"Marketing",
       Customer:"Customer", Supplier:"Supplier",
     }
   },
@@ -2930,7 +2801,7 @@ var LANG = {
     clientBack: "رجوع", clientCall: "اتصال", clientEmailBtn: "إيميل", clientWhatsApp: "واتساب",
     cats: {
       Sales:"مبيعات", Service:"خدمات", Rent:"إيجار", Investment:"استثمار", Other:"أخرى",
-      Fuel:"وقود", Vehicle:"عربية", Government:"جهات حكومية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
+      Fuel:"وقود", Vehicle:"عربية", Supplies:"مستلزمات", Salary:"رواتب", Utilities:"مرافق", Marketing:"تسويق",
       Customer:"عميل", Supplier:"مورد",
     }
   },
@@ -2999,7 +2870,7 @@ var LANG = {
     clientBack: "Zurück", clientCall: "Anrufen", clientEmailBtn: "E-Mail", clientWhatsApp: "WhatsApp",
     cats: {
       Sales:"Verkauf", Service:"Service", Rent:"Miete", Investment:"Investition", Other:"Sonstiges",
-      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Government:"Behörden", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
+      Fuel:"Kraftstoff", Vehicle:"Fahrzeug", Supplies:"Vorräte", Salary:"Gehalt", Utilities:"Nebenkosten", Marketing:"Marketing",
       Customer:"Kunde", Supplier:"Lieferant",
     }
   }
@@ -3020,14 +2891,9 @@ var state = {
   debts: [],
   currency: '€',
   lang: localStorage.getItem('smartac_lang') || 'en',
-  period: 'month',          // the home filter is always a single month now
-  txTab: 'expense',         // which side of the month the home list is showing
-  homeView: 'picker',       // 'picker' = year/month chooser, 'month' = the month screen
-  year: new Date().getFullYear(),
-  month: new Date().getMonth(),
+  period: 'month',
   customDateFilter: null,
   reportPeriod: 'month',
-  vatBasis: 'ist',
   currentType: 'income',
   currentCat: 'Sales',
   debtTab: 'owes',
@@ -3092,7 +2958,7 @@ function getCurrencyLabel(sym) {
 
 var CATS = {
   income: ['Sales','Service','Rent','Investment','Other'],
-  expense: ['Fuel','Vehicle','Supplies','Rent','Salary','Government','Utilities','Marketing','Other'],
+  expense: ['Fuel','Supplies','Rent','Salary','Utilities','Marketing','Other'],
   debt: ['Customer','Supplier','Other'],
 };
 
@@ -3234,7 +3100,7 @@ var SVG_ICON_PATHS = {
 };
 var CAT_ICON_KEYS = {
   Sales:'shoppingCart', Service:'scissors', Rent:'home', Investment:'trendingUp', Other:'pin',
-  Fuel:'droplet', Vehicle:'truck', Government:'building', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
+  Fuel:'droplet', Vehicle:'truck', Supplies:'packageIcon', Salary:'user', Utilities:'lightbulb', Marketing:'megaphone',
   Customer:'user', Supplier:'building',
 };
 function svgIcon(name, size) {
@@ -3263,7 +3129,6 @@ function save() {
   localStorage.setItem(uk('budgets'), JSON.stringify(state.budgets));
   localStorage.setItem(uk('lang'), state.lang);
   localStorage.setItem(uk('uvaInterval'), state.uvaInterval || 'quarter');
-  localStorage.setItem(uk('vatBasis'), state.vatBasis || 'ist');
   localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
   localStorage.setItem(uk('theme'), state.theme);
   localStorage.setItem(uk('fixed_income'), JSON.stringify(state.fixedIncome||[]));
@@ -3314,7 +3179,6 @@ function loadUserData() {
   state.installments = JSON.parse(localStorage.getItem(uk('installments')) || '[]');
   state.budgets = JSON.parse(localStorage.getItem(uk('budgets')) || '{}');
   state.uvaInterval = localStorage.getItem(uk('uvaInterval')) || 'quarter';
-  state.vatBasis = localStorage.getItem(uk('vatBasis')) || 'ist';
   state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
   state.theme = localStorage.getItem(uk('theme')) || 'light';
   state.fixedIncome = JSON.parse(localStorage.getItem(uk('fixed_income')) || '[]');
@@ -3375,7 +3239,7 @@ function txDateMatchesFilter(txDate) {
   }
   if(state.period === 'today') return txDate === todayStr;
   if(state.period === 'week') { var w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
-  if(state.period === 'month') return d.getMonth()===state.month && d.getFullYear()===state.year;
+  if(state.period === 'month') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
   if(state.period === 'quarter') return Math.floor(d.getMonth()/3)===Math.floor(now.getMonth()/3) && d.getFullYear()===now.getFullYear();
   if(state.period === 'year') return d.getFullYear()===now.getFullYear();
   return true;
@@ -7060,67 +6924,26 @@ function renderComingSoonPage(pageId, labelKey) {
 }
 
 // ── PERIOD ──
-function monthNamesLocal() { return KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en; }
-
-// Label for the active filter, e.g. "Juli 2026" — replaces the old t('month') wording.
-function periodLabelText() { return monthNamesLocal()[state.month] + ' ' + state.year; }
-
-// Years are derived from the data, never a fixed list: every year that has a
-// transaction, plus the current one, plus whatever is selected.
-function availableYears() {
-  var ys = {}, cur = new Date().getFullYear();
-  (state.transactions||[]).forEach(function(tx) {
-    if(tx && tx.date) { var y = parseInt(tx.date.substring(0,4),10); if(y) ys[y] = 1; }
-  });
-  ys[cur] = 1; ys[state.year] = 1;
-  return Object.keys(ys).map(Number).sort(function(a,b){ return a-b; });
-}
-
-function renderMonthTabs() {
-  var strip = document.getElementById('monthStrip');
-  if(strip) {
-    var h = '';
-    for(var m = 0; m < 12; m++) {
-      h += '<button type="button" class="mtab' + (m === state.month ? ' active' : '') +
-           '" onclick="setMonth(' + m + ')" title="' + escHtml(monthNamesLocal()[m]) + '">' + (m+1) + '</button>';
-    }
-    strip.innerHTML = h;
-  }
-  var yc = document.getElementById('yearChip');
-  if(yc) yc.textContent = state.year;
-}
-
-function setMonth(m) {
-  state.month = m;
-  state.period = 'month';
+function setPeriod(p, btn) {
+  state.period = p;
   state.customDateFilter = null;
+  closeCustomDatePopover();
   renderCustomDateActiveBar();
-  renderMonthTabs();
+  document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.period-tab').forEach(function(b){
+    if(b.getAttribute('data-period') === p) b.classList.add('active');
+  });
   renderHome();
+  // If reports page is visible, refresh its chart too
   var rp = document.getElementById('reportsPage');
   if(rp && rp.style.display !== 'none') { renderReports(); renderChart(); }
-}
-
-function cycleYear() {
-  var ys = availableYears(), i = ys.indexOf(state.year);
-  state.year = ys[(i + 1) % ys.length];
-  setMonth(state.month);
-}
-
-// Jump the home filter to whatever month a date belongs to.
-function goToDate(dateStr) {
-  var y = parseInt((dateStr||'').substring(0,4),10), m = parseInt((dateStr||'').substring(5,7),10) - 1;
-  if(!y || isNaN(m) || m < 0 || m > 11) return false;
-  if(y === state.year && m === state.month) return false;
-  state.year = y;
-  openMonthDetail(m);
-  return true;
 }
 
 function updatePeriodBarVisibility(page) {
   var periodTabs = document.getElementById('periodTabs');
   if(!periodTabs) return;
-  periodTabs.style.display = (page === 'home' && state.homeView === 'month' && !state.customDateFilter) ? 'flex' : 'none';
+  periodTabs.style.display = (page === 'home' && !state.customDateFilter) ? 'flex' : 'none';
   var activeBar = document.getElementById('customDateActiveBar');
   if(activeBar) activeBar.style.display = (page === 'home' && state.customDateFilter) ? 'flex' : 'none';
 }
@@ -7184,14 +7007,18 @@ function applyCustomDateFilter() {
   }
   if(err) err.style.display = 'none';
   closeCustomDatePopover();
+  document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
   renderCustomDateActiveBar();
   renderHome();
 }
 
 function clearCustomDateFilter() {
   state.customDateFilter = null;
-  state.period = 'month';
-  renderMonthTabs();
+  state.period = 'today';
+  document.querySelectorAll('.period-tab').forEach(function(b){
+    b.classList.remove('active');
+    if(b.getAttribute('data-period') === 'today') b.classList.add('active');
+  });
   renderCustomDateActiveBar();
   renderHome();
 }
@@ -7457,7 +7284,7 @@ function openVatBreakdown(type) {
   var totalNetto = 0, totalSteuer = 0, totalBrutto = 0;
   groupOrder.forEach(function(cat){ totalNetto += groups[cat].netto; totalSteuer += groups[cat].steuer; totalBrutto += groups[cat].brutto; });
 
-  var subtitle = state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText();
+  var subtitle = state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period);
 
   var cs = 'background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:16px';
   var h = '<div style="' + cs + '">';
@@ -7547,46 +7374,6 @@ var UVA_TXT = {
                ar:'تحضير لتقرير UVA — ليس استشارة ضريبية. التقديم الرسمي يتم عبر FinanzOnline. ملفات PDF/Excel بتطلع بالألماني للمحاسب.',
                de:'Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.'}
 };
-var VATBASIS_L = {
-  label: {en:'Basis',            ar:'أساس الاحتساب',        de:'Versteuerung'},
-  ist:   {en:'When paid (cash)', ar:'وقت التحصيل',          de:'Ist-Besteuerung'},
-  soll:  {en:'When invoiced',    ar:'وقت الكتابة',          de:'Soll-Besteuerung'},
-  istHint:  {en:'A sales invoice counts as income on the day it is paid.',
-             ar:'الفاتورة الصادرة بتتحسب دخل يوم ما تتحصّل.',
-             de:'Eine Ausgangsrechnung zählt am Zahlungstag als Einnahme.'},
-  sollHint: {en:'A sales invoice counts as income on its issue date, paid or not.',
-             ar:'الفاتورة الصادرة بتتحسب دخل بتاريخ إصدارها، اتحصّلت أو لأ.',
-             de:'Eine Ausgangsrechnung zählt am Rechnungsdatum als Einnahme, bezahlt oder nicht.'},
-  switched: {en:'Applies to invoices created from now on.',
-             ar:'بينطبق على الفواتير اللي بتتعمل من هلق وجاي.',
-             de:'Gilt für künftig erstellte Rechnungen.'},
-};
-function vbt(k) { return (VATBASIS_L[k] && (VATBASIS_L[k][state.lang] || VATBASIS_L[k].en)) || k; }
-
-// Which event puts a sales invoice on the books. Austrian businesses run one or
-// the other, never both — the choice has to be exclusive or invoices get counted
-// twice (once when written, once when paid).
-function vatBasisChanged() {
-  var sel = document.getElementById('vatBasis');
-  if(sel) { state.vatBasis = sel.value; save(); }
-  renderVatBasis();
-  showToast(vbt('switched'), 'success');
-}
-
-function renderVatBasis() {
-  var basis = state.vatBasis || 'ist';
-  var lbl = document.getElementById('vatBasisLbl');
-  if(lbl) lbl.textContent = vbt('label');
-  var sel = document.getElementById('vatBasis');
-  if(sel) {
-    sel.innerHTML = '<option value="ist">' + escHtml(vbt('ist')) + '</option>'
-                  + '<option value="soll">' + escHtml(vbt('soll')) + '</option>';
-    sel.value = basis;
-  }
-  var hint = document.getElementById('vatBasisHint');
-  if(hint) hint.textContent = vbt(basis === 'soll' ? 'sollHint' : 'istHint');
-}
-
 function uvat(k) { var lang = state.lang; return (UVA_TXT[k] && (UVA_TXT[k][lang] || UVA_TXT[k].en)) || k; }
 
 function uvaKeyForDate(dateStr, interval) {
@@ -7693,7 +7480,6 @@ function uvaAllPeriods(interval, transactions) {
 }
 
 function uvaPopulatePeriods() {
-  renderVatBasis();
   var interval = state.uvaInterval || 'quarter';
   var ivSel = document.getElementById('uvaInterval');
   if(ivSel) {
@@ -8587,8 +8373,10 @@ function scanInvoicesSaveAll() {
   // to a custom range covering the saved dates so the user actually sees
   // what they just added instead of it silently vanishing from view.
   if(savedDates.length && !savedDates.every(txDateMatchesFilter)) {
-    // Show the month the invoice actually belongs to, not the one that happened to be open.
-    goToDate(savedDates.reduce(function(a,b){ return b < a ? b : a; }));
+    var minDate = savedDates.reduce(function(a,b){ return b < a ? b : a; });
+    var maxDate = savedDates.reduce(function(a,b){ return b > a ? b : a; });
+    state.customDateFilter = minDate === maxDate ? {mode:'single', date:minDate} : {mode:'range', from:minDate, to:maxDate};
+    document.querySelectorAll('.period-tab').forEach(function(b){ b.classList.remove('active'); });
   }
 
   save();
@@ -10490,8 +10278,8 @@ function getPrevPeriodData() {
       return d > w2start && d <= w2end;
     }
     if(state.period === 'month') {
-      var pm = state.month === 0 ? 11 : state.month-1;
-      var py = state.month === 0 ? state.year-1 : state.year;
+      var pm = now.getMonth() === 0 ? 11 : now.getMonth()-1;
+      var py = now.getMonth() === 0 ? now.getFullYear()-1 : now.getFullYear();
       return d.getMonth()===pm && d.getFullYear()===py;
     }
     if(state.period === 'quarter') {
@@ -10600,12 +10388,6 @@ function calculateNetIncome(filteredTransactions) {
 }
 
 function renderHome() {
-  if(state.homeView === 'picker') { renderHomePicker(); return; }
-  renderMonthTabs();
-  var backLbl = document.getElementById('hpBackLbl');
-  if(backLbl) backLbl.textContent = periodLabelText();
-  renderCarryCard();
-  renderTxPanes();
   try {
   // Always reload from storage to ensure data is fresh: compare the
   // currently active session (read fresh, never cached) against whichever
@@ -10702,7 +10484,7 @@ function renderHome() {
   var total = state.transactions.length;
   if(netSubEl) netSubEl.textContent = total === 0
     ? t('noTx').split('\n')[0]
-    : txs.length + ' ' + t('transactions') + ' • ' + (state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText());
+    : txs.length + ' ' + t('transactions') + ' • ' + (state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period));
 
   var incomeChangeEl = document.getElementById('incomeChange');
   var expenseChangeEl = document.getElementById('expenseChange');
@@ -10936,380 +10718,6 @@ function closeTxDetail() {
   _currentTx = null;
 }
 
-
-// ── HOME INCOME / EXPENSE PANES ──
-var HOMEP_L = {
-  income:   {en:'Income',        ar:'الدخل',            de:'Einnahmen'},
-  expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
-  netto:    {en:'Net',           ar:'الصافي',           de:'Netto'},
-  vat:      {en:'VAT',           ar:'الضريبة',          de:'MwSt.'},
-  fixOut:   {en:'Fixed \u00b7 due',  ar:'دفعات ثابتة \u00b7 مستحقة', de:'Fixzahlungen \u00b7 offen'},
-  fixIn:    {en:'Fixed \u00b7 due',  ar:'دخل ثابت \u00b7 مستحق',    de:'Fixe Einnahmen \u00b7 offen'},
-  restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
-  restIn:   {en:'Other income',  ar:'دخل آخر',          de:'Übrige Einnahmen'},
-  salary:   {en:'Salary',        ar:'راتب',             de:'Gehalt'},
-  none:     {en:'Nothing fixed yet', ar:'ما في دفعات ثابتة', de:'Noch keine Fixzahlungen'},
-  docs:     {en:'Invoice photos',    ar:'صور الفواتير',     de:'Belege'},
-  fixedHd:  {en:'Fixed costs',       ar:'الدفعات الثابتة',  de:'Fixkosten'},
-  otherHd:  {en:'Other',             ar:'أخرى',             de:'Sonstiges'},
-  bizHd:    {en:'Business',          ar:'الشركة',           de:'Betrieb'},
-  navFleet: {en:'Fleet',             ar:'الأسطول',          de:'Fuhrpark'},
-  navCont:  {en:'Contacts',          ar:'جهات الاتصال',     de:'Kontakte'},
-  navEmp:   {en:'Employees',         ar:'الموظفين',         de:'Mitarbeiter'},
-  navLog:   {en:'Daily Log',         ar:'سجل الأعمال',      de:'Tagesprotokoll'},
-  carryHd:  {en:'Saldo of past months', ar:'رصيد الشهور السابقة', de:'Saldo der Vormonate'},
-  carryNet: {en:'Netto',             ar:'الصافي',           de:'Netto'},
-  carryVat: {en:'Steuer (MwSt)',     ar:'الضريبة',          de:'Steuer (MwSt)'},
-  carryTot: {en:'Total',             ar:'الإجمالي',         de:'Total'},
-  today:    {en:'Today',             ar:'ملخص اليوم',       de:'Heute'},
-  debtsHd:  {en:'Debts',             ar:'الديون',           de:'Schulden'},
-  owesMe:   {en:'Owed to you',       ar:'لك',               de:'Forderungen'},
-  iOwe:     {en:'You owe',           ar:'عليك',             de:'Verbindlichkeiten'},
-  noneToday:{en:'Nothing booked today', ar:'ما في حركات اليوم', de:'Heute noch nichts gebucht'},
-  noDebts:  {en:'No open debts',     ar:'ما في ديون مفتوحة', de:'Keine offenen Schulden'},
-  seeAll:   {en:'Open debts page',   ar:'افتح صفحة الديون', de:'Zur Schuldenseite'},
-  yearNet:  {en:'Year net',      ar:'الصافي السنوي',    de:'Jahressaldo'},
-};
-function hptx(k) { return (HOMEP_L[k] && HOMEP_L[k][state.lang]) || (HOMEP_L[k] && HOMEP_L[k].en) || k; }
-
-// Recurring rules rendered as the rows they produce in the selected month.
-// Shape comes straight from state.recurring / state.fixedIncome / state.employees.
-function fixedRowsFor(type, forYear, forMonth) {
-  // checkRecurringDue() turns each rule into a real transaction once its day
-  // arrives and stamps lastRecorded = 'YYYY-MM'. So a rule belongs in this group
-  // only while it is still unbooked for the month on screen — otherwise it is
-  // already sitting in the transactions group and would be counted twice.
-  var y = (forYear == null) ? state.year : forYear;
-  var m = (forMonth == null) ? state.month : forMonth;
-  var monthKey = y + '-' + pad2(m + 1);
-  var now = new Date();
-  var nowKey = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
-  if(monthKey < nowKey) return [];   // past months: everything was booked at the time
-
-  var rows = [];
-  function add(src, name, amount, vatRate, day) {
-    if(src.lastRecorded === monthKey) return;
-    var amt = parseFloat(amount) || 0;
-    if(amt <= 0) return;
-    rows.push({name: name, amount: amt, vatRate: parseFloat(vatRate) || 0,
-               day: parseInt(day, 10) || 1, fixed: true});
-  }
-  if(type === 'expense') {
-    (state.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
-    (state.employees || []).forEach(function(e) {
-      add(e, hptx('salary') + ' \u00b7 ' + (e.name || e.fullName || ''), e.salary, 0, 1);
-    });
-  } else {
-    (state.fixedIncome || []).forEach(function(fi) { add(fi, fi.name, fi.amount, fi.vatRate, fi.day); });
-  }
-  return rows.sort(function(a, b) { return a.day - b.day; });
-}
-
-function sumRows(rows) {
-  var brutto = 0, netto = 0;
-  rows.forEach(function(r) {
-    var v = vatBreakdown(r.amount, r.vatRate || 0);
-    brutto += v.brutto; netto += v.netto;
-  });
-  return {brutto: brutto, netto: netto, steuer: brutto - netto};
-}
-
-// Net for a whole year, using the same model the month cards use:
-// the year's transactions plus the fixed rows once per elapsed month.
-function yearNetTotal(y) {
-  // Booked months are already in state.transactions; only the rest of the
-  // current year is still carried by the unbooked rules.
-  var net = 0;
-  (state.transactions || []).forEach(function(tx) {
-    if(!tx || !tx.date || parseInt(tx.date.substring(0, 4), 10) !== y) return;
-    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
-    net += tx.type === 'income' ? n : -n;
-  });
-  var now = new Date();
-  if(y === now.getFullYear()) {
-    var openNet = sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto;
-    net += openNet;
-  }
-  return net;
-}
-
-// ── RECEIPT STRIP ──
-// The month's attachments, shown as the documents they are. Two storage paths
-// feed it: tx.invoice is an inline data URL, tx.receiptId points at a blob in
-// IndexedDB — so thumbnails for the latter resolve asynchronously.
-var _stripUrls = [];
-function releaseStripUrls() {
-  _stripUrls.forEach(function(u) { try { URL.revokeObjectURL(u); } catch(e) {} });
-  _stripUrls = [];
-}
-
-function renderReceiptStrip(type) {
-  var wrap = document.getElementById('rcptStripWrap');
-  var strip = document.getElementById('rcptStrip');
-  if(!wrap || !strip) return;
-  releaseStripUrls();
-
-  var docs = getFiltered().filter(function(tx) {
-    return tx.type === type && (tx.invoice || tx.receiptId);
-  });
-  if(!docs.length) { wrap.style.display = 'none'; strip.innerHTML = ''; return; }
-
-  var ttl = document.getElementById('rcptStripTtl');
-  if(ttl) ttl.textContent = hptx('docs');
-  wrap.style.display = '';
-
-  var fileIcon = svgIcon('fileText', 26);
-  strip.innerHTML = '';
-  docs.forEach(function(tx) {
-    var btn = document.createElement('button');
-    btn.type = 'button';
-    btn.className = 'rcpt';
-    btn.innerHTML = '<span class="rcpt-thumb">' + fileIcon + '</span>'
-      + '<span class="rcpt-cap">' + escHtml(tx.name || '') + '</span>'
-      + '<span class="rcpt-amt" style="color:' + (type === 'income' ? 'var(--income)' : 'var(--expense)') + '">'
-      + (type === 'income' ? '+' : '-') + fmt(tx.amount) + '</span>';
-    var thumb = btn.querySelector('.rcpt-thumb');
-
-    if(tx.invoice) {
-      if(String(tx.invoice).indexOf('data:image/') === 0) thumb.innerHTML = '<img alt="" src="' + tx.invoice + '"/>';
-      btn.onclick = function() { openInvoice(tx.invoice, tx.invoiceName || 'Invoice'); };
-    } else {
-      btn.onclick = function() {
-        receiptGet(tx.receiptId).then(function(rec) { if(rec) openReceiptViewer(rec); });
-      };
-      receiptGet(tx.receiptId).then(function(rec) {
-        if(!rec || !rec.blob || !thumb.isConnected) return;
-        if((rec.type || '').indexOf('image/') !== 0) return;   // PDFs keep the document icon
-        var u = URL.createObjectURL(rec.blob);
-        _stripUrls.push(u);
-        thumb.innerHTML = '<img alt="" src="' + u + '"/>';
-      }).catch(function() {});
-    }
-    strip.appendChild(btn);
-  });
-}
-
-
-// ── HOME PICKER ──
-
-// Years offered on the picker: every year with data, the current one, and two
-// ahead — fixed commitments are known before the year starts.
-function pickerYears() {
-  var ys = {}, cur = new Date().getFullYear();
-  (state.transactions || []).forEach(function(tx) {
-    if(tx && tx.date) { var y = parseInt(tx.date.substring(0,4),10); if(y) ys[y] = 1; }
-  });
-  for(var i = 0; i <= 2; i++) ys[cur + i] = 1;
-  ys[state.year] = 1;
-  return Object.keys(ys).map(Number).sort(function(a,b){ return a-b; });
-}
-
-// Net for one month under the same model the month view uses: that month's
-// transactions, plus the fixed rules that have not been booked into them yet.
-function monthNetFor(y, m) {
-  var monthPrefix = y + '-' + pad2(m + 1);
-  var net = 0, seen = false;
-  (state.transactions || []).forEach(function(tx) {
-    if(!tx || !tx.date || tx.date.substring(0,7) !== monthPrefix) return;
-    seen = true;
-    var n = vatBreakdown(tx.amount, tx.vatRate || 0).netto;
-    net += tx.type === 'income' ? n : -n;
-  });
-  var fIn = fixedRowsFor('income', y, m), fOut = fixedRowsFor('expense', y, m);
-  if(fIn.length || fOut.length) seen = true;
-  net += sumRows(fIn).netto - sumRows(fOut).netto;
-  return seen ? net : null;
-}
-
-function showHomePicker() {
-  state.homeView = 'picker';
-  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
-  if(hp) hp.style.display = '';
-  if(md) md.style.display = 'none';
-  updatePeriodBarVisibility('home');
-  renderHomePicker();
-}
-
-function openMonthDetail(m) {
-  state.month = m;
-  state.homeView = 'month';
-  var hp = document.getElementById('homePicker'), md = document.getElementById('monthDetail');
-  if(hp) hp.style.display = 'none';
-  if(md) md.style.display = '';
-  updatePeriodBarVisibility('home');
-  renderHome();
-}
-
-function renderHomePicker() {
-  var names = monthNamesLocal();
-
-  var yb = document.getElementById('hpYears');
-  if(yb) {
-    var cur = new Date().getFullYear(), h = '';
-    pickerYears().forEach(function(y) {
-      h += '<button type="button" class="hp-yr' + (y === state.year ? ' sel' : '') +
-           (y > cur ? ' future' : '') + '" onclick="hpSetYear(' + y + ')">' + y + '</button>';
-    });
-    yb.innerHTML = h;
-    var sel = yb.querySelector('.sel');
-    if(sel) yb.scrollLeft = sel.offsetLeft - (yb.clientWidth - sel.offsetWidth) / 2;
-  }
-
-  var mb = document.getElementById('hpMonths');
-  if(mb) {
-    var h2 = '';
-    for(var m = 0; m < 12; m++) {
-      // The card carries the month name only. Figures live inside the month.
-      var net = monthNetFor(state.year, m);
-      h2 += '<button type="button" class="hp-mo' + (net === null ? ' void' : '') + '"' +
-            (net === null ? '' : ' onclick="openMonthDetail(' + m + ')"') + '>' +
-            '<span class="hp-mo-nm">' + escHtml(names[m]) + '</span>' +
-            (net === null ? '<span class="hp-mo-hint">&#8212;</span>' : '') + '</button>';
-    }
-    mb.innerHTML = h2;
-  }
-
-  var lbl = document.getElementById('hpBackLbl');
-  if(lbl) lbl.textContent = periodLabelText();
-  renderHomeBiz();
-}
-
-function hpSetYear(y) { state.year = y; renderHomePicker(); }
-
-
-
-
-
-
-
-// Everything booked in this year before the month on screen — the balance the
-// month opens with, rather than a figure for the month itself.
-function carryInTotals(y, m) {
-  var netto = 0, vat = 0;
-  (state.transactions || []).forEach(function(tx) {
-    if(!tx || !tx.date) return;
-    var ty = parseInt(tx.date.substring(0,4), 10);
-    var tm = parseInt(tx.date.substring(5,7), 10) - 1;
-    if(ty !== y || tm >= m) return;
-    var v = vatBreakdown(tx.amount, tx.vatRate || 0);
-    if(tx.type === 'income')      { netto += v.netto; vat += v.steuer; }
-    else if(tx.type === 'expense'){ netto -= v.netto; vat -= v.steuer; }
-  });
-  return {netto: netto, vat: vat, total: netto - vat};
-}
-
-function renderCarryCard() {
-  var c = carryInTotals(state.year, state.month);
-  function put(id, v, neutral) {
-    var el = document.getElementById(id);
-    if(!el) return;
-    el.textContent = (Math.abs(v) < 0.005 ? '' : (v > 0 ? '+' : '-')) + fmt(Math.abs(v));
-    el.style.color = neutral ? 'var(--text)' :
-      (Math.abs(v) < 0.005 ? 'var(--text3)' : (v > 0 ? 'var(--income)' : 'var(--expense)'));
-  }
-  var ttl = document.getElementById('carryTitle');
-  if(ttl) ttl.textContent = hptx('carryHd');
-  ['carryNetL:carryNet','carryVatL:carryVat','carryTotL:carryTot'].forEach(function(pair) {
-    var p = pair.split(':'), el = document.getElementById(p[0]);
-    if(el) el.textContent = hptx(p[1]);
-  });
-  put('carryNetV', c.netto);
-  put('carryVatV', -c.vat);      // VAT collected is money owed on, so it reads as a deduction
-  put('carryTotV', c.total);
-  var card = document.getElementById('carryCard');
-  // January has nothing before it, and an all-zero card is just noise on a phone
-  var empty = Math.abs(c.netto) < 0.005 && Math.abs(c.vat) < 0.005 && Math.abs(c.total) < 0.005;
-  if(card) card.style.display = (state.month === 0 || empty) ? 'none' : '';
-}
-
-// Straight shortcuts to the pages these things already live on.
-function renderHomeBiz() {
-  var host = document.getElementById('hpBizBody');
-  if(!host) return;
-  var items = [
-    {view:'fleet',     label:'navFleet', icon:'truck',     show: state.businessType === 'transport'},
-    {view:'contacts',  label:'navCont',  icon:'building',  show: true},
-    {view:'employees', label:'navEmp',   icon:'users',     show: true},
-    {view:'agenda',    label:'navLog',   icon:'checklist', show: true}
-  ];
-  var h = '';
-  items.forEach(function(it) {
-    if(!it.show) return;
-    h += '<button type="button" class="hp-nav" onclick="showNav(\'' + it.view + '\')">' +
-         '<span class="hp-nav-ico">' + svgIcon(it.icon, 15) + '</span>' +
-         '<span class="hp-nav-lbl">' + escHtml(hptx(it.label)) + '</span>' +
-         '<span class="hp-nav-car">&rsaquo;</span></button>';
-  });
-  host.innerHTML = h;
-  var bh = document.getElementById('hpBizHd');
-  if(bh) bh.textContent = hptx('bizHd');
-}
-
-
-function setTxTab(t) {
-  state.txTab = t;
-  renderTxPanes();
-}
-
-function renderTxPanes() {
-  var host = document.getElementById('txPanes');
-  if(!host) return;
-  var type = state.txTab === 'income' ? 'income' : 'expense';
-
-  document.querySelectorAll('.tx-tab').forEach(function(b) {
-    var bt = b.getAttribute('data-t');
-    b.textContent = hptx(bt);
-    b.classList.toggle('active', bt === type);
-  });
-
-  var txs = getFiltered().filter(function(tx) { return tx.type === type; })
-              .map(function(tx) {
-                return {name: tx.name, amount: tx.amount, vatRate: tx.vatRate || 0,
-                        day: parseInt((tx.date || '').substring(8, 10), 10) || 1, tx: tx};
-              }).sort(function(a, b) { return a.day - b.day; });
-  var fixed = fixedRowsFor(type);
-  var sTx = sumRows(txs), sFix = sumRows(fixed);
-  var color = type === 'income' ? 'var(--income)' : 'var(--expense)';
-  var sign = type === 'income' ? '+' : '-';
-
-  renderReceiptStrip(type);
-
-  var sums = document.getElementById('txSums');
-  if(sums) {
-    sums.innerHTML = '<div class="tx-sum">' + escHtml(hptx('netto')) + '<b>' + fmt(sTx.netto + sFix.netto) + '</b></div>'
-      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>';
-  }
-
-  function group(title, rows, total, isFixed) {
-    if(!rows.length) return '';
-    var h = '<div class="tx-grp"><div class="tx-grp-hdr"><span class="tx-grp-ttl">' + escHtml(title) + '</span>'
-          + '<span class="tx-grp-sum" style="color:' + color + '">' + sign + fmt(total) + '</span></div>';
-    rows.forEach(function(r, i) {
-      var dd = pad2(r.day) + '.' + pad2(state.month + 1) + '.' + state.year;
-      h += '<button type="button" class="tx-row' + (isFixed ? ' tx-row-fix' : '') + '"'
-         + (isFixed ? '' : ' data-tx="' + i + '"') + '>'
-         + '<span class="tx-row-nm">' + escHtml(r.name || '') + '</span>'
-         + '<span class="tx-row-dt">' + dd + '</span>'
-         + '<span class="tx-row-am" style="color:' + color + '">' + sign + fmt(r.amount) + '</span></button>';
-    });
-    return h + '</div>';
-  }
-
-  var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
-           + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
-  if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
-
-  var yn = yearNetTotal(state.year);
-  html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
-        + '<span class="year-net-v" style="color:' + (yn >= 0 ? 'var(--income)' : 'var(--expense)') + '">'
-        + (yn >= 0 ? '+' : '-') + fmt(Math.abs(yn)) + '</span></div>';
-
-  host.innerHTML = html;
-  host.querySelectorAll('[data-tx]').forEach(function(el) {
-    el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
-  });
-}
-
 function renderTxList(txs, showAll) {
   var list = document.getElementById('txList');
   if(!list) return;
@@ -11363,12 +10771,8 @@ function txSearchBlob(tx) {
 
 function filterTransactions(query) {
   var q = (query || '').toLowerCase();
-  var panes = document.getElementById('txPanes');
-  var list = document.getElementById('txList');
-  if(panes) panes.style.display = q ? 'none' : '';
-  if(list) list.style.display = q ? '' : 'none';
   if(!q) {
-    renderTxPanes();
+    renderTxList(getFiltered());
     return;
   }
   var filtered = state.transactions.filter(function(tx) {
@@ -11398,7 +10802,7 @@ function openAllTxPage() {
   html += '<div style="flex:1;font-size:16px;font-weight:700">' + titleLbl + '</div>';
   html += '</div>';
   html += '<div style="padding:16px">';
-  html += '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(state.customDateFilter ? buildCustomDateFilterSubLabel() : periodLabelText()) + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(state.customDateFilter ? buildCustomDateFilterSubLabel() : t(state.period)) + '</div>';
   html += '<input type="text" id="allTxSearchInput" placeholder="' + escHtml(t('searchTx')) + '" oninput="filterAllTx(this.value)" style="width:100%;padding:12px 16px;border-radius:14px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:14px;outline:none"/>';
   html += '<div id="allTxList"></div>';
   html += '</div>';
@@ -11816,7 +11220,7 @@ function shareReport() {
   var expense = periodTxs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+t.amount;},0);
   var periodLabels = {today:{en:'Today',ar:'اليوم',de:'Heute'},week:{en:'This Week',ar:'هذا الأسبوع',de:'Diese Woche'},month:{en:'This Month',ar:'هذا الشهر',de:'Diesen Monat'},year:{en:'This Year',ar:'هذا العام',de:'Dieses Jahr'}};
   var lang = state.lang;
-  var periodLabel = periodLabelText();
+  var periodLabel = (periodLabels[state.period]&&periodLabels[state.period][lang])||'Period';
   var text = periodLabel+'\n\n'+t('totalIncome')+': '+fmt(income)+'\n'+t('totalExpenses')+': '+fmt(expense)+'\n'+t('netProfit')+': '+fmt(income-expense)+'\n\nSent via Trabis';
   if(navigator.share) navigator.share({text:text});
   else { if(navigator.clipboard&&navigator.clipboard.writeText) navigator.clipboard.writeText(text); showToast(t('reportCopied')||'Report copied!', 'success'); }
@@ -12003,7 +11407,13 @@ function applyLang() {
   var mqaInvoiceLbl = document.getElementById('mqa-lbl-invoice');
   if(mqaInvoiceLbl) mqaInvoiceLbl.textContent = {en:'Invoice', ar:'فاتورة', de:'Rechnung'}[state.lang] || 'Invoice';
 
-  renderMonthTabs();
+  // Update period tabs
+  ['today','week','month','quarter','year'].forEach(function(p,i) {
+    var tabs = document.querySelectorAll('.period-tab');
+    if(tabs[i]) tabs[i].textContent = t(p);
+  });
+  var customBtnEl = document.getElementById('customPeriodBtn');
+  if(customBtnEl) customBtnEl.innerHTML = svgIcon('calendar',12) + ' ' + escHtml(t('custom'));
   var modeSingleBtn = document.getElementById('customModeSingleBtn');
   if(modeSingleBtn) modeSingleBtn.textContent = t('singleDay');
   var modeRangeBtn = document.getElementById('customModeRangeBtn');
@@ -13182,7 +12592,7 @@ function exportData() {
   }
   function row() { return Array.prototype.slice.call(arguments).map(esc).join(','); }
 
-  var periodLabel = periodLabelText();
+  var periodLabel = (l.periods && l.periods[state.period]) || state.period;
   var lines = [];
 
   // ── Header ──
@@ -13717,9 +13127,7 @@ async function deleteReceivedInvoice(idx) {
   save(); renderInvoicesPage();
 }
 
-// Books the income a sales invoice represents. Guarded by inv.incomeTxId so an
-// invoice can never be booked twice, whichever basis it was booked under.
-function bookInvoiceIncome(inv, bookDate) {
+function handleInvoicePaid(inv) {
   if(inv.incomeTxId) return;
   var items = inv.items || [];
   var vatRate = inv.vatRate || 0;
@@ -13744,7 +13152,7 @@ function bookInvoiceIncome(inv, bookDate) {
       amount: g.amount * (1 + vatRate / 100),
       type: 'income',
       category: cat,
-      date: bookDate || today(),
+      date: today(),
       invoice: null,
       invoiceName: null,
       clientId: inv.clientId || null,
@@ -13755,15 +13163,9 @@ function bookInvoiceIncome(inv, bookDate) {
     });
   });
   inv.incomeTxId = firstTxId;
-}
 
-// Called when an invoice is actually paid: books the income if it is not on the
-// books yet (Ist-Besteuerung) and issues the payment receipt either way.
-function handleInvoicePaid(inv) {
-  bookInvoiceIncome(inv, today());
   if(!inv.autoReceiptId) {
-    var items = inv.items || [];
-    var receiptId = Date.now() + 1;
+    var receiptId = Date.now() + order.length;
     state.receipts.push({
       id: receiptId,
       number: 'REC-' + receiptId,
@@ -14132,8 +13534,6 @@ function saveIssuedInvoice() {
   _recalcInvoiceTotals();
   var inv = _collectInvoiceFormData('issued');
   state.issuedInvoices.push(inv);
-  // Soll-Besteuerung: the income belongs to the invoice date, not the payment.
-  if(state.vatBasis === 'soll') bookInvoiceIncome(inv, inv.issueDate);
   if(inv.status === 'Paid') handleInvoicePaid(inv);
   save();
   _activeInvoiceTab = 'issued';
@@ -15495,7 +14895,6 @@ var LP_TEXT = {
     errWrong:'Incorrect username or password', errExists:'Username already taken',
     version:'Trabis v1.5 · Business Tracking System',
     gotoLogin:'Sign In', gotoRegister:'Create Account',
-    demoBtn:'Try the demo — no sign-up', demoNote:'Sample data on this device only. Nothing is sent anywhere.',
     fullName:'Full Name', email:'Email', phone:'Phone Number', country:'Country',
     confirmPass:'Confirm Password',
     showPw:'Show', hidePw:'Hide',
@@ -15526,7 +14925,6 @@ var LP_TEXT = {
     errWrong:'اسم المستخدم أو كلمة المرور غير صحيحة', errExists:'اسم المستخدم مستخدم بالفعل',
     version:'Trabis v1.5 · نظام تتبع الأعمال',
     gotoLogin:'تسجيل الدخول', gotoRegister:'إنشاء حساب',
-    demoBtn:'جرّب الديمو — بدون تسجيل', demoNote:'بيانات تجريبية على هذا الجهاز فقط. ما بينبعت إشي لحدا.',
     fullName:'الاسم الكامل', email:'البريد الإلكتروني', phone:'رقم الهاتف', country:'الدولة',
     confirmPass:'تأكيد كلمة المرور',
     showPw:'إظهار', hidePw:'إخفاء',
@@ -15557,7 +14955,6 @@ var LP_TEXT = {
     errWrong:'Falscher Benutzername oder Passwort', errExists:'Benutzername bereits vergeben',
     version:'Trabis v1.5 · Geschäfts-Tracking-System',
     gotoLogin:'Anmelden', gotoRegister:'Konto erstellen',
-    demoBtn:'Demo ansehen — ohne Anmeldung', demoNote:'Beispieldaten nur auf diesem Gerät. Es wird nichts übertragen.',
     fullName:'Vollständiger Name', email:'E-Mail', phone:'Telefonnummer', country:'Land',
     confirmPass:'Passwort bestätigen',
     showPw:'Zeigen', hidePw:'Verbergen',
@@ -15578,7 +14975,6 @@ function lpUpdateText() {
     'lp-btn-signin':l.signIn,'lp-btn-create':l.createAcc,
     'lp-login-heading':l.loginH,'lp-login-sub':l.loginS,
     'lp-signin-btn':l.signIn,'lp-goto-register':l.gotoRegister,
-    'lp-demo-btn':l.demoBtn,'lp-demo-note':l.demoNote,
     'lp-or1':l.or,'lp-back-lbl1':l.back,
     'lp-reg-heading':l.regH,'lp-reg-sub':l.regS,
     'lp-goto-login':l.gotoLogin,
@@ -15826,85 +15222,6 @@ function lpRegister() {
   document.getElementById('lp-view-register').style.display='none';
   document.getElementById('lp-view-langsel').style.display='block';
   lpSelectLang(lpLang);
-}
-
-
-// ── DEMO ACCESS ──
-// One tap into a working app: no email, no password, no form. The account is
-// local to this browser like every other one, and is seeded once so the demo
-// actually has something to show.
-var DEMO_USER = 'demo';
-
-function lpDemoLogin() {
-  var accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}');
-  if(!accounts[DEMO_USER]) {
-    accounts[DEMO_USER] = {
-      password: btoa(unescape(encodeURIComponent('demo'))),
-      fullname: 'Demo', email: '', phone: '', country: '',
-      businessName: 'Alpen Transporte (Demo)',
-      createdAt: new Date().toISOString(), isNew: false, isDemo: true
-    };
-    localStorage.setItem('smartac_accounts', JSON.stringify(accounts));
-  }
-  localStorage.setItem('smartac_session', DEMO_USER);
-  loadUserData();
-  if(!state.transactions.length) seedDemoData();
-  obSelectedLang = lpLang; state.lang = lpLang;
-  var lp = document.getElementById('landingPage');
-  if(lp) lp.style.display = 'none';
-  obFinishLogin(DEMO_USER);
-}
-
-// Enough of a business to exercise every part of the screen: three months of
-// trading, fixed rules in three different categories, staff, an open debt.
-function seedDemoData() {
-  var now = new Date(), Y = now.getFullYear(), M = now.getMonth();
-  function iso(monthsBack, day) {
-    var d = new Date(Y, M - monthsBack, day);
-    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(day);
-  }
-  var id = Date.now();
-  function tx(o) { o.id = id++; state.transactions.push(o); }
-
-  state.businessType = 'transport';
-  state.currency = '€';
-  state.businessName = 'Alpen Transporte (Demo)';
-  state.businessAddress = 'Handelskai 94, 1200 Wien';
-  state.businessTaxId = 'ATU12345678';
-
-  [0, 1, 2].forEach(function(back) {
-    var f = 1 - back * 0.08;
-    tx({type:'income', name:'Frachtauftrag Wien–Linz', amount:Math.round(6420*f), vatRate:20,
-        category:'Sales', date:iso(back, 4), clientName:'Spedition Kern'});
-    tx({type:'income', name:'Frachtauftrag Graz',      amount:Math.round(3180*f), vatRate:20,
-        category:'Sales', date:iso(back, 12), clientName:'Hofer Logistik'});
-    tx({type:'income', name:'Innergem. Lieferung DE',  amount:Math.round(2640*f), vatRate:0,
-        category:'Sales', date:iso(back, 19), clientName:'Mayer & Söhne GmbH'});
-    tx({type:'expense', name:'Diesel',        amount:Math.round(1860*f), vatRate:20, category:'Fuel',    date:iso(back, 6)});
-    tx({type:'expense', name:'GO-Maut',       amount:Math.round(438*f),  vatRate:20, category:'Vehicle', date:iso(back, 9)});
-    tx({type:'expense', name:'Werkstatt LKW', amount:Math.round(620*f),  vatRate:20, category:'Vehicle', date:iso(back, 17)});
-  });
-
-  state.recurring = [
-    {id:id++, name:'Leasing Mercedes Sprinter', amount:894,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
-    {id:id++, name:'Leasing VW Crafter',        amount:812,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
-    {id:id++, name:'ÖGK',                       amount:1892, category:'Government', vatRate:0,  day:15, lastRecorded:null},
-    {id:id++, name:'SVS',                       amount:2146, category:'Government', vatRate:0,  day:1,  lastRecorded:null},
-    {id:id++, name:'Büromiete',                 amount:780,  category:'Rent',       vatRate:0,  day:1,  lastRecorded:null}
-  ];
-  state.employees = [
-    {id:id++, name:'Stefan Moser',  fullName:'Stefan Moser',  salary:2640, position:'Fahrer', lastRecorded:null},
-    {id:id++, name:'Ahmad Haddad',  fullName:'Ahmad Haddad',  salary:2480, position:'Fahrer', lastRecorded:null}
-  ];
-  state.debts = [
-    {id:id++, person:'Bau Nord GmbH', amount:1180, category:'Customer',
-     date:iso(1, 20), status:'pending', type:'owes-me'}
-  ];
-  state.clients = [
-    {id:id++, name:'Spedition Kern'}, {id:id++, name:'Hofer Logistik'}, {id:id++, name:'Mayer & Söhne GmbH'}
-  ];
-  state.year = Y; state.month = M;
-  save();
 }
 
 function lpPwCriteria(pass) {
