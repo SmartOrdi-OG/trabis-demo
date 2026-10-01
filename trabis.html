@@ -202,6 +202,20 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
 .tx-row-fix .tx-row-dt{color:var(--primary)}
 .tx-empty{text-align:center;padding:24px 10px;color:var(--text3);font-size:13px}
 .tx-row-am,.tx-grp-sum,.tx-sum b,.year-net-v,.tx-row-dt{unicode-bidi:isolate-override;direction:ltr}
+.gov-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.gov-top{display:flex;align-items:flex-start;gap:12px}
+.gov-ico{width:38px;height:38px;border-radius:11px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.gov-name{font-size:15px;font-weight:800}
+.gov-sub{font-size:11.5px;color:var(--text3)}
+.gov-amt{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--expense)}
+.gov-meta{display:flex;gap:6px 16px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:var(--text2)}
+.gov-meta b{color:var(--text)}
+.gov-pays{margin-top:10px;padding-top:8px;border-top:1px solid var(--border)}
+.gov-pay{display:flex;align-items:baseline;gap:8px;font-size:12.5px;padding:3px 0}
+.gov-pay>span:first-child{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gov-open{margin-top:10px;width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--primary);font-weight:700;font-size:13px;cursor:pointer}
+.gov-add{background:var(--card2);border:1.5px dashed var(--border);border-radius:16px;padding:14px 16px}
+.gov-chip{padding:6px 11px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12px;font-weight:700;cursor:pointer}
 .rcpt-cap-ttl{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px;flex-shrink:0}
 .tx-split{display:grid;grid-template-columns:220px minmax(0,1fr);gap:24px;align-items:start}
 .rcpt-col{position:sticky;top:8px;max-height:calc(100vh - 40px);display:flex;flex-direction:column;min-width:0}
@@ -723,7 +737,7 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
 
 /* ── MOBILE LAYOUT (default: 430px centered) ── */
 @media (max-width:1023px) {
-  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{max-width:430px;margin-left:auto;margin-right:auto}
+  .hdr,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage,#govPage,#projectsPage{max-width:430px;margin-left:auto;margin-right:auto}
   .bnav{max-width:430px}
   #mainPage{max-width:430px;margin-left:auto;margin-right:auto}
   /* Landing page mobile */
@@ -782,8 +796,8 @@ body.lang-ar .summary>.sum-card:nth-child(2){border-left:none;border-right:4px s
   .more-back-btn{display:none !important}
   #sidebarNav{transform:translateX(0)}
   body.lang-ar #sidebarNav{transform:translateX(0)}
-  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage{margin-left:240px !important;max-width:none}
-  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage,body.lang-ar #agendaPage{margin-left:0 !important;margin-right:240px !important}
+  .hdr,#mainPage,.scroll,#reportsPage,#debtsPage,#settingsPage,#invoicesPage,#clientsPage,#suppliersPage,#fixedPage,#employeesPage,#helpPage,#fleetPage,#assetsPage,#inventoryPage,#kalenderPage,#notizenPage,#archivePage,#contactsPage,#agendaPage,#govPage,#projectsPage{margin-left:240px !important;max-width:none}
+  body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #reportsPage,body.lang-ar #debtsPage,body.lang-ar #settingsPage,body.lang-ar #invoicesPage,body.lang-ar #clientsPage,body.lang-ar #suppliersPage,body.lang-ar #fixedPage,body.lang-ar #employeesPage,body.lang-ar #helpPage,body.lang-ar #fleetPage,body.lang-ar #assetsPage,body.lang-ar #inventoryPage,body.lang-ar #kalenderPage,body.lang-ar #notizenPage,body.lang-ar #archivePage,body.lang-ar #contactsPage,body.lang-ar #agendaPage,#govPage,#projectsPage{margin-left:0 !important;margin-right:240px !important}
   .fab{right:32px;bottom:32px;left:auto}
   .fab-scan{left:32px;bottom:32px;right:auto}
   .modal-overlay{align-items:center}
@@ -2677,6 +2691,8 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 <div id="archivePage" style="display:none" class="settings-page"></div>
 <div id="contactsPage" style="display:none" class="settings-page"></div>
 <div id="agendaPage" style="display:none" class="settings-page"></div>
+<div id="govPage" style="display:none" class="settings-page"></div>
+<div id="projectsPage" style="display:none" class="settings-page"></div>
 
 <!-- IN-APP NOTIFICATION CONTAINER -->
 <div id="inAppNotifContainer"></div>
@@ -2757,6 +2773,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
       <select id="modal-supplier" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:12px">
         <option value="">— No supplier —</option>
       </select>
+      <div id="modal-gov-wrap" style="display:none;margin-bottom:8px">
+        <div style="font-size:13px;color:var(--text2);margin-bottom:4px" id="modal-gov-lbl">Government entity (optional)</div>
+        <select id="modal-gov" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box">
+          <option value="">&#8212;</option>
+        </select>
+      </div>
       <input type="text" id="modal-invoice-ref" placeholder="Invoice # or reference (optional)" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;box-sizing:border-box;margin-bottom:12px">
       <!-- Receipt capture / upload (expense only) -->
       <div id="receiptWrap" style="margin-bottom:12px">
@@ -3425,10 +3447,10 @@ function showNav(page) {
   if(page === 'fleet' && state.businessType !== 'transport') { showNav('home'); return; }
   if(page === 'inventory' && state.businessType !== 'retail' && state.businessType !== 'transport') { showNav('home'); return; }
   closeMoreMenu();
-  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage','agendaPage'].forEach(function(p) {
+  ['mainPage','reportsPage','debtsPage','settingsPage','invoicesPage','clientsPage','suppliersPage','fixedPage','employeesPage','helpPage','fleetPage','assetsPage','inventoryPage','kalenderPage','notizenPage','archivePage','contactsPage','agendaPage','govPage','projectsPage'].forEach(function(p) {
     document.getElementById(p).style.display = 'none';
   });
-  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts','agenda'].forEach(function(n) {
+  ['home','reports','debts','settings','invoices','clients','suppliers','fixed','employees','help','fleet','assets','inventory','kalender','notizen','archive','contacts','agenda','gov','projects'].forEach(function(n) {
     var navEl = document.getElementById('nav-'+n);
     if(navEl) navEl.classList.remove('active');
     var snavEl = document.getElementById('snav-'+n);
@@ -3438,7 +3460,7 @@ function showNav(page) {
   var snavSettings = document.getElementById('snav-settings');
   if(snavSettings) snavSettings.classList.remove('active');
 
-  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage',agenda:'agendaPage'};
+  var pages = {home:'mainPage',reports:'reportsPage',debts:'debtsPage',settings:'settingsPage',invoices:'invoicesPage',clients:'clientsPage',suppliers:'suppliersPage',fixed:'fixedPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',assets:'assetsPage',inventory:'inventoryPage',kalender:'kalenderPage',notizen:'notizenPage',archive:'archivePage',contacts:'contactsPage',agenda:'agendaPage',gov:'govPage',projects:'projectsPage'};
   var el = document.getElementById(pages[page]);
   el.style.display = 'block';
   if(page !== 'home') {
@@ -3473,6 +3495,8 @@ function showNav(page) {
   if(page === 'archive') renderArchivePage();
   if(page === 'contacts') renderContactsPage();
   if(page === 'agenda') renderAgendaPage();
+  if(page === 'gov') renderGovPage();
+  if(page === 'projects' && typeof renderProjectsPage === 'function') renderProjectsPage();
 }
 
 // ── MORE MENU (mobile) ──
@@ -7313,6 +7337,8 @@ function closeModal() {
   if(incRefInpC) incRefInpC.value = '';
   var supSel = document.getElementById('modal-supplier');
   if(supSel) supSel.value = '';
+  var govSelC = document.getElementById('modal-gov');
+  if(govSelC) govSelC.value = '';
   var refInp = document.getElementById('modal-invoice-ref');
   if(refInp) refInp.value = '';
   var prodSelC = document.getElementById('modal-product');
@@ -10218,7 +10244,7 @@ function renderModal() {
     var refPh = {en:'Invoice # or reference (optional)', ar:'رقم الفاتورة أو المرجع (اختياري)', de:'Rechnungs-Nr. oder Referenz (optional)'};
     refEl.placeholder = refPh[lang] || refPh.en;
   }
-  if(typ === 'expense') refreshSupplierDropdown();
+  if(typ === 'expense') { refreshSupplierDropdown(); refreshGovDropdown(); }
 }
 
 function refreshProductDropdown() {
@@ -10451,6 +10477,8 @@ async function addTransaction() {
       }
       var refInp = document.getElementById('modal-invoice-ref');
       invRef = refInp ? refInp.value.trim() : null;
+      var govSel = document.getElementById('modal-gov');
+      var govIdVal = govSel && govSel.value ? parseInt(govSel.value, 10) : null;
     }
     var prodId = null, prodQty = 0;
     if(state.businessType === 'retail' || state.businessType === 'transport') {
@@ -10474,6 +10502,7 @@ async function addTransaction() {
       clientName: cliName,
       supplierId: supId,
       supplierName: supName,
+      govId: (typeof govIdVal !== 'undefined' && govIdVal) ? govIdVal : null,
       invoiceRef: invRef || null,
       receiptId: hasReceipt ? newTxId : null,
       receiptName: hasReceipt ? state.pendingReceipt.name : null,
@@ -11161,6 +11190,119 @@ function rcptAddFile(type, mode) {
   if(b) b.click();
 }
 
+
+// ── GOVERNMENT ENTITIES ──
+// Government contacts (SVS, ÖGK, Finanzamt, ...) with a running counter of what was paid to
+// each, taken from the expenses. An expense counts for an entity when it was linked to it in
+// the expense form (govId) or, failing that, when its name/supplier names the entity.
+var GOV_L = {
+  title:   {en:'Government Entities', ar:'الجهات الحكومية', de:'Behörden'},
+  intro:   {en:'Each entity keeps a running total of what you paid it — taken from your expenses — and its own file archive.', ar:'كل جهة ليها عدّاد بالمدفوع لها — من المصاريف — وأرشيف ملفات خاص بيها.', de:'Jede Stelle hat einen laufenden Zähler der Zahlungen — aus den Ausgaben — und ein eigenes Dokumentenarchiv.'},
+  yearLbl: {en:'paid this year', ar:'مدفوع هذه السنة', de:'bezahlt dieses Jahr'},
+  monthLbl:{en:'this month', ar:'هذا الشهر', de:'diesen Monat'},
+  files:   {en:'files', ar:'ملفات', de:'Dateien'},
+  archive: {en:'Archive & details', ar:'الأرشيف والتفاصيل', de:'Archiv & Details'},
+  add:     {en:'Add government entity', ar:'إضافة جهة حكومية', de:'Behörde hinzufügen'},
+  addPh:   {en:'Entity name (e.g. Magistrat Wien)', ar:'اسم الجهة (مثال: Magistrat Wien)', de:'Name der Stelle (z. B. Magistrat Wien)'},
+  save:    {en:'Add', ar:'إضافة', de:'Hinzufügen'},
+  quick:   {en:'Quick add', ar:'إضافة سريعة', de:'Schnell hinzufügen'},
+  none:    {en:'No government entities yet — add one below.', ar:'لا توجد جهات بعد — أضف واحدة من الأسفل.', de:'Noch keine Behörden — unten hinzufügen.'},
+  recent:  {en:'Latest payments', ar:'آخر المدفوعات', de:'Letzte Zahlungen'},
+  noPay:   {en:'No payments recorded yet', ar:'لا مدفوعات مسجّلة بعد', de:'Noch keine Zahlungen'},
+  linkLbl: {en:'Government entity (optional)', ar:'الجهة الحكومية (اختياري)', de:'Behörde (optional)'}
+};
+function govtx(k) { return (GOV_L[k] && GOV_L[k][state.lang]) || (GOV_L[k] && GOV_L[k].en) || k; }
+var GOV_QUICK = ['Finanzamt', 'SVS', 'ÖGK', 'AMS', 'Arbeiterkammer', 'Wirtschaftskammer'];
+
+function govEntities() {
+  return (state.contacts || []).filter(function(c) { return c && c.type === 'government'; });
+}
+function govTxMatches(tx, c) {
+  if(!tx || tx.type !== 'expense') return false;
+  if(tx.govId != null) return tx.govId === c.id;
+  var n = (c.name || '').toLowerCase().trim();
+  if(!n) return false;
+  var hay = ((tx.name || '') + ' ' + (tx.supplierName || '')).toLowerCase();
+  if(hay.indexOf(n) >= 0) return true;
+  var first = n.split(/\s+/)[0];
+  if(first.length < 3) return false;
+  var esc = first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[^a-zäöüß])' + esc + '($|[^a-zäöüß])').test(hay);
+}
+function govPayments(c) {
+  return (state.transactions || []).filter(function(tx) { return govTxMatches(tx, c); })
+    .sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
+}
+function govTotals(c, y, m) {
+  var t = {year: 0, month: 0, count: 0};
+  govPayments(c).forEach(function(tx) {
+    var ty = parseInt((tx.date || '').substring(0, 4), 10), tm = parseInt((tx.date || '').substring(5, 7), 10) - 1;
+    var amt = parseFloat(tx.amount) || 0;
+    if(ty === y) { t.year += amt; t.count++; if(tm === m) t.month += amt; }
+  });
+  return t;
+}
+function refreshGovDropdown() {
+  var wrap = document.getElementById('modal-gov-wrap'), sel = document.getElementById('modal-gov');
+  if(!sel) return;
+  var lbl = document.getElementById('modal-gov-lbl');
+  if(lbl) lbl.textContent = govtx('linkLbl');
+  var ents = govEntities(), cur = sel.value;
+  sel.innerHTML = '<option value="">&#8212;</option>' + ents.map(function(c) {
+    return '<option value="' + c.id + '">' + escHtml(c.name) + '</option>';
+  }).join('');
+  sel.value = cur;
+  if(wrap) wrap.style.display = ents.length ? 'block' : 'none';
+}
+
+function renderGovPage() {
+  var page = document.getElementById('govPage');
+  if(!page) return;
+  var dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+  var ents = govEntities();
+  var h = '<div style="direction:' + dir + '">';
+  h += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">'
+     + '<button type="button" class="more-back-btn" onclick="showNav(\'home\')">' + svgIcon('chevronLeft', 20) + '</button>'
+     + '<div style="font-size:20px;font-weight:700">' + escHtml(govtx('title')) + '</div></div>';
+  h += '<div style="font-size:12.5px;color:var(--text3);margin:0 0 14px;line-height:1.5">' + escHtml(govtx('intro')) + '</div>';
+  if(!ents.length) h += '<div style="text-align:center;padding:22px 10px;color:var(--text3);font-size:13px">' + escHtml(govtx('none')) + '</div>';
+  ents.forEach(function(c) {
+    var tot = govTotals(c, state.year, state.month);
+    var docs = (state.contactDocs || []).filter(function(d) { return d.contactId === c.id; }).length;
+    var pays = govPayments(c).slice(0, 3);
+    h += '<div class="gov-card">'
+      + '<div class="gov-top"><div class="gov-ico">' + svgIcon('landmark', 18) + '</div>'
+      + '<div style="flex:1;min-width:0"><div class="gov-name">' + escHtml(c.name) + '</div>'
+      + (c.notes ? '<div class="gov-sub">' + escHtml(String(c.notes).split('\n')[0]) + '</div>' : '') + '</div>'
+      + '<div style="text-align:end"><div class="gov-amt">' + fmt(tot.year) + '</div><div class="gov-sub">' + escHtml(govtx('yearLbl')) + '</div></div></div>'
+      + '<div class="gov-meta"><span>' + escHtml(govtx('monthLbl')) + ': <b>' + fmt(tot.month) + '</b></span><span>&#128193; <b>' + docs + '</b> ' + escHtml(govtx('files')) + '</span></div>'
+      + '<div class="gov-pays"><div class="gov-sub" style="font-weight:700;margin-bottom:3px">' + escHtml(govtx('recent')) + '</div>'
+      + (pays.length ? pays.map(function(tx) {
+          return '<div class="gov-pay"><span>' + escHtml(tx.name || '') + '</span><span class="gov-sub">' + escHtml(formatDateDisplay(tx.date)) + '</span><b>-' + fmt(tx.amount) + '</b></div>';
+        }).join('') : '<div class="gov-sub">' + escHtml(govtx('noPay')) + '</div>')
+      + '</div>'
+      + '<button type="button" class="gov-open" onclick="openContactProfile(' + c.id + ')">' + escHtml(govtx('archive')) + ' &rsaquo;</button>'
+      + '</div>';
+  });
+  var have = ents.map(function(c) { return (c.name || '').toLowerCase(); });
+  var quick = GOV_QUICK.filter(function(q) { return have.indexOf(q.toLowerCase()) < 0; });
+  h += '<div class="gov-add"><div style="font-size:13px;font-weight:700;margin-bottom:8px">' + escHtml(govtx('add')) + '</div>'
+     + '<div style="display:flex;gap:8px"><input id="govNewName" type="text" placeholder="' + escHtml(govtx('addPh')) + '" onkeydown="if(event.key===\'Enter\')govAdd()" '
+     + 'style="flex:1;min-width:0;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px">'
+     + '<button type="button" onclick="govAdd()" style="padding:0 16px;border-radius:10px;border:none;background:var(--primary);color:#fff;font-weight:700;cursor:pointer">' + escHtml(govtx('save')) + '</button></div>'
+     + (quick.length ? '<div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center"><span class="gov-sub">' + escHtml(govtx('quick')) + ':</span>'
+        + quick.map(function(q) { return '<button type="button" class="gov-chip" onclick="govAdd(\'' + q + '\')">+ ' + escHtml(q) + '</button>'; }).join('') + '</div>' : '')
+     + '</div></div>';
+  page.innerHTML = h;
+}
+function govAdd(preset) {
+  var name = preset || ((document.getElementById('govNewName') || {}).value || '').trim();
+  if(!name) return;
+  state.contacts = state.contacts || [];
+  state.contacts.push({id: Date.now(), name: name, phone: '', email: '', type: 'government', notes: '', createdAt: Date.now()});
+  save();
+  renderGovPage();
+}
 
 // ── HOME PICKER ──
 
