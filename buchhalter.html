@@ -908,7 +908,7 @@ function whDayEntryBu(emp, day) {
 function whDayLeavePeriodBu(emp, day) {
   return (emp.leavePeriods || []).find(function(lp) { return day >= lp.from && day <= lp.to; }) || null;
 }
-function whLeaveTypeLabelBu(type) { return type === 'karenz' ? 'Karenz' : 'Krankenstand'; }
+function whLeaveTypeLabelBu(type) { return type === 'karenz' ? 'Karenz' : (type === 'urlaub' ? 'Urlaub' : (type === 'feiertag' ? 'Feiertag' : 'Krankenstand')); }
 
 // Prefer the most recent month with a recorded leave period (that's what a bookkeeper
 // opening this view is usually looking for), then the most recent month with any work-hours
