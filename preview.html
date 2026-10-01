@@ -175,7 +175,11 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .ts-input{width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:14px;font-family:inherit;min-width:0}
 .ts-input:focus{outline:none;border-color:var(--primary)}
 .ts-field{margin-bottom:14px}
-.ts-grid3 .ts-input{height:44px}
+.ts-input[type=time],.ts-input[type=number]{-webkit-appearance:none;appearance:none;display:block;width:100%;min-width:0;max-width:100%;height:44px;line-height:1.2;margin:0}
+.ts-input[type=time]::-webkit-date-and-time-value{text-align:center;min-height:1.2em;margin:0}
+.ts-input[type=time]::-webkit-datetime-edit{padding:0}
+.ts-grid3>div,.ts-times>*{min-width:0}
+.ts-grid3 .ts-input[type=time]{text-align:center}
 .ts-grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px}
 .ts-btn{padding:12px 18px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .ts-btn.ghost{background:transparent;border:1.5px solid var(--border);color:var(--text2)}
@@ -194,9 +198,9 @@ body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,B
 .ts-wd{font-size:13px;color:var(--text2)}
 .ts-row .ts-input{padding:8px 10px;font-size:13.5px}
 .ts-times{display:grid;grid-template-columns:1fr 1fr 58px 62px;gap:6px;align-items:center;margin-top:8px}
-.ts-times input[type=time]::-webkit-calendar-picker-indicator{display:none}
-.ts-times input[type=time]{text-align:center}
-.ts-times .ts-input{padding:7px 4px;font-size:13px}
+.ts-input[type=time]::-webkit-calendar-picker-indicator{display:none}
+.ts-input[type=time]{text-align:center}
+.ts-times .ts-input{padding:0 4px;font-size:13px;height:38px}
 .ts-hrs{font-size:12.5px;font-weight:800;text-align:right;font-variant-numeric:tabular-nums;color:var(--text)}
 .ts-hol{font-size:11px;font-weight:700;color:#7c3aed;margin-top:5px}
 .ts-kv{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px;color:var(--text2)}
