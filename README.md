@@ -13,6 +13,17 @@ Two HTML files make up the product:
 - **`index.html`** — the main app: transactions, invoices, clients/suppliers, employees, calendar/notes, and (depending on the business's selected type) Fleet or Inventory. This is what business owners use.
 - **`buchhalter.html`** — a separate, German-only, **read-only** portal for accountants. It reads the same browser's `localStorage`/IndexedDB as `index.html` (see [Data storage](#data-storage)) and never writes to it. This is a temporary, same-device-only solution — a real multi-device "accountant login" requires the Cloud phase (see `TODO.md`).
 
+## Which file is which
+
+| File | What it is |
+|---|---|
+| `trabis.html` | **The current app** (served at `/`). Full working app with the new home picker, month screen, Government Entities, Projects and the timesheet/vacation sheet. Same `smartac_*` storage keys as before. |
+| `index.html` | The previous stable app, kept untouched and reachable at `/index.html`. |
+| `preview.html` | Static design mockup with demo data only, reachable at `/preview.html`. |
+| `buchhalter.html` | Read-only accountant portal (reads the same browser storage). |
+
+`vercel.json` rewrites `/` to `trabis.html`.
+
 ## Tech stack
 
 - Vanilla JavaScript (ES5-style, no framework, no bundler)
