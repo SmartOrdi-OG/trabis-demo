@@ -34,7 +34,7 @@
   --income:#16a34a;
   --expense:#dc2626;
 }
-body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
 /* HEADER */
 .hdr{background:var(--card);padding:16px 20px 12px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;box-shadow:var(--shadow)}
 .logo{display:flex;align-items:center;gap:8px}
@@ -2948,6 +2948,7 @@ function showNav(page) {
   var pages = {home:'mainPage',settings:'settingsPage',employees:'employeesPage',help:'helpPage',fleet:'fleetPage',contacts:'contactsPage',agenda:'agendaPage',gov:'govPage',projects:'projectsPage'};
   if(!pages[page]) { showNav('home'); return; }
   closeMoreMenu();
+  syncScrollLock();
   Object.keys(pages).forEach(function(n) {
     document.getElementById(pages[n]).style.display = 'none';
     var navEl = document.getElementById('nav-'+n);
@@ -6205,6 +6206,7 @@ function syncScrollLock() {
   }
 }
 new MutationObserver(syncScrollLock).observe(document.body, {subtree:true, childList:true, attributes:true, attributeFilter:['class','style']});
+['touchstart','scroll','click'].forEach(function(ev){ window.addEventListener(ev, syncScrollLock, {passive:true, capture:true}); });
 
 // ── SWIPE-DOWN TO CLOSE: bottom-sheet gesture for all modals (mobile) ──
 (function(){
