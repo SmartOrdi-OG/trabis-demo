@@ -13330,6 +13330,44 @@ var DEMO_SUPPLIERS = [
   ['Parkgebühren', 'Wiener Parkraum GmbH']
 ];
 
+function demoInvoicePdf(tx) {
+  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : (window.jsPDF || null);
+  if(!JsPdf) return null;
+  try {
+    var isInc = tx.type === 'income', me = 'Alpen Transporte (Demo)', other = tx.clientName || 'Kunde';
+    if(!isInc) { DEMO_SUPPLIERS.some(function(p) { if(tx.name.indexOf(p[0]) === 0) { other = p[1]; return true; } }); if(other === 'Kunde') other = 'Lieferant'; }
+    var from = isInc ? me : other, to = isInc ? other : me;
+    var v = vatBreakdown(tx.amount, tx.vatRate || 0);
+    var d = tx.date.substring(8, 10) + '.' + tx.date.substring(5, 7) + '.' + tx.date.substring(0, 4);
+    var no = (isInc ? 'AR-' : 'ER-') + tx.date.substring(0, 4) + '-' + String(tx.id % 10000).padStart(4, '0');
+    function f(n) { return 'EUR ' + n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+    var doc = new JsPdf({unit: 'mm', format: 'a4'});
+    var acc = isInc ? [30, 136, 229] : [84, 110, 122];
+    doc.setFillColor(acc[0], acc[1], acc[2]); doc.rect(0, 0, 210, 6, 'F');
+    doc.setTextColor(20); doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.text(from, 20, 24);
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(110);
+    doc.text(isInc ? 'Handelskai 94, 1200 Wien · UID ATU12345678' : 'Österreich', 20, 30);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(20); doc.setTextColor(acc[0], acc[1], acc[2]); doc.text('RECHNUNG', 190, 24, {align: 'right'});
+    doc.setFontSize(8); doc.setTextColor(130); doc.setFont('helvetica', 'normal');
+    doc.text('RECHNUNG AN', 20, 52); doc.text('RECHNUNGSNR. / DATUM', 190, 52, {align: 'right'});
+    doc.setFontSize(11); doc.setTextColor(20); doc.setFont('helvetica', 'bold'); doc.text(to, 20, 59);
+    doc.setFont('helvetica', 'normal'); doc.text(no + '  ·  ' + d, 190, 59, {align: 'right'});
+    doc.setDrawColor(210); doc.line(20, 72, 190, 72);
+    doc.setFontSize(8); doc.setTextColor(130); doc.setFont('helvetica', 'bold');
+    doc.text('BESCHREIBUNG', 20, 79); doc.text('MENGE', 120, 79, {align: 'right'}); doc.text('NETTO', 190, 79, {align: 'right'});
+    doc.setFontSize(11); doc.setTextColor(20); doc.setFont('helvetica', 'normal');
+    doc.text(tx.name, 20, 88); doc.text('1', 120, 88, {align: 'right'}); doc.text(f(v.netto), 190, 88, {align: 'right'});
+    doc.line(20, 96, 190, 96);
+    doc.setTextColor(90); doc.text('Netto', 130, 108); doc.text('USt ' + (tx.vatRate || 0) + ' %', 130, 115);
+    doc.setTextColor(20); doc.text(f(v.netto), 190, 108, {align: 'right'}); doc.text(f(v.steuer), 190, 115, {align: 'right'});
+    doc.line(130, 120, 190, 120);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(12); doc.text('Gesamt', 130, 128); doc.text(f(v.brutto), 190, 128, {align: 'right'});
+    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(140);
+    doc.text('Zahlbar innerhalb von 14 Tagen ohne Abzug.  Demo-Beleg.', 20, 280);
+    return 'data:application/pdf;base64,' + doc.output('datauristring').split('base64,')[1];
+  } catch(e) { return null; }
+}
+
 function demoInvoiceSvg(tx) {
   function esc(x) { return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function f(n) { return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
@@ -13395,9 +13433,11 @@ function seedDemoInvoiceCases() {
     });
   }
   state.transactions.forEach(function(t) {
-    if(t.invoice || t.receiptId || !(t.demoCase || t.demoExtra || t.recurringId === undefined && !t.fixed && /^(Frachtauftrag|Innergem|Diesel|GO-Maut|Werkstatt)/.test(t.name))) return;
-    t.invoice = demoInvoiceSvg(t);
-    t.invoiceName = (t.type === 'income' ? 'Ausgangsrechnung ' : 'Eingangsrechnung ') + t.name + '.svg';
+    if(t.invoice && String(t.invoice).indexOf('data:image/svg') !== 0) return;
+    if(t.receiptId || !(t.demoCase || t.demoExtra || t.recurringId === undefined && !t.fixed && /^(Frachtauftrag|Innergem|Diesel|GO-Maut|Werkstatt)/.test(t.name))) return;
+    var pdf = demoInvoicePdf(t);
+    t.invoice = pdf || demoInvoiceSvg(t);
+    t.invoiceName = (t.type === 'income' ? 'Ausgangsrechnung ' : 'Eingangsrechnung ') + t.name + (pdf ? '.pdf' : '.svg');
   });
   save();
 }
