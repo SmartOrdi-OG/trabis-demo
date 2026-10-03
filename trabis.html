@@ -302,6 +302,8 @@ body.art .tx-tab.active[data-t="expense"]{background:var(--card);color:var(--red
 body.art .tx-sums{display:block;margin-bottom:0}
 body.art .tx-sum{display:flex;justify-content:space-between;align-items:baseline;padding:9px 0;font-size:13.5px;font-weight:400;color:var(--text2)}
 body.art .tx-sum b{display:inline;margin:0;font-size:13.5px;font-weight:700;color:var(--text)}
+body.art .tx-sum-total{border-top:1px solid var(--border);margin-top:2px;font-weight:700;color:var(--text)}
+body.art .tx-sum-total b{font-size:15px}
 body.art .tx-grp-hdr{border-bottom:none;border-top:1.5px solid var(--border);padding:12px 0 8px;margin:6px 0 0}
 body.art .tx-grp-ttl{font-size:14px;font-weight:800;color:var(--text)}
 body.art .tx-grp-sum{font-size:14px;font-weight:800}
@@ -8877,6 +8879,7 @@ var HOMEP_L = {
   expense:  {en:'Expenses',      ar:'المصاريف',         de:'Ausgaben'},
   netto:    {en:'Total net',     ar:'إجمالي الصافي',    de:'Netto gesamt'},
   vat:      {en:'Total VAT',     ar:'إجمالي الضريبة',   de:'MwSt. gesamt'},
+  gross:    {en:'Total (net + VAT)', ar:'الإجمالي (صافي + ضريبة)', de:'Gesamt (Netto + MwSt.)'},
   fixOut:   {en:'Fixed \u00b7 due',  ar:'دفعات ثابتة \u00b7 مستحقة', de:'Fixzahlungen \u00b7 offen'},
   fixIn:    {en:'Fixed \u00b7 due',  ar:'دخل ثابت \u00b7 مستحق',    de:'Fixe Einnahmen \u00b7 offen'},
   restOut:  {en:'Other expenses',ar:'مصاريف أخرى',      de:'Übrige Ausgaben'},
@@ -9655,7 +9658,8 @@ function renderTxPanes() {
   var sums = document.getElementById('txSums');
   if(sums) {
     sums.innerHTML = '<div class="tx-sum">' + escHtml(hptx('netto')) + '<b>' + fmt(sTx.netto + sFix.netto) + '</b></div>'
-      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>';
+      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>'
+      + '<div class="tx-sum tx-sum-total">' + escHtml(hptx('gross')) + '<b>' + fmt(sTx.brutto + sFix.brutto) + '</b></div>';
   }
 
   function group(title, rows, total, isFixed) {
@@ -14068,36 +14072,25 @@ function checkInvoicesDue() {
     var msg1Map = { en: n1 + ' invoice(s) overdue', ar: n1 + ' فاتورة متأخرة', de: n1 + ' Rechnung(en) überfällig' };
     var msg1 = msg1Map[lang] || msg1Map.en;
     addNotification(msg1, 'error');
-    showToast(msg1, 'error');
+    void(msg1, 'error');
   }
   if(dueTodayList.length) {
     var n2 = dueTodayList.length;
     var msg2Map = { en: n2 + ' invoice(s) due today', ar: n2 + ' فاتورة مستحقة اليوم', de: n2 + ' Rechnung(en) heute fällig' };
     var msg2 = msg2Map[lang] || msg2Map.en;
     addNotification(msg2, 'warning');
-    showToast(msg2, 'warning');
+    void(msg2, 'warning');
   }
   if(dueSoonList.length) {
     var n3 = dueSoonList.length;
     var msg3Map = { en: n3 + ' invoice(s) due in 1-3 days', ar: n3 + ' فاتورة مستحقة خلال 3 أيام', de: n3 + ' Rechnung(en) in 1-3 Tagen fällig' };
     var msg3 = msg3Map[lang] || msg3Map.en;
     addNotification(msg3, 'info');
-    showToast(msg3, 'info');
+    void(msg3, 'info');
   }
 }
 
-function showRecurringNotification(count) {
-  if(state.notifyRecurring === false) return;
-  var lang = state.lang || 'en';
-  var msgMap = {
-    en: count + ' recurring transaction(s) recorded automatically this month',
-    ar: 'تم تسجيل ' + count + ' معاملة متكررة تلقائياً هذا الشهر',
-    de: count + ' wiederkehrende Transaktion(en) automatisch erfasst'
-  };
-  var msg = msgMap[lang] || msgMap.en;
-  addNotification(msg, 'success');
-  showToast(msg, 'success');
-}
+function showRecurringNotification(count) {}
 
 // ── PDF EXPORT ──
 
