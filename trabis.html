@@ -2239,6 +2239,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
   <div id="settings-about-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
   <div id="settings-session-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px">
+    <button type="button" id="sessSampleBtn" onclick="sampleToggle()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:600;cursor:pointer">Load sample invoices</button>
     <button type="button" id="sessLogoutBtn" onclick="logout()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer">Log out</button>
     <button type="button" id="sessDemoBtn" onclick="logout();setTimeout(lpDemoLogin,50)" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:none;color:var(--primary);font-size:14px;font-weight:600;cursor:pointer">Open demo account</button>
   </div>
@@ -10505,6 +10506,10 @@ var SETTINGS_L = {
 
   logoutBtn:    {en:'Log out', ar:'تسجيل الخروج', de:'Abmelden'},
   demoBtn:      {en:'Open demo account', ar:'فتح حساب الديمو', de:'Demo-Konto öffnen'},
+  sampleLoad:   {en:'Load sample invoices', ar:'تحميل فواتير تجريبية', de:'Beispiel-Rechnungen laden'},
+  sampleRemove: {en:'Remove sample invoices', ar:'حذف الفواتير التجريبية', de:'Beispiel-Rechnungen entfernen'},
+  sampleAsk:    {en:'Add sample transport invoices (PDF) for the last 3 months to this account? You can remove them again.', ar:'إضافة فواتير نقل تجريبية (PDF) لآخر 3 شهور لهذا الحساب؟ تقدر تحذفها بعدين.', de:'Beispiel-Rechnungen (PDF) der letzten 3 Monate zu diesem Konto hinzufügen? Sie können sie wieder entfernen.'},
+  sampleRmAsk:  {en:'Remove all sample invoices? Your own entries stay.', ar:'حذف كل الفواتير التجريبية؟ بياناتك الخاصة هتفضل.', de:'Alle Beispiel-Rechnungen entfernen? Ihre eigenen Einträge bleiben.'},
   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
@@ -10931,6 +10936,8 @@ function renderAboutSection() {
 function renderDangerSection() {
   var lo = document.getElementById('sessLogoutBtn'), dm = document.getElementById('sessDemoBtn');
   if(lo) lo.textContent = stx('logoutBtn');
+  var sb = document.getElementById('sessSampleBtn');
+  if(sb) sb.textContent = stx(sampleLoaded() ? 'sampleRemove' : 'sampleLoad');
   if(dm) dm.textContent = stx('demoBtn');
   var card = document.getElementById('settings-danger-card');
   if(!card) return;
@@ -13440,6 +13447,22 @@ function seedDemoInvoiceCases() {
     t.invoiceName = (t.type === 'income' ? 'Ausgangsrechnung ' : 'Eingangsrechnung ') + t.name + (pdf ? '.pdf' : '.svg');
   });
   save();
+}
+
+function sampleLoaded() {
+  return (state.transactions || []).some(function(t) { return t.demoCase || t.demoExtra; });
+}
+function sampleToggle() {
+  if(sampleLoaded()) {
+    if(!confirm(stx('sampleRmAsk'))) return;
+    state.transactions = state.transactions.filter(function(t) { return !(t.demoCase || t.demoExtra); });
+    save();
+  } else {
+    if(!confirm(stx('sampleAsk'))) return;
+    seedDemoInvoiceCases();
+  }
+  renderDangerSection();
+  if(typeof renderHome === 'function') renderHome();
 }
 
 function seedDemoData() {
