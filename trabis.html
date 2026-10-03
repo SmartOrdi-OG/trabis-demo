@@ -310,6 +310,10 @@ body.art .tx-grp-sum{font-size:14px;font-weight:800}
 body.art .tx-row{padding:10px 6px;border-bottom:1px solid var(--border)}
 body.art .tx-row+.tx-row{border-top:none}
 body.art .tx-row-nm{font-size:13.5px;font-weight:700}
+.tx-row{flex-wrap:wrap}
+.tx-row-sub i{font-style:normal;white-space:nowrap}
+.tx-row-sub{flex:0 0 100%;display:flex;flex-wrap:wrap;gap:1px 8px;font-size:10.5px;text-align:start;color:var(--text3);font-variant-numeric:tabular-nums;unicode-bidi:plaintext;margin-top:2px}
+body.art .month-card{margin-top:-8px}
 @media (max-width:1023px){body.art .carry-card{padding:14px 14px;gap:6px}
 body.art .carry-v,body.art .carry-row.tot .carry-v{font-size:14.5px}
 body.art #homePicker,body.art #monthDetail{padding:16px 16px 60px}
@@ -2116,6 +2120,12 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     <div class="carry-row"><span class="carry-l" id="carryVatL">Steuer</span><span class="carry-v" id="carryVatV">-</span></div>
     <div class="carry-row tot"><span class="carry-l" id="carryTotL">Total</span><span class="carry-v" id="carryTotV">-</span></div>
   </div>
+  <div class="carry-card month-card" id="monthCard">
+    <div class="carry-title" id="monthCardTitle">This month</div>
+    <div class="carry-row"><span class="carry-l" id="mcNetL">Netto</span><span class="carry-v" id="mcNetV">-</span></div>
+    <div class="carry-row"><span class="carry-l" id="mcVatL">Steuer</span><span class="carry-v" id="mcVatV">-</span></div>
+    <div class="carry-row tot"><span class="carry-l" id="mcTotL">Total</span><span class="carry-v" id="mcTotV">-</span></div>
+  </div>
 
 
 
@@ -2134,7 +2144,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
         <div class="rcpt-actions" id="rcptActions"></div>
       </div>
       <div class="tx-main" style="min-width:0">
-        <div class="tx-sums" id="txSums"></div>
         
         <div id="txPanes"></div>
         
@@ -8901,6 +8910,10 @@ var HOMEP_L = {
   takePhoto:{en:'Take photo',        ar:'تصوير فاتورة',     de:'Foto aufnehmen'},
   createInv:{en:'Create invoice',    ar:'إنشاء فاتورة',     de:'Rechnung erstellen'},
   noDocs:   {en:'No invoices yet',   ar:'لا توجد فواتير بعد', de:'Noch keine Belege'},
+  rowNet:   {en:'Net', ar:'صافي', de:'Netto'},
+  rowVat:   {en:'VAT', ar:'ضريبة', de:'MwSt'},
+  rowTot:   {en:'Total', ar:'إجمالي', de:'Total'},
+  monthHd:  {en:'This month', ar:'هذا الشهر', de:'Dieser Monat'},
   carryHd:  {en:'Saldo of past months', ar:'رصيد الشهور السابقة', de:'Saldo der Vormonate'},
   carryNet: {en:'Netto',             ar:'الصافي',           de:'Netto'},
   carryVat: {en:'Steuer (MwSt)',     ar:'الضريبة',          de:'Steuer (MwSt)'},
@@ -9577,7 +9590,38 @@ function carryInTotals(y, m) {
   return {netto: netto, vat: vat, total: netto - vat};
 }
 
+function monthTotals(y, m) {
+  var pre = y + '-' + pad2(m + 1), netto = 0, vat = 0;
+  (state.transactions || []).forEach(function(tx) {
+    if(!tx || !tx.date || tx.date.substring(0, 7) !== pre) return;
+    var v = vatBreakdown(tx.amount, tx.vatRate || 0), k = tx.type === 'income' ? 1 : -1;
+    netto += k * v.netto; vat += k * v.steuer;
+  });
+  [['income', 1], ['expense', -1]].forEach(function(p) {
+    var sm = sumRows(fixedRowsFor(p[0], y, m));
+    netto += p[1] * sm.netto; vat += p[1] * sm.steuer;
+  });
+  return {netto: netto, vat: vat, total: netto - vat};
+}
+
+function renderMonthCard() {
+  var c = monthTotals(state.year, state.month);
+  function put(id, v) {
+    var el = document.getElementById(id);
+    if(!el) return;
+    el.textContent = (Math.abs(v) < 0.005 ? '' : (v > 0 ? '+' : '-')) + fmt(Math.abs(v));
+    el.style.color = Math.abs(v) < 0.005 ? 'var(--text3)' : (v > 0 ? 'var(--income)' : 'var(--expense)');
+  }
+  var t = document.getElementById('monthCardTitle');
+  if(t) t.textContent = hptx('monthHd');
+  [['mcNetL','carryNet'],['mcVatL','carryVat'],['mcTotL','carryTot']].forEach(function(p) {
+    var el = document.getElementById(p[0]); if(el) el.textContent = hptx(p[1]);
+  });
+  put('mcNetV', c.netto); put('mcVatV', -c.vat); put('mcTotV', c.total);
+}
+
 function renderCarryCard() {
+  renderMonthCard();
   var c = carryInTotals(state.year, state.month);
   function put(id, v, neutral) {
     var el = document.getElementById(id);
@@ -9655,24 +9699,19 @@ function renderTxPanes() {
 
   renderReceiptStrip(type);
 
-  var sums = document.getElementById('txSums');
-  if(sums) {
-    sums.innerHTML = '<div class="tx-sum">' + escHtml(hptx('netto')) + '<b>' + fmt(sTx.netto + sFix.netto) + '</b></div>'
-      + '<div class="tx-sum">' + escHtml(hptx('vat')) + '<b>' + fmt(sTx.steuer + sFix.steuer) + '</b></div>'
-      + '<div class="tx-sum tx-sum-total">' + escHtml(hptx('gross')) + '<b>' + fmt(sTx.brutto + sFix.brutto) + '</b></div>';
-  }
-
   function group(title, rows, total, isFixed) {
     if(!rows.length) return '';
     var h = '<div class="tx-grp"><div class="tx-grp-hdr"><span class="tx-grp-ttl">' + escHtml(title) + '</span>'
           + '<span class="tx-grp-sum" style="color:' + color + '">' + sign + fmt(total) + '</span></div>';
     rows.forEach(function(r, i) {
       var dd = pad2(r.day) + '.' + pad2(state.month + 1) + '.' + state.year;
+      var rv = vatBreakdown(r.amount, r.vatRate || 0);
       h += '<button type="button" class="tx-row' + (isFixed ? ' tx-row-fix' : '') + '"'
          + (isFixed ? '' : ' data-tx="' + i + '"') + '>'
          + '<span class="tx-row-nm">' + escHtml(r.name || '') + '</span>'
          + '<span class="tx-row-dt">' + dd + '</span>'
-         + '<span class="tx-row-am" style="color:' + color + '">' + sign + fmt(r.amount) + '</span></button>';
+         + '<span class="tx-row-am" style="color:' + color + '">' + sign + fmt(r.amount) + '</span>'
+         + '<span class="tx-row-sub">' + '<i>' + escHtml(hptx('rowNet')) + ' ' + fmt(rv.netto) + '</i><i>' + escHtml(hptx('rowVat')) + ' ' + fmt(rv.steuer) + '</i><i>' + escHtml(hptx('rowTot')) + ' ' + fmt(rv.brutto) + '</i>' + '</span></button>';
     });
     return h + '</div>';
   }
