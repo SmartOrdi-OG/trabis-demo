@@ -13302,7 +13302,7 @@ function lpDemoLogin() {
   }
   localStorage.setItem('smartac_session', DEMO_USER);
   loadUserData();
-  if(!state.transactions.length) seedDemoData();
+  if(!state.transactions.length) seedDemoData(); else seedDemoInvoiceCases();
   obSelectedLang = lpLang; state.lang = lpLang;
   var lp = document.getElementById('landingPage');
   if(lp) lp.style.display = 'none';
@@ -13311,6 +13311,27 @@ function lpDemoLogin() {
 
 // Enough of a business to exercise every part of the screen: three months of
 // trading, fixed rules in three different categories, staff, an open debt.
+// Invoices with mixed VAT rates and cents, so the net / VAT / total maths can be
+// checked by eye. Added once (flag demoCase), also to demo accounts created earlier.
+function seedDemoInvoiceCases() {
+  if(state.transactions.some(function(t){ return t.demoCase; })) return;
+  var n = new Date(), d = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-';
+  var id = Date.now() + 5000;
+  [
+    ['income',  'Personenbeförderung 10%', 1100.00, 10, 'Sales',   '08'],
+    ['income',  'Kurierdienst 20%',         999.99, 20, 'Sales',   '14'],
+    ['income',  'Beherbergung 13%',         565.00, 13, 'Sales',   '21'],
+    ['expense', 'Reifen LKW 20%',          1234.56, 20, 'Vehicle', '05'],
+    ['expense', 'Büromaterial 10%',         110.00, 10, 'Other',   '11'],
+    ['expense', 'Fachliteratur 13%',        226.00, 13, 'Other',   '16'],
+    ['expense', 'Versicherung 0%',          350.00,  0, 'Insurance','20']
+  ].forEach(function(r) {
+    state.transactions.push({id: id++, type: r[0], name: r[1], amount: r[2], vatRate: r[3],
+                             category: r[4], date: d + r[5], demoCase: true});
+  });
+  save();
+}
+
 function seedDemoData() {
   var now = new Date(), Y = now.getFullYear(), M = now.getMonth();
   function iso(monthsBack, day) {
@@ -13338,6 +13359,7 @@ function seedDemoData() {
     tx({type:'expense', name:'GO-Maut',       amount:Math.round(438*f),  vatRate:20, category:'Vehicle', date:iso(back, 9)});
     tx({type:'expense', name:'Werkstatt LKW', amount:Math.round(620*f),  vatRate:20, category:'Vehicle', date:iso(back, 17)});
   });
+  seedDemoInvoiceCases();
 
   state.recurring = [
     {id:id++, name:'Leasing Mercedes Sprinter', amount:894,  category:'Vehicle',    vatRate:20, day:10, lastRecorded:null},
