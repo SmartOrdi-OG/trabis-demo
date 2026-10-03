@@ -13311,23 +13311,84 @@ function lpDemoLogin() {
 
 // Enough of a business to exercise every part of the screen: three months of
 // trading, fixed rules in three different categories, staff, an open debt.
-// Invoices with mixed VAT rates and cents, so the net / VAT / total maths can be
-// checked by eye. Added once (flag demoCase), also to demo accounts created earlier.
+// Who issued each demo expense invoice (name starts with → supplier).
+var DEMO_SUPPLIERS = [
+  ['Diesel', 'OMV Tankstellen GmbH'], ['GO-Maut', 'ASFINAG Maut Service GmbH'], ['Werkstatt', 'Kfz-Werkstatt Huber GmbH'],
+  ['Reifen', 'Reifen Pichler KG'], ['Büromaterial', 'Office Discount e.U.'], ['Fachliteratur', 'Verlag Österreich GmbH'],
+  ['Versicherung', 'Wiener Städtische Versicherung'], ['KFZ-Versicherung', 'Wiener Städtische Versicherung'],
+  ['Telefon', 'A1 Telekom Austria AG'], ['AdBlue', 'OMV Tankstellen GmbH'], ['Reifenservice', 'Reifen Pichler KG'],
+  ['Leasing', 'Raiffeisen-Leasing GmbH'], ['SVS', 'SVS Sozialversicherung'], ['Büromiete', 'Immo Wien Verwaltung GmbH'],
+  ['Parkgebühren', 'Wiener Parkraum GmbH']
+];
+
+function demoInvoiceSvg(tx) {
+  function esc(x) { return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function f(n) { return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+  var me = 'Alpen Transporte (Demo)', meAddr = 'Handelskai 94, 1200 Wien';
+  var isInc = tx.type === 'income', other = tx.clientName || 'Kunde';
+  if(!isInc) { DEMO_SUPPLIERS.some(function(p) { if(tx.name.indexOf(p[0]) === 0) { other = p[1]; return true; } }); if(!tx.clientName && other === 'Kunde') other = 'Lieferant'; }
+  var from = isInc ? me : other, to = isInc ? other : me;
+  var v = vatBreakdown(tx.amount, tx.vatRate || 0);
+  var d = tx.date.substring(8, 10) + '.' + tx.date.substring(5, 7) + '.' + tx.date.substring(0, 4);
+  var no = (isInc ? 'AR-' : 'ER-') + tx.date.substring(0, 4) + '-' + String(tx.id % 10000).padStart(4, '0');
+  var accent = isInc ? '#1e88e5' : '#546e7a';
+  var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="420" height="560" viewBox="0 0 420 560" font-family="Helvetica,Arial,sans-serif">'
+    + '<rect width="420" height="560" fill="#fff"/><rect width="420" height="8" fill="' + accent + '"/>'
+    + '<text x="28" y="48" font-size="17" font-weight="700" fill="#111">' + esc(from) + '</text>'
+    + '<text x="28" y="66" font-size="10" fill="#666">' + esc(isInc ? meAddr : 'Österreich') + '</text>'
+    + '<text x="392" y="48" font-size="20" font-weight="700" fill="' + accent + '" text-anchor="end">RECHNUNG</text>'
+    + '<text x="28" y="118" font-size="9" fill="#888">RECHNUNG AN</text><text x="28" y="134" font-size="12" font-weight="600" fill="#111">' + esc(to) + '</text>'
+    + '<text x="392" y="118" font-size="9" fill="#888" text-anchor="end">NR. / DATUM</text>'
+    + '<text x="392" y="134" font-size="12" fill="#111" text-anchor="end">' + no + ' · ' + d + '</text>'
+    + '<line x1="28" y1="168" x2="392" y2="168" stroke="#ddd"/>'
+    + '<text x="28" y="188" font-size="9" font-weight="700" fill="#888">BESCHREIBUNG</text><text x="392" y="188" font-size="9" font-weight="700" fill="#888" text-anchor="end">BETRAG NETTO</text>'
+    + '<text x="28" y="214" font-size="12" fill="#111">' + esc(tx.name) + '</text><text x="392" y="214" font-size="12" fill="#111" text-anchor="end">€ ' + f(v.netto) + '</text>'
+    + '<line x1="28" y1="240" x2="392" y2="240" stroke="#ddd"/>'
+    + '<text x="250" y="270" font-size="11" fill="#555">Netto</text><text x="392" y="270" font-size="11" fill="#111" text-anchor="end">€ ' + f(v.netto) + '</text>'
+    + '<text x="250" y="292" font-size="11" fill="#555">USt ' + (tx.vatRate || 0) + ' %</text><text x="392" y="292" font-size="11" fill="#111" text-anchor="end">€ ' + f(v.steuer) + '</text>'
+    + '<line x1="250" y1="306" x2="392" y2="306" stroke="#111"/>'
+    + '<text x="250" y="328" font-size="13" font-weight="700" fill="#111">Gesamt</text><text x="392" y="328" font-size="13" font-weight="700" fill="#111" text-anchor="end">€ ' + f(v.brutto) + '</text>'
+    + '<text x="28" y="520" font-size="9" fill="#999">Zahlbar innerhalb von 14 Tagen · Demo-Beleg</text></svg>';
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+}
+
+// Demo data: a transport firm's invoices — mixed VAT rates, cents, several per month,
+// every one with its scanned-style document attached. Idempotent, and also tops up
+// demo accounts created before these existed.
 function seedDemoInvoiceCases() {
-  if(state.transactions.some(function(t){ return t.demoCase; })) return;
-  var n = new Date(), d = n.getFullYear() + '-' + pad2(n.getMonth() + 1) + '-';
-  var id = Date.now() + 5000;
-  [
-    ['income',  'Personenbeförderung 10%', 1100.00, 10, 'Sales',   '08'],
-    ['income',  'Kurierdienst 20%',         999.99, 20, 'Sales',   '14'],
-    ['income',  'Beherbergung 13%',         565.00, 13, 'Sales',   '21'],
-    ['expense', 'Reifen LKW 20%',          1234.56, 20, 'Vehicle', '05'],
-    ['expense', 'Büromaterial 10%',         110.00, 10, 'Other',   '11'],
-    ['expense', 'Fachliteratur 13%',        226.00, 13, 'Other',   '16'],
-    ['expense', 'Versicherung 0%',          350.00,  0, 'Insurance','20']
-  ].forEach(function(r) {
-    state.transactions.push({id: id++, type: r[0], name: r[1], amount: r[2], vatRate: r[3],
-                             category: r[4], date: d + r[5], demoCase: true});
+  var n = new Date(), Y = n.getFullYear(), M = n.getMonth(), id = Date.now() + 5000;
+  function iso(back, day) { var d = new Date(Y, M - back, 1); return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + day; }
+  function add(type, name, amt, vat, cat, date, client) {
+    var t = {id: id++, type: type, name: name, amount: amt, vatRate: vat, category: cat, date: date, demoCase: true};
+    if(client) t.clientName = client;
+    state.transactions.push(t);
+  }
+  if(!state.transactions.some(function(t){ return t.demoCase && t.date === iso(0, '08') && t.name.indexOf('Personenbef') === 0; })
+     && !state.transactions.some(function(t){ return t.demoCase; })) {
+    add('income',  'Personenbeförderung 10%', 1100.00, 10, 'Sales',   iso(0,'08'), 'Reisebüro Sonnenhof');
+    add('income',  'Kurierdienst 20%',         999.99, 20, 'Sales',   iso(0,'14'), 'Hofer Logistik');
+    add('income',  'Beherbergung 13%',         565.00, 13, 'Sales',   iso(0,'21'), 'Hotel Alpenblick');
+    add('expense', 'Reifen LKW 20%',          1234.56, 20, 'Vehicle', iso(0,'05'));
+    add('expense', 'Büromaterial 10%',         110.00, 10, 'Other',   iso(0,'11'));
+    add('expense', 'Fachliteratur 13%',        226.00, 13, 'Other',   iso(0,'16'));
+    add('expense', 'Versicherung 0%',          350.00,  0, 'Insurance',iso(0,'20'));
+  }
+  if(!state.transactions.some(function(t){ return t.demoExtra; })) {
+    [0, 1, 2].forEach(function(back) {
+      var k = 1 - back * 0.06, r = function(x) { return Math.round(x * k * 100) / 100; };
+      add('income',  'Containertransport Hafen Wien', r(2880), 20, 'Sales', iso(back,'24'), 'Hafen Wien Logistik');
+      add('income',  'Expressfahrt Salzburg',          r(1450), 20, 'Sales', iso(back,'27'), 'Alpenmilch eGen');
+      add('expense', 'Reifenservice',                  r(540),  20, 'Vehicle', iso(back,'22'));
+      add('expense', 'KFZ-Versicherung',               r(410),   0, 'Insurance', iso(back,'25'));
+      add('expense', 'Telefon A1',                      r(89.9), 20, 'Other', iso(back,'28'));
+      add('expense', 'AdBlue',                          r(212),  20, 'Fuel', iso(back,'15'));
+      state.transactions[state.transactions.length - 1].demoExtra = true;
+    });
+  }
+  state.transactions.forEach(function(t) {
+    if(t.invoice || t.receiptId || !(t.demoCase || t.demoExtra || t.recurringId === undefined && !t.fixed && /^(Frachtauftrag|Innergem|Diesel|GO-Maut|Werkstatt)/.test(t.name))) return;
+    t.invoice = demoInvoiceSvg(t);
+    t.invoiceName = (t.type === 'income' ? 'Ausgangsrechnung ' : 'Eingangsrechnung ') + t.name + '.svg';
   });
   save();
 }
