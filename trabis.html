@@ -2238,6 +2238,10 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-about-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
+  <div id="settings-session-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px">
+    <button type="button" id="sessLogoutBtn" onclick="logout()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer">Log out</button>
+    <button type="button" id="sessDemoBtn" onclick="logout();setTimeout(lpDemoLogin,50)" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:none;color:var(--primary);font-size:14px;font-weight:600;cursor:pointer">Open demo account</button>
+  </div>
   <div id="settings-danger-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:24px;box-shadow:var(--shadow)"></div>
 
   <div style="height:40px"></div>
@@ -10499,6 +10503,8 @@ var SETTINGS_L = {
   terms:        {en:'Terms of Use', ar:'شروط الاستخدام', de:'Nutzungsbedingungen'},
   privacy:      {en:'Privacy Policy', ar:'سياسة الخصوصية', de:'Datenschutzrichtlinie'},
 
+  logoutBtn:    {en:'Log out', ar:'تسجيل الخروج', de:'Abmelden'},
+  demoBtn:      {en:'Open demo account', ar:'فتح حساب الديمو', de:'Demo-Konto öffnen'},
   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
@@ -10923,6 +10929,9 @@ function renderAboutSection() {
 }
 
 function renderDangerSection() {
+  var lo = document.getElementById('sessLogoutBtn'), dm = document.getElementById('sessDemoBtn');
+  if(lo) lo.textContent = stx('logoutBtn');
+  if(dm) dm.textContent = stx('demoBtn');
   var card = document.getElementById('settings-danger-card');
   if(!card) return;
   card.innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:12px;color:#ef4444">' + stx('dangerTitle') + '</div>'
