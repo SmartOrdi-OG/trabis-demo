@@ -422,7 +422,7 @@ function buShowClients() {
   show('screenClients');
   BuApi.listClients().then(function(list) {
     $('clientsError').textContent = list.length ? '' : (BuApi.mode === 'local'
-      ? 'Noch hat kein Mandant ein Paket gesendet. In der Haupt-App: Startseite → Steuerberater-Paket → Senden.' : 'Noch hat kein Mandant Ihnen Zugriff freigegeben.');
+      ? 'Noch hat kein Mandant ein Paket freigegeben.' : 'Noch hat kein Mandant Ihnen Zugriff freigegeben.');
     $('clientList').innerHTML = list.map(function(c) {
       return '<li class="acct-item" onclick="buSelectClient(\'' + jq(c.id) + '\')"><span class="acct-avatar">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</span>'
         + '<span><span class="acct-name">' + esc(c.name) + '</span><br><span class="acct-user">' + esc(c.sub || '') + '</span></span></li>';
@@ -504,11 +504,11 @@ function viewOverview(P) {
 }
 function sharesHtml() {
   if(!S.shares.length) return '';
-  var h = '<h2 class="sec" style="margin-top:0">Von Ihrem Mandanten gesendet</h2><div class="shares">';
+  var h = '<h2 class="sec" style="margin-top:0">Vom Mandanten freigegeben</h2><div class="shares">';
   S.shares.forEach(function(s, i) {
     var per = s.from === s.to ? MON[+s.from.substring(5, 7) - 1] + ' ' + s.from.substring(0, 4) : MON3[+s.from.substring(5, 7) - 1] + ' ' + s.from.substring(0, 4) + ' – ' + MON3[+s.to.substring(5, 7) - 1] + ' ' + s.to.substring(0, 4);
     var on = s.from === S.from && s.to === S.to;
-    h += '<div class="share' + (on ? ' on' : '') + '"><div><b>' + per + '</b><span>' + (s.createdAt ? 'gesendet am ' + deDate(s.createdAt.substring(0, 10)) : '') + (s.note ? ' · „' + esc(s.note) + '“' : '') + '</span></div><button class="dl-btn sm" onclick="openShare(' + i + ')">' + (on ? 'Geöffnet' : 'Öffnen') + '</button></div>';
+    h += '<div class="share' + (on ? ' on' : '') + '"><div><b>' + per + '</b><span>' + (s.createdAt ? 'freigegeben am ' + deDate(s.createdAt.substring(0, 10)) : '') + (s.note ? ' · „' + esc(s.note) + '“' : '') + '</span></div><button class="dl-btn sm" onclick="openShare(' + i + ')">' + (on ? 'Geöffnet' : 'Öffnen') + '</button></div>';
   });
   return h + '</div>';
 }

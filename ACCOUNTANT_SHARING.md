@@ -187,12 +187,12 @@ create policy "owner manages exports" on exports using (auth.uid() = owner_id) w
 
 ---
 
-## إرسال الباكيت للمحاسب (Share) — الواجهة اتبنت
+## إتاحة (Release) الباكيت للمحاسب — الواجهة اتبنت
 
-**الفكرة:** المستخدم يدوس "Senden" في ورقة الباكيت (الصفحة الرئيسية → Steuerberater-Paket) بعد ما يختار الفترة، فيتسجل **Share** = مرجع (فترة + نطاق)، مش نسخة من الملفات. المحاسب يفتحه من بوابته ويشوف البيانات الحية للفترة دي بس. المستخدم يقدر **يلغي** (Widerrufen) في أي وقت.
+**الفكرة:** المستخدم يدوس "Senden" في ورقة الباكيت (الصفحة الرئيسية → Steuerberater-Paket) بعد ما يختار الفترة (من غير إيميل — المحاسب مربوط بالشركة مسبقًا)، فيتسجل **Share** = مرجع (فترة + نطاق)، مش نسخة من الملفات. المحاسب يفتحه من بوابته ويشوف البيانات الحية للفترة دي بس. المستخدم يقدر **يلغي** (Widerrufen) في أي وقت.
 
 ```json
-{ "id": 1, "email": "steuer@kanzlei.at", "note": "Q3 Unterlagen",
+{ "id": 1, "note": "Q3 Unterlagen",
   "from": "2026-07", "to": "2026-09",
   "scopes": {"docs": true, "employees": true, "government": false},
   "createdAt": "ISO", "revokedAt": null }
@@ -203,7 +203,7 @@ create policy "owner manages exports" on exports using (auth.uid() = owner_id) w
 
 | الطلب | الوظيفة |
 |---|---|
-| `POST /shares` `{email, note, from, to, scopes}` | إنشاء Share + إرسال إيميل للمحاسب برابط البوابة (ودعوة تسجيل لو مالوش حساب) |
+| `POST /shares` `{note, from, to, scopes}` | إنشاء Share. بيظهر تلقائي للمحاسبين المربوطين بالشركة (`accountant_access`)؛ مفيش إيميل ولا دعوة هنا |
 | `GET /shares` | قائمة المبعوتات للمستخدم (بما فيها الملغية) |
 | `DELETE /shares/:id` | إلغاء (`revokedAt`) |
 
@@ -212,14 +212,13 @@ create policy "owner manages exports" on exports using (auth.uid() = owner_id) w
 - `GET /accountant/clients/:id/shares` → Shares النشطة: `[{id, from, to, note, scopes, createdAt}]`.
 - الواجهة بتحصر الفترة على أوسع مدى من الـ Shares وبتخفي تبويب الموظفين/الجهات الحكومية لو مش في النطاق، لكن **الإنفاذ الحقيقي على السيرفر**: `can_read` لازم يرفض أي طلب خارج الفترة أو النطاق.
 - كل فتح Share بيتسجل: `POST /accountant/audit {action:"open_share"}`.
-- ربط الـ Share بالمحاسب بيتم بالإيميل (`shares.email` = إيميل حساب المحاسب).
+- **ربط المحاسب بالشركة** بيتم مرة واحدة (دعوة/قبول من `accountant_access` فوق)؛ بعدها أي Share نشط للشركة بيظهر لكل محاسب مربوط بيها، من غير إيميل لكل إرسال.
 
 مسودة الجدول (للنقل لـ `supabase/migrations/` بعد المراجعة):
 ```sql
 create table shares (
   id bigint generated always as identity primary key,
   owner_id uuid not null references auth.users on delete cascade,
-  accountant_email text not null,
   note text, period_from text not null, period_to text not null,   -- 'YYYY-MM'
   scopes jsonb not null default '{"docs":true,"employees":false,"government":false}',
   created_at timestamptz default now(), revoked_at timestamptz

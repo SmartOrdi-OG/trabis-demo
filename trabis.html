@@ -10531,19 +10531,17 @@ var SETTINGS_L = {
   accBusy: {en:'Preparing…', ar:'جاري التجهيز…', de:'Wird erstellt…'},
   accDone: {en:'Done — file downloaded.', ar:'تم — الملف اتنزّل.', de:'Fertig — Datei heruntergeladen.'},
   accNone: {en:'No entries in this period.', ar:'مفيش بنود في الفترة دي.', de:'Keine Buchungen in diesem Zeitraum.'},
-   shTitle: {en:'Send to your tax advisor', ar:'إرسال للمحاسب الضريبي', de:'An Steuerberater senden'},
-  shSub: {en:'Your advisor sees the period selected above in their portal (read-only). You can revoke it any time.', ar:'المحاسب هيشوف الفترة المختارة فوق في بوابته (قراءة فقط). تقدر تلغي في أي وقت.', de:'Ihr Steuerberater sieht den oben gewählten Zeitraum in seinem Portal (nur lesen). Sie können den Zugriff jederzeit widerrufen.'},
-  shEmail: {en:"Advisor's e-mail", ar:'إيميل المحاسب', de:'E-Mail des Steuerberaters'},
+   shTitle: {en:'Release to your tax advisor', ar:'إتاحة للمحاسب الضريبي', de:'Für Steuerberater freigeben'},
+  shSub: {en:"The selected period appears in your advisor's portal (read-only). You can withdraw it any time.", ar:'الفترة المختارة هتظهر في بوابة المحاسب (قراءة فقط). تقدر تسحبها في أي وقت.', de:'Der gewählte Zeitraum erscheint im Portal Ihres Steuerberaters (nur lesen). Sie können ihn jederzeit zurückziehen.'},
   shNote: {en:'Note (optional)', ar:'ملاحظة (اختياري)', de:'Nachricht (optional)'},
   shDocs: {en:'Invoices and figures', ar:'الفواتير والأرقام', de:'Belege und Zahlen'},
   shEmp: {en:'Employees: hours and leave', ar:'الموظفين: الساعات والإجازات', de:'Mitarbeiter: Stunden und Urlaub'},
   shGov: {en:'Government entities', ar:'الجهات الحكومية', de:'Behörden'},
-  shSend: {en:'Send', ar:'إرسال', de:'Senden'},
-  shSent: {en:'Sent — your advisor can now open it.', ar:'اتبعت — المحاسب يقدر يفتحه دلوقتي.', de:'Gesendet — Ihr Steuerberater kann es jetzt öffnen.'},
-  shBadMail: {en:'Please enter a valid e-mail.', ar:'اكتب إيميل صحيح.', de:'Bitte gültige E-Mail eingeben.'},
-  shSentHd: {en:'Sent packages', ar:'الباكيتات المبعوتة', de:'Gesendete Pakete'},
-  shRevoke: {en:'Revoke', ar:'إلغاء', de:'Widerrufen'},
-  shRevoked: {en:'revoked', ar:'ملغي', de:'widerrufen'},
+  shSend: {en:'Release', ar:'إتاحة', de:'Freigeben'},
+  shSent: {en:"Released — it now appears in your advisor's portal.", ar:'اتاحت — ظهرت في بوابة المحاسب.', de:'Freigegeben — erscheint jetzt im Portal Ihres Steuerberaters.'},
+  shSentHd: {en:'Released packages', ar:'الباكيتات المتاحة', de:'Freigegebene Pakete'},
+  shRevoke: {en:'Withdraw', ar:'سحب', de:'Zurückziehen'},
+  shRevoked: {en:'withdrawn', ar:'مسحوب', de:'zurückgezogen'},
   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
@@ -13511,7 +13509,6 @@ function openAccPackage() {
     + '<div style="border-top:1px solid var(--border);margin:14px 0 12px"></div>'
     + '<div style="font-weight:800;font-size:15px;margin-bottom:4px">' + escHtml(stx('shTitle')) + '</div>'
     + '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(stx('shSub')) + '</div>'
-    + '<input type="email" id="shEmail" placeholder="' + escHtml(stx('shEmail')) + '" style="' + inp + ';margin-bottom:8px"/>'
     + '<input type="text" id="shNote" placeholder="' + escHtml(stx('shNote')) + '" style="' + inp + ';margin-bottom:10px"/>'
     + '<div style="display:flex;flex-direction:column;gap:6px;font-size:13px;margin-bottom:10px">'
     + '<label><input type="checkbox" checked disabled/> ' + escHtml(stx('shDocs')) + '</label>'
@@ -13522,7 +13519,6 @@ function openAccPackage() {
     + '<div id="shList"></div></div>';
   ov.style.display = 'flex';
   accPreset('month');
-  try { document.getElementById('shEmail').value = localStorage.getItem(uk('lastAccEmail')) || ''; } catch(e) {}
   accShareRender();
 }
 
@@ -13534,16 +13530,14 @@ function accSharesGet() { try { return JSON.parse(localStorage.getItem(uk('share
 function accSharesSet(list) { localStorage.setItem(uk('shares'), JSON.stringify(list)); }
 function accShareSend() {
   var from = document.getElementById('accFrom').value, to = document.getElementById('accTo').value;
-  var email = (document.getElementById('shEmail').value || '').trim(), st = document.getElementById('shStatus');
+  var st = document.getElementById('shStatus');
   if(!from || !to) return;
   if(from > to) { var sw = from; from = to; to = sw; }
-  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { st.textContent = stx('shBadMail'); return; }
   var list = accSharesGet();
-  list.push({id: Date.now(), email: email, note: (document.getElementById('shNote').value || '').trim(), from: from, to: to,
+  list.push({id: Date.now(), note: (document.getElementById('shNote').value || '').trim(), from: from, to: to,
              scopes: {docs: true, employees: document.getElementById('shEmp').checked, government: document.getElementById('shGov').checked},
              createdAt: new Date().toISOString(), revokedAt: null});
   accSharesSet(list);
-  try { localStorage.setItem(uk('lastAccEmail'), email); } catch(e) {}
   document.getElementById('shNote').value = '';
   st.textContent = stx('shSent');
   accShareRender();
@@ -13562,8 +13556,8 @@ function accShareRender() {
   list.forEach(function(x) {
     var per = x.from === x.to ? x.from : x.from + ' – ' + x.to, off = !!x.revokedAt;
     h += '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--border)' + (off ? ';opacity:.55' : '') + '">'
-      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(x.email) + '</div>'
-      + '<div style="font-size:11.5px;color:var(--text3)">' + escHtml(per) + (x.note ? ' · ' + escHtml(x.note) : '') + (off ? ' · ' + escHtml(stx('shRevoked')) : '') + '</div></div>'
+      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(per) + '</div>'
+      + '<div style="font-size:11.5px;color:var(--text3)">' + escHtml(x.createdAt.substring(0, 10)) + (x.note ? ' · ' + escHtml(x.note) : '') + (off ? ' · ' + escHtml(stx('shRevoked')) : '') + '</div></div>'
       + (off ? '' : '<button type="button" onclick="accShareRevoke(' + x.id + ')" style="border:1.5px solid var(--border);background:var(--card);border-radius:9px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--expense);cursor:pointer">' + escHtml(stx('shRevoke')) + '</button>') + '</div>';
   });
   host.innerHTML = h;
