@@ -16,7 +16,7 @@
  *   employees: [{name, month, hours, workDays, urlaub, krank, karenz, feiertag, entitled, rest}],
  *   getAttachment: function(tx) -> Promise<{bytes:Uint8Array, type:string}|null>,
  *   want: {pdf:true, xlsx:true, csv:true}
- * }) -> Promise<{pdf, xlsx, csv, base, missingAttachments, counts}>
+ * }) -> Promise<{pdf, xlsx, csv, base, counts}>   (needs network: pdf-lib is loaded from cdnjs on first use)
  */
 (function(global) {
   'use strict';
@@ -396,22 +396,17 @@
   function build(opts) {
     opts.company = opts.company || {};
     var want = opts.want || {pdf: true, xlsx: true, csv: true};
-    var P = prepare(opts), res = {counts: {income: P.income.length, expense: P.expense.length}, missingAttachments: 0};
+    var P = prepare(opts), res = {counts: {income: P.income.length, expense: P.expense.length}};
     res.base = 'Trabis_Steuerberater_' + safeName(opts.company.name) + '_' + opts.from + (opts.from === opts.to ? '' : '_bis_' + opts.to);
     // Which rows have files — needed by the registers in every output.
     return Promise.all(P.rows.map(function(r) {
       return Promise.resolve(opts.getAttachment ? opts.getAttachment(r.tx) : null).then(function(a) { r.hasFile = !!(a && a.bytes); }, function() { r.hasFile = false; });
     })).then(function() {
       if(want.csv) res.csv = buildCsv(P);
-      var p = want.pdf ? buildPdf(P, opts).then(function(b) { res.pdf = b; }, function(e) {
-        // pdf-lib unavailable (offline): still deliver the registers, flag the missing attachments
-        res.pdfError = String(e && e.message || e);
-        res.pdf = new Uint8Array(frontMatter(P, opts));
-      }) : Promise.resolve();
+      var p = want.pdf ? buildPdf(P, opts).then(function(b) { res.pdf = b; }) : Promise.resolve();
       return p;
     }).then(function() {
       if(want.xlsx) res.xlsx = buildXlsx(buildSheets(P, opts));
-      P.rows.forEach(function(r) { if(!r.hasFile && r.tx) {} });
       return res;
     });
   }

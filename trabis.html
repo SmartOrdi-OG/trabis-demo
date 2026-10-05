@@ -10543,8 +10543,7 @@ var SETTINGS_L = {
   accBusy: {en:'Preparing…', ar:'جاري التجهيز…', de:'Wird erstellt…'},
   accDone: {en:'Done — file downloaded.', ar:'تم — الملف اتنزّل.', de:'Fertig — Datei heruntergeladen.'},
   accNone: {en:'No entries in this period.', ar:'مفيش بنود في الفترة دي.', de:'Keine Buchungen in diesem Zeitraum.'},
-  accOffline: {en:'Invoices could not be merged (no internet for the PDF library) — the PDF contains the registers only.', ar:'مقدرتش أدمج الفواتير (مفيش إنترنت لمكتبة الـ PDF) — الملف فيه الجداول بس.', de:'Belege konnten nicht eingefügt werden (keine Internetverbindung) — das PDF enthält nur die Verzeichnisse.'},
-  dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
+   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
 function stx(k) { return (SETTINGS_L[k] && SETTINGS_L[k][state.lang]) || (SETTINGS_L[k] && SETTINGS_L[k].en) || k; }
@@ -13546,7 +13545,7 @@ function accPack(kind) {
     if(kind === 'pdf') TrabisPackage.download(r.pdf, r.base + '.pdf', 'application/pdf');
     if(kind === 'xlsx') TrabisPackage.download(r.xlsx, r.base + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     if(kind === 'csv') TrabisPackage.download(r.csv, r.base + '.csv', 'text/csv;charset=utf-8');
-    st.textContent = r.pdfError ? stx('accOffline') : stx('accDone');
+    st.textContent = stx('accDone');
   }).catch(function(e) { st.textContent = 'Error: ' + (e && e.message || e); });
 }
 

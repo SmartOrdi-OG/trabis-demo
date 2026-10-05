@@ -484,5 +484,5 @@
 ## Steuerberater-Paket (المرحلة 1.5.6)
 - `trabis-package.js` (مشترك): بيبني PDF (غلاف + ملخص + فهرس الدخل/المصروف + كل الفواتير المرفقة مرقّمة E-/A-) + Excel (Zusammenfassung / Einnahmen / Ausgaben / Journal / Mitarbeiter) + CSV (فاصلة منقوطة، UTF-8 BOM).
 - زرارها في Settings → "Steuerberater-Paket" (الفترة من/إلى + أزرار شهر/ربع/سنة).
-- دمج الـ PDF بيحتاج pdf-lib من cdnjs وقت الاستخدام؛ لو مفيش نت الملف بيطلع فيه الفهارس بس.
+- التطبيق مبني على إن النت والسيرفر دايمًا موجودين: pdf-lib بيتحمّل من cdnjs وقت الاستخدام ومفيش وضع أوفلاين.
 - مع السيرفر: نفس الدالة بتاخد `transactions/employees/getAttachment` من الـ API (انظر ACCOUNTANT_SHARING.md).
