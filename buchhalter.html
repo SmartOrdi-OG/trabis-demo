@@ -43,71 +43,52 @@ button{cursor:pointer}
 .tb-act{display:flex;gap:8px;flex:none}
 .tb-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:700}
 .tb-btn:hover{border-color:var(--primary);color:var(--primary)}
-#view{max-width:1180px;margin:0 auto;padding:22px 28px 70px}
+#view{padding:0}
 .ro-badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);background:var(--primary-light);border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle}
 
-/* home */
-.hp-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}
-.hp-fixed,.hp-pick{background:var(--card2);border:1px solid var(--border);border-radius:18px;padding:14px;min-width:0}
-.hp-pick{position:sticky;top:12px}
-.hp-hd{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;padding:2px 4px 12px}
-.hp-nav{display:flex;align-items:center;gap:12px;width:100%;padding:15px 14px;border-radius:16px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;text-align:start;margin-bottom:10px}
-.hp-nav:hover{border-color:var(--primary)}
-.hp-ico{flex:none;width:38px;height:38px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center}
-.hp-lbl{flex:1;min-width:0;font-size:14px;font-weight:700}.hp-sub{display:block;font-size:11.5px;font-weight:400;color:var(--text3);margin-top:2px}
-.hp-car{color:var(--text3);font-size:15px}
-.yr{display:flex;align-items:center;justify-content:center;gap:12px;padding:4px 0 12px;border-bottom:1px solid var(--border);margin-bottom:12px}
-.yr button{width:34px;height:30px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2)}
-.yr b{font-size:21px;color:var(--primary);min-width:70px;text-align:center}
-.mo{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;padding:11px 12px;margin-bottom:8px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-size:13.5px;font-weight:700;color:var(--text)}
-.mo small{font-size:11px;font-weight:700;white-space:nowrap}
-.grp-h span:last-child{white-space:nowrap}
-.mo.empty{border-style:dashed;background:transparent;color:var(--text3);font-weight:600}
-.mo.now{background:var(--primary);border-color:var(--primary);color:#fff}.mo.now small{color:#fff!important}
-
-/* page header */
-.ph{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
-.back{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-size:18px;color:var(--text)}
-.ph h1{margin:0;font-size:22px}
-.chip{padding:5px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:700;color:var(--text2)}
-
-/* cards */
-.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.card3{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.card3 .t{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
-.card3 .l{font-size:11.5px;color:var(--text3)}.card3 .v{font-size:17px;font-weight:800;white-space:nowrap}
-.pos{color:var(--income)}.neg{color:var(--expense)}.zero{color:var(--text3)}
-
-/* month */
-.tabs{display:inline-flex;gap:4px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:5px;margin:8px 0 16px}
-.tabs button{padding:10px 24px;border:none;border-radius:10px;background:transparent;font-size:14px;font-weight:700;color:var(--text2)}
-.tabs button.on.inc{background:var(--card);color:var(--income);box-shadow:var(--shadow)}
-.tabs button.on.exp{background:var(--card);color:var(--expense);box-shadow:var(--shadow)}
-.split{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start}
-.rc-title{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px}
-.rc{display:flex;gap:10px;align-items:center;width:100%;padding:9px 10px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);text-align:left}
-.rc:hover{border-color:var(--primary)}
-.rc-n{flex:none;width:30px;height:30px;border-radius:8px;background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
-.rc-t{flex:1;min-width:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rc-a{display:block;font-size:12px;font-weight:800}
-.grp-h{display:flex;justify-content:space-between;align-items:center;padding:12px 0 8px;border-top:1px solid var(--border);margin-top:10px;font-weight:800;font-size:15px}
-.grp-h:first-child{border-top:none;margin-top:0}
-.row{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:10px 6px;border-bottom:1px solid var(--border)}
-.row .nm{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.row .dt{font-size:11px;color:var(--text3)}.row .dt.fix{color:var(--primary)}
-.row .am{font-size:13.5px;font-weight:800}
-.row .sub{flex:0 0 100%;display:flex;flex-wrap:wrap;gap:1px 10px;font-size:10.5px;color:var(--text3)}
-.row .sub i{font-style:normal;white-space:nowrap}
-.row .no{font-size:10.5px;font-weight:700;color:var(--primary);margin-right:2px}
+/* period bar + tabs */
+.pbar{background:var(--card);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.pbar-in{max-width:1180px;margin:0 auto;padding:12px 28px 8px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.pbar-t b{font-size:16px}.pbar-t span{font-size:12px;color:var(--text3);margin-left:10px}
+.pbar-p{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pbar-p label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--text3)}
+.pbar-p input{padding:7px 9px;border:1.5px solid var(--border);border-radius:8px;background:var(--card2);font-size:13px;color:var(--text)}
+.tabbar{max-width:1180px;margin:0 auto;padding:0 28px;display:flex;gap:2px;overflow-x:auto}
+.tabbar button{padding:10px 16px;border:none;background:none;font-size:13.5px;font-weight:700;color:var(--text2);border-bottom:3px solid transparent;white-space:nowrap}
+.tabbar button.on{color:var(--primary);border-bottom-color:var(--primary)}
+.content{max-width:1180px;margin:0 auto;padding:20px 28px 70px}
+.sec{font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--text2);margin:26px 0 10px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.kl{font-size:11.5px;color:var(--text3)}.kv{font-size:18px;font-weight:800;margin-top:3px}.ks{font-size:11.5px;color:var(--text2);margin-top:2px}
+.dls{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.dl{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+.dl-tag{flex:none;width:44px;height:44px;border-radius:8px;background:#eef3f8;color:var(--text2);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center}
+.dl-txt{flex:1;min-width:0}.dl-txt b{display:block;font-size:14px}.dl-txt span{display:block;font-size:12px;color:var(--text2);margin-top:2px;line-height:1.4}
+.dl-btn{flex:none;padding:9px 14px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-size:12.5px;font-weight:700}
+.dl-btn.sm{padding:8px 12px}.dl-btn:disabled{background:#c9d6e2;cursor:not-allowed}
+.dlstat{font-size:12.5px;color:var(--text2);min-height:18px;margin-top:10px}
+.note{margin-top:10px;font-size:12.5px;color:var(--text2);background:#fff8e6;border:1px solid #f5dfa0;border-radius:8px;padding:9px 12px}
+.toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.seg{display:inline-flex;border:1.5px solid var(--border);border-radius:8px;overflow:hidden;background:var(--card)}
+.seg button{padding:8px 14px;border:none;background:none;font-size:12.5px;font-weight:700;color:var(--text2)}
+.seg button.on{background:var(--primary);color:#fff}
+.search{flex:1;min-width:180px;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:var(--card)}
+.tbl-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--border);border-radius:10px}
+.tbl{width:100%;border-collapse:collapse;font-size:13px}
+.tbl th{background:#f3f7fb;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--text2);padding:9px 12px;white-space:nowrap}
+.tbl td{padding:9px 12px;border-top:1px solid var(--border);white-space:nowrap}
+.tbl td:nth-child(4){white-space:normal;min-width:160px}
+.tbl .r{text-align:right}.tbl tfoot td{font-weight:800;background:#f8fafc}
+.tbl td.act{white-space:nowrap}.act button{padding:5px 9px;margin-right:6px;border:1.5px solid var(--border);border-radius:7px;background:var(--card);font-size:12px;font-weight:700;color:var(--primary)}
+.act button:hover{border-color:var(--primary)}
+.nofile{font-size:12px;color:var(--text3)}
+.no{font-weight:800;font-size:12px;padding:2px 7px;border-radius:6px}.no.income{background:#e6f6ec;color:#15803d}.no.expense{background:#fdeaea;color:#b91c1c}
+.emp-h{margin:22px 0 8px}.emp-h b{font-size:15px}.emp-h span{font-size:12.5px;color:var(--text2);margin-left:10px}
 .empty-msg{text-align:center;padding:26px 10px;color:var(--text3);font-size:13px}
-
-/* employees / gov */
-.list-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:12px}
-.list-card.click{cursor:pointer}.list-card.click:hover{border-color:var(--primary)}
-.lc-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.lc-name{font-weight:800;font-size:15px}.lc-sub{font-size:12px;color:var(--text3);margin-top:2px}
-.kv{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}.kv div{font-size:11px;color:var(--text3)}.kv b{display:block;font-size:14px;color:var(--text);margin-top:1px}
-.pay{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--border);font-size:12.5px}
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.back{width:40px;height:40px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-size:18px;color:var(--text)}
+.ph h1{margin:0;font-size:20px}
 
 /* overlays */
 .ov{display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,30,50,.45);align-items:flex-end;justify-content:center}
@@ -144,15 +125,10 @@ button{cursor:pointer}
 .ts-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
 
 @media (max-width:720px){
-  .topbar{padding:12px 16px}#view{padding:16px 16px 70px}
-  .hp-wrap{grid-template-columns:minmax(0,1fr) 40%;gap:10px}
-  .hp-fixed,.hp-pick{padding:10px;border-radius:16px}
-  .hp-nav{padding:10px;gap:8px;border-radius:12px}.hp-ico{width:30px;height:30px;border-radius:9px}.hp-lbl{font-size:12px}.hp-sub{display:none}
-  .card3{padding:14px;gap:6px}.card3 .v{font-size:14.5px}
-  .split{grid-template-columns:36% minmax(0,1fr);gap:10px}
-  .topbar{flex-wrap:wrap;row-gap:10px}.tb-brand{flex:1 0 100%}.tb-act{flex:1 0 100%}.tb-act .tb-btn{flex:1;padding:8px 6px;font-size:11.5px}.tb-t2{max-width:70vw}
-  .mo{flex-direction:column;align-items:flex-start;gap:2px;padding:9px 10px;font-size:13px}
-  .grp-h{font-size:14px}.row .nm{flex:1 1 100%;order:0}
+  .topbar{padding:12px 16px;flex-wrap:wrap;row-gap:10px}.tb-brand{flex:1 0 100%}.tb-act{flex:1 0 100%}.tb-act .tb-btn{flex:1;padding:8px 6px;font-size:11.5px}.tb-t2{max-width:70vw}
+  .pbar-in,.tabbar,.content{padding-left:14px;padding-right:14px}
+  .kpis{grid-template-columns:repeat(2,1fr)}.dls{grid-template-columns:1fr}
+  .dl{flex-wrap:wrap}.dl-btn{width:100%}
   .ts-stats{grid-template-columns:repeat(2,1fr)}
 }
 </style>
@@ -194,7 +170,6 @@ button{cursor:pointer}
   <div id="view"></div>
 </div>
 
-<div class="ov" id="pkgOv" onclick="if(event.target===this)buClosePkg()"><div class="sheet" id="pkgSheet"></div></div>
 <div class="page-ov" id="tsOv"><div class="page-in" id="tsBody"></div></div>
 <div class="page-ov" id="legalOv"><div class="page-in"><button class="back" onclick="document.getElementById('legalOv').classList.remove('open')">&#8592;</button><div class="legal" id="legalBody"></div></div></div>
 <div id="viewer"><div class="vb"><button onclick="buViewerDownload()">Herunterladen</button><button onclick="buCloseViewer()">Schließen</button></div><div id="viewerContent"></div></div>
@@ -413,7 +388,7 @@ function vatBreakdown(amount, rate) {
 
 
 // ── state ───────────────────────────────────────────────────────────────────
-var S = {clientId: null, data: null, view: 'home', year: new Date().getFullYear(), month: new Date().getMonth(), tab: 'income', ts: {empId: null, month: null}};
+var S = {clientId: null, data: null, tab: 'overview', from: '', to: '', docFilter: 'all', q: '', sel: {}, ts: {empId: null, month: null}};
 var $ = function(id) { return document.getElementById(id); };
 function show(id) { ['screenLogin', 'screenClients', 'screenApp'].forEach(function(s) { $(s).style.display = s === id ? (s === 'screenApp' ? 'block' : 'flex') : 'none'; }); }
 
@@ -443,129 +418,98 @@ function buShowClients() {
 }
 function buSelectClient(id) {
   BuApi.loadClient(id).then(function(d) {
-    S.clientId = id; S.data = d; S.view = 'home'; S.year = new Date().getFullYear(); S.month = new Date().getMonth(); S.tab = 'income';
+    S.clientId = id; S.data = d; S.tab = 'overview'; S.docFilter = 'all'; S.q = ''; S.sel = {}; presetPeriod('quarter', true);
     sessionStorage.setItem('bu_account', id);
     $('tbClient').textContent = (d.businessName || id) + (d.businessTaxId ? ' · ' + d.businessTaxId : '');
     show('screenApp'); render(); BuApi.audit(id, 'open_client');
   }, function() { alert('Daten konnten nicht geladen werden.'); });
 }
 
-// ── numbers ─────────────────────────────────────────────────────────────────
-function txs() { return S.data.transactions || []; }
-function hasTime(tx) { return tx && tx.date; }
-function split(tx) { var v = vatBreakdown(tx.amount, tx.vatRate || 0); return v; }
-// unbooked fixed rows exist only for the current/future months (earlier ones were booked as real transactions)
-function fixedRows(type, y, m) {
-  var key = y + '-' + pad2(m + 1), now = new Date(), nk = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
-  if(key < nk) return [];
-  var rows = [];
-  function add(src, name, amount, vat, day) {
-    if(src.lastRecorded === key) return;
-    var a = parseFloat(amount) || 0; if(a <= 0) return;
-    rows.push({name: name, amount: a, vatRate: parseFloat(vat) || 0, day: parseInt(day, 10) || 1, fixed: true});
-  }
-  if(type === 'expense') {
-    (S.data.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
-    (S.data.employees || []).forEach(function(e) { add(e, 'Gehalt · ' + (e.name || e.fullName || ''), e.salary, 0, 1); });
-  } else (S.data.fixedIncome || []).forEach(function(f) { add(f, f.name, f.amount, f.vatRate, f.day); });
-  return rows.sort(function(a, b) { return a.day - b.day; });
+// ── period + data ───────────────────────────────────────────────────────────
+function presetPeriod(k, silent) {
+  var n = new Date(), y = n.getFullYear(), m = n.getMonth() + 1;
+  if(k === 'quarter') { var q = Math.floor((m - 1) / 3); S.from = y + '-' + pad2(q * 3 + 1); S.to = y + '-' + pad2(q * 3 + 3); }
+  else if(k === 'year') { S.from = y + '-01'; S.to = y + '-12'; }
+  else if(k === 'last') { var d = new Date(y, m - 2, 1); S.from = S.to = d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
+  else { S.from = S.to = y + '-' + pad2(m); }
+  S.sel = {};
+  if(!silent) render();
 }
-function sumRows(rows) { var g = 0, n = 0; rows.forEach(function(r) { var v = vatBreakdown(r.amount, r.vatRate || 0); g += v.brutto; n += v.netto; }); return {brutto: g, netto: n, steuer: g - n}; }
-function monthTotals(y, m) {
-  var pre = y + '-' + pad2(m + 1), net = 0, vat = 0;
-  txs().forEach(function(t) { if(!hasTime(t) || t.date.substring(0, 7) !== pre) return; var v = split(t), k = t.type === 'income' ? 1 : -1; net += k * v.netto; vat += k * v.steuer; });
-  [['income', 1], ['expense', -1]].forEach(function(p) { var s = sumRows(fixedRows(p[0], y, m)); net += p[1] * s.netto; vat += p[1] * s.steuer; });
-  return {net: net, vat: vat, total: net - vat};
+function setPeriod() {
+  var f = $('pFrom').value, t = $('pTo').value; if(!f || !t) return;
+  if(f > t) { var x = f; f = t; t = x; }
+  S.from = f; S.to = t; S.sel = {}; render();
 }
-function carryIn(y, m) {
-  var net = 0, vat = 0;
-  txs().forEach(function(t) {
-    if(!hasTime(t)) return;
-    if(parseInt(t.date.substring(0, 4), 10) !== y || parseInt(t.date.substring(5, 7), 10) - 1 >= m) return;
-    var v = split(t), k = t.type === 'income' ? 1 : -1; net += k * v.netto; vat += k * v.steuer;
-  });
-  return {net: net, vat: vat, total: net - vat};
+function txRows() {
+  return (S.data.transactions || []).map(function(t) { return {id: t.id, type: t.type, name: t.name, amount: t.amount, vatRate: t.vatRate || 0, date: t.date, invoice: t.invoice, receiptId: t.receiptId, category: t.category || '', party: t.clientName || t.supplierName || ''}; });
 }
-function monthHasData(y, m) {
-  var pre = y + '-' + pad2(m + 1);
-  return txs().some(function(t) { return hasTime(t) && t.date.substring(0, 7) === pre; }) || fixedRows('income', y, m).length || fixedRows('expense', y, m).length;
-}
-function card3(title, c) {
-  return '<div class="card3"><div class="t">' + esc(title) + '</div>'
-    + '<div><div class="l">Netto</div><div class="v num ' + cls(c.net) + '">' + sgn(c.net) + '</div></div>'
-    + '<div><div class="l">Steuer (USt)</div><div class="v num ' + cls(-c.vat) + '">' + sgn(-c.vat) + '</div></div>'
-    + '<div><div class="l">Total</div><div class="v num ' + cls(c.total) + '">' + sgn(c.total) + '</div></div></div>';
-}
+function periodData() { return TrabisPackage.prepare({from: S.from, to: S.to, transactions: txRows()}); }
+function hasFile(tx) { return !!(tx.invoice || tx.receiptId); }
+function periodLabel() { return S.from === S.to ? MON[+S.from.substring(5, 7) - 1] + ' ' + S.from.substring(0, 4) : MON3[+S.from.substring(5, 7) - 1] + ' ' + S.from.substring(0, 4) + ' – ' + MON3[+S.to.substring(5, 7) - 1] + ' ' + S.to.substring(0, 4); }
 
 // ── views ───────────────────────────────────────────────────────────────────
-function go(v) { S.view = v; render(); window.scrollTo(0, 0); }
 function render() {
-  var f = {home: viewHome, month: viewMonth, employees: viewEmployees, gov: viewGov}[S.view] || viewHome;
-  $('view').innerHTML = f();
+  var d = S.data, P = periodData();
+  var tabs = [['overview', 'Übersicht'], ['docs', 'Belege (' + P.rows.length + ')'], ['emps', 'Mitarbeiter'], ['gov', 'Behörden']];
+  var h = '<div class="pbar"><div class="pbar-in">'
+    + '<div class="pbar-t"><b>' + esc(d.businessName || '') + '</b><span>' + esc(d.businessTaxId || '') + '</span></div>'
+    + '<div class="pbar-p"><label>Zeitraum</label><input type="month" id="pFrom" value="' + S.from + '" onchange="setPeriod()"><span>–</span><input type="month" id="pTo" value="' + S.to + '" onchange="setPeriod()">'
+    + '<button class="pre" onclick="presetPeriod(\'month\')">Monat</button><button class="pre" onclick="presetPeriod(\'last\')">Vormonat</button><button class="pre" onclick="presetPeriod(\'quarter\')">Quartal</button><button class="pre" onclick="presetPeriod(\'year\')">Jahr</button></div>'
+    + '</div><div class="tabbar">' + tabs.map(function(t) { return '<button class="' + (S.tab === t[0] ? 'on' : '') + '" onclick="S.tab=\'' + t[0] + '\';render()">' + t[1] + '</button>'; }).join('') + '</div></div>';
+  var body = {overview: viewOverview, docs: viewDocs, emps: viewEmps, gov: viewGov}[S.tab](P);
+  $('view').innerHTML = h + '<div class="content">' + body + '</div>';
 }
-function header(title, extra) { return '<div class="ph"><button class="back" onclick="go(\'' + (S.view === 'month' || S.view === 'employees' || S.view === 'gov' ? 'home' : 'home') + '\')">&#8592;</button><h1>' + esc(title) + '</h1>' + (extra || '') + '</div>'; }
+function kpi(l, v, sub) { return '<div class="kpi"><div class="kl">' + l + '</div><div class="kv num">' + v + '</div>' + (sub ? '<div class="ks num">' + sub + '</div>' : '') + '</div>'; }
+function viewOverview(P) {
+  var t = {iN: 0, iV: 0, eN: 0, eV: 0}; P.summary.forEach(function(s) { t.iN += s.iN; t.iV += s.iV; t.eN += s.eN; t.eV += s.eV; });
+  var saldo = t.iN - t.eN, zl = t.iV - t.eV, withFile = P.rows.filter(function(r) { return hasFile(r.tx); }).length, missing = P.rows.length - withFile;
+  var h = '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', sgn(-zl), 'Total ' + sgn(saldo - zl)) + '</div>';
+  h += '<h2 class="sec">Downloads für ' + esc(periodLabel()) + '</h2><div class="dls">'
+    + dl('PDF', 'Komplettpaket als PDF', 'Zusammenfassung, Verzeichnisse und alle ' + withFile + ' Belege – Einnahmen und Ausgaben getrennt, nummeriert.', 'pdf', 'Herunterladen')
+    + dl('XLS', 'Excel-Datei', 'Zusammenfassung, Einnahmen, Ausgaben, Journal und Mitarbeiter-Stunden – mit Summenformeln.', 'xlsx', 'Herunterladen')
+    + dl('ZIP', 'Alle Belege (Originaldateien)', 'Original-PDFs/Bilder, sortiert in Einnahmen/ und Ausgaben/, benannt nach Belegnummer.', 'zip', 'Herunterladen')
+    + dl('CSV', 'CSV für Import', 'Journal mit Semikolon und Komma-Dezimal (UTF-8) – für den Import in Ihre Buchhaltungssoftware.', 'csv', 'Herunterladen')
+    + '</div><div id="dlStatus" class="dlstat"></div>';
+  if(missing) h += '<div class="note">' + missing + ' von ' + P.rows.length + ' Buchungen haben keinen Beleg (z. B. Gehälter oder Fixzahlungen ohne Dokument).</div>';
+  h += '<h2 class="sec">Monatsübersicht</h2><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Monat</th><th class="r">Einnahmen netto</th><th class="r">USt</th><th class="r">Ausgaben netto</th><th class="r">Vorsteuer</th><th class="r">Saldo netto</th><th class="r">USt-Zahllast</th><th class="r">Total</th></tr></thead><tbody>';
+  P.summary.forEach(function(s) { h += '<tr><td>' + MON[+s.month.substring(5, 7) - 1] + ' ' + s.month.substring(0, 4) + '</td><td class="r num">' + deNum(s.iN) + '</td><td class="r num">' + deNum(s.iV) + '</td><td class="r num">' + deNum(s.eN) + '</td><td class="r num">' + deNum(s.eV) + '</td><td class="r num">' + deNum(s.saldoNet) + '</td><td class="r num">' + deNum(s.zahllast) + '</td><td class="r num"><b>' + deNum(s.total) + '</b></td></tr>'; });
+  return h + '</tbody></table></div>';
+}
+function dl(tag, title, desc, kind, btn) {
+  return '<div class="dl"><div class="dl-tag">' + tag + '</div><div class="dl-txt"><b>' + title + '</b><span>' + desc + '</span></div><button class="dl-btn" onclick="pkBuild(\'' + kind + '\')">' + btn + '</button></div>';
+}
 
-function viewHome() {
-  var d = S.data, y = S.year, emp = (d.employees || []).length, gov = (d.contacts || []).filter(function(c) { return c && c.type === 'government'; }).length;
-  var tile = function(ic, label, sub, click) { return '<button class="hp-nav" onclick="' + click + '"><span class="hp-ico">' + ic + '</span><span class="hp-lbl">' + label + '<span class="hp-sub">' + sub + '</span></span><span class="hp-car">&rsaquo;</span></button>'; };
-  var I = {
-    emp: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
-    gov: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10m4 11V10m6 11V10m4 11V10M2 10l10-7 10 7"/></svg>',
-    pkg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>'
-  };
-  var months = '';
-  for(var m = 0; m < 12; m++) {
-    var has = monthHasData(y, m), mt = monthTotals(y, m), isNow = (y === new Date().getFullYear() && m === new Date().getMonth());
-    months += '<button class="mo' + (has ? '' : ' empty') + (isNow ? ' now' : '') + '" onclick="openMonth(' + m + ')"><span>' + MON[m] + '</span>'
-      + (has ? '<small class="num ' + (isNow ? '' : cls(mt.net)) + '">' + sgn(mt.net) + '</small>' : '') + '</button>';
-  }
-  return '<div class="ph"><h1 style="font-size:20px">' + esc(d.businessName || '') + '</h1></div>'
-    + '<div class="hp-wrap"><div class="hp-fixed"><div class="hp-hd">Unterlagen</div>'
-    + tile(I.pkg, 'Steuerberater-Paket', 'PDF mit Belegen + Excel', 'buOpenPkg()')
-    + tile(I.emp, 'Mitarbeiter', emp + (emp === 1 ? ' Person' : ' Personen') + ' · Stunden &amp; Urlaub', "go('employees')")
-    + tile(I.gov, 'Behörden', gov + ' Einträge · Zahlungen', "go('gov')")
-    + '</div><div class="hp-pick"><div class="yr"><button onclick="S.year--;render()">&#9650;</button><b class="num">' + y + '</b><button onclick="S.year++;render()">&#9660;</button></div>' + months + '</div></div>';
+function viewDocs(P) {
+  var q = (S.q || '').toLowerCase();
+  var rows = P.rows.filter(function(r) {
+    if(S.docFilter !== 'all' && r.type !== S.docFilter) return false;
+    return !q || (r.no + ' ' + r.name + ' ' + r.party + ' ' + r.category).toLowerCase().indexOf(q) >= 0;
+  });
+  window._docRows = rows;
+  var selN = rows.filter(function(r) { return S.sel[r.tx.id]; }).length;
+  var h = '<div class="toolbar"><div class="seg">' + [['all', 'Alle'], ['income', 'Einnahmen'], ['expense', 'Ausgaben']].map(function(f) { return '<button class="' + (S.docFilter === f[0] ? 'on' : '') + '" onclick="S.docFilter=\'' + f[0] + '\';render()">' + f[1] + '</button>'; }).join('') + '</div>'
+    + '<input class="search" placeholder="Suchen (Nr., Text, Partei)…" value="' + esc(S.q) + '" oninput="S.q=this.value;docsRefocus()">'
+    + '<button class="dl-btn sm" ' + (selN ? '' : 'disabled') + ' onclick="pkBuild(\'zipsel\')">' + (selN ? selN + ' ausgewählte Belege (ZIP)' : 'Auswahl als ZIP') + '</button></div>';
+  if(!rows.length) return h + '<div class="empty-msg">Keine Belege im Zeitraum.</div><div id="dlStatus" class="dlstat"></div>';
+  h += '<div class="tbl-wrap"><table class="tbl docs"><thead><tr><th><input type="checkbox" onchange="selAll(this.checked)"></th><th>Nr.</th><th>Datum</th><th>Buchungstext</th><th>Partei</th><th class="r">USt %</th><th class="r">Netto</th><th class="r">USt</th><th class="r">Brutto</th><th>Beleg</th></tr></thead><tbody>';
+  rows.forEach(function(r, i) {
+    var f = hasFile(r.tx);
+    h += '<tr><td><input type="checkbox" ' + (S.sel[r.tx.id] ? 'checked ' : '') + (f ? '' : 'disabled ') + 'onchange="selOne(' + r.tx.id + ',this.checked)"></td><td><span class="no ' + r.type + '">' + r.no + '</span></td><td class="num">' + deDate(r.date) + '</td><td>' + esc(r.name) + '</td><td>' + esc(r.party) + '</td>'
+      + '<td class="r num">' + r.rate + '</td><td class="r num">' + deNum(r.net) + '</td><td class="r num">' + deNum(r.vat) + '</td><td class="r num"><b>' + deNum(r.gross) + '</b></td>'
+      + '<td class="act">' + (f ? '<button onclick="viewDoc(' + i + ')">Ansehen</button><button onclick="saveDoc(' + i + ')">Laden</button>' : '<span class="nofile">kein Beleg</span>') + '</td></tr>';
+  });
+  var tot = rows.reduce(function(a, r) { var k = r.type === 'income' ? 1 : -1; a.n += k * r.net; a.v += k * r.vat; a.g += k * r.gross; return a; }, {n: 0, v: 0, g: 0});
+  h += '</tbody><tfoot><tr><td colspan="6">Saldo (Einnahmen − Ausgaben)</td><td class="r num">' + deNum(tot.n) + '</td><td class="r num">' + deNum(tot.v) + '</td><td class="r num">' + deNum(tot.g) + '</td><td></td></tr></tfoot></table></div><div id="dlStatus" class="dlstat"></div>';
+  return h;
 }
-function openMonth(m) { S.month = m; S.tab = 'income'; go('month'); BuApi.audit(S.clientId, 'view_month', S.year + '-' + pad2(m + 1)); }
-
-function monthRowsFor(type) {
-  var pre = S.year + '-' + pad2(S.month + 1);
-  var booked = txs().filter(function(t) { return hasTime(t) && t.type === type && t.date.substring(0, 7) === pre; })
-    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
-  return {booked: booked, fixed: fixedRows(type, S.year, S.month)};
-}
-function attachOf(tx) { return tx.invoice ? 'inline' : (tx.receiptId ? 'file' : ''); }
-function rowHtml(name, dateIso, gross, rate, color, sign, att, idx, fixed, day) {
-  var v = vatBreakdown(gross, rate || 0);
-  var dt = fixed ? pad2(day) + '.' + pad2(S.month + 1) + '.' + S.year : deDate(dateIso);
-  return '<div class="row"' + (att ? ' style="cursor:pointer" onclick="openAttachment(\'' + att + '\',' + idx + ')"' : '') + '>'
-    + '<span class="nm">' + esc(name) + (att ? ' &#128206;' : '') + '</span><span class="dt' + (fixed ? ' fix' : '') + '">' + dt + '</span>'
-    + '<span class="am num" style="color:' + color + '">' + sign + eur(gross) + '</span>'
-    + '<span class="sub num"><i>Netto ' + eur(v.netto) + '</i><i>USt ' + (rate || 0) + '% ' + eur(v.steuer) + '</i><i>Total ' + eur(v.brutto) + '</i></span></div>';
-}
-function viewMonth() {
-  var y = S.year, m = S.month, type = S.tab, inc = type === 'income', color = inc ? 'var(--income)' : 'var(--expense)', sign = inc ? '+' : '−';
-  var r = monthRowsFor(type), docs = r.booked.filter(function(t) { return attachOf(t); });
-  window._bookedList = r.booked;
-  var rcpt = '<div class="rc-title">Belege (' + docs.length + ')</div>' + (docs.length ? docs.map(function(t, i) {
-    var idx = r.booked.indexOf(t);
-    return '<button class="rc" onclick="openAttachment(\'' + attachOf(t) + '\',' + idx + ')"><span class="rc-n">' + (i + 1) + '</span><span class="rc-t">' + esc(t.name) + '<span class="rc-a num" style="color:' + color + '">' + sign + eur(t.amount) + '</span></span></button>';
-  }).join('') : '<div class="empty-msg" style="padding:8px 0;text-align:left">Keine Belege.</div>');
-  function grp(title, rows, isFixed) {
-    if(!rows.length) return '';
-    var sum = sumRows(isFixed ? rows : rows.map(function(t) { return {amount: t.amount, vatRate: t.vatRate || 0}; })).brutto;
-    return '<div class="grp-h"><span>' + title + '</span><span class="num" style="color:' + color + '">' + sign + eur(sum) + '</span></div>'
-      + rows.map(function(t, i) {
-        return isFixed ? rowHtml(t.name, '', t.amount, t.vatRate, color, sign, '', 0, true, t.day)
-                       : rowHtml(t.name, t.date, t.amount, t.vatRate, color, sign, attachOf(t), r.booked.indexOf(t), false, 0);
-      }).join('');
-  }
-  var body = grp(inc ? 'Fixe Einnahmen · offen' : 'Fixzahlungen · offen', r.fixed, true) + grp(inc ? 'Übrige Einnahmen' : 'Übrige Ausgaben', r.booked, false);
-  if(!body) body = '<div class="empty-msg">Keine Buchungen in diesem Monat.</div>';
-  return '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>' + MON[m] + '</h1><span class="chip num">' + y + '</span></div>'
-    + card3('Saldo der Vormonate', carryIn(y, m)) + card3('Dieser Monat', monthTotals(y, m))
-    + '<div class="tabs"><button class="inc' + (inc ? ' on' : '') + '" onclick="S.tab=\'income\';render()">Einnahmen</button><button class="exp' + (!inc ? ' on' : '') + '" onclick="S.tab=\'expense\';render()">Ausgaben</button></div>'
-    + '<div class="split"><div>' + rcpt + '</div><div>' + body + '</div></div>';
+function docsRefocus() { var pos = ($('view').querySelector('.search') || {}).selectionStart; render(); var s = $('view').querySelector('.search'); if(s) { s.focus(); try { s.setSelectionRange(pos, pos); } catch(e) {} } }
+function selAll(on) { (window._docRows || []).forEach(function(r) { if(hasFile(r.tx)) S.sel[r.tx.id] = on; }); render(); }
+function selOne(id, on) { S.sel[id] = on; render(); }
+function viewDoc(i) { var r = window._docRows[i]; getAttachment(r.tx).then(function(a) { if(a) { viewBlob(a.blob, fileNameFor(r, a.type)); BuApi.audit(S.clientId, 'view_file', String(r.tx.id)); } else alert('Beleg nicht gefunden.'); }); }
+function saveDoc(i) { var r = window._docRows[i]; getAttachment(r.tx).then(function(a) { if(!a) { alert('Beleg nicht gefunden.'); return; } TrabisPackage.download(a.blob, fileNameFor(r, a.type), a.type); BuApi.audit(S.clientId, 'download_file', String(r.tx.id)); }); }
+function fileNameFor(r, type) {
+  var ext = (type || '').indexOf('pdf') >= 0 ? 'pdf' : (type || '').indexOf('png') >= 0 ? 'png' : (type || '').indexOf('jpeg') >= 0 ? 'jpg' : (type || '').indexOf('svg') >= 0 ? 'svg' : 'pdf';
+  return r.no + '_' + r.date + '_' + String(r.name).replace(/[^\w\-]+/g, '_').substring(0, 30) + '.' + ext;
 }
 
 // ── attachments ─────────────────────────────────────────────────────────────
@@ -574,14 +518,6 @@ function dataUrlToBlob(u) {
   var m = /^data:([^;,]+)[^,]*;base64,(.*)$/.exec(u || ''); if(!m) return null;
   var bin = atob(m[2]), b = new Uint8Array(bin.length); for(var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
   return new Blob([b], {type: m[1]});
-}
-function openAttachment(kind, idx) {
-  var t = window._bookedList[idx]; if(!t) return;
-  getAttachment(t).then(function(a) {
-    if(!a) { alert('Beleg nicht gefunden.'); return; }
-    viewBlob(a.blob, t.invoiceName || (t.name + (a.type === 'application/pdf' ? '.pdf' : '')));
-    BuApi.audit(S.clientId, 'download_file', String(t.id));
-  });
 }
 function getAttachment(t) {
   if(t.invoice) { var b = dataUrlToBlob(t.invoice); return Promise.resolve(b ? {blob: b, type: b.type} : null); }
@@ -601,18 +537,24 @@ function buCloseViewer() { $('viewer').classList.remove('open'); $('viewerConten
 
 // ── employees ───────────────────────────────────────────────────────────────
 function empName(e) { return e.fullName || e.name || ''; }
-function viewEmployees() {
-  var list = S.data.employees || [], mk = new Date().toISOString().substring(0, 7);
-  var h = '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>Mitarbeiter</h1></div>';
-  if(!list.length) return h + '<div class="empty-msg">Keine Mitarbeiter erfasst.</div>';
+function viewEmps(P) {
+  var list = S.data.employees || [], months = TrabisPackage.monthRange(S.from, S.to);
+  if(!list.length) return '<div class="empty-msg">Keine Mitarbeiter erfasst.</div>';
+  var h = '';
   list.forEach(function(e) {
-    var st = wtMonthStats(e, mk), vac = wtVacation(e, mk);
-    h += '<div class="list-card click" onclick="openTimesheet(' + e.id + ')"><div class="lc-top"><div><div class="lc-name">' + esc(empName(e)) + '</div><div class="lc-sub">' + esc(e.position || '') + (e.startDate ? ' · Eintritt ' + deDate(e.startDate) : '') + '</div></div><span class="hp-car">&rsaquo;</span></div>'
-      + '<div class="kv num"><div>Stunden ' + MON3[+mk.substring(5, 7) - 1] + '<b>' + deNum(st.hours) + ' h</b></div><div>Arbeitstage<b>' + st.workDays + '</b></div><div>Urlaub / Krank<b>' + st.urlaub + ' / ' + st.krank + '</b></div><div>Resturlaub<b>' + (vac.hasHire ? deNum(vac.rest) + ' Tage' : '—') + '</b></div></div></div>';
+    var rows = '', tot = {hours: 0, workDays: 0, urlaub: 0, krank: 0, karenz: 0};
+    months.forEach(function(mk) {
+      var s = wtMonthStats(e, mk), v = wtVacation(e, mk);
+      tot.hours += s.hours; tot.workDays += s.workDays; tot.urlaub += s.urlaub; tot.krank += s.krank; tot.karenz += s.karenz;
+      rows += '<tr><td>' + MON[+mk.substring(5, 7) - 1] + ' ' + mk.substring(0, 4) + '</td><td class="r num">' + deNum(s.hours) + '</td><td class="r num">' + s.workDays + '</td><td class="r num">' + s.urlaub + '</td><td class="r num">' + s.krank + '</td><td class="r num">' + s.karenz + '</td><td class="r num">' + s.feiertag + '</td><td class="r num">' + (v.hasHire ? deNum(v.rest) : '—') + '</td><td class="act"><button onclick="openTimesheet(' + e.id + ',\'' + mk + '\')">Stundenzettel</button></td></tr>';
+    });
+    h += '<div class="emp-h"><b>' + esc(empName(e)) + '</b><span>' + esc(e.position || '') + (e.startDate ? ' · Eintritt ' + deDate(e.startDate) : '') + '</span></div>'
+      + '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Monat</th><th class="r">Stunden</th><th class="r">Arbeitstage</th><th class="r">Urlaub</th><th class="r">Krank</th><th class="r">Karenz</th><th class="r">Feiertage</th><th class="r">Resturlaub</th><th></th></tr></thead><tbody>' + rows
+      + '</tbody><tfoot><tr><td>Summe</td><td class="r num">' + deNum(tot.hours) + '</td><td class="r num">' + tot.workDays + '</td><td class="r num">' + tot.urlaub + '</td><td class="r num">' + tot.krank + '</td><td class="r num">' + tot.karenz + '</td><td></td><td></td><td></td></tr></tfoot></table></div>';
   });
   return h;
 }
-function openTimesheet(id) { S.ts.empId = id; S.ts.month = S.ts.month || new Date().toISOString().substring(0, 7); renderTs(); $('tsOv').classList.add('open'); BuApi.audit(S.clientId, 'view_timesheet', String(id)); }
+function openTimesheet(id, mk) { S.ts.empId = id; S.ts.month = mk || S.to; renderTs(); $('tsOv').classList.add('open'); BuApi.audit(S.clientId, 'view_timesheet', String(id)); }
 function tsShift(d) {
   var p = S.ts.month.split('-'), dt = new Date(+p[0], +p[1] - 1 + d, 1);
   S.ts.month = dt.getFullYear() + '-' + pad2(dt.getMonth() + 1); renderTs();
@@ -648,63 +590,50 @@ function govTxMatches(tx, c) {
   var first = n.split(/\s+/)[0]; if(first.length < 3) return false;
   return new RegExp('(^|[^a-zäöüß])' + first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-zäöüß])').test(hay);
 }
-function viewGov() {
+function viewGov(P) {
   var ents = (S.data.contacts || []).filter(function(c) { return c && c.type === 'government'; });
-  var h = '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>Behörden</h1></div>';
-  if(!ents.length) return h + '<div class="empty-msg">Keine Behörden erfasst.</div>';
-  var y = S.year, m = new Date().getMonth();
+  if(!ents.length) return '<div class="empty-msg">Keine Behörden erfasst.</div>';
+  var inRange = function(d) { var k = (d || '').substring(0, 7); return k >= S.from && k <= S.to; };
+  var h = '';
   ents.forEach(function(c) {
-    var pays = txs().filter(function(t) { return govTxMatches(t, c); }).sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
-    var ty = 0, tm = 0;
-    pays.forEach(function(t) { var a = parseFloat(t.amount) || 0; if(parseInt(t.date.substring(0, 4), 10) === y) { ty += a; if(parseInt(t.date.substring(5, 7), 10) - 1 === m) tm += a; } });
-    h += '<div class="list-card"><div class="lc-top"><div><div class="lc-name">' + esc(c.name) + '</div><div class="lc-sub">' + pays.length + ' Zahlung' + (pays.length === 1 ? '' : 'en') + '</div></div></div>'
-      + '<div class="kv num"><div>Dieses Jahr (' + y + ')<b>' + eur(ty) + '</b></div><div>Dieser Monat<b>' + eur(tm) + '</b></div></div>'
-      + pays.slice(0, 6).map(function(t) { return '<div class="pay num"><span>' + deDate(t.date) + ' · ' + esc(t.name) + '</span><b>' + eur(parseFloat(t.amount) || 0) + '</b></div>'; }).join('') + '</div>';
+    var pays = (S.data.transactions || []).filter(function(t) { return govTxMatches(t, c) && inRange(t.date); }).sort(function(a, b) { return a.date < b.date ? -1 : 1; });
+    var sum = pays.reduce(function(s, t) { return s + (parseFloat(t.amount) || 0); }, 0);
+    h += '<div class="emp-h"><b>' + esc(c.name) + '</b><span>' + pays.length + ' Zahlung' + (pays.length === 1 ? '' : 'en') + ' im Zeitraum · ' + eur(sum) + '</span></div>';
+    if(pays.length) h += '<div class="tbl-wrap"><table class="tbl"><thead><tr><th>Datum</th><th>Buchungstext</th><th class="r">Betrag</th></tr></thead><tbody>'
+      + pays.map(function(t) { return '<tr><td class="num">' + deDate(t.date) + '</td><td>' + esc(t.name) + '</td><td class="r num">' + eur(parseFloat(t.amount) || 0) + '</td></tr>'; }).join('') + '</tbody></table></div>';
   });
   return h;
 }
 
-// ── package ─────────────────────────────────────────────────────────────────
-function buOpenPkg() {
-  $('pkgSheet').innerHTML = '<div class="sheet-hd"><h2>Steuerberater-Paket</h2><button class="x" onclick="buClosePkg()">&times;</button></div>'
-    + '<div style="font-size:12px;color:var(--text3);margin-bottom:14px">PDF mit allen Belegen (Einnahmen und Ausgaben) + Excel mit den Zahlen für den gewählten Zeitraum.</div>'
-    + '<div style="display:flex;gap:8px;margin-bottom:10px"><label class="fld">Von<input type="month" id="pkFrom"></label><label class="fld">Bis<input type="month" id="pkTo"></label></div>'
-    + '<div style="margin-bottom:12px"><button class="pre" onclick="pkPreset(\'month\')">Dieser Monat</button><button class="pre" onclick="pkPreset(\'quarter\')">Dieses Quartal</button><button class="pre" onclick="pkPreset(\'year\')">Dieses Jahr</button></div>'
-    + '<button class="btn p" onclick="pkBuild(\'pdf\')">PDF mit Belegen</button><button class="btn o" onclick="pkBuild(\'xlsx\')">Excel (Zahlen)</button><button class="btn g" onclick="pkBuild(\'csv\')">CSV für Import</button>'
-    + '<div id="pkStatus" style="font-size:12px;color:var(--text3);margin-top:12px;min-height:16px"></div>';
-  $('pkgOv').classList.add('open'); pkPreset('month');
-}
-function buClosePkg() { $('pkgOv').classList.remove('open'); }
-function pkPreset(k) {
-  var n = new Date(), y = n.getFullYear(), m = n.getMonth() + 1, a, b;
-  if(k === 'quarter') { var q = Math.floor((m - 1) / 3); a = y + '-' + pad2(q * 3 + 1); b = y + '-' + pad2(q * 3 + 3); }
-  else if(k === 'year') { a = y + '-01'; b = y + '-12'; } else { a = b = y + '-' + pad2(m); }
-  $('pkFrom').value = a; $('pkTo').value = b;
-}
+// ── downloads ───────────────────────────────────────────────────────────────
+function attachBytes(tx) { return getAttachment(tx).then(function(a) { return a ? a.blob.arrayBuffer().then(function(ab) { return {bytes: new Uint8Array(ab), type: a.type}; }) : null; }); }
 function pkBuild(kind) {
-  var from = $('pkFrom').value, to = $('pkTo').value, st = $('pkStatus'); if(!from || !to) return;
-  if(from > to) { var t = from; from = to; to = t; }
-  st.textContent = 'Wird erstellt…';
+  var st = $('dlStatus'); if(st) st.textContent = 'Wird erstellt…';
   var emps = [];
   (S.data.employees || []).forEach(function(e) {
-    TrabisPackage.monthRange(from, to).forEach(function(mk) {
+    TrabisPackage.monthRange(S.from, S.to).forEach(function(mk) {
       var s = wtMonthStats(e, mk), v = wtVacation(e, mk);
       if(!(s.hours > 0 || s.urlaub || s.krank || s.karenz)) return;
       emps.push({name: empName(e), month: mk, hours: s.hours, workDays: s.workDays, urlaub: s.urlaub, krank: s.krank, karenz: s.karenz, feiertag: s.feiertag, entitled: v.entitled || 0, rest: v.rest || 0});
     });
   });
-  var rows = txs().map(function(t) { return {id: t.id, type: t.type, name: t.name, amount: t.amount, vatRate: t.vatRate || 0, date: t.date, invoice: t.invoice, receiptId: t.receiptId, category: t.category || '', party: t.clientName || t.supplierName || ''}; });
-  TrabisPackage.build({
-    company: {name: S.data.businessName, address: S.data.businessAddress, taxId: S.data.businessTaxId}, from: from, to: to, transactions: rows, employees: emps,
-    getAttachment: function(tx) { return getAttachment(tx).then(function(a) { return a ? a.blob.arrayBuffer().then(function(ab) { return {bytes: new Uint8Array(ab), type: a.type}; }) : null; }); },
-    want: {pdf: kind === 'pdf', xlsx: kind === 'xlsx', csv: kind === 'csv'}
-  }).then(function(r) {
-    if(!r.counts.income && !r.counts.expense) { st.textContent = 'Keine Buchungen in diesem Zeitraum.'; return; }
+  var opts = {company: {name: S.data.businessName, address: S.data.businessAddress, taxId: S.data.businessTaxId}, from: S.from, to: S.to, transactions: txRows(), employees: emps, getAttachment: attachBytes};
+  var done = function(msg) { if($('dlStatus')) $('dlStatus').textContent = msg; };
+  if(kind === 'zip' || kind === 'zipsel') {
+    if(kind === 'zipsel') opts.onlyIds = Object.keys(S.sel).filter(function(k) { return S.sel[k]; });
+    return TrabisPackage.bundle(opts).then(function(r) {
+      if(!r.count) { done('Keine Belege im Zeitraum.'); return; }
+      TrabisPackage.download(r.zip, r.base + '.zip', 'application/zip'); done(r.count + ' Belege heruntergeladen.'); BuApi.audit(S.clientId, 'export_zip', S.from + '..' + S.to);
+    }).catch(function(e) { done('Fehler: ' + (e && e.message || e)); });
+  }
+  opts.want = {pdf: kind === 'pdf', xlsx: kind === 'xlsx', csv: kind === 'csv'};
+  return TrabisPackage.build(opts).then(function(r) {
+    if(!r.counts.income && !r.counts.expense) { done('Keine Buchungen in diesem Zeitraum.'); return; }
     if(kind === 'pdf') TrabisPackage.download(r.pdf, r.base + '.pdf', 'application/pdf');
     if(kind === 'xlsx') TrabisPackage.download(r.xlsx, r.base + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     if(kind === 'csv') TrabisPackage.download(r.csv, r.base + '.csv', 'text/csv;charset=utf-8');
-    st.textContent = 'Fertig — Datei heruntergeladen.'; BuApi.audit(S.clientId, 'export_package', from + '..' + to + ' ' + kind);
-  }).catch(function(e) { st.textContent = 'Fehler: ' + (e && e.message || e); });
+    done('Fertig — Datei heruntergeladen.'); BuApi.audit(S.clientId, 'export_package', S.from + '..' + S.to + ' ' + kind);
+  }).catch(function(e) { done('Fehler: ' + (e && e.message || e)); });
 }
 
 // ── legal ───────────────────────────────────────────────────────────────────

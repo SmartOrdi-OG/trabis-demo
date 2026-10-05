@@ -411,11 +411,39 @@
     });
   }
 
+
+  // ZIP of the original attachments, sorted into Einnahmen/ and Ausgaben/ and named by Belegnr,
+  // plus Journal.csv. opts.onlyIds (optional array of tx ids) limits it to a selection.
+  function extOf(type) {
+    type = (type || '').toLowerCase();
+    return type.indexOf('pdf') >= 0 ? 'pdf' : type.indexOf('jpeg') >= 0 || type.indexOf('jpg') >= 0 ? 'jpg' : type.indexOf('png') >= 0 ? 'png'
+         : type.indexOf('webp') >= 0 ? 'webp' : type.indexOf('svg') >= 0 ? 'svg' : 'bin';
+  }
+  function bundle(opts) {
+    opts.company = opts.company || {};
+    var P = prepare(opts), only = opts.onlyIds ? opts.onlyIds.map(String) : null, files = [], count = 0;
+    var chain = Promise.resolve();
+    P.rows.forEach(function(r) {
+      if(only && only.indexOf(String(r.tx.id)) < 0) return;
+      chain = chain.then(function() {
+        return Promise.resolve(opts.getAttachment ? opts.getAttachment(r.tx) : null).then(function(a) {
+          if(!a || !a.bytes) return;
+          count++;
+          files.push({name: (r.type === 'income' ? 'Einnahmen/' : 'Ausgaben/') + r.no + '_' + r.date + '_' + safeName(r.name).substring(0, 30) + '.' + extOf(a.type), data: a.bytes});
+        }, function() {});
+      });
+    });
+    return chain.then(function() {
+      files.push({name: 'Journal.csv', data: buildCsv(P)});
+      return {zip: zipStore(files), count: count, base: 'Trabis_Belege_' + safeName(opts.company.name) + '_' + opts.from + (opts.from === opts.to ? '' : '_bis_' + opts.to)};
+    });
+  }
+
   function download(bytes, name, mime) {
     var blob = bytes instanceof Blob ? bytes : new Blob([bytes], {type: mime}), url = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = url; a.download = name; document.body.appendChild(a); a.click();
     setTimeout(function() { URL.revokeObjectURL(url); a.remove(); }, 1500);
   }
 
-  global.TrabisPackage = {build: build, download: download, prepare: prepare, monthRange: monthRange};
+  global.TrabisPackage = {build: build, bundle: bundle, download: download, prepare: prepare, monthRange: monthRange};
 })(window);
