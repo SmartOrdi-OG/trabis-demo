@@ -69,6 +69,11 @@ button{cursor:pointer}
 .dl-txt{flex:1;min-width:0}.dl-txt b{display:block;font-size:14px}.dl-txt span{display:block;font-size:12px;color:var(--text2);margin-top:2px;line-height:1.4}
 .dl-btn{flex:none;padding:9px 14px;border:none;border-radius:8px;background:var(--primary);color:#fff;font-size:12.5px;font-weight:700}
 .dl-btn.sm{padding:8px 12px}.dl-btn:disabled{background:#c9d6e2;cursor:not-allowed}
+.shares{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.share{display:flex;align-items:center;justify-content:space-between;gap:10px;background:var(--card);border:1.5px solid var(--border);border-radius:10px;padding:12px 14px}
+.share.on{border-color:var(--primary)}
+.share>div{flex:1;min-width:0}.share .dl-btn{flex:none;width:auto}
+.share b{display:block;font-size:14px}.share span{display:block;font-size:12px;color:var(--text2);margin-top:2px}
 .dlstat{font-size:12.5px;color:var(--text2);min-height:18px;margin-top:10px}
 .note{margin-top:10px;font-size:12.5px;color:var(--text2);background:#fff8e6;border:1px solid #f5dfa0;border-radius:8px;padding:9px 12px}
 .toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
@@ -129,7 +134,7 @@ button{cursor:pointer}
 @media (max-width:720px){
   .topbar{padding:12px 16px;flex-wrap:wrap;row-gap:10px}.tb-brand{flex:1 0 100%}.tb-act{flex:1 0 100%}.tb-act .tb-btn{flex:1;padding:8px 6px;font-size:11.5px}.tb-t2{max-width:70vw}
   .pbar-in,.tabbar,.content{padding-left:14px;padding-right:14px}
-  .kpis{grid-template-columns:repeat(2,1fr)}.dls{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}.dls,.shares{grid-template-columns:1fr}
   .dl{flex-wrap:wrap}.dl-btn{width:100%}
   .ts-stats{grid-template-columns:repeat(2,1fr)}
 }
@@ -197,6 +202,7 @@ var BuApi = (function() {
   function ukFor(u, k) { return 'smartac_u_' + u + '_' + k; }
   function rj(u, k, fb) { var r = localStorage.getItem(ukFor(u, k)); if(!r) return fb; try { return JSON.parse(r); } catch(e) { return fb; } }
   function rs(u, k, fb) { var v = localStorage.getItem(ukFor(u, k)); return (v == null || v === '') ? fb : v; }
+  function localShares(u) { return rj(u, 'shares', []).filter(function(s) { return s && !s.revokedAt; }); }
   function http(method, path, body) {
     var h = {'Accept': 'application/json'}, tok = sessionStorage.getItem('bu_token');
     if(tok) h.Authorization = 'Bearer ' + tok;
@@ -231,11 +237,16 @@ var BuApi = (function() {
       if(remote) return http('POST', '/auth/accountant/login', {email: user, password: pass}).then(function(r) { return r.json(); }).then(function(j) { sessionStorage.setItem('bu_token', j.token); return true; }, function() { throw new Error('Benutzername oder Passwort falsch.'); });
       return (ACCOUNTANT_CREDENTIALS[user] && ACCOUNTANT_CREDENTIALS[user] === pass) ? Promise.resolve(true) : Promise.reject(new Error('Benutzername oder Passwort falsch.'));
     },
-    // → Promise<[{id, name, sub}]>
+    // → Promise<[{id, name, sub}]>  (only clients that have shared something with this accountant)
     listClients: function() {
       if(remote) return http('GET', '/accountant/clients').then(function(r) { return r.json(); });
       var acc = {}; try { acc = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
-      return Promise.resolve(Object.keys(acc).map(function(u) { return {id: u, name: acc[u].businessName || u, sub: '@' + u}; }));
+      return Promise.resolve(Object.keys(acc).filter(function(u) { return localShares(u).length; }).map(function(u) { return {id: u, name: acc[u].businessName || u, sub: localShares(u).length + ' Paket' + (localShares(u).length === 1 ? '' : 'e')}; }));
+    },
+    // → Promise<[{id, from, to, note, scopes:{docs,employees,government}, createdAt}]>  active shares only
+    listShares: function(clientId) {
+      if(remote) return http('GET', '/accountant/clients/' + encodeURIComponent(clientId) + '/shares').then(function(r) { return r.json(); });
+      return Promise.resolve(localShares(clientId));
     },
     // → Promise<{businessName, businessAddress, businessTaxId, businessType, transactions[], recurring[], fixedIncome[], employees[], contacts[]}>
     loadClient: function(id) {
@@ -390,7 +401,7 @@ function vatBreakdown(amount, rate) {
 
 
 // ── state ───────────────────────────────────────────────────────────────────
-var S = {clientId: null, data: null, tab: 'overview', from: '', to: '', docFilter: 'all', q: '', sel: {}, ts: {empId: null, month: null}};
+var S = {clientId: null, data: null, shares: [], limit: null, scopes: {docs: true, employees: false, government: false}, tab: 'overview', from: '', to: '', docFilter: 'all', q: '', sel: {}, ts: {empId: null, month: null}};
 var $ = function(id) { return document.getElementById(id); };
 function show(id) { ['screenLogin', 'screenClients', 'screenApp'].forEach(function(s) { $(s).style.display = s === id ? (s === 'screenApp' ? 'block' : 'flex') : 'none'; }); }
 
@@ -411,7 +422,7 @@ function buShowClients() {
   show('screenClients');
   BuApi.listClients().then(function(list) {
     $('clientsError').textContent = list.length ? '' : (BuApi.mode === 'local'
-      ? 'Keine Geschäftskonten in diesem Browser gefunden. Zuerst in der Haupt-App anmelden.' : 'Noch hat kein Mandant Ihnen Zugriff freigegeben.');
+      ? 'Noch hat kein Mandant ein Paket gesendet. In der Haupt-App: Startseite → Steuerberater-Paket → Senden.' : 'Noch hat kein Mandant Ihnen Zugriff freigegeben.');
     $('clientList').innerHTML = list.map(function(c) {
       return '<li class="acct-item" onclick="buSelectClient(\'' + jq(c.id) + '\')"><span class="acct-avatar">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</span>'
         + '<span><span class="acct-name">' + esc(c.name) + '</span><br><span class="acct-user">' + esc(c.sub || '') + '</span></span></li>';
@@ -419,8 +430,12 @@ function buShowClients() {
   }, function() { $('clientsError').textContent = 'Mandanten konnten nicht geladen werden.'; });
 }
 function buSelectClient(id) {
-  BuApi.loadClient(id).then(function(d) {
-    S.clientId = id; S.data = d; S.tab = 'overview'; S.docFilter = 'all'; S.q = ''; S.sel = {}; presetPeriod('quarter', true);
+  Promise.all([BuApi.loadClient(id), BuApi.listShares(id)]).then(function(res) {
+    var d = res[0], shares = res[1] || [];
+    S.shares = shares.slice().sort(function(x, y) { return (y.createdAt || '').localeCompare(x.createdAt || ''); });
+    S.limit = shares.length ? {from: shares.map(function(s) { return s.from; }).sort()[0], to: shares.map(function(s) { return s.to; }).sort().reverse()[0]} : null;
+    S.scopes = {docs: true, employees: shares.some(function(s) { return s.scopes && s.scopes.employees; }), government: shares.some(function(s) { return s.scopes && s.scopes.government; })};
+    S.clientId = id; S.data = d; S.tab = 'overview'; S.docFilter = 'all'; S.q = ''; S.sel = {}; if(S.shares.length) openShare(0, true); else presetPeriod('quarter', true);
     sessionStorage.setItem('bu_account', id);
     $('tbClient').textContent = (d.businessName || id) + (d.businessTaxId ? ' · ' + d.businessTaxId : '');
     show('screenApp'); render(); BuApi.audit(id, 'open_client');
@@ -434,14 +449,21 @@ function presetPeriod(k, silent) {
   else if(k === 'year') { S.from = y + '-01'; S.to = y + '-12'; }
   else if(k === 'last') { var d = new Date(y, m - 2, 1); S.from = S.to = d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
   else { S.from = S.to = y + '-' + pad2(m); }
-  S.sel = {};
+  S.sel = {}; clampPeriod();
   if(!silent) render();
 }
 function setPeriod() {
   var f = $('pFrom').value, t = $('pTo').value; if(!f || !t) return;
   if(f > t) { var x = f; f = t; t = x; }
-  S.from = f; S.to = t; S.sel = {}; render();
+  S.from = f; S.to = t; clampPeriod(); S.sel = {}; render();
 }
+function clampPeriod() {
+  if(!S.limit) return;
+  if(S.from < S.limit.from) S.from = S.limit.from;
+  if(S.to > S.limit.to) S.to = S.limit.to;
+  if(S.from > S.to) S.from = S.to;
+}
+function openShare(i, silent) { var s = S.shares[i]; if(!s) return; S.from = s.from; S.to = s.to; S.tab = 'overview'; S.sel = {}; if(!silent) { render(); window.scrollTo(0, 0); } BuApi.audit(S.clientId, 'open_share', String(s.id)); }
 function txRows() {
   return (S.data.transactions || []).map(function(t) { return {id: t.id, type: t.type, name: t.name, amount: t.amount, vatRate: t.vatRate || 0, date: t.date, invoice: t.invoice, receiptId: t.receiptId, category: t.category || '', party: t.clientName || t.supplierName || ''}; });
 }
@@ -452,10 +474,13 @@ function periodLabel() { return S.from === S.to ? MON[+S.from.substring(5, 7) - 
 // ── views ───────────────────────────────────────────────────────────────────
 function render() {
   var d = S.data, P = periodData();
-  var tabs = [['overview', 'Übersicht'], ['docs', 'Belege (' + P.rows.length + ')'], ['emps', 'Mitarbeiter'], ['gov', 'Behörden']];
+  var tabs = [['overview', 'Übersicht'], ['docs', 'Belege (' + P.rows.length + ')']];
+  if(S.scopes.employees) tabs.push(['emps', 'Mitarbeiter']);
+  if(S.scopes.government) tabs.push(['gov', 'Behörden']);
+  var lim = S.limit ? ' min="' + S.limit.from + '" max="' + S.limit.to + '"' : '';
   var h = '<div class="pbar"><div class="pbar-in">'
     + '<div class="pbar-t"><b>' + esc(d.businessName || '') + '</b><span>' + esc(d.businessTaxId || '') + '</span></div>'
-    + '<div class="pbar-p"><label>Zeitraum</label><input type="month" id="pFrom" value="' + S.from + '" onchange="setPeriod()"><span>–</span><input type="month" id="pTo" value="' + S.to + '" onchange="setPeriod()">'
+    + '<div class="pbar-p"><label>Zeitraum</label><input type="month" id="pFrom"' + lim + ' value="' + S.from + '" onchange="setPeriod()"><span>–</span><input type="month" id="pTo"' + lim + ' value="' + S.to + '" onchange="setPeriod()">'
     + '<button class="pre" onclick="presetPeriod(\'month\')">Monat</button><button class="pre" onclick="presetPeriod(\'last\')">Vormonat</button><button class="pre" onclick="presetPeriod(\'quarter\')">Quartal</button><button class="pre" onclick="presetPeriod(\'year\')">Jahr</button></div>'
     + '</div><div class="tabbar">' + tabs.map(function(t) { return '<button class="' + (S.tab === t[0] ? 'on' : '') + '" onclick="S.tab=\'' + t[0] + '\';render()">' + t[1] + '</button>'; }).join('') + '</div></div>';
   var body = {overview: viewOverview, docs: viewDocs, emps: viewEmps, gov: viewGov}[S.tab](P);
@@ -465,7 +490,7 @@ function kpi(l, v, sub) { return '<div class="kpi"><div class="kl">' + l + '</di
 function viewOverview(P) {
   var t = {iN: 0, iV: 0, eN: 0, eV: 0}; P.summary.forEach(function(s) { t.iN += s.iN; t.iV += s.iV; t.eN += s.eN; t.eV += s.eV; });
   var saldo = t.iN - t.eN, zl = t.iV - t.eV, withFile = P.rows.filter(function(r) { return hasFile(r.tx); }).length, missing = P.rows.length - withFile;
-  var h = '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', sgn(-zl), 'Total ' + sgn(saldo - zl)) + '</div>';
+  var h = sharesHtml() + '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', sgn(-zl), 'Total ' + sgn(saldo - zl)) + '</div>';
   h += '<h2 class="sec">Downloads für ' + esc(periodLabel()) + '</h2><div class="dls">'
     + dl('PDF', 'Komplettpaket als PDF', 'Zusammenfassung, Verzeichnisse und alle ' + withFile + ' Belege – Einnahmen und Ausgaben getrennt, nummeriert.', 'pdf', 'Herunterladen')
     + dl('XLS', 'Excel-Datei', 'Zusammenfassung, Einnahmen, Ausgaben, Journal und Mitarbeiter-Stunden – mit Summenformeln.', 'xlsx', 'Herunterladen')
@@ -476,6 +501,16 @@ function viewOverview(P) {
   h += '<h2 class="sec">Monatsübersicht</h2><div class="tbl-wrap"><table class="tbl"><thead><tr><th>Monat</th><th class="r">Einnahmen netto</th><th class="r">USt</th><th class="r">Ausgaben netto</th><th class="r">Vorsteuer</th><th class="r">Saldo netto</th><th class="r">USt-Zahllast</th><th class="r">Total</th></tr></thead><tbody>';
   P.summary.forEach(function(s) { h += '<tr><td>' + MON[+s.month.substring(5, 7) - 1] + ' ' + s.month.substring(0, 4) + '</td><td class="r num">' + deNum(s.iN) + '</td><td class="r num">' + deNum(s.iV) + '</td><td class="r num">' + deNum(s.eN) + '</td><td class="r num">' + deNum(s.eV) + '</td><td class="r num">' + deNum(s.saldoNet) + '</td><td class="r num">' + deNum(s.zahllast) + '</td><td class="r num"><b>' + deNum(s.total) + '</b></td></tr>'; });
   return h + '</tbody></table></div>';
+}
+function sharesHtml() {
+  if(!S.shares.length) return '';
+  var h = '<h2 class="sec" style="margin-top:0">Von Ihrem Mandanten gesendet</h2><div class="shares">';
+  S.shares.forEach(function(s, i) {
+    var per = s.from === s.to ? MON[+s.from.substring(5, 7) - 1] + ' ' + s.from.substring(0, 4) : MON3[+s.from.substring(5, 7) - 1] + ' ' + s.from.substring(0, 4) + ' – ' + MON3[+s.to.substring(5, 7) - 1] + ' ' + s.to.substring(0, 4);
+    var on = s.from === S.from && s.to === S.to;
+    h += '<div class="share' + (on ? ' on' : '') + '"><div><b>' + per + '</b><span>' + (s.createdAt ? 'gesendet am ' + deDate(s.createdAt.substring(0, 10)) : '') + (s.note ? ' · „' + esc(s.note) + '“' : '') + '</span></div><button class="dl-btn sm" onclick="openShare(' + i + ')">' + (on ? 'Geöffnet' : 'Öffnen') + '</button></div>';
+  });
+  return h + '</div>';
 }
 function dl(tag, title, desc, kind, btn) {
   return '<div class="dl"><div class="dl-tag">' + tag + '</div><div class="dl-txt"><b>' + title + '</b><span>' + desc + '</span></div><button class="dl-btn" onclick="pkBuild(\'' + kind + '\')">' + btn + '</button></div>';
@@ -612,7 +647,7 @@ function attachBytes(tx) { return getAttachment(tx).then(function(a) { return a 
 function pkBuild(kind) {
   var st = $('dlStatus'); if(st) st.textContent = 'Wird erstellt…';
   var emps = [];
-  (S.data.employees || []).forEach(function(e) {
+  (S.scopes.employees ? (S.data.employees || []) : []).forEach(function(e) {
     TrabisPackage.monthRange(S.from, S.to).forEach(function(mk) {
       var s = wtMonthStats(e, mk), v = wtVacation(e, mk);
       if(!(s.hours > 0 || s.urlaub || s.krank || s.karenz)) return;

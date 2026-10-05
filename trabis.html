@@ -10531,7 +10531,20 @@ var SETTINGS_L = {
   accBusy: {en:'Preparing…', ar:'جاري التجهيز…', de:'Wird erstellt…'},
   accDone: {en:'Done — file downloaded.', ar:'تم — الملف اتنزّل.', de:'Fertig — Datei heruntergeladen.'},
   accNone: {en:'No entries in this period.', ar:'مفيش بنود في الفترة دي.', de:'Keine Buchungen in diesem Zeitraum.'},
-   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
+   shTitle: {en:'Send to your tax advisor', ar:'إرسال للمحاسب الضريبي', de:'An Steuerberater senden'},
+  shSub: {en:'Your advisor sees the period selected above in their portal (read-only). You can revoke it any time.', ar:'المحاسب هيشوف الفترة المختارة فوق في بوابته (قراءة فقط). تقدر تلغي في أي وقت.', de:'Ihr Steuerberater sieht den oben gewählten Zeitraum in seinem Portal (nur lesen). Sie können den Zugriff jederzeit widerrufen.'},
+  shEmail: {en:"Advisor's e-mail", ar:'إيميل المحاسب', de:'E-Mail des Steuerberaters'},
+  shNote: {en:'Note (optional)', ar:'ملاحظة (اختياري)', de:'Nachricht (optional)'},
+  shDocs: {en:'Invoices and figures', ar:'الفواتير والأرقام', de:'Belege und Zahlen'},
+  shEmp: {en:'Employees: hours and leave', ar:'الموظفين: الساعات والإجازات', de:'Mitarbeiter: Stunden und Urlaub'},
+  shGov: {en:'Government entities', ar:'الجهات الحكومية', de:'Behörden'},
+  shSend: {en:'Send', ar:'إرسال', de:'Senden'},
+  shSent: {en:'Sent — your advisor can now open it.', ar:'اتبعت — المحاسب يقدر يفتحه دلوقتي.', de:'Gesendet — Ihr Steuerberater kann es jetzt öffnen.'},
+  shBadMail: {en:'Please enter a valid e-mail.', ar:'اكتب إيميل صحيح.', de:'Bitte gültige E-Mail eingeben.'},
+  shSentHd: {en:'Sent packages', ar:'الباكيتات المبعوتة', de:'Gesendete Pakete'},
+  shRevoke: {en:'Revoke', ar:'إلغاء', de:'Widerrufen'},
+  shRevoked: {en:'revoked', ar:'ملغي', de:'widerrufen'},
+  dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
 function stx(k) { return (SETTINGS_L[k] && SETTINGS_L[k][state.lang]) || (SETTINGS_L[k] && SETTINGS_L[k].en) || k; }
@@ -13494,9 +13507,66 @@ function openAccPackage() {
     + '<button type="button" onclick="accPack(\'pdf\')" style="box-sizing:border-box;width:100%;padding:13px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + escHtml(stx('accPdf')) + '</button>'
     + '<button type="button" onclick="accPack(\'xlsx\')" style="box-sizing:border-box;width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer">' + escHtml(stx('accXlsx')) + '</button>'
     + '<button type="button" onclick="accPack(\'csv\')" style="box-sizing:border-box;width:100%;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + escHtml(stx('accCsv')) + '</button></div>'
-    + '<div id="accStatus" style="font-size:12px;color:var(--text3);margin-top:12px;min-height:16px"></div></div>';
+    + '<div id="accStatus" style="font-size:12px;color:var(--text3);margin-top:12px;min-height:16px"></div>'
+    + '<div style="border-top:1px solid var(--border);margin:14px 0 12px"></div>'
+    + '<div style="font-weight:800;font-size:15px;margin-bottom:4px">' + escHtml(stx('shTitle')) + '</div>'
+    + '<div style="font-size:12px;color:var(--text3);margin-bottom:10px">' + escHtml(stx('shSub')) + '</div>'
+    + '<input type="email" id="shEmail" placeholder="' + escHtml(stx('shEmail')) + '" style="' + inp + ';margin-bottom:8px"/>'
+    + '<input type="text" id="shNote" placeholder="' + escHtml(stx('shNote')) + '" style="' + inp + ';margin-bottom:10px"/>'
+    + '<div style="display:flex;flex-direction:column;gap:6px;font-size:13px;margin-bottom:10px">'
+    + '<label><input type="checkbox" checked disabled/> ' + escHtml(stx('shDocs')) + '</label>'
+    + '<label><input type="checkbox" id="shEmp" checked/> ' + escHtml(stx('shEmp')) + '</label>'
+    + '<label><input type="checkbox" id="shGov" checked/> ' + escHtml(stx('shGov')) + '</label></div>'
+    + '<button type="button" onclick="accShareSend()" style="box-sizing:border-box;width:100%;padding:13px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + escHtml(stx('shSend')) + '</button>'
+    + '<div id="shStatus" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>'
+    + '<div id="shList"></div></div>';
   ov.style.display = 'flex';
   accPreset('month');
+  try { document.getElementById('shEmail').value = localStorage.getItem(uk('lastAccEmail')) || ''; } catch(e) {}
+  accShareRender();
+}
+
+// ── SHARING WITH THE ACCOUNTANT ──
+// A share is a reference (period + what may be seen), not a copy: the accountant portal reads the
+// live data for that period. Local prototype: stored under uk('shares'); with the server this becomes
+// POST/GET/DELETE /shares (see ACCOUNTANT_SHARING.md) and the portal reads it through BuApi.
+function accSharesGet() { try { return JSON.parse(localStorage.getItem(uk('shares')) || '[]'); } catch(e) { return []; } }
+function accSharesSet(list) { localStorage.setItem(uk('shares'), JSON.stringify(list)); }
+function accShareSend() {
+  var from = document.getElementById('accFrom').value, to = document.getElementById('accTo').value;
+  var email = (document.getElementById('shEmail').value || '').trim(), st = document.getElementById('shStatus');
+  if(!from || !to) return;
+  if(from > to) { var sw = from; from = to; to = sw; }
+  if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { st.textContent = stx('shBadMail'); return; }
+  var list = accSharesGet();
+  list.push({id: Date.now(), email: email, note: (document.getElementById('shNote').value || '').trim(), from: from, to: to,
+             scopes: {docs: true, employees: document.getElementById('shEmp').checked, government: document.getElementById('shGov').checked},
+             createdAt: new Date().toISOString(), revokedAt: null});
+  accSharesSet(list);
+  try { localStorage.setItem(uk('lastAccEmail'), email); } catch(e) {}
+  document.getElementById('shNote').value = '';
+  st.textContent = stx('shSent');
+  accShareRender();
+}
+function accShareRevoke(id) {
+  var list = accSharesGet();
+  list.forEach(function(x) { if(x.id === id && !x.revokedAt) x.revokedAt = new Date().toISOString(); });
+  accSharesSet(list);
+  accShareRender();
+}
+function accShareRender() {
+  var host = document.getElementById('shList'); if(!host) return;
+  var list = accSharesGet().sort(function(a, b) { return b.id - a.id; });
+  if(!list.length) { host.innerHTML = ''; return; }
+  var h = '<div style="font-size:12px;font-weight:700;color:var(--text3);margin:14px 0 6px">' + escHtml(stx('shSentHd')) + '</div>';
+  list.forEach(function(x) {
+    var per = x.from === x.to ? x.from : x.from + ' – ' + x.to, off = !!x.revokedAt;
+    h += '<div style="display:flex;align-items:center;gap:8px;padding:9px 0;border-top:1px solid var(--border)' + (off ? ';opacity:.55' : '') + '">'
+      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(x.email) + '</div>'
+      + '<div style="font-size:11.5px;color:var(--text3)">' + escHtml(per) + (x.note ? ' · ' + escHtml(x.note) : '') + (off ? ' · ' + escHtml(stx('shRevoked')) : '') + '</div></div>'
+      + (off ? '' : '<button type="button" onclick="accShareRevoke(' + x.id + ')" style="border:1.5px solid var(--border);background:var(--card);border-radius:9px;padding:6px 10px;font-size:12px;font-weight:700;color:var(--expense);cursor:pointer">' + escHtml(stx('shRevoke')) + '</button>') + '</div>';
+  });
+  host.innerHTML = h;
 }
 function closeAccPackage() {
   var ov = document.getElementById('accPkgOverlay');
