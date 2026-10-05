@@ -3,1349 +3,727 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trabis — Buchhalter Portal</title>
+<title>Trabis — Buchhalter-Portal</title>
 <link rel="icon" type="image/png" href="logo-circle.png"/>
 <style>
 :root{
-  --bg:#f0f8ff; --card:#ffffff; --border:#cce4f7; --primary:#1a7fd4; --primary-light:#e3f2fd;
+  --bg:#f0f8ff; --card:#ffffff; --card2:#f6fbff; --border:#cce4f7; --primary:#1a7fd4; --primary-light:#e3f2fd;
   --text:#1a2a3a; --text2:#4a6a8a; --text3:#8aabb8; --shadow:0 2px 12px rgba(26,127,212,0.10);
-  --income:#16a34a; --expense:#dc2626; --orange:#d97706;
+  --income:#16a34a; --expense:#dc2626;
 }
 *{box-sizing:border-box}
-body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-input,select,button{font-family:inherit}
-.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
+button,input,select{font-family:inherit}
+button{cursor:pointer}
+.num{font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
 
-/* ── LOGIN / ACCOUNT SELECT ── */
-#loginScreen,#accountScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
-.auth-card{background:var(--card);border-radius:20px;padding:36px 32px;box-shadow:var(--shadow);width:100%;max-width:380px;text-align:center}
-.auth-logo{width:56px;height:56px;border-radius:14px;margin-bottom:14px}
+/* login + client list */
+.auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:var(--card);border-radius:20px;padding:34px 30px;box-shadow:var(--shadow);width:100%;max-width:400px;text-align:center}
+.auth-logo{width:56px;height:56px;border-radius:14px;margin-bottom:12px}
 .auth-title{font-size:20px;font-weight:800;margin-bottom:4px}
-.auth-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
-.auth-input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;background:#f8fafc;color:var(--text);margin-bottom:12px;outline:none;box-sizing:border-box}
+.auth-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
+.auth-input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;background:var(--card2);color:var(--text);margin-bottom:12px;outline:none}
 .auth-input:focus{border-color:var(--primary)}
-.auth-pw-wrap{position:relative}
-.auth-pw-wrap .auth-input{padding-right:76px}
-.auth-pw-toggle{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--primary);padding:0;margin-bottom:0}
-.auth-btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer;margin-top:4px}
-.auth-btn:hover{opacity:0.92}
-.auth-error{color:var(--expense);font-size:12.5px;margin-bottom:10px;min-height:1px}
-.auth-back-link{display:block;margin-top:14px;font-size:12.5px;font-weight:600;color:var(--primary);text-decoration:none}
-.auth-back-link:hover{text-decoration:underline}
-.auth-note{font-size:11px;color:var(--text3);margin-top:18px;line-height:1.6}
-
-.acct-list{list-style:none;padding:0;margin:0;text-align:left}
-.acct-item{display:flex;align-items:center;gap:12px;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;margin-bottom:10px;cursor:pointer;background:#f8fafc;transition:border-color .15s}
+.auth-btn{width:100%;padding:13px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-size:15px;font-weight:700}
+.auth-error{color:var(--expense);font-size:13px;min-height:18px;margin-bottom:8px}
+.auth-note{font-size:11.5px;color:var(--text3);margin-top:16px;line-height:1.5}
+.acct-list{list-style:none;margin:0;padding:0;text-align:left}
+.acct-item{display:flex;align-items:center;gap:12px;padding:13px 12px;border:1.5px solid var(--border);border-radius:14px;margin-bottom:10px;cursor:pointer;background:var(--card)}
 .acct-item:hover{border-color:var(--primary)}
-.acct-avatar{width:38px;height:38px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;flex-shrink:0}
-.acct-name{font-weight:700;font-size:14px}
-.acct-user{font-size:12px;color:var(--text3)}
+.acct-avatar{width:40px;height:40px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex:none}
+.acct-name{font-weight:700;font-size:15px}.acct-user{font-size:12px;color:var(--text3)}
 
-/* ── DASHBOARD ── */
-#dashScreen{display:none}
-.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:14px 0;position:sticky;top:0;z-index:50}
-.topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.biz-name{font-size:17px;font-weight:800}
-.biz-sub{font-size:11.5px;color:var(--text3)}
-.topbar-actions{display:flex;align-items:center;gap:14px;font-size:12.5px}
-.topbar-link{color:var(--primary);text-decoration:none;cursor:pointer;font-weight:600}
-.topbar-link:hover{text-decoration:underline}
+/* shell */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 28px;background:var(--card);border-bottom:1px solid var(--border)}
+.tb-brand{display:flex;align-items:center;gap:12px;min-width:0}
+.tb-brand img{width:40px;height:40px;border-radius:12px;flex:none}
+.tb-t1{font-weight:800;font-size:17px;line-height:1.15}.tb-t2{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
+.tb-act{display:flex;gap:8px;flex:none}
+.tb-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:700}
+.tb-btn:hover{border-color:var(--primary);color:var(--primary)}
+#view{max-width:1180px;margin:0 auto;padding:22px 28px 70px}
+.ro-badge{display:inline-block;font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--text2);background:var(--primary-light);border-radius:999px;padding:3px 9px;margin-left:8px;vertical-align:middle}
 
-.tabs{display:flex;gap:4px;overflow-x:auto;padding:12px 0;border-bottom:1px solid var(--border);background:var(--card)}
-.tab-btn{display:inline-flex;align-items:center;gap:8px;flex-shrink:0;padding:9px 16px;border-radius:10px;border:none;background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap}
-.tab-btn.active{background:var(--primary-light);color:var(--primary)}
-.sidebar-header{display:none;align-items:center;gap:10px;padding:20px;border-bottom:1px solid var(--border);margin-bottom:4px}
-.sidebar-logo-icon{width:34px;height:34px;border-radius:9px;flex-shrink:0}
-.sidebar-logo-text{font-size:15px;font-weight:800;color:var(--text)}
-.sidebar-logo-sub{font-size:10.5px;color:var(--text3);font-weight:600}
+/* home */
+.hp-wrap{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:22px;align-items:start}
+.hp-fixed,.hp-pick{background:var(--card2);border:1px solid var(--border);border-radius:18px;padding:14px;min-width:0}
+.hp-pick{position:sticky;top:12px}
+.hp-hd{font-size:11px;font-weight:700;letter-spacing:.06em;color:var(--text3);text-transform:uppercase;padding:2px 4px 12px}
+.hp-nav{display:flex;align-items:center;gap:12px;width:100%;padding:15px 14px;border-radius:16px;border:1.5px solid var(--border);background:var(--card);color:inherit;font:inherit;text-align:start;margin-bottom:10px}
+.hp-nav:hover{border-color:var(--primary)}
+.hp-ico{flex:none;width:38px;height:38px;border-radius:12px;background:var(--primary-light);color:var(--primary);display:flex;align-items:center;justify-content:center}
+.hp-lbl{flex:1;min-width:0;font-size:14px;font-weight:700}.hp-sub{display:block;font-size:11.5px;font-weight:400;color:var(--text3);margin-top:2px}
+.hp-car{color:var(--text3);font-size:15px}
+.yr{display:flex;align-items:center;justify-content:center;gap:12px;padding:4px 0 12px;border-bottom:1px solid var(--border);margin-bottom:12px}
+.yr button{width:34px;height:30px;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text2)}
+.yr b{font-size:21px;color:var(--primary);min-width:70px;text-align:center}
+.mo{display:flex;justify-content:space-between;align-items:center;gap:6px;width:100%;padding:11px 12px;margin-bottom:8px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-size:13.5px;font-weight:700;color:var(--text)}
+.mo small{font-size:11px;font-weight:700;white-space:nowrap}
+.grp-h span:last-child{white-space:nowrap}
+.mo.empty{border-style:dashed;background:transparent;color:var(--text3);font-weight:600}
+.mo.now{background:var(--primary);border-color:var(--primary);color:#fff}.mo.now small{color:#fff!important}
 
-.section{padding:20px 0 60px}
-.card{background:var(--card);border-radius:16px;padding:18px;box-shadow:var(--shadow);margin-bottom:16px}
-.card-title{font-size:14px;font-weight:700;margin-bottom:12px}
-.stat-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:16px}
-.stat{flex:1;min-width:140px;background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
-.stat-label{font-size:11px;color:var(--text3)}
-.stat-value{font-size:19px;font-weight:800;margin-top:2px}
+/* page header */
+.ph{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.back{width:40px;height:40px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);font-size:18px;color:var(--text)}
+.ph h1{margin:0;font-size:22px}
+.chip{padding:5px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);font-size:13px;font-weight:700;color:var(--text2)}
 
-.donut-wrap{display:flex;align-items:center;gap:24px;flex-wrap:wrap}
-.donut-legend{display:flex;flex-direction:column;gap:10px}
-.donut-legend-item{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--text)}
-.donut-legend-item span.donut-sub{font-weight:500;color:var(--text3)}
-.donut-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card3{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 20px;margin-bottom:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card3 .t{grid-column:1/-1;font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--text3)}
+.card3 .l{font-size:11.5px;color:var(--text3)}.card3 .v{font-size:17px;font-weight:800;white-space:nowrap}
+.pos{color:var(--income)}.neg{color:var(--expense)}.zero{color:var(--text3)}
 
-.pills{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap}
-.pill{padding:7px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:600;cursor:pointer}
-.pill.active{background:var(--primary);color:#fff;border-color:var(--primary)}
-.pill select{border:none;background:none;font-size:12.5px;font-weight:600;color:inherit;outline:none}
+/* month */
+.tabs{display:inline-flex;gap:4px;background:var(--card2);border:1px solid var(--border);border-radius:14px;padding:5px;margin:8px 0 16px}
+.tabs button{padding:10px 24px;border:none;border-radius:10px;background:transparent;font-size:14px;font-weight:700;color:var(--text2)}
+.tabs button.on.inc{background:var(--card);color:var(--income);box-shadow:var(--shadow)}
+.tabs button.on.exp{background:var(--card);color:var(--expense);box-shadow:var(--shadow)}
+.split{display:grid;grid-template-columns:230px minmax(0,1fr);gap:20px;align-items:start}
+.rc-title{font-size:12px;font-weight:700;color:var(--text3);margin-bottom:10px}
+.rc{display:flex;gap:10px;align-items:center;width:100%;padding:9px 10px;margin-bottom:8px;border:1.5px solid var(--border);border-radius:12px;background:var(--card);text-align:left}
+.rc:hover{border-color:var(--primary)}
+.rc-n{flex:none;width:30px;height:30px;border-radius:8px;background:var(--primary-light);color:var(--primary);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center}
+.rc-t{flex:1;min-width:0;font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-a{display:block;font-size:12px;font-weight:800}
+.grp-h{display:flex;justify-content:space-between;align-items:center;padding:12px 0 8px;border-top:1px solid var(--border);margin-top:10px;font-weight:800;font-size:15px}
+.grp-h:first-child{border-top:none;margin-top:0}
+.row{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;padding:10px 6px;border-bottom:1px solid var(--border)}
+.row .nm{flex:1;min-width:0;font-size:13.5px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.row .dt{font-size:11px;color:var(--text3)}.row .dt.fix{color:var(--primary)}
+.row .am{font-size:13.5px;font-weight:800}
+.row .sub{flex:0 0 100%;display:flex;flex-wrap:wrap;gap:1px 10px;font-size:10.5px;color:var(--text3)}
+.row .sub i{font-style:normal;white-space:nowrap}
+.row .no{font-size:10.5px;font-weight:700;color:var(--primary);margin-right:2px}
+.empty-msg{text-align:center;padding:26px 10px;color:var(--text3);font-size:13px}
 
-table{width:100%;border-collapse:collapse;font-size:13px}
-th{text-align:left;color:var(--text3);font-weight:600;font-size:11px;text-transform:uppercase;padding:8px 8px;border-bottom:1.5px solid var(--border)}
-td{padding:10px 8px;border-bottom:1px solid var(--border)}
-tr:last-child td{border-bottom:none}
-.badge{display:inline-block;padding:2px 9px;border-radius:8px;font-size:11px;font-weight:700}
-.badge.income{background:rgba(22,163,74,0.1);color:var(--income)}
-.badge.expense{background:rgba(220,38,38,0.1);color:var(--expense)}
-.badge.paid{background:rgba(22,163,74,0.1);color:var(--income)}
-.badge.pending{background:rgba(217,119,6,0.12);color:var(--orange)}
-.badge.overdue{background:rgba(220,38,38,0.1);color:var(--expense)}
-.badge.freigegeben{background:rgba(22,163,74,0.1);color:var(--income)}
-.badge.offen{background:rgba(217,119,6,0.12);color:var(--orange)}
-.link-icon{color:var(--primary);cursor:pointer;font-size:12.5px;text-decoration:none}
-.empty-msg{text-align:center;padding:30px 10px;color:var(--text3);font-size:13px}
-.dl-btn{display:inline-flex;align-items:center;gap:8px;padding:11px 18px;border-radius:12px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:13px;font-weight:700;cursor:pointer;margin:0 8px 8px 0}
-.dl-btn:hover{border-color:var(--primary);color:var(--primary)}
-.disclaimer{font-size:10.5px;color:var(--text3);line-height:1.6;margin-top:6px}
-@media (max-width:640px){
-  .card{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:560px}
+/* employees / gov */
+.list-card{background:var(--card);border:1.5px solid var(--border);border-radius:16px;padding:14px 16px;margin-bottom:12px}
+.list-card.click{cursor:pointer}.list-card.click:hover{border-color:var(--primary)}
+.lc-top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.lc-name{font-weight:800;font-size:15px}.lc-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.kv{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px}.kv div{font-size:11px;color:var(--text3)}.kv b{display:block;font-size:14px;color:var(--text);margin-top:1px}
+.pay{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-top:1px solid var(--border);font-size:12.5px}
+
+/* overlays */
+.ov{display:none;position:fixed;inset:0;z-index:9000;background:rgba(15,30,50,.45);align-items:flex-end;justify-content:center}
+.ov.open{display:flex}
+.sheet{background:var(--card);width:100%;max-width:520px;border-radius:20px 20px 0 0;padding:20px 18px 26px;box-shadow:0 -8px 30px rgba(0,0,0,.18);max-height:92vh;overflow-y:auto}
+.sheet h2{margin:0;font-size:17px}
+.sheet-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.x{border:none;background:var(--card2);width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--text2)}
+.fld{flex:1;font-size:11px;color:var(--text3)}
+.fld input{width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px}
+.btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:700;margin-top:8px}
+.btn.p{background:var(--primary);color:#fff}.btn.o{background:var(--card2);border:1.5px solid var(--primary);color:var(--primary)}.btn.g{background:none;border:1.5px solid var(--border);color:var(--text2);font-size:13px;font-weight:600;padding:10px}
+.pre{padding:6px 12px;border-radius:999px;border:1.5px solid var(--border);background:var(--card);font-size:12px;font-weight:700;color:var(--text2);margin-right:6px}
+#viewer{display:none;position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.92);align-items:center;justify-content:center;flex-direction:column;padding:14px}
+#viewer.open{display:flex}
+#viewer .vb{position:absolute;top:12px;right:12px;display:flex;gap:8px}
+#viewer .vb button{background:rgba(255,255,255,.18);color:#fff;border:none;border-radius:10px;padding:9px 14px;font-weight:700}
+.page-ov{display:none;position:fixed;inset:0;z-index:9500;background:var(--bg);overflow-y:auto}
+.page-ov.open{display:block}
+.page-in{max-width:860px;margin:0 auto;padding:18px 20px 60px}
+.legal h2{font-size:15px;margin:20px 0 6px}.legal p{font-size:13px;line-height:1.65;color:var(--text2);margin:0}.legal a{color:var(--primary)}
+.legal-footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text3);text-align:center}
+
+/* timesheet */
+.ts-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:6px 0 14px}
+.ts-nav button{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-size:16px}
+.ts-m{font-weight:800;font-size:16px}
+.ts-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.ts-stats div{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:11px;color:var(--text3)}.ts-stats b{display:block;font-size:16px;color:var(--text);margin-top:2px}
+.ts-row{display:grid;grid-template-columns:62px 34px minmax(0,1fr) 62px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px;background:var(--card)}
+.ts-row.wk{background:var(--card2);color:var(--text3)}
+.ts-row .st{font-weight:700}.st-urlaub{color:#2563eb}.st-krankenstand{color:#dc2626}.st-karenz{color:#7c3aed}.st-feiertag{color:#d97706}
+.ts-hol{grid-column:1/-1;font-size:11px;color:#d97706}
+.ts-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
+
+@media (max-width:720px){
+  .topbar{padding:12px 16px}#view{padding:16px 16px 70px}
+  .hp-wrap{grid-template-columns:minmax(0,1fr) 40%;gap:10px}
+  .hp-fixed,.hp-pick{padding:10px;border-radius:16px}
+  .hp-nav{padding:10px;gap:8px;border-radius:12px}.hp-ico{width:30px;height:30px;border-radius:9px}.hp-lbl{font-size:12px}.hp-sub{display:none}
+  .card3{padding:14px;gap:6px}.card3 .v{font-size:14.5px}
+  .split{grid-template-columns:36% minmax(0,1fr);gap:10px}
+  .topbar{flex-wrap:wrap;row-gap:10px}.tb-brand{flex:1 0 100%}.tb-act{flex:1 0 100%}.tb-act .tb-btn{flex:1;padding:8px 6px;font-size:11.5px}.tb-t2{max-width:70vw}
+  .mo{flex-direction:column;align-items:flex-start;gap:2px;padding:9px 10px;font-size:13px}
+  .grp-h{font-size:14px}.row .nm{flex:1 1 100%;order:0}
+  .ts-stats{grid-template-columns:repeat(2,1fr)}
 }
-
-/* ── DESKTOP RESPONSIVE (≥1024px): fixed sidebar nav + larger scale ── */
-@media (min-width:1024px){
-  .wrap{max-width:1400px}
-  #sidebarInner{position:fixed;top:0;left:0;bottom:0;width:240px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto;z-index:60}
-  .sidebar-header{display:flex}
-  .tabs{flex-direction:column;align-items:stretch;gap:2px;padding:12px;border-bottom:none;overflow-x:visible}
-  .tab-btn{width:100%;justify-content:flex-start;padding:11px 14px;font-size:14.5px}
-  .topbar{margin-left:240px}
-  .section-outer{margin-left:240px}
-  .biz-name{font-size:19px}
-  .biz-sub{font-size:12.5px}
-  .card{padding:22px}
-  .card-title{font-size:15px;margin-bottom:14px}
-  .stat{padding:18px}
-  .stat-label{font-size:12px}
-  .stat-value{font-size:23px}
-  table{font-size:14px}
-  th{font-size:12px;padding:10px 8px}
-  td{padding:12px 8px}
-  .dl-btn{font-size:13.5px;padding:12px 20px}
-}
-
-#viewerOverlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:10001;align-items:center;justify-content:center;padding:16px}
-#viewerOverlay.open{display:flex}
-#viewerClose{position:absolute;top:16px;right:16px;width:38px;height:38px;border-radius:50%;border:none;background:rgba(255,255,255,0.15);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-#viewerDownload{position:absolute;top:16px;right:64px;height:38px;padding:0 16px;border-radius:19px;border:none;background:var(--primary);color:#fff;font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px}
-
-#legalOverlay{display:none;position:fixed;inset:0;background:#f8fafc;z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch}
-#legalOverlay.open{display:block}
-.legal-hdr{background:var(--primary);padding:16px 24px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:1}
-.legal-back{background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:50%;width:36px;height:36px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.legal-title{font-size:18px;font-weight:800;color:#fff}
-.legal-sub{font-size:12.5px;color:rgba(255,255,255,0.75);margin-top:2px}
-.legal-body{max-width:760px;margin:0 auto;padding:32px 24px 60px}
-.legal-body h2{font-size:15px;font-weight:700;color:var(--text);margin:26px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--primary-light)}
-.legal-body h2:first-child{margin-top:0}
-.legal-body p{font-size:14px;color:var(--text2);line-height:1.8;margin:0 0 4px}
-.legal-body a{color:var(--primary);text-decoration:none}
-.legal-footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);font-size:11.5px;color:var(--text3);text-align:center}
-
-#whOverlay{display:none;position:fixed;inset:0;background:#f8fafc;z-index:10000;overflow-y:auto;-webkit-overflow-scrolling:touch}
-#whOverlay.open{display:block}
-.wh-month-nav{background:none;border:1.5px solid var(--border);border-radius:10px;width:36px;height:36px;cursor:pointer;color:var(--text);font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.wh-month-nav:hover{border-color:var(--primary);color:var(--primary)}
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen">
+<div id="screenLogin" class="auth-wrap">
   <div class="auth-card">
     <img src="logo-circle.png" class="auth-logo" alt="Trabis"/>
     <div class="auth-title">Buchhalter-Zugang</div>
     <div class="auth-sub">Nur-Lese-Ansicht für Steuerberater</div>
     <div class="auth-error" id="loginError"></div>
-    <input class="auth-input" id="buUser" placeholder="Benutzername" autocomplete="username"/>
-    <div class="auth-pw-wrap">
-      <input class="auth-input" id="buPass" type="password" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')buchhalterLogin()"/>
-      <button class="auth-pw-toggle" id="buPassToggle" onclick="buTogglePw()" type="button">Anzeigen</button>
-    </div>
-    <button class="auth-btn" onclick="buchhalterLogin()">Anmelden</button>
-    <a href="index.html" class="auth-back-link" style="display:inline-flex;align-items:center;gap:4px;justify-content:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg> Zurück zum normalen Login</a>
-    <div class="auth-note">Dieser Zugang ist schreibgeschützt — es können keine Daten geändert werden. Zugriff nur über denselben Browser, in dem die Geschäftsdaten erfasst wurden.</div>
+    <input class="auth-input" id="buUser" placeholder="Benutzername / E-Mail" autocomplete="username"/>
+    <input class="auth-input" id="buPass" type="password" placeholder="Passwort" autocomplete="current-password" onkeydown="if(event.key==='Enter')buLogin()"/>
+    <button class="auth-btn" onclick="buLogin()">Anmelden</button>
+    <div class="auth-note">Schreibgeschützt: Sie sehen nur, was Ihr Mandant für Sie freigegeben hat. Jeder Zugriff wird protokolliert.</div>
   </div>
 </div>
 
-<!-- ACCOUNT SELECT -->
-<div id="accountScreen" style="display:none">
-  <div class="auth-card" style="max-width:420px">
-    <div class="auth-title">Firma auswählen</div>
-    <div class="auth-sub">Welches Konto möchten Sie einsehen?</div>
-    <ul class="acct-list" id="acctList"></ul>
-    <div class="auth-error" id="acctError"></div>
+<div id="screenClients" class="auth-wrap" style="display:none">
+  <div class="auth-card" style="max-width:440px">
+    <div class="auth-title">Mandant auswählen</div>
+    <div class="auth-sub" id="clientsSub">Welche Firma möchten Sie einsehen?</div>
+    <ul class="acct-list" id="clientList"></ul>
+    <div class="auth-error" id="clientsError"></div>
+    <button class="tb-btn" style="margin-top:6px" onclick="buLogout()">Abmelden</button>
   </div>
 </div>
 
-<!-- DASHBOARD -->
-<div id="dashScreen">
+<div id="screenApp" style="display:none">
   <div class="topbar">
-    <div class="wrap topbar-inner">
-      <div>
-        <div class="biz-name" id="dashBizName">—</div>
-        <div class="biz-sub" id="dashLastUpdate">—</div>
-      </div>
-      <div class="topbar-actions">
-        <span class="topbar-link" onclick="showAccountScreen()">Andere Firma wählen</span>
-        <span class="topbar-link" onclick="buchhalterLogout()">Abmelden</span>
-      </div>
+    <div class="tb-brand"><img src="logo-circle.png" alt="Trabis"/><div><div class="tb-t1">Trabis <span class="ro-badge">Nur lesen</span></div><div class="tb-t2" id="tbClient">—</div></div></div>
+    <div class="tb-act">
+      <button class="tb-btn" onclick="buShowClients()">Mandant wechseln</button>
+      <button class="tb-btn" onclick="buOpenLegal()">Rechtliches</button>
+      <button class="tb-btn" onclick="buLogout()">Abmelden</button>
     </div>
   </div>
-  <div class="wrap">
-    <div id="sidebarInner">
-      <div class="sidebar-header">
-        <img src="logo-circle.png" class="sidebar-logo-icon" alt="Trabis"/>
-        <div>
-          <div class="sidebar-logo-text">Trabis</div>
-          <div class="sidebar-logo-sub">Buchhalter Portal</div>
-        </div>
-      </div>
-      <div class="tabs" id="tabBar"></div>
-    </div>
-  </div>
-  <div class="section-outer">
-    <div class="wrap section" id="sectionBody"></div>
-  </div>
+  <div id="view"></div>
 </div>
 
-<div id="viewerOverlay" onclick="if(event.target===this)closeViewer()">
-  <button id="viewerDownload" onclick="downloadAttachment()" style="display:none"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/></svg> Herunterladen</button>
-  <button id="viewerClose" onclick="closeViewer()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
-  <div id="viewerContent"></div>
-</div>
-
-<div id="legalOverlay">
-  <div class="legal-hdr">
-    <button class="legal-back" onclick="closeLegalOverlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div>
-      <div class="legal-title" id="legalTitle"></div>
-      <div class="legal-sub" id="legalSub"></div>
-    </div>
-  </div>
-  <div class="legal-body" id="legalBody"></div>
-</div>
-
-<div id="whOverlay">
-  <div class="legal-hdr">
-    <button class="legal-back" onclick="closeWhOverlay()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
-    <div>
-      <div class="legal-title" id="whOverlayTitle"></div>
-      <div class="legal-sub" id="whOverlaySub"></div>
-    </div>
-  </div>
-  <div class="legal-body" id="whOverlayBody" style="max-width:820px"></div>
-</div>
+<div class="ov" id="pkgOv" onclick="if(event.target===this)buClosePkg()"><div class="sheet" id="pkgSheet"></div></div>
+<div class="page-ov" id="tsOv"><div class="page-in" id="tsBody"></div></div>
+<div class="page-ov" id="legalOv"><div class="page-in"><button class="back" onclick="document.getElementById('legalOv').classList.remove('open')">&#8592;</button><div class="legal" id="legalBody"></div></div></div>
+<div id="viewer"><div class="vb"><button onclick="buViewerDownload()">Herunterladen</button><button onclick="buCloseViewer()">Schließen</button></div><div id="viewerContent"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="trabis-package.js"></script>
 <script>
-// ────────────────────────────────────────
-// Read-only accountant portal.
-// Shares localStorage/IndexedDB with index.html on the same origin —
-// no network calls, no writes to business data anywhere in this file.
-// ────────────────────────────────────────
+// ════════════════════════════════════════════════════════════════════════════
+// Trabis Buchhalter-Portal — read-only accountant view, German only.
+//
+// All data access goes through BuApi (one place to swap). Two backends:
+//   • local  (default)  — same-browser localStorage/IndexedDB, for the prototype.
+//   • remote            — set window.BU_API_BASE = 'https://…' before this script and
+//                         the portal talks to the server (contract: ACCOUNTANT_SHARING.md).
+// Nothing below BuApi knows or cares which one is active. No writes to business data.
+// ════════════════════════════════════════════════════════════════════════════
 
-var ACCOUNTANT_CREDENTIALS = { 'buchhalter': 'Steuer2026!' };
+var ACCOUNTANT_CREDENTIALS = { 'buchhalter': 'Steuer2026!' };   // local mode only; remote mode uses real accounts
 
-var buCurrentUser = null;   // business account username currently being viewed
-var buData = null;          // loaded read-only snapshot of that account's data
-var buCurrency = '€';
-var buTab = 'overview';
-var buUvaInterval = 'quarter';
-var buUvaPeriod = null;
-
-function ukFor(user, key) { return 'smartac_u_' + user + '_' + key; }
-function readJSON(user, key, fallback) {
-  var raw = localStorage.getItem(ukFor(user, key));
-  if(!raw) return fallback;
-  try { return JSON.parse(raw); } catch(e) { return fallback; }
-}
-function readStr(user, key, fallback) {
-  var v = localStorage.getItem(ukFor(user, key));
-  return (v == null || v === '') ? fallback : v;
-}
-
-function buTogglePw() {
-  var inp = document.getElementById('buPass');
-  var btn = document.getElementById('buPassToggle');
-  inp.type = inp.type === 'password' ? 'text' : 'password';
-  btn.textContent = inp.type === 'password' ? 'Anzeigen' : 'Verbergen';
-}
-
-function buchhalterLogin() {
-  var user = (document.getElementById('buUser').value || '').trim();
-  var pass = document.getElementById('buPass').value || '';
-  var errEl = document.getElementById('loginError');
-  errEl.textContent = '';
-  if(!ACCOUNTANT_CREDENTIALS[user] || ACCOUNTANT_CREDENTIALS[user] !== pass) {
-    errEl.textContent = 'Benutzername oder Passwort falsch.';
-    return;
+var BuApi = (function() {
+  var base = (window.BU_API_BASE || '').replace(/\/$/, '');
+  var remote = !!base;
+  function ukFor(u, k) { return 'smartac_u_' + u + '_' + k; }
+  function rj(u, k, fb) { var r = localStorage.getItem(ukFor(u, k)); if(!r) return fb; try { return JSON.parse(r); } catch(e) { return fb; } }
+  function rs(u, k, fb) { var v = localStorage.getItem(ukFor(u, k)); return (v == null || v === '') ? fb : v; }
+  function http(method, path, body) {
+    var h = {'Accept': 'application/json'}, tok = sessionStorage.getItem('bu_token');
+    if(tok) h.Authorization = 'Bearer ' + tok;
+    if(body) h['Content-Type'] = 'application/json';
+    return fetch(base + path, {method: method, headers: h, body: body ? JSON.stringify(body) : undefined}).then(function(r) {
+      if(!r.ok) throw new Error('HTTP ' + r.status);
+      return r;
+    });
   }
-  sessionStorage.setItem('bu_loggedin', '1');
-  showAccountScreen();
-}
-
-function showAccountScreen() {
-  sessionStorage.removeItem('bu_account');
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('dashScreen').style.display = 'none';
-  document.getElementById('accountScreen').style.display = 'flex';
-  var accounts = {};
-  try { accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
-  var usernames = Object.keys(accounts);
-  var list = document.getElementById('acctList');
-  var errEl = document.getElementById('acctError');
-  if(!usernames.length) {
-    list.innerHTML = '';
-    errEl.textContent = 'Keine Geschäftskonten in diesem Browser gefunden. Melden Sie sich zuerst in der Haupt-App (index.html) in diesem Browser an.';
-    return;
+  function idbGet(db, store, id) {
+    var chk = indexedDB.databases ? indexedDB.databases().then(function(l) { return l.some(function(d) { return d.name === db; }); }).catch(function() { return false; }) : Promise.resolve(true);
+    return chk.then(function(ok) {
+      if(!ok) return null;
+      return new Promise(function(res) {
+        var rq = indexedDB.open(db);          // never pass a version: must not create/upgrade the owner's DB
+        rq.onupgradeneeded = function(e) { e.target.transaction.abort(); };
+        rq.onerror = function() { res(null); };
+        rq.onsuccess = function(e) {
+          var d = e.target.result;
+          if(!d.objectStoreNames.contains(store)) { d.close(); res(null); return; }
+          var r = d.transaction(store).objectStore(store).get(id);
+          r.onsuccess = function() { d.close(); res(r.result || null); };
+          r.onerror = function() { d.close(); res(null); };
+        };
+      });
+    });
   }
-  errEl.textContent = '';
-  list.innerHTML = usernames.map(function(u) {
-    var biz = accounts[u].businessName || u;
-    var initial = biz.charAt(0).toUpperCase();
-    return '<li class="acct-item" onclick="selectAccount(\'' + u.replace(/'/g,"\\'") + '\')">'
-      + '<span class="acct-avatar">' + initial + '</span>'
-      + '<span><span class="acct-name">' + escHtmlBu(biz) + '</span><br><span class="acct-user">@' + escHtmlBu(u) + '</span></span>'
-      + '</li>';
-  }).join('');
-}
-
-function selectAccount(username) {
-  buCurrentUser = username;
-  sessionStorage.setItem('bu_account', username);
-  buData = loadAccountData(username);
-  document.getElementById('accountScreen').style.display = 'none';
-  document.getElementById('dashScreen').style.display = 'block';
-  document.getElementById('dashBizName').textContent = buData.businessName || username;
-  document.getElementById('dashLastUpdate').textContent = 'Letzte Aktualisierung: ' + formatLastUpdate(buData);
-  buTab = 'overview';
-  renderTabs();
-  renderSection();
-}
-
-function buchhalterLogout() {
-  sessionStorage.removeItem('bu_loggedin');
-  sessionStorage.removeItem('bu_account');
-  buCurrentUser = null; buData = null;
-  document.getElementById('dashScreen').style.display = 'none';
-  document.getElementById('accountScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('buUser').value = '';
-  document.getElementById('buPass').value = '';
-}
-
-function loadAccountData(user) {
-  var accounts = {};
-  try { accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
   return {
-    businessName: (accounts[user] && accounts[user].businessName) || '',
-    businessType: readStr(user, 'businessType', 'general'),
-    currency: readStr(user, 'currency', '€'),
-    transactions: readJSON(user, 'tx', []),
-    debts: readJSON(user, 'debts', []),
-    clients: readJSON(user, 'clients', []),
-    suppliers: readJSON(user, 'suppliers', []),
-    employees: readJSON(user, 'employees', []),
-    fleet: readJSON(user, 'fleet', []),
-    assets: readJSON(user, 'assets', []),
-    inventory: readJSON(user, 'inventory', []),
-    issuedInvoices: readJSON(user, 'issued_inv', []),
-    receivedInvoices: readJSON(user, 'received_inv', []),
-    uvaFreigaben: readJSON(user, 'uvaFreigaben', {}),
-    bizTaxId: readStr(user, 'bizTaxId', ''),
-    recurring: readJSON(user, 'recurring', []),
-    fixedIncome: readJSON(user, 'fixed_income', []),
-    installments: readJSON(user, 'installments', []),
+    mode: remote ? 'remote' : 'local',
+    // → Promise<true> or rejects with a German message
+    login: function(user, pass) {
+      if(remote) return http('POST', '/auth/accountant/login', {email: user, password: pass}).then(function(r) { return r.json(); }).then(function(j) { sessionStorage.setItem('bu_token', j.token); return true; }, function() { throw new Error('Benutzername oder Passwort falsch.'); });
+      return (ACCOUNTANT_CREDENTIALS[user] && ACCOUNTANT_CREDENTIALS[user] === pass) ? Promise.resolve(true) : Promise.reject(new Error('Benutzername oder Passwort falsch.'));
+    },
+    // → Promise<[{id, name, sub}]>
+    listClients: function() {
+      if(remote) return http('GET', '/accountant/clients').then(function(r) { return r.json(); });
+      var acc = {}; try { acc = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
+      return Promise.resolve(Object.keys(acc).map(function(u) { return {id: u, name: acc[u].businessName || u, sub: '@' + u}; }));
+    },
+    // → Promise<{businessName, businessAddress, businessTaxId, businessType, transactions[], recurring[], fixedIncome[], employees[], contacts[]}>
+    loadClient: function(id) {
+      if(remote) return http('GET', '/accountant/clients/' + encodeURIComponent(id) + '/snapshot').then(function(r) { return r.json(); });
+      var acc = {}; try { acc = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
+      return Promise.resolve({
+        businessName: (acc[id] && acc[id].businessName) || id, businessAddress: rs(id, 'bizAddress', ''), businessTaxId: rs(id, 'bizTaxId', ''),
+        businessType: rs(id, 'businessType', 'general'),
+        transactions: rj(id, 'tx', []), recurring: rj(id, 'recurring', []), fixedIncome: rj(id, 'fixed_income', []),
+        employees: rj(id, 'employees', []), contacts: rj(id, 'contacts', [])
+      });
+    },
+    // kind: 'receipt' | 'empdoc'  → Promise<{blob, type, name}|null>
+    getFile: function(clientId, kind, fileId) {
+      if(remote) return http('GET', '/accountant/clients/' + encodeURIComponent(clientId) + '/files/' + kind + '/' + encodeURIComponent(fileId)).then(function(r) {
+        return r.blob().then(function(b) { return {blob: b, type: b.type, name: ''}; });
+      }).catch(function() { return null; });
+      return kind === 'empdoc' ? idbGet('smartac_empdocs', 'docs', fileId) : idbGet('smartac_receipts', 'receipts', fileId);
+    },
+    audit: function(clientId, action, object) { if(remote) http('POST', '/accountant/audit', {clientId: clientId, action: action, object: object || null}).catch(function() {}); }
   };
+})();
+
+// ── small helpers ───────────────────────────────────────────────────────────
+function pad2(n) { n = String(n); return n.length < 2 ? '0' + n : n; }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function jq(s) { return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'"); }
+function deNum(n) { n = Math.round((n + (n < 0 ? -1e-9 : 1e-9)) * 100) / 100; return n.toFixed(2).replace('.', ',').replace(/\B(?=(\d{3})+(?!\d))/g, '.'); }
+function eur(n) { return '€ ' + deNum(n); }
+function sgn(n) { return (Math.abs(n) < 0.005 ? '' : (n > 0 ? '+' : '−')) + '€ ' + deNum(Math.abs(n)); }
+function cls(n) { return Math.abs(n) < 0.005 ? 'zero' : (n > 0 ? 'pos' : 'neg'); }
+function deDate(iso) { return iso ? iso.substring(8, 10) + '.' + iso.substring(5, 7) + '.' + iso.substring(0, 4) : '—'; }
+var MON = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+var MON3 = ['Jän','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+var WD = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+
+// ── ported from the app (same maths, so both sides show the same numbers) ──
+var WT_FIXED_HOL = {'0-1':'Neujahr','0-6':'Heilige Drei Könige','4-1':'Staatsfeiertag','7-15':'Mariä Himmelfahrt','9-26':'Nationalfeiertag','10-1':'Allerheiligen','11-8':'Mariä Empfängnis','11-25':'Christtag','11-26':'Stefanitag'};
+function whTimeDiffHours(start, end, breakMinutes) {
+  if(!start || !end) return null;
+  var sp = start.split(':'), ep = end.split(':');
+  var startMin = parseInt(sp[0], 10) * 60 + parseInt(sp[1], 10);
+  var endMin = parseInt(ep[0], 10) * 60 + parseInt(ep[1], 10);
+  if(endMin <= startMin) endMin += 24 * 60;
+  var mins = endMin - startMin - (parseFloat(breakMinutes) || 0);
+  return Math.max(0, mins / 60);
 }
 
-function formatLastUpdate(data) {
-  var maxId = 0;
-  ['transactions','debts','employees','fleet','assets','inventory','issuedInvoices','receivedInvoices'].forEach(function(k) {
-    (data[k] || []).forEach(function(item) { if(item && item.id > maxId) maxId = item.id; });
-  });
-  if(!maxId) return 'keine Daten';
-  return new Date(maxId).toLocaleString('de-AT');
+function whEntryDate(w) { return w.fromDate || w.date || ''; }
+
+function whMonthLabelText(monthKey) {
+  var parts = monthKey.split('-');
+  var monthNames = KAL_MONTH_NAMES[state.lang] || KAL_MONTH_NAMES.en;
+  return monthNames[parseInt(parts[1],10)-1] + ' ' + parts[0];
 }
 
-function escHtmlBu(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-var SVG_ICON_PATHS_BU = {
-  chevronLeft: '<polyline points="15 18 9 12 15 6"/>',
-  check: '<polyline points="20 6 9 17 4 12"/>',
-  download: '<path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 21h14"/>',
-  x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
-  home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
-  percent: '<line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
-  list: '<line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>',
-  fileText: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>',
-  users: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
-  box: '<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/>',
-  settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
-};
-function svgIconBu(name, size) {
-  size = size || 16;
-  return '<svg width="' + size + '" height="' + size + '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle">' + SVG_ICON_PATHS_BU[name] + '</svg>';
-}
-function fmtBu(n) {
-  var v = parseFloat(n) || 0;
-  return buData.currency + v.toLocaleString('de-AT', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-function todayBu() { var d = new Date(); return d.toISOString().substring(0,10); }
-function fmtDateBu(s) { return s ? String(s).substring(0,10) : '—'; }
-
-// ── shared math (ported from index.html) ──
-function vatBreakdownBu(amount, rate) {
-  var netto = amount / (1 + rate / 100);
-  return {brutto: amount, netto: netto, steuer: amount - netto};
-}
-function uvaKeyForDateBu(dateStr, interval) {
-  var y = dateStr.substring(0,4), m = parseInt(dateStr.substring(5,7), 10);
-  if(interval === 'month') return y + '-' + ('0'+m).slice(-2);
-  if(interval === 'quarter') return y + '-Q' + Math.ceil(m/3);
-  return y;
-}
-function uvaKeyLabelBu(key) {
-  if(/^\d{4}-Q\d$/.test(key)) return 'Q' + key.substring(6) + ' ' + key.substring(0,4);
-  if(/^\d{4}-\d{2}$/.test(key)) {
-    var mon = ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-    return mon[parseInt(key.substring(5,7),10)-1] + ' ' + key.substring(0,4);
-  }
-  return key;
-}
-function computeUvaBu(key, interval) {
-  var res = {salesNetto:{0:0,10:0,13:0,20:0,other:0}, salesUst:{0:0,10:0,13:0,20:0,other:0}, kz000:0, sumUst:0, vorsteuer:0, zahllast:0, vorsteuerByRate:{}};
-  (buData.transactions || []).filter(function(tx) {
-    return tx && tx.date && (tx.type === 'income' || tx.type === 'expense') && uvaKeyForDateBu(tx.date, interval) === key;
-  }).forEach(function(tx) {
-    var r = tx.vatRate || 0;
-    var b = vatBreakdownBu(tx.amount, r);
-    if(tx.type === 'income') {
-      var bucket = (r === 0 || r === 10 || r === 13 || r === 20) ? r : 'other';
-      res.salesNetto[bucket] += b.netto; res.salesUst[bucket] += b.steuer;
-    } else {
-      // Vorsteuer (KZ 060) is a single lump total on the official UVA form — no rate breakdown.
-      res.vorsteuer += b.steuer;
-      var rk = String(r);
-      res.vorsteuerByRate[rk] = (res.vorsteuerByRate[rk] || 0) + b.steuer;
-    }
-  });
-  res.kz000 = res.salesNetto[0] + res.salesNetto[10] + res.salesNetto[13] + res.salesNetto[20] + res.salesNetto.other;
-  res.sumUst = res.salesUst[10] + res.salesUst[13] + res.salesUst[20] + res.salesUst.other;
-  res.zahllast = res.sumUst - res.vorsteuer;
-  return res;
-}
-function monthsBetweenBu(fromDateStr, toDateStr) {
-  var f = new Date(fromDateStr + 'T00:00:00'), t = new Date(toDateStr + 'T00:00:00');
-  var months = (t.getFullYear() - f.getFullYear()) * 12 + (t.getMonth() - f.getMonth());
-  if(t.getDate() < f.getDate()) months -= 1;
-  return Math.max(0, months);
-}
-function calcDepreciationBu(price, purchaseDate, ratePercent) {
-  price = parseFloat(price) || 0; ratePercent = parseFloat(ratePercent) || 0;
-  if(!price || !purchaseDate || !ratePercent) return null;
-  var annual = price * (ratePercent / 100);
-  var monthly = annual / 12;
-  var months = monthsBetweenBu(purchaseDate, todayBu());
-  var accumulated = Math.min(monthly * months, price);
-  return {annual: annual, monthly: monthly, accumulated: accumulated, bookValue: Math.max(0, price - accumulated)};
-}
-function whComputeHoursBu(entry) {
+function whComputeHours(entry) {
   if(entry.hours != null && entry.hours !== '') return parseFloat(entry.hours) || 0;
-  if(entry.start && entry.end) {
-    var sp = entry.start.split(':'), ep = entry.end.split(':');
-    var startMin = parseInt(sp[0],10)*60+parseInt(sp[1],10), endMin = parseInt(ep[0],10)*60+parseInt(ep[1],10);
-    if(endMin <= startMin) endMin += 24*60;
-    return Math.max(0, (endMin - startMin - (parseFloat(entry.breakMinutes)||0)) / 60);
-  }
-  return 0;
-}
-function whFmtHMBu(decimalHours) {
-  var totalMin = Math.round((decimalHours||0) * 60);
-  var h = Math.floor(totalMin / 60);
-  var m = totalMin % 60;
-  return h + ':' + (m < 10 ? '0' : '') + m;
+  var fromTimes = whTimeDiffHours(entry.start, entry.end, entry.breakMinutes);
+  return fromTimes != null ? fromTimes : 0;
 }
 
-// ── tabs / navigation ──
-var TABS = [
-  {id:'overview', label:'Übersicht', icon:'home'},
-  {id:'invoices', label:'Rechnungen', icon:'fileText'},
-  {id:'uva', label:'UVA', icon:'percent'},
-  {id:'transactions', label:'Transaktionen', icon:'list'},
-  {id:'employees', label:'Mitarbeiter', icon:'users'},
-  {id:'assets', label:'Anlagevermögen', icon:'box'},
-  {id:'downloads', label:'Downloads', icon:'download'},
-  {id:'settings', label:'Einstellungen', icon:'settings'},
-];
-function renderTabs() {
-  var bar = document.getElementById('tabBar');
-  bar.innerHTML = TABS.map(function(t) {
-    return '<button class="tab-btn' + (buTab===t.id?' active':'') + '" onclick="switchTab(\'' + t.id + '\')">' + svgIconBu(t.icon,16) + '<span>' + t.label + '</span></button>';
-  }).join('');
-}
-function switchTab(id) { buTab = id; renderTabs(); renderSection(); }
-
-function renderSection() {
-  var body = document.getElementById('sectionBody');
-  if(buTab === 'overview') body.innerHTML = renderOverviewHtml();
-  else if(buTab === 'uva') { body.innerHTML = renderUvaHtml(); wireUvaControls(); }
-  else if(buTab === 'transactions') body.innerHTML = renderTransactionsHtml();
-  else if(buTab === 'invoices') { body.innerHTML = renderInvoicesHtml(); wireReceiptsSectionControls(); }
-  else if(buTab === 'employees') body.innerHTML = renderEmployeesHtml();
-  else if(buTab === 'assets') body.innerHTML = renderAssetsHtml();
-  else if(buTab === 'downloads') body.innerHTML = renderDownloadsHtml();
-  else if(buTab === 'settings') body.innerHTML = renderSettingsHtml();
-}
-
-// ── Übersicht ──
-var buPeriod = 'month';
-function renderIncomeExpenseDonutHtml(income, expense) {
-  var total = income + expense;
-  if(total <= 0) return '<div class="empty-msg">Keine Daten für den gewählten Zeitraum</div>';
-  var r = 40, circumference = 2 * Math.PI * r;
-  var incomeLen = circumference * (income / total);
-  var expenseLen = circumference - incomeLen;
-  var h = '<div class="donut-wrap">';
-  h += '<svg width="120" height="120" viewBox="0 0 100 100">';
-  h += '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--income)" stroke-width="14" stroke-dasharray="' + incomeLen + ' ' + expenseLen + '" stroke-dashoffset="0" transform="rotate(-90 50 50)"/>';
-  h += '<circle cx="50" cy="50" r="' + r + '" fill="none" stroke="var(--expense)" stroke-width="14" stroke-dasharray="' + expenseLen + ' ' + incomeLen + '" stroke-dashoffset="-' + incomeLen + '" transform="rotate(-90 50 50)"/>';
-  h += '</svg>';
-  h += '<div class="donut-legend">';
-  h += '<div class="donut-legend-item"><span class="donut-dot" style="background:var(--income)"></span>Einnahmen <span class="donut-sub">' + Math.round(income/total*100) + '%</span></div>';
-  h += '<div class="donut-legend-item"><span class="donut-dot" style="background:var(--expense)"></span>Ausgaben <span class="donut-sub">' + Math.round(expense/total*100) + '%</span></div>';
-  h += '</div>';
-  h += '</div>';
-  return h;
-}
-function renderOverviewHtml() {
-  var txs = periodFilterTx(buPeriod);
-  var income = txs.filter(function(t){return t.type==='income';}).reduce(function(s,t){return s+(t.amount||0);},0);
-  var expense = txs.filter(function(t){return t.type==='expense';}).reduce(function(s,t){return s+(t.amount||0);},0);
-  var h = '<div class="pills">';
-  [['today','Heute'],['week','Woche'],['month','Monat'],['year','Jahr']].forEach(function(p) {
-    h += '<button class="pill' + (buPeriod===p[0]?' active':'') + '" onclick="buPeriod=\'' + p[0] + '\';renderSection()">' + p[1] + '</button>';
-  });
-  h += '</div>';
-  h += '<div class="stat-row">';
-  h += '<div class="stat"><div class="stat-label">Einnahmen</div><div class="stat-value" style="color:var(--income)">' + fmtBu(income) + '</div></div>';
-  h += '<div class="stat"><div class="stat-label">Ausgaben</div><div class="stat-value" style="color:var(--expense)">' + fmtBu(expense) + '</div></div>';
-  h += '<div class="stat"><div class="stat-label">Netto</div><div class="stat-value">' + fmtBu(income-expense) + '</div></div>';
-  h += '</div>';
-  h += '<div class="card"><div class="card-title">Einnahmen vs. Ausgaben</div>' + renderIncomeExpenseDonutHtml(income, expense) + '</div>';
-  var openDebts = (buData.debts||[]).filter(function(d){return d.status!=='paid';});
-  h += '<div class="card"><div class="card-title">Offene Forderungen / Verbindlichkeiten</div>';
-  if(!openDebts.length) h += '<div class="empty-msg">Keine offenen Posten</div>';
-  else {
-    h += '<table><tr><th>Person</th><th>Typ</th><th>Betrag</th><th>Fällig</th></tr>';
-    openDebts.forEach(function(d) {
-      h += '<tr><td>' + escHtmlBu(d.person) + '</td><td>' + (d.type==='i-owe'?'Verbindlichkeit':'Forderung') + '</td><td>' + fmtBu(d.amount) + '</td><td>' + fmtDateBu(d.date) + '</td></tr>';
-    });
-    h += '</table>';
-  }
-  h += '</div>';
-
-  var recurring = buData.recurring || [];
-  var fixedIncome = buData.fixedIncome || [];
-  h += '<div class="card"><div class="card-title">Fixkosten &amp; festes Einkommen</div>';
-  if(!recurring.length && !fixedIncome.length) h += '<div class="empty-msg">Keine Fixkosten erfasst</div>';
-  else {
-    h += '<table><tr><th>Name</th><th>Typ</th><th>Kategorie</th><th>MwSt %</th><th>Betrag/Mo</th></tr>';
-    recurring.forEach(function(r) {
-      h += '<tr><td>' + escHtmlBu(r.name) + '</td><td>Ausgabe</td><td>' + escHtmlBu(r.category||'Other') + '</td><td>' + (parseFloat(r.vatRate)||0) + '%</td><td>' + fmtBu(r.amount) + '</td></tr>';
-    });
-    fixedIncome.forEach(function(fi) {
-      h += '<tr><td>' + escHtmlBu(fi.name) + '</td><td>Einnahme</td><td>' + escHtmlBu(fi.category||'Other') + '</td><td>' + (parseFloat(fi.vatRate)||0) + '%</td><td>' + fmtBu(fi.amount) + '</td></tr>';
-    });
-    h += '</table>';
-  }
-  h += '</div>';
-
-  var installments = (buData.installments || []).filter(function(i){ return i.status === 'active'; });
-  if(installments.length) {
-    h += '<div class="card"><div class="card-title">Laufende Ausschreibungen (Ratenzahlung)</div>';
-    h += '<table><tr><th>Name</th><th>Gesamt (Netto)</th><th>Rest</th><th>Fortschritt</th></tr>';
-    installments.forEach(function(i) {
-      var remaining = Math.max(0, i.totalNetto - i.monthlyNetto * i.monthsPosted);
-      h += '<tr><td>' + escHtmlBu(i.name||'') + '</td><td>' + fmtBu(i.totalNetto) + '</td><td>' + fmtBu(remaining) + '</td><td>' + i.monthsPosted + '/' + i.totalMonths + '</td></tr>';
-    });
-    h += '</table></div>';
-  }
-  return h;
-}
-function periodFilterTx(period) {
-  var now = new Date(), todayStr = todayBu();
-  return (buData.transactions||[]).filter(function(tx) {
-    if(!tx || !tx.date) return false;
-    var d = new Date(tx.date.substring(0,10)+'T12:00:00');
-    if(period==='today') return tx.date.substring(0,10)===todayStr;
-    if(period==='week') { var w=new Date(now); w.setDate(w.getDate()-7); return d>=w; }
-    if(period==='month') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-    if(period==='year') return d.getFullYear()===now.getFullYear();
-    return true;
+function whDayEntry(emp, day) {
+  return (emp.workHours || []).find(function(w) {
+    var wd = whEntryDate(w);
+    return wd === day && (!w.toDate || w.toDate === wd);
   });
 }
 
-// ── UVA ──
-function uvaPeriodsBu(interval) {
-  var years = {}; years[todayBu().substring(0,4)] = true;
-  (buData.transactions||[]).forEach(function(tx){ if(tx&&tx.date&&(tx.type==='income'||tx.type==='expense')) years[tx.date.substring(0,4)]=true; });
-  var yearNums = Object.keys(years).map(Number);
-  var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
-  var keys = [];
-  for(var y = minYear; y <= maxYear; y++) {
-    if(interval === 'month') { for(var m = 1; m <= 12; m++) keys.push(y + '-' + ('0'+m).slice(-2)); }
-    else if(interval === 'quarter') { for(var q = 1; q <= 4; q++) keys.push(y + '-Q' + q); }
-    else keys.push(String(y));
-  }
-  return keys.sort().reverse();
-}
-function renderUvaHtml() {
-  if(!buUvaPeriod) buUvaPeriod = uvaKeyForDateBu(todayBu(), buUvaInterval);
-  var periods = uvaPeriodsBu(buUvaInterval);
-  var u = computeUvaBu(buUvaPeriod, buUvaInterval);
-  var fg = buData.uvaFreigaben && buData.uvaFreigaben[buUvaPeriod];
-  var h = '<div class="card">';
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">';
-  h += '<div class="card-title" style="margin-bottom:0">Umsatzsteuervoranmeldung</div>';
-  h += '<span class="badge ' + (fg?'freigegeben':'offen') + '" style="display:inline-flex;align-items:center;gap:4px">' + (fg ? (svgIconBu('check',11) + ' Freigegeben · ' + new Date(fg.at).toLocaleDateString('de-AT')) : 'Offen') + '</span>';
-  h += '</div>';
-  h += '<div class="pills">';
-  h += '<span class="pill"><select id="uvaIntervalSel"><option value="month"' + (buUvaInterval==='month'?' selected':'') + '>Monatlich</option><option value="quarter"' + (buUvaInterval==='quarter'?' selected':'') + '>Vierteljährlich</option><option value="year"' + (buUvaInterval==='year'?' selected':'') + '>Jährlich</option></select></span>';
-  h += '<span class="pill"><select id="uvaPeriodSel">' + periods.map(function(k){return '<option value="'+k+'"'+(k===buUvaPeriod?' selected':'')+'>'+uvaKeyLabelBu(k)+'</option>';}).join('') + '</select></span>';
-  h += '</div>';
-  function row(label, val, bold) { return '<tr' + (bold?' style="font-weight:800"':'') + '><td>' + label + '</td><td style="text-align:right;direction:ltr">' + val + '</td></tr>'; }
-  h += '<table>';
-  h += row('KZ 000 — Gesamtbetrag Bemessungsgrundlage', fmtBu(u.kz000));
-  h += row('KZ 022 — Umsätze 20% (Netto / USt)', fmtBu(u.salesNetto[20]) + ' / ' + fmtBu(u.salesUst[20]));
-  h += row('KZ 006 — Umsätze 13% (Netto / USt)', fmtBu(u.salesNetto[13]) + ' / ' + fmtBu(u.salesUst[13]));
-  h += row('KZ 029 — Umsätze 10% (Netto / USt)', fmtBu(u.salesNetto[10]) + ' / ' + fmtBu(u.salesUst[10]));
-  h += row('Steuerfreie Umsätze 0%', fmtBu(u.salesNetto[0]));
-  if(u.salesNetto.other || u.salesUst.other) h += row('Umsätze zu sonstigen Sätzen (Netto / USt)', fmtBu(u.salesNetto.other) + ' / ' + fmtBu(u.salesUst.other));
-  h += row('Summe Umsatzsteuer', fmtBu(u.sumUst));
-  h += row('KZ 060 — Vorsteuer', '− ' + fmtBu(u.vorsteuer));
-  var isCredit = u.zahllast < 0;
-  h += row(isCredit ? 'KZ 095 — Gutschrift' : 'KZ 095 — Zahllast', fmtBu(Math.abs(u.zahllast)), true);
-  h += '</table>';
-  var vsRateKeys = Object.keys(u.vorsteuerByRate || {}).sort(function(a,b){ return parseFloat(b) - parseFloat(a); });
-  if(vsRateKeys.length) {
-    h += '<div style="padding:8px 0 2px 14px">';
-    h += '<div style="font-size:11px;color:var(--text3);margin-bottom:4px">Aufschlüsselung Vorsteuer nach Sätzen (nur informativ — kein offizielles Formularfeld)</div>';
-    vsRateKeys.forEach(function(rk) {
-      h += '<div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);padding:2px 0">'
-        + '<span>' + rk + '%</span><span style="direction:ltr">− ' + fmtBu(u.vorsteuerByRate[rk]) + '</span></div>';
-    });
-    h += '</div>';
-  }
-  h += '<div class="disclaimer">Vorbereitung für die UVA — keine steuerliche Beratung. Die offizielle Einreichung erfolgt über FinanzOnline.</div>';
-  h += '</div>';
-  return h;
-}
-function wireUvaControls() {
-  var ivSel = document.getElementById('uvaIntervalSel');
-  var pSel = document.getElementById('uvaPeriodSel');
-  if(ivSel) ivSel.onchange = function() { buUvaInterval = ivSel.value; buUvaPeriod = null; renderSection(); };
-  if(pSel) pSel.onchange = function() { buUvaPeriod = pSel.value; renderSection(); };
+function whDayLeavePeriod(emp, day) {
+  return (emp.leavePeriods || []).find(function(lp) { return day >= lp.from && day <= lp.to; }) || null;
 }
 
-// ── Transaktionen ──
-function renderTxSection(txs, title) {
-  var h = '<div class="card"><div class="card-title">' + title + ' (' + txs.length + ')</div>';
-  if(!txs.length) { h += '<div class="empty-msg">Keine ' + title.toLowerCase() + '</div></div>'; return h; }
-  var totalNetto = 0, totalBrutto = 0;
-  h += '<table><tr><th>Datum</th><th>Beschreibung</th><th>Netto</th><th>MwSt.</th><th>Brutto</th><th>Beleg</th></tr>';
-  txs.forEach(function(tx) {
-    var b = vatBreakdownBu(tx.amount, tx.vatRate||0);
-    totalNetto += b.netto; totalBrutto += b.brutto;
-    h += '<tr><td>' + fmtDateBu(tx.date) + '</td><td>' + escHtmlBu(tx.name) + '</td>'
-      + '<td>' + fmtBu(b.netto) + '</td><td>' + (tx.vatRate||0) + '%</td><td>' + fmtBu(b.brutto) + '</td>'
-      + '<td>' + (tx.receiptId ? '<a class="link-icon" onclick="viewReceipt(' + tx.receiptId + ')">Ansehen</a>' : '—') + '</td></tr>';
-  });
-  h += '<tr style="font-weight:800"><td colspan="2">Summe</td><td>' + fmtBu(totalNetto) + '</td><td></td><td>' + fmtBu(totalBrutto) + '</td><td></td></tr>';
-  h += '</table></div>';
-  return h;
-}
-function renderTransactionsHtml() {
-  var txs = (buData.transactions||[]).slice().sort(function(a,b){ return (b.id||0)-(a.id||0); });
-  if(!txs.length) return '<div class="card"><div class="card-title">Alle Transaktionen (0)</div><div class="empty-msg">Keine Transaktionen</div></div>';
-  var income = txs.filter(function(tx){ return tx.type === 'income'; });
-  var expense = txs.filter(function(tx){ return tx.type === 'expense'; });
-  return renderTxSection(income, 'Einnahmen') + renderTxSection(expense, 'Ausgaben');
-}
-
-// ── Rechnungen ──
-function renderInvoicesHtml() {
-  return renderReceiptsSectionHtml();
-}
-
-// ── Belege / Anhänge (combined PDF export, grouped by period + Ausgaben/Einnahmen) ──
-var buRecInterval = 'month';
-var buRecPeriod = null;
-
-function buRecPeriods(interval) {
-  var years = {}; years[todayBu().substring(0,4)] = true;
-  (buData.transactions||[]).forEach(function(tx){ if(tx && tx.date && tx.receiptId) years[tx.date.substring(0,4)]=true; });
-  var yearNums = Object.keys(years).map(Number);
-  var minYear = Math.min.apply(null, yearNums), maxYear = Math.max.apply(null, yearNums);
-  var keys = [];
-  for(var y = minYear; y <= maxYear; y++) {
-    if(interval === 'month') { for(var m = 1; m <= 12; m++) keys.push(y + '-' + ('0'+m).slice(-2)); }
-    else if(interval === 'quarter') { for(var q = 1; q <= 4; q++) keys.push(y + '-Q' + q); }
-    else keys.push(String(y));
-  }
-  return keys.sort().reverse();
-}
-function receiptsForPeriod(type, key, interval) {
-  return (buData.transactions||[]).filter(function(tx) {
-    return tx && tx.receiptId && tx.type === type && tx.date && uvaKeyForDateBu(tx.date, interval) === key;
-  }).sort(function(a,b){ return (a.date||'') < (b.date||'') ? -1 : ((a.date||'') > (b.date||'') ? 1 : 0); });
-}
-function renderReceiptsSectionHtml() {
-  if(!buRecPeriod) buRecPeriod = uvaKeyForDateBu(todayBu(), buRecInterval);
-  var periods = buRecPeriods(buRecInterval);
-  var exp = receiptsForPeriod('expense', buRecPeriod, buRecInterval);
-  var inc = receiptsForPeriod('income', buRecPeriod, buRecInterval);
-  var h = '<div class="card">';
-  h += '<div class="card-title">Belege / Anhänge</div>';
-  h += '<div class="pills">';
-  h += '<span class="pill"><select id="recIntervalSel"><option value="month"' + (buRecInterval==='month'?' selected':'') + '>Monatlich</option><option value="quarter"' + (buRecInterval==='quarter'?' selected':'') + '>Vierteljährlich</option><option value="year"' + (buRecInterval==='year'?' selected':'') + '>Jährlich</option></select></span>';
-  h += '<span class="pill"><select id="recPeriodSel">' + periods.map(function(k){return '<option value="'+k+'"'+(k===buRecPeriod?' selected':'')+'>'+uvaKeyLabelBu(k)+'</option>';}).join('') + '</select></span>';
-  h += '</div>';
-  h += '<div style="font-size:12.5px;color:var(--text2);margin-bottom:10px">' + exp.length + ' Ausgabenbeleg(e) · ' + inc.length + ' Einnahmenbeleg(e) im gewählten Zeitraum</div>';
-  h += '<button class="dl-btn" id="recDownloadExpBtn"' + (!exp.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Ausgaben als PDF herunterladen</button>';
-  h += '<button class="dl-btn" id="recDownloadIncBtn"' + (!inc.length ? ' disabled' : '') + '>' + svgIconBu('download',14) + ' Einnahmen als PDF herunterladen</button>';
-  h += '<div id="recDownloadStatus" style="font-size:12.5px;color:var(--text2);margin-top:8px"></div>';
-  h += '<div class="disclaimer">Alle Belege/Rechnungen, die im Hauptprogramm an Transaktionen angehängt wurden (Foto oder PDF), gruppiert nach Zeitraum — Ausgaben und Einnahmen als zwei separate PDF-Dateien.</div>';
-  h += '</div>';
-  return h;
-}
-function wireReceiptsSectionControls() {
-  var ivSel = document.getElementById('recIntervalSel');
-  var pSel = document.getElementById('recPeriodSel');
-  if(ivSel) ivSel.onchange = function() { buRecInterval = ivSel.value; buRecPeriod = null; renderSection(); };
-  if(pSel) pSel.onchange = function() { buRecPeriod = pSel.value; renderSection(); };
-  var expBtn = document.getElementById('recDownloadExpBtn');
-  var incBtn = document.getElementById('recDownloadIncBtn');
-  if(expBtn) expBtn.onclick = function() { downloadReceiptsPdf('expense'); };
-  if(incBtn) incBtn.onclick = function() { downloadReceiptsPdf('income'); };
-}
-
-function buPdfLoadJs() {
-  return new Promise(function(resolve, reject) {
-    if(window.pdfjsLib) { resolve(); return; }
-    var s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js';
-    s.onload = function() {
-      try {
-        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js';
-        resolve();
-      } catch(e) { reject(e); }
-    };
-    s.onerror = reject;
-    document.head.appendChild(s);
-  });
-}
-// Renders every page of an attached PDF to a JPEG data URL (capped at 15
-// pages) so it can be merged as image pages into the combined export —
-// jsPDF alone can't import an existing PDF's pages directly.
-function buPdfBlobToImageDataUrls(blob) {
-  return buPdfLoadJs().then(function() {
-    return blob.arrayBuffer();
-  }).then(function(buf) {
-    return window.pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise;
-  }).then(function(pdf) {
-    var numPages = Math.min(pdf.numPages, 15);
-    var pageNums = [];
-    for(var i = 1; i <= numPages; i++) pageNums.push(i);
-    return pageNums.reduce(function(chain, pageNum) {
-      return chain.then(function(urls) {
-        return pdf.getPage(pageNum).then(function(page) {
-          var viewport = page.getViewport({scale: 2});
-          var canvas = document.createElement('canvas');
-          canvas.width = viewport.width; canvas.height = viewport.height;
-          var ctx = canvas.getContext('2d');
-          return page.render({canvasContext: ctx, viewport: viewport}).promise.then(function() {
-            urls.push(canvas.toDataURL('image/jpeg', 0.9));
-            return urls;
-          });
-        });
-      });
-    }, Promise.resolve([]));
-  });
-}
-function imageBlobToDataUrl(blob) {
-  return new Promise(function(resolve, reject) {
-    var reader = new FileReader();
-    reader.onload = function() { resolve(reader.result); };
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
-function imageDimensionsFromDataUrl(dataUrl) {
-  return new Promise(function(resolve) {
-    var img = new Image();
-    img.onload = function() { resolve({w: img.naturalWidth || 800, h: img.naturalHeight || 1131}); };
-    img.onerror = function() { resolve({w: 800, h: 1131}); }; // A4-ish fallback ratio
-    img.src = dataUrl;
-  });
-}
-
-function downloadReceiptsPdf(type) {
-  var statusEl = document.getElementById('recDownloadStatus');
-  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var list = receiptsForPeriod(type, buRecPeriod, buRecInterval);
-  if(!list.length) return;
-  var label = type === 'expense' ? 'Ausgaben' : 'Einnahmen';
-
-  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  doc.setFontSize(18); doc.setFont(undefined,'bold');
-  doc.text(label + ' — ' + (buData.businessName||''), 14, 24);
-  doc.setFontSize(11); doc.setFont(undefined,'normal');
-  doc.text('Zeitraum: ' + uvaKeyLabelBu(buRecPeriod), 14, 34);
-  doc.text(list.length + ' Beleg(e)', 14, 42);
-  doc.setFontSize(9); doc.setTextColor(140);
-  doc.text('Erstellt am ' + new Date().toLocaleDateString('de-AT'), 14, 52);
-  doc.setTextColor(0);
-
-  function addImagePage(dataUrl, dims, caption) {
-    var isLandscape = dims.w > dims.h;
-    doc.addPage('a4', isLandscape ? 'l' : 'p');
-    var pageW = doc.internal.pageSize.getWidth();
-    var pageH = doc.internal.pageSize.getHeight();
-    var margin = 12;
-    doc.setFontSize(9); doc.setFont(undefined,'normal'); doc.setTextColor(90);
-    doc.text(caption, margin, margin, {maxWidth: pageW - margin*2});
-    doc.setTextColor(0);
-    var top = margin + 8;
-    var usableW = pageW - margin*2, usableH = pageH - top - margin;
-    var ratio = Math.min(usableW / dims.w, usableH / dims.h);
-    var drawW = dims.w * ratio, drawH = dims.h * ratio;
-    doc.addImage(dataUrl, 'JPEG', margin + (usableW-drawW)/2, top + (usableH-drawH)/2, drawW, drawH);
-  }
-  function processGroup(list) {
-    return list.reduce(function(chain, tx) {
-      return chain.then(function() {
-        return idbGet('smartac_receipts', 'receipts', tx.receiptId).then(function(rec) {
-          if(!rec || !rec.blob) return; // attachment not on this device — skip silently, same as the single viewer does
-          var caption = (tx.type === 'expense' ? 'Ausgabe' : 'Einnahme') + ' · ' + fmtDateBu(tx.date) + ' · ' + (tx.name||'') + ' · ' + fmtBu(tx.amount);
-          if(rec.type === 'application/pdf') {
-            return buPdfBlobToImageDataUrls(rec.blob).then(function(dataUrls) {
-              return dataUrls.reduce(function(c2, url, idx) {
-                return c2.then(function() {
-                  return imageDimensionsFromDataUrl(url).then(function(dims) {
-                    addImagePage(url, dims, caption + (dataUrls.length>1 ? ' (Seite ' + (idx+1) + '/' + dataUrls.length + ')' : ''));
-                  });
-                });
-              }, Promise.resolve());
-            }).catch(function(){});
-          }
-          return imageBlobToDataUrl(rec.blob).then(function(url) {
-            return imageDimensionsFromDataUrl(url).then(function(dims) { addImagePage(url, dims, caption); });
-          });
-        });
-      });
-    }, Promise.resolve());
-  }
-
-  if(statusEl) statusEl.textContent = 'Wird erstellt …';
-  processGroup(list).then(function() {
-    doc.save(label + '_' + buRecPeriod + '.pdf');
-    if(statusEl) statusEl.textContent = '';
-  }).catch(function() {
-    if(statusEl) statusEl.textContent = 'Fehler beim Erstellen des PDFs.';
-  });
-}
-
-// ── Mitarbeiter ──
-function renderEmployeesHtml() {
-  var emps = buData.employees || [];
-  var totalBrutto = emps.reduce(function(s,e){return s+(parseFloat(e.salary)||0);},0);
-  var h = '<div class="stat-row"><div class="stat"><div class="stat-label">Mitarbeiter</div><div class="stat-value">' + emps.length + '</div></div>';
-  h += '<div class="stat"><div class="stat-label">Gehälter gesamt (Brutto/Monat)</div><div class="stat-value">' + fmtBu(totalBrutto) + '</div></div></div>';
-  h += '<div class="card"><div class="card-title">Mitarbeiterliste</div>';
-  if(!emps.length) h += '<div class="empty-msg">Keine Mitarbeiter</div></div>';
-  else {
-    h += '<table><tr><th>Name</th><th>Position</th><th>Gehalt (Brutto)</th><th>Std. diesen Monat</th><th>Dokumente</th><th>Zeitblatt</th></tr>';
-    var curMonth = todayBu().substring(0,7);
-    emps.forEach(function(e) {
-      var hrs = (e.workHours||[]).filter(function(w){ return (w.fromDate||w.date||'').substring(0,7)===curMonth; })
-        .reduce(function(s,w){return s+whComputeHoursBu(w);},0);
-      var docLinks = (e.documents||[]).map(function(d){ return '<a class="link-icon" onclick="viewEmpDoc(' + d.id + ')">' + escHtmlBu(d.name) + '</a>'; }).join(', ');
-      h += '<tr><td>' + escHtmlBu(e.fullName||e.name) + '</td><td>' + escHtmlBu(e.position||'—') + '</td><td>' + fmtBu(e.salary) + '</td><td>' + whFmtHMBu(hrs) + '</td>'
-        + '<td>' + (docLinks || '—') + '</td>'
-        + '<td><a class="link-icon" onclick="openEmpTimesheet(' + e.id + ')">Anzeigen</a></td></tr>';
-    });
-    h += '</table></div>';
-  }
-  return h;
-}
-
-// ── Arbeitszeit / Zeitblatt (read-only, mirrors index.html's whOpenMonthSheet) ──
-var buWhEmpId = null;
-var buWhMonth = null;
-function whDaysInMonthBu(monthKey) {
+function whDaysInMonth(monthKey) {
   var parts = monthKey.split('-');
   var year = parseInt(parts[0],10), month = parseInt(parts[1],10);
   var lastDay = new Date(year, month, 0).getDate();
   var days = [];
-  for(var d = 1; d <= lastDay; d++) days.push(monthKey + '-' + (d<10?'0':'') + d);
+  for(var d = 1; d <= lastDay; d++) days.push(monthKey + '-' + pad2(d));
   return days;
 }
-var AT_MONTH_NAMES_BU = ['Jänner','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-function whAtMonthLabelBu(monthKey) {
-  var parts = monthKey.split('-');
-  return AT_MONTH_NAMES_BU[parseInt(parts[1],10)-1] + ' ' + parts[0];
-}
-function whFmtDayDateBu(day) {
-  var p = day.split('-');
-  return p[2] + '.' + p[1] + '.' + p[0];
-}
-function whDayEntryBu(emp, day) {
-  return (emp.workHours || []).find(function(w) {
-    var wd = w.fromDate || w.date || '';
-    return wd === day && (!w.toDate || w.toDate === wd);
-  });
-}
-function whDayLeavePeriodBu(emp, day) {
-  return (emp.leavePeriods || []).find(function(lp) { return day >= lp.from && day <= lp.to; }) || null;
-}
-function whLeaveTypeLabelBu(type) { return type === 'karenz' ? 'Karenz' : (type === 'urlaub' ? 'Urlaub' : (type === 'feiertag' ? 'Feiertag' : 'Krankenstand')); }
 
-// Prefer the most recent month with a recorded leave period (that's what a bookkeeper
-// opening this view is usually looking for), then the most recent month with any work-hours
-// entry, and only fall back to today's month if the employee has no recorded data at all —
-// otherwise the sheet silently opens on an empty current month with nothing to see.
-function whMostRelevantMonthBu(emp) {
-  var leaveMonths = {};
-  (emp.leavePeriods||[]).forEach(function(lp){
-    if(lp.from) leaveMonths[lp.from.substring(0,7)] = true;
-    if(lp.to) leaveMonths[lp.to.substring(0,7)] = true;
-  });
-  var leaveKeys = Object.keys(leaveMonths).sort();
-  if(leaveKeys.length) return leaveKeys[leaveKeys.length-1];
-  var whMonths = {};
-  (emp.workHours||[]).forEach(function(w){ var d = w.fromDate||w.date; if(d) whMonths[d.substring(0,7)] = true; });
-  var whKeys = Object.keys(whMonths).sort();
-  if(whKeys.length) return whKeys[whKeys.length-1];
-  return null;
+function wtEaster(y) {
+  var a = y % 19, b = Math.floor(y / 100), c = y % 100, d = Math.floor(b / 4), e = b % 4;
+  var f = Math.floor((b + 8) / 25), g = Math.floor((b - f + 1) / 3);
+  var h = (19 * a + b - d - g + 15) % 30, i = Math.floor(c / 4), k = c % 4;
+  var l = (32 + 2 * e + 2 * i - h - k) % 7, mm = Math.floor((a + 11 * h + 22 * l) / 451);
+  var month = Math.floor((h + l - 7 * mm + 114) / 31), day = ((h + l - 7 * mm + 114) % 31) + 1;
+  return new Date(y, month - 1, day);
 }
-function openEmpTimesheet(empId) {
-  buWhEmpId = empId;
-  var emp = (buData.employees||[]).find(function(e){ return e.id === empId; });
-  buWhMonth = (emp && whMostRelevantMonthBu(emp)) || todayBu().substring(0,7);
-  renderEmpTimesheet();
-  document.getElementById('whOverlay').classList.add('open');
-}
-function closeWhOverlay() {
-  document.getElementById('whOverlay').classList.remove('open');
-}
-function whShiftMonth(delta) {
-  var parts = buWhMonth.split('-');
-  var d = new Date(parseInt(parts[0],10), parseInt(parts[1],10) - 1 + delta, 1);
-  var mm = d.getMonth() + 1;
-  buWhMonth = d.getFullYear() + '-' + (mm<10?'0':'') + mm;
-  renderEmpTimesheet();
-}
-function renderEmpTimesheet() {
-  var emp = (buData.employees||[]).find(function(e){ return e.id === buWhEmpId; });
-  if(!emp) return;
-  var empName = emp.fullName || emp.name || '';
-  document.getElementById('whOverlayTitle').textContent = 'Arbeitszeit — ' + empName;
-  document.getElementById('whOverlaySub').textContent = whAtMonthLabelBu(buWhMonth);
-  var days = whDaysInMonthBu(buWhMonth);
 
-  var h = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">';
-  h += '<button class="wh-month-nav" onclick="whShiftMonth(-1)">' + svgIconBu('chevronLeft',16) + '</button>';
-  h += '<div style="flex:1;text-align:center;font-weight:700;font-size:15px">' + whAtMonthLabelBu(buWhMonth) + '</div>';
-  h += '<button class="wh-month-nav" onclick="whShiftMonth(1)" style="transform:scaleX(-1)">' + svgIconBu('chevronLeft',16) + '</button>';
-  h += '</div>';
-
-  var hasAnyData = days.some(function(day) { return whDayLeavePeriodBu(emp, day) || whDayEntryBu(emp, day); });
-  if(!hasAnyData) {
-    h += '<div class="empty-msg">Keine Einträge für diesen Monat — mit den Pfeilen andere Monate durchsuchen.</div>';
+function wtHolidayName(day) {
+  var p = day.split('-'), y = +p[0], m = +p[1] - 1, d = +p[2];
+  if(WT_FIXED_HOL[m + '-' + d]) return WT_FIXED_HOL[m + '-' + d];
+  var easter = wtEaster(y), t = new Date(y, m, d).getTime();
+  var moving = [[1,'Ostermontag'],[39,'Christi Himmelfahrt'],[50,'Pfingstmontag'],[60,'Fronleichnam']];
+  for(var i = 0; i < moving.length; i++) {
+    if(new Date(easter.getFullYear(), easter.getMonth(), easter.getDate() + moving[i][0]).getTime() === t) return moving[i][1];
   }
-
-  h += '<div style="overflow-x:auto"><table style="min-width:640px">';
-  h += '<tr><th>Datum</th><th>Startzeit</th><th>Endzeit</th><th>Pause (min)</th><th>Gesamtstunden</th></tr>';
-  var total = 0;
-  days.forEach(function(day) {
-    var leave = whDayLeavePeriodBu(emp, day);
-    if(leave) {
-      h += '<tr><td>' + whFmtDayDateBu(day) + '</td><td colspan="4" style="background:rgba(139,92,246,0.08)">';
-      h += '<span style="color:#8b5cf6;font-weight:700">' + whLeaveTypeLabelBu(leave.type) + '</span>';
-      if(leave.docId) h += ' &nbsp; <a class="link-icon" onclick="viewEmpDoc(' + leave.docId + ')">Zertifikat ansehen</a>';
-      h += '</td></tr>';
-      return;
-    }
-    var entry = whDayEntryBu(emp, day);
-    var hrs = entry ? whComputeHoursBu(entry) : 0;
-    if(entry) total += hrs;
-    h += '<tr><td>' + whFmtDayDateBu(day) + '</td><td>' + (entry && entry.start ? entry.start : '—') + '</td><td>' + (entry && entry.end ? entry.end : '—') + '</td>'
-      + '<td>' + (entry && entry.breakMinutes != null ? entry.breakMinutes : '—') + '</td><td>' + (entry ? whFmtHMBu(hrs) : '—') + '</td></tr>';
-  });
-  h += '</table></div>';
-  h += '<div style="margin-top:14px;font-weight:700;font-size:14px">Gesamtstunden Monat: ' + whFmtHMBu(total) + '</div>';
-  h += '<button class="dl-btn" style="margin-top:14px" onclick="whExportTimesheetPdf()">' + svgIconBu('download',14) + ' PDF herunterladen</button>';
-  document.getElementById('whOverlayBody').innerHTML = h;
+  return '';
 }
 
-// Ported from index.html's whExportPDF — same layout/columns, sourced from buData instead of state.
-function whExportTimesheetPdf() {
-  var emp = (buData.employees||[]).find(function(e){ return e.id === buWhEmpId; });
-  if(!emp) return;
-  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var monthKey = buWhMonth;
-  var days = whDaysInMonthBu(monthKey);
-  var empName = emp.fullName || emp.name || '';
-
-  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  var cols = [14, 46, 90, 118, 146, 170, 196];
-  var headers = ['Datum','Fahrer','Startzeit','Endzeit','Pause (min)','Gesamtstunden'];
-  var rowH = 6.6;
-  var y = 16;
-
-  doc.setDrawColor(120);
-  doc.setFillColor(216,216,216);
-  doc.rect(cols[0], y, cols[6]-cols[0], rowH, 'FD');
-  doc.setFontSize(11); doc.setFont(undefined, 'bold'); doc.setTextColor(0);
-  doc.text(whAtMonthLabelBu(monthKey), cols[0]+2, y+rowH-2);
-  y += rowH;
-
-  doc.setFontSize(8);
-  for(var i = 0; i < 6; i++) {
-    doc.setFillColor(240,240,240);
-    doc.rect(cols[i], y, cols[i+1]-cols[i], rowH, 'FD');
-    doc.setTextColor(0);
-    doc.text(headers[i], cols[i]+2, y+rowH-2);
-  }
-  y += rowH;
-
-  doc.setFont(undefined, 'normal'); doc.setFontSize(9); doc.setTextColor(0);
-  var total = 0;
-  days.forEach(function(day) {
-    var leave = whDayLeavePeriodBu(emp, day);
-    if(leave) {
-      doc.rect(cols[0], y, cols[1]-cols[0], rowH);
-      doc.text(whFmtDayDateBu(day).substring(0,12), cols[0]+2, y+rowH-2);
-      doc.rect(cols[1], y, cols[2]-cols[1], rowH);
-      doc.text(empName.substring(0,22), cols[1]+2, y+rowH-2);
-      doc.rect(cols[2], y, cols[6]-cols[2], rowH);
-      doc.setFont(undefined, 'bold');
-      doc.text(whLeaveTypeLabelBu(leave.type), cols[2]+2, y+rowH-2);
-      doc.setFont(undefined, 'normal');
-      y += rowH;
-      if(y > 280) { doc.addPage(); y = 16; }
-      return;
-    }
-    var entry = whDayEntryBu(emp, day);
-    var hrs = entry ? whComputeHoursBu(entry) : 0;
-    if(entry) total += hrs;
-    var values = [
-      whFmtDayDateBu(day), empName,
-      entry && entry.start ? entry.start : '',
-      entry && entry.end ? entry.end : '',
-      entry && entry.breakMinutes != null ? String(entry.breakMinutes) : '',
-      entry ? whFmtHMBu(hrs) : ''
-    ];
-    for(var c = 0; c < 6; c++) {
-      doc.rect(cols[c], y, cols[c+1]-cols[c], rowH);
-      doc.text(String(values[c]).substring(0, c===1?22:12), cols[c]+2, y+rowH-2);
-    }
-    y += rowH;
-    if(y > 280) { doc.addPage(); y = 16; }
-  });
-
-  y += 14;
-  doc.setDrawColor(0);
-  doc.line(14, y, 74, y);
-  y += 5;
-  doc.setFontSize(10); doc.setFont(undefined, 'normal'); doc.setTextColor(0);
-  doc.text('Unterschrift Fahrer', 14, y);
-
-  y += 10;
-  doc.setFontSize(8); doc.setTextColor(120);
-  doc.text('Gesamtstunden Monat: ' + whFmtHMBu(total) + '  ·  Erstellt am: ' + new Date().toLocaleString('de-AT'), 14, y);
-
-  doc.save('Arbeitszeit_' + empName.replace(/\s+/g,'_') + '_' + monthKey + '.pdf');
+function wtDayInfo(emp, day) {
+  var leave = whDayLeavePeriod(emp, day);
+  var entry = leave ? null : whDayEntry(emp, day);
+  var hol = wtHolidayName(day);
+  var st = leave ? leave.type : (entry ? '' : (hol ? 'feiertag' : ''));
+  return {leave: leave, entry: entry, hol: hol, st: st, locked: !!(leave && leave.from !== leave.to), auto: !leave && !entry && !!hol};
 }
 
-// ── Anlagevermögen ──
-function instForBu(id) { return id ? (buData.installments || []).find(function(i){ return i.id === id; }) : null; }
-function renderAssetsHtml() {
-  var vehicles = (buData.fleet||[]).filter(function(v){ return v.acqType && v.acqType !== 'rentOnly'; });
-  var general = buData.assets || [];
-  var totalValue = 0;
-  var h = '<div class="card"><div class="card-title">Anlagevermögen &amp; Ausschreibung</div>';
-  h += '<table><tr><th>Name</th><th>Kaufpreis (Netto)</th><th>Datum</th><th>MwSt.</th><th>Rest (Ausschr.)</th><th>Fortschritt</th></tr>';
-  function row(name, price, date, vat, inst) {
-    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
-    var progress = inst ? (inst.monthsPosted + '/' + inst.totalMonths) : '—';
-    totalValue += (parseFloat(price)||0);
-    h += '<tr><td>' + escHtmlBu(name) + '</td><td>' + fmtBu(price) + '</td><td>' + fmtDateBu(date) + '</td><td>' + (vat||0) + '%</td><td>' + (remaining != null ? fmtBu(remaining) : '—') + '</td><td>' + progress + '</td></tr>';
+function wtMonthStats(emp, monthKey) {
+  var s = {hours: 0, workDays: 0, urlaub: 0, krank: 0, karenz: 0, feiertag: 0};
+  whDaysInMonth(monthKey).forEach(function(day) {
+    var i = wtDayInfo(emp, day);
+    if(i.st === 'urlaub') s.urlaub++;
+    else if(i.st === 'krankenstand') s.krank++;
+    else if(i.st === 'karenz') s.karenz++;
+    else if(i.st === 'feiertag') s.feiertag++;
+    else if(i.entry) { var h = whComputeHours(i.entry); if(h > 0) { s.hours += h; s.workDays++; } }
+  });
+  return s;
+}
+
+function wtVacation(emp, monthKey) {
+  var res = {hasHire: !!emp.startDate, months: 0, used: 0, factor: parseFloat(emp.vacationFactor) || 2.08};
+  if(!emp.startDate) { res.entitled = 0; res.rest = 0; return res; }
+  var hm = emp.startDate.substring(0, 7);
+  var hy = +hm.substring(0, 4), hmo = +hm.substring(5, 7), y = +monthKey.substring(0, 4), m = +monthKey.substring(5, 7);
+  res.months = Math.max(0, (y - hy) * 12 + (m - hmo) + 1);
+  var lastDay = monthKey + '-' + pad2(new Date(y, m, 0).getDate());
+  (emp.leavePeriods || []).forEach(function(lp) {
+    if(lp.type !== 'urlaub') return;
+    var a = new Date(lp.from + 'T00:00:00'), b = new Date(lp.to + 'T00:00:00');
+    for(var d = new Date(a); d <= b; d.setDate(d.getDate() + 1)) {
+      var iso = d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+      if(iso < emp.startDate || iso > lastDay) continue;
+      var dw = d.getDay();
+      if(dw === 0 || dw === 6) continue;
+      if(lp.from !== lp.to && wtHolidayName(iso)) continue;
+      res.used++;
+    }
+  });
+  res.entitled = res.months * res.factor;
+  res.rest = res.entitled - res.used;
+  return res;
+}
+
+function vatBreakdown(amount, rate) {
+  var netto = amount / (1 + rate / 100);
+  return {brutto: amount, netto: netto, steuer: amount - netto};
+}
+
+
+// ── state ───────────────────────────────────────────────────────────────────
+var S = {clientId: null, data: null, view: 'home', year: new Date().getFullYear(), month: new Date().getMonth(), tab: 'income', ts: {empId: null, month: null}};
+var $ = function(id) { return document.getElementById(id); };
+function show(id) { ['screenLogin', 'screenClients', 'screenApp'].forEach(function(s) { $(s).style.display = s === id ? (s === 'screenApp' ? 'block' : 'flex') : 'none'; }); }
+
+// ── login / client list ─────────────────────────────────────────────────────
+function buLogin() {
+  var u = ($('buUser').value || '').trim(), p = $('buPass').value || '';
+  $('loginError').textContent = '';
+  BuApi.login(u, p).then(function() { sessionStorage.setItem('bu_loggedin', '1'); buShowClients(); }, function(e) { $('loginError').textContent = e.message; });
+}
+function buLogout() {
+  ['bu_loggedin', 'bu_account', 'bu_token'].forEach(function(k) { sessionStorage.removeItem(k); });
+  S.clientId = null; S.data = null;
+  $('buUser').value = ''; $('buPass').value = '';
+  show('screenLogin');
+}
+function buShowClients() {
+  sessionStorage.removeItem('bu_account');
+  show('screenClients');
+  BuApi.listClients().then(function(list) {
+    $('clientsError').textContent = list.length ? '' : (BuApi.mode === 'local'
+      ? 'Keine Geschäftskonten in diesem Browser gefunden. Zuerst in der Haupt-App anmelden.' : 'Noch hat kein Mandant Ihnen Zugriff freigegeben.');
+    $('clientList').innerHTML = list.map(function(c) {
+      return '<li class="acct-item" onclick="buSelectClient(\'' + jq(c.id) + '\')"><span class="acct-avatar">' + esc((c.name || '?').charAt(0).toUpperCase()) + '</span>'
+        + '<span><span class="acct-name">' + esc(c.name) + '</span><br><span class="acct-user">' + esc(c.sub || '') + '</span></span></li>';
+    }).join('');
+  }, function() { $('clientsError').textContent = 'Mandanten konnten nicht geladen werden.'; });
+}
+function buSelectClient(id) {
+  BuApi.loadClient(id).then(function(d) {
+    S.clientId = id; S.data = d; S.view = 'home'; S.year = new Date().getFullYear(); S.month = new Date().getMonth(); S.tab = 'income';
+    sessionStorage.setItem('bu_account', id);
+    $('tbClient').textContent = (d.businessName || id) + (d.businessTaxId ? ' · ' + d.businessTaxId : '');
+    show('screenApp'); render(); BuApi.audit(id, 'open_client');
+  }, function() { alert('Daten konnten nicht geladen werden.'); });
+}
+
+// ── numbers ─────────────────────────────────────────────────────────────────
+function txs() { return S.data.transactions || []; }
+function hasTime(tx) { return tx && tx.date; }
+function split(tx) { var v = vatBreakdown(tx.amount, tx.vatRate || 0); return v; }
+// unbooked fixed rows exist only for the current/future months (earlier ones were booked as real transactions)
+function fixedRows(type, y, m) {
+  var key = y + '-' + pad2(m + 1), now = new Date(), nk = now.getFullYear() + '-' + pad2(now.getMonth() + 1);
+  if(key < nk) return [];
+  var rows = [];
+  function add(src, name, amount, vat, day) {
+    if(src.lastRecorded === key) return;
+    var a = parseFloat(amount) || 0; if(a <= 0) return;
+    rows.push({name: name, amount: a, vatRate: parseFloat(vat) || 0, day: parseInt(day, 10) || 1, fixed: true});
   }
-  vehicles.forEach(function(v) { row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetVatRate, instForBu(v.installmentId)); });
-  general.forEach(function(a) { row(a.name, a.value, a.purchaseDate, a.vatRate, instForBu(a.installmentId)); });
-  if(!vehicles.length && !general.length) h += '<tr><td colspan="6" style="text-align:center;color:var(--text3)">Keine Anlagegüter erfasst</td></tr>';
-  h += '<tr style="font-weight:800"><td colspan="1">Summe</td><td>' + fmtBu(totalValue) + '</td><td colspan="4"></td></tr>';
-  h += '</table><div class="disclaimer">Für Planungszwecke — keine Steuerberatung.</div></div>';
+  if(type === 'expense') {
+    (S.data.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
+    (S.data.employees || []).forEach(function(e) { add(e, 'Gehalt · ' + (e.name || e.fullName || ''), e.salary, 0, 1); });
+  } else (S.data.fixedIncome || []).forEach(function(f) { add(f, f.name, f.amount, f.vatRate, f.day); });
+  return rows.sort(function(a, b) { return a.day - b.day; });
+}
+function sumRows(rows) { var g = 0, n = 0; rows.forEach(function(r) { var v = vatBreakdown(r.amount, r.vatRate || 0); g += v.brutto; n += v.netto; }); return {brutto: g, netto: n, steuer: g - n}; }
+function monthTotals(y, m) {
+  var pre = y + '-' + pad2(m + 1), net = 0, vat = 0;
+  txs().forEach(function(t) { if(!hasTime(t) || t.date.substring(0, 7) !== pre) return; var v = split(t), k = t.type === 'income' ? 1 : -1; net += k * v.netto; vat += k * v.steuer; });
+  [['income', 1], ['expense', -1]].forEach(function(p) { var s = sumRows(fixedRows(p[0], y, m)); net += p[1] * s.netto; vat += p[1] * s.steuer; });
+  return {net: net, vat: vat, total: net - vat};
+}
+function carryIn(y, m) {
+  var net = 0, vat = 0;
+  txs().forEach(function(t) {
+    if(!hasTime(t)) return;
+    if(parseInt(t.date.substring(0, 4), 10) !== y || parseInt(t.date.substring(5, 7), 10) - 1 >= m) return;
+    var v = split(t), k = t.type === 'income' ? 1 : -1; net += k * v.netto; vat += k * v.steuer;
+  });
+  return {net: net, vat: vat, total: net - vat};
+}
+function monthHasData(y, m) {
+  var pre = y + '-' + pad2(m + 1);
+  return txs().some(function(t) { return hasTime(t) && t.date.substring(0, 7) === pre; }) || fixedRows('income', y, m).length || fixedRows('expense', y, m).length;
+}
+function card3(title, c) {
+  return '<div class="card3"><div class="t">' + esc(title) + '</div>'
+    + '<div><div class="l">Netto</div><div class="v num ' + cls(c.net) + '">' + sgn(c.net) + '</div></div>'
+    + '<div><div class="l">Steuer (USt)</div><div class="v num ' + cls(-c.vat) + '">' + sgn(-c.vat) + '</div></div>'
+    + '<div><div class="l">Total</div><div class="v num ' + cls(c.total) + '">' + sgn(c.total) + '</div></div></div>';
+}
+
+// ── views ───────────────────────────────────────────────────────────────────
+function go(v) { S.view = v; render(); window.scrollTo(0, 0); }
+function render() {
+  var f = {home: viewHome, month: viewMonth, employees: viewEmployees, gov: viewGov}[S.view] || viewHome;
+  $('view').innerHTML = f();
+}
+function header(title, extra) { return '<div class="ph"><button class="back" onclick="go(\'' + (S.view === 'month' || S.view === 'employees' || S.view === 'gov' ? 'home' : 'home') + '\')">&#8592;</button><h1>' + esc(title) + '</h1>' + (extra || '') + '</div>'; }
+
+function viewHome() {
+  var d = S.data, y = S.year, emp = (d.employees || []).length, gov = (d.contacts || []).filter(function(c) { return c && c.type === 'government'; }).length;
+  var tile = function(ic, label, sub, click) { return '<button class="hp-nav" onclick="' + click + '"><span class="hp-ico">' + ic + '</span><span class="hp-lbl">' + label + '<span class="hp-sub">' + sub + '</span></span><span class="hp-car">&rsaquo;</span></button>'; };
+  var I = {
+    emp: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+    gov: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V10m4 11V10m6 11V10m4 11V10M2 10l10-7 10 7"/></svg>',
+    pkg: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="18"/><polyline points="9 15 12 18 15 15"/></svg>'
+  };
+  var months = '';
+  for(var m = 0; m < 12; m++) {
+    var has = monthHasData(y, m), mt = monthTotals(y, m), isNow = (y === new Date().getFullYear() && m === new Date().getMonth());
+    months += '<button class="mo' + (has ? '' : ' empty') + (isNow ? ' now' : '') + '" onclick="openMonth(' + m + ')"><span>' + MON[m] + '</span>'
+      + (has ? '<small class="num ' + (isNow ? '' : cls(mt.net)) + '">' + sgn(mt.net) + '</small>' : '') + '</button>';
+  }
+  return '<div class="ph"><h1 style="font-size:20px">' + esc(d.businessName || '') + '</h1></div>'
+    + '<div class="hp-wrap"><div class="hp-fixed"><div class="hp-hd">Unterlagen</div>'
+    + tile(I.pkg, 'Steuerberater-Paket', 'PDF mit Belegen + Excel', 'buOpenPkg()')
+    + tile(I.emp, 'Mitarbeiter', emp + (emp === 1 ? ' Person' : ' Personen') + ' · Stunden &amp; Urlaub', "go('employees')")
+    + tile(I.gov, 'Behörden', gov + ' Einträge · Zahlungen', "go('gov')")
+    + '</div><div class="hp-pick"><div class="yr"><button onclick="S.year--;render()">&#9650;</button><b class="num">' + y + '</b><button onclick="S.year++;render()">&#9660;</button></div>' + months + '</div></div>';
+}
+function openMonth(m) { S.month = m; S.tab = 'income'; go('month'); BuApi.audit(S.clientId, 'view_month', S.year + '-' + pad2(m + 1)); }
+
+function monthRowsFor(type) {
+  var pre = S.year + '-' + pad2(S.month + 1);
+  var booked = txs().filter(function(t) { return hasTime(t) && t.type === type && t.date.substring(0, 7) === pre; })
+    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+  return {booked: booked, fixed: fixedRows(type, S.year, S.month)};
+}
+function attachOf(tx) { return tx.invoice ? 'inline' : (tx.receiptId ? 'file' : ''); }
+function rowHtml(name, dateIso, gross, rate, color, sign, att, idx, fixed, day) {
+  var v = vatBreakdown(gross, rate || 0);
+  var dt = fixed ? pad2(day) + '.' + pad2(S.month + 1) + '.' + S.year : deDate(dateIso);
+  return '<div class="row"' + (att ? ' style="cursor:pointer" onclick="openAttachment(\'' + att + '\',' + idx + ')"' : '') + '>'
+    + '<span class="nm">' + esc(name) + (att ? ' &#128206;' : '') + '</span><span class="dt' + (fixed ? ' fix' : '') + '">' + dt + '</span>'
+    + '<span class="am num" style="color:' + color + '">' + sign + eur(gross) + '</span>'
+    + '<span class="sub num"><i>Netto ' + eur(v.netto) + '</i><i>USt ' + (rate || 0) + '% ' + eur(v.steuer) + '</i><i>Total ' + eur(v.brutto) + '</i></span></div>';
+}
+function viewMonth() {
+  var y = S.year, m = S.month, type = S.tab, inc = type === 'income', color = inc ? 'var(--income)' : 'var(--expense)', sign = inc ? '+' : '−';
+  var r = monthRowsFor(type), docs = r.booked.filter(function(t) { return attachOf(t); });
+  window._bookedList = r.booked;
+  var rcpt = '<div class="rc-title">Belege (' + docs.length + ')</div>' + (docs.length ? docs.map(function(t, i) {
+    var idx = r.booked.indexOf(t);
+    return '<button class="rc" onclick="openAttachment(\'' + attachOf(t) + '\',' + idx + ')"><span class="rc-n">' + (i + 1) + '</span><span class="rc-t">' + esc(t.name) + '<span class="rc-a num" style="color:' + color + '">' + sign + eur(t.amount) + '</span></span></button>';
+  }).join('') : '<div class="empty-msg" style="padding:8px 0;text-align:left">Keine Belege.</div>');
+  function grp(title, rows, isFixed) {
+    if(!rows.length) return '';
+    var sum = sumRows(isFixed ? rows : rows.map(function(t) { return {amount: t.amount, vatRate: t.vatRate || 0}; })).brutto;
+    return '<div class="grp-h"><span>' + title + '</span><span class="num" style="color:' + color + '">' + sign + eur(sum) + '</span></div>'
+      + rows.map(function(t, i) {
+        return isFixed ? rowHtml(t.name, '', t.amount, t.vatRate, color, sign, '', 0, true, t.day)
+                       : rowHtml(t.name, t.date, t.amount, t.vatRate, color, sign, attachOf(t), r.booked.indexOf(t), false, 0);
+      }).join('');
+  }
+  var body = grp(inc ? 'Fixe Einnahmen · offen' : 'Fixzahlungen · offen', r.fixed, true) + grp(inc ? 'Übrige Einnahmen' : 'Übrige Ausgaben', r.booked, false);
+  if(!body) body = '<div class="empty-msg">Keine Buchungen in diesem Monat.</div>';
+  return '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>' + MON[m] + '</h1><span class="chip num">' + y + '</span></div>'
+    + card3('Saldo der Vormonate', carryIn(y, m)) + card3('Dieser Monat', monthTotals(y, m))
+    + '<div class="tabs"><button class="inc' + (inc ? ' on' : '') + '" onclick="S.tab=\'income\';render()">Einnahmen</button><button class="exp' + (!inc ? ' on' : '') + '" onclick="S.tab=\'expense\';render()">Ausgaben</button></div>'
+    + '<div class="split"><div>' + rcpt + '</div><div>' + body + '</div></div>';
+}
+
+// ── attachments ─────────────────────────────────────────────────────────────
+var _vUrl = null, _vName = 'Beleg';
+function dataUrlToBlob(u) {
+  var m = /^data:([^;,]+)[^,]*;base64,(.*)$/.exec(u || ''); if(!m) return null;
+  var bin = atob(m[2]), b = new Uint8Array(bin.length); for(var i = 0; i < bin.length; i++) b[i] = bin.charCodeAt(i);
+  return new Blob([b], {type: m[1]});
+}
+function openAttachment(kind, idx) {
+  var t = window._bookedList[idx]; if(!t) return;
+  getAttachment(t).then(function(a) {
+    if(!a) { alert('Beleg nicht gefunden.'); return; }
+    viewBlob(a.blob, t.invoiceName || (t.name + (a.type === 'application/pdf' ? '.pdf' : '')));
+    BuApi.audit(S.clientId, 'download_file', String(t.id));
+  });
+}
+function getAttachment(t) {
+  if(t.invoice) { var b = dataUrlToBlob(t.invoice); return Promise.resolve(b ? {blob: b, type: b.type} : null); }
+  if(t.receiptId) return BuApi.getFile(S.clientId, 'receipt', t.receiptId).then(function(rec) { return rec && rec.blob ? {blob: rec.blob, type: rec.type || rec.blob.type, name: rec.name} : null; });
+  return Promise.resolve(null);
+}
+function viewBlob(blob, name) {
+  buCloseViewer();
+  _vUrl = URL.createObjectURL(blob); _vName = name || 'Beleg';
+  var isPdf = (blob.type || '').indexOf('pdf') >= 0;
+  $('viewerContent').innerHTML = isPdf ? '<iframe src="' + _vUrl + '" style="width:92vw;height:86vh;border:none;background:#fff;border-radius:12px"></iframe>'
+    : '<img src="' + _vUrl + '" style="max-width:92vw;max-height:86vh;border-radius:12px;background:#fff"/>';
+  $('viewer').classList.add('open');
+}
+function buViewerDownload() { if(!_vUrl) return; var a = document.createElement('a'); a.href = _vUrl; a.download = _vName; a.click(); }
+function buCloseViewer() { $('viewer').classList.remove('open'); $('viewerContent').innerHTML = ''; if(_vUrl) { URL.revokeObjectURL(_vUrl); _vUrl = null; } }
+
+// ── employees ───────────────────────────────────────────────────────────────
+function empName(e) { return e.fullName || e.name || ''; }
+function viewEmployees() {
+  var list = S.data.employees || [], mk = new Date().toISOString().substring(0, 7);
+  var h = '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>Mitarbeiter</h1></div>';
+  if(!list.length) return h + '<div class="empty-msg">Keine Mitarbeiter erfasst.</div>';
+  list.forEach(function(e) {
+    var st = wtMonthStats(e, mk), vac = wtVacation(e, mk);
+    h += '<div class="list-card click" onclick="openTimesheet(' + e.id + ')"><div class="lc-top"><div><div class="lc-name">' + esc(empName(e)) + '</div><div class="lc-sub">' + esc(e.position || '') + (e.startDate ? ' · Eintritt ' + deDate(e.startDate) : '') + '</div></div><span class="hp-car">&rsaquo;</span></div>'
+      + '<div class="kv num"><div>Stunden ' + MON3[+mk.substring(5, 7) - 1] + '<b>' + deNum(st.hours) + ' h</b></div><div>Arbeitstage<b>' + st.workDays + '</b></div><div>Urlaub / Krank<b>' + st.urlaub + ' / ' + st.krank + '</b></div><div>Resturlaub<b>' + (vac.hasHire ? deNum(vac.rest) + ' Tage' : '—') + '</b></div></div></div>';
+  });
+  return h;
+}
+function openTimesheet(id) { S.ts.empId = id; S.ts.month = S.ts.month || new Date().toISOString().substring(0, 7); renderTs(); $('tsOv').classList.add('open'); BuApi.audit(S.clientId, 'view_timesheet', String(id)); }
+function tsShift(d) {
+  var p = S.ts.month.split('-'), dt = new Date(+p[0], +p[1] - 1 + d, 1);
+  S.ts.month = dt.getFullYear() + '-' + pad2(dt.getMonth() + 1); renderTs();
+}
+var LEAVE_L = {urlaub: 'Urlaub', krankenstand: 'Krankenstand', karenz: 'Karenz', feiertag: 'Feiertag'};
+function renderTs() {
+  var e = (S.data.employees || []).filter(function(x) { return x.id === S.ts.empId; })[0]; if(!e) return;
+  var mk = S.ts.month, st = wtMonthStats(e, mk), vac = wtVacation(e, mk);
+  var h = '<div class="ph"><button class="back" onclick="$(\'tsOv\').classList.remove(\'open\')">&#8592;</button><h1>' + esc(empName(e)) + '</h1></div>'
+    + '<div class="ts-nav"><button onclick="tsShift(-1)">&#8249;</button><div class="ts-m">' + MON[+mk.substring(5, 7) - 1] + ' ' + mk.substring(0, 4) + '</div><button onclick="tsShift(1)">&#8250;</button></div>'
+    + '<div class="ts-stats num"><div>Arbeitsstunden<b>' + deNum(st.hours) + ' h</b></div><div>Arbeitstage<b>' + st.workDays + '</b></div><div>Urlaub / Krank / Karenz<b>' + st.urlaub + ' / ' + st.krank + ' / ' + st.karenz + '</b></div><div>Resturlaub<b>' + (vac.hasHire ? deNum(vac.rest) : '—') + '</b></div></div>'
+    + (vac.hasHire ? '<div style="font-size:12px;color:var(--text3);margin:-4px 0 12px">Urlaubsanspruch: ' + vac.months + ' Monate × ' + deNum(vac.factor) + ' = ' + deNum(vac.entitled) + ' Tage · verbraucht ' + vac.used + '</div>' : '')
+    + '<div class="ts-card">';
+  whDaysInMonth(mk).forEach(function(day) {
+    var i = wtDayInfo(e, day), dow = new Date(+day.substring(0, 4), +day.substring(5, 7) - 1, +day.substring(8)).getDay();
+    var hrs = i.entry ? whComputeHours(i.entry) : 0, label = '';
+    if(i.st) label = '<span class="st st-' + i.st + '">' + (LEAVE_L[i.st] || i.st) + '</span>' + (i.leave && i.leave.docId ? ' <a href="#" onclick="openEmpDoc(\'' + jq(i.leave.docId) + '\');return false" style="color:var(--primary)">Beleg</a>' : '');
+    else if(i.entry) label = (i.entry.start || '') + ' – ' + (i.entry.end || '') + (i.entry.breakMinutes ? ' · Pause ' + i.entry.breakMinutes + ' min' : '');
+    h += '<div class="ts-row num' + ((dow === 0 || dow === 6) ? ' wk' : '') + '"><span>' + pad2(+day.substring(8)) + '.' + day.substring(5, 7) + '.</span><span>' + WD[dow] + '</span><span>' + label + '</span><span style="text-align:right;font-weight:700">' + (hrs > 0 ? deNum(hrs) + ' h' : '') + '</span>'
+      + (i.hol ? '<div class="ts-hol">&#127881; ' + esc(i.hol) + '</div>' : '') + '</div>';
+  });
+  $('tsBody').innerHTML = h + '</div>';
+}
+function openEmpDoc(id) { BuApi.getFile(S.clientId, 'empdoc', isNaN(+id) ? id : +id).then(function(r) { if(r && r.blob) viewBlob(r.blob, r.name || 'Beleg'); else alert('Dokument nicht gefunden.'); }); }
+
+// ── government entities ─────────────────────────────────────────────────────
+function govTxMatches(tx, c) {
+  if(!tx || tx.type !== 'expense') return false;
+  if(tx.govId != null) return tx.govId === c.id;
+  var n = (c.name || '').toLowerCase().trim(); if(!n) return false;
+  var hay = ((tx.name || '') + ' ' + (tx.supplierName || '')).toLowerCase();
+  if(hay.indexOf(n) >= 0) return true;
+  var first = n.split(/\s+/)[0]; if(first.length < 3) return false;
+  return new RegExp('(^|[^a-zäöüß])' + first.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '($|[^a-zäöüß])').test(hay);
+}
+function viewGov() {
+  var ents = (S.data.contacts || []).filter(function(c) { return c && c.type === 'government'; });
+  var h = '<div class="ph"><button class="back" onclick="go(\'home\')">&#8592;</button><h1>Behörden</h1></div>';
+  if(!ents.length) return h + '<div class="empty-msg">Keine Behörden erfasst.</div>';
+  var y = S.year, m = new Date().getMonth();
+  ents.forEach(function(c) {
+    var pays = txs().filter(function(t) { return govTxMatches(t, c); }).sort(function(a, b) { return (b.date || '').localeCompare(a.date || ''); });
+    var ty = 0, tm = 0;
+    pays.forEach(function(t) { var a = parseFloat(t.amount) || 0; if(parseInt(t.date.substring(0, 4), 10) === y) { ty += a; if(parseInt(t.date.substring(5, 7), 10) - 1 === m) tm += a; } });
+    h += '<div class="list-card"><div class="lc-top"><div><div class="lc-name">' + esc(c.name) + '</div><div class="lc-sub">' + pays.length + ' Zahlung' + (pays.length === 1 ? '' : 'en') + '</div></div></div>'
+      + '<div class="kv num"><div>Dieses Jahr (' + y + ')<b>' + eur(ty) + '</b></div><div>Dieser Monat<b>' + eur(tm) + '</b></div></div>'
+      + pays.slice(0, 6).map(function(t) { return '<div class="pay num"><span>' + deDate(t.date) + ' · ' + esc(t.name) + '</span><b>' + eur(parseFloat(t.amount) || 0) + '</b></div>'; }).join('') + '</div>';
+  });
   return h;
 }
 
-// ── Downloads ──
-function renderDownloadsHtml() {
-  var h = '<div class="card"><div class="card-title">Berichte herunterladen</div>';
-  h += '<button class="dl-btn" onclick="downloadUvaPdf()">' + svgIconBu('download',14) + ' UVA als PDF</button>';
-  h += '<button class="dl-btn" onclick="downloadTransactionsCsv()">' + svgIconBu('download',14) + ' Transaktionen als CSV</button>';
-  h += '<button class="dl-btn" onclick="downloadAssetsPdf()">' + svgIconBu('download',14) + ' Anlagevermögen als PDF</button>';
-  if(buData.businessType === 'retail') h += '<button class="dl-btn" onclick="downloadInventoryPdf()">' + svgIconBu('download',14) + ' Lagerbestand als PDF</button>';
-  h += '<div class="disclaimer">Alle Berichte werden lokal aus den Daten im Browser des Unternehmers erzeugt.</div>';
-  h += '</div>';
-  return h;
+// ── package ─────────────────────────────────────────────────────────────────
+function buOpenPkg() {
+  $('pkgSheet').innerHTML = '<div class="sheet-hd"><h2>Steuerberater-Paket</h2><button class="x" onclick="buClosePkg()">&times;</button></div>'
+    + '<div style="font-size:12px;color:var(--text3);margin-bottom:14px">PDF mit allen Belegen (Einnahmen und Ausgaben) + Excel mit den Zahlen für den gewählten Zeitraum.</div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:10px"><label class="fld">Von<input type="month" id="pkFrom"></label><label class="fld">Bis<input type="month" id="pkTo"></label></div>'
+    + '<div style="margin-bottom:12px"><button class="pre" onclick="pkPreset(\'month\')">Dieser Monat</button><button class="pre" onclick="pkPreset(\'quarter\')">Dieses Quartal</button><button class="pre" onclick="pkPreset(\'year\')">Dieses Jahr</button></div>'
+    + '<button class="btn p" onclick="pkBuild(\'pdf\')">PDF mit Belegen</button><button class="btn o" onclick="pkBuild(\'xlsx\')">Excel (Zahlen)</button><button class="btn g" onclick="pkBuild(\'csv\')">CSV für Import</button>'
+    + '<div id="pkStatus" style="font-size:12px;color:var(--text3);margin-top:12px;min-height:16px"></div>';
+  $('pkgOv').classList.add('open'); pkPreset('month');
 }
-function downloadUvaPdf() {
-  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var key = buUvaPeriod || uvaKeyForDateBu(todayBu(), buUvaInterval);
-  var u = computeUvaBu(key, buUvaInterval);
-  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  var y = 20;
-  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('UVA — ' + (buData.businessName||''), 14, y); y+=8;
-  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text('Zeitraum: ' + uvaKeyLabelBu(key), 14, y); y+=10;
-  [['KZ 000', u.kz000], ['KZ 022 (20%)', u.salesNetto[20]+' / '+u.salesUst[20]], ['KZ 006 (13%)', u.salesNetto[13]+' / '+u.salesUst[13]],
-   ['KZ 029 (10%)', u.salesNetto[10]+' / '+u.salesUst[10]], ['Summe USt', u.sumUst], ['KZ 060 Vorsteuer', u.vorsteuer],
-   [u.zahllast<0?'KZ 095 Gutschrift':'KZ 095 Zahllast', Math.abs(u.zahllast)]].forEach(function(r) {
-    doc.text(String(r[0]), 14, y); doc.text(String(r[1]), 190, y, {align:'right'}); y+=7;
-  });
-  doc.save('UVA_' + key + '.pdf');
+function buClosePkg() { $('pkgOv').classList.remove('open'); }
+function pkPreset(k) {
+  var n = new Date(), y = n.getFullYear(), m = n.getMonth() + 1, a, b;
+  if(k === 'quarter') { var q = Math.floor((m - 1) / 3); a = y + '-' + pad2(q * 3 + 1); b = y + '-' + pad2(q * 3 + 3); }
+  else if(k === 'year') { a = y + '-01'; b = y + '-12'; } else { a = b = y + '-' + pad2(m); }
+  $('pkFrom').value = a; $('pkTo').value = b;
 }
-function downloadTransactionsCsv() {
-  var rows = [['Datum','Beschreibung','Typ','Netto','MwSt %','Brutto']];
-  (buData.transactions||[]).forEach(function(tx) {
-    var b = vatBreakdownBu(tx.amount, tx.vatRate||0);
-    rows.push([fmtDateBu(tx.date), tx.name, tx.type, b.netto.toFixed(2), (tx.vatRate||0), b.brutto.toFixed(2)]);
-  });
-  var csv = rows.map(function(r){ return r.map(function(c){ return '"' + String(c).replace(/"/g,'""') + '"'; }).join(';'); }).join('\n');
-  var blob = new Blob(['﻿' + csv], {type:'text/csv;charset=utf-8'});
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a'); a.href = url; a.download = 'Transaktionen.csv'; a.click();
-  setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-}
-function downloadAssetsPdf() {
-  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var vehicles = (buData.fleet||[]).filter(function(v){ return v.acqType && v.acqType !== 'rentOnly'; });
-  var general = buData.assets || [];
-  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  var y = 20;
-  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Anlagevermögen — ' + (buData.businessName||''), 14, y); y += 8;
-  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
-
-  doc.setFont(undefined,'bold'); doc.setFontSize(9);
-  doc.text('Name', 14, y); doc.text('Kaufpreis (Netto)', 100, y, {align:'right'}); doc.text('Datum', 104, y);
-  doc.text('MwSt.', 155, y, {align:'right'}); doc.text('Rest (Ausschr.)', 196, y, {align:'right'});
-  y += 3; doc.line(14, y, 196, y); y += 5;
-  doc.setFont(undefined,'normal');
-
-  var totalValue = 0;
-  function row(name, price, date, vat, remaining) {
-    doc.setFontSize(9);
-    doc.text(String(name).substring(0,30), 14, y);
-    doc.text(fmtBu(price), 100, y, {align:'right'});
-    doc.text(String(date||''), 104, y);
-    doc.text((vat||0) + '%', 155, y, {align:'right'});
-    doc.text(remaining != null ? fmtBu(remaining) : '—', 196, y, {align:'right'});
-    y += 6;
-    if(y > 280) { doc.addPage(); y = 20; }
-  }
-  vehicles.forEach(function(v) {
-    var inst = instForBu(v.installmentId);
-    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
-    row((v.name||v.plate) + ' (Fahrzeug)', v.assetValue, v.assetPurchaseDate, v.assetVatRate, remaining);
-    totalValue += (v.assetValue || 0);
-  });
-  general.forEach(function(a) {
-    var inst = instForBu(a.installmentId);
-    var remaining = inst ? Math.max(0, inst.totalNetto - inst.monthlyNetto * inst.monthsPosted) : null;
-    row(a.name, a.value, a.purchaseDate, a.vatRate, remaining);
-    totalValue += (a.value || 0);
-  });
-
-  y += 2; doc.line(14, y, 196, y); y += 6;
-  doc.setFont(undefined,'bold');
-  doc.text('Summe', 14, y);
-  doc.text(fmtBu(totalValue), 100, y, {align:'right'});
-  y += 12;
-  doc.setFontSize(8); doc.setFont(undefined,'normal'); doc.setTextColor(120);
-  doc.text('Für Planungszwecke — keine Steuerberatung.', 14, y, {maxWidth:182});
-  doc.save('Anlagevermoegen_' + todayBu() + '.pdf');
-}
-function downloadInventoryPdf() {
-  var JsPdf = (window.jspdf && window.jspdf.jsPDF) ? window.jspdf.jsPDF : null;
-  if(!JsPdf) { alert('PDF-Bibliothek nicht verfügbar.'); return; }
-  var products = buData.inventory || [];
-  var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
-  var y = 20;
-  doc.setFontSize(16); doc.setFont(undefined,'bold'); doc.text('Lagerbestand — ' + (buData.businessName||''), 14, y); y += 8;
-  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.text(new Date().toLocaleDateString('de-AT'), 14, y); y += 10;
-
-  doc.setFont(undefined,'bold'); doc.setFontSize(9);
-  doc.text('Name', 14, y); doc.text('Menge', 100, y, {align:'right'}); doc.text('Verkaufspreis', 150, y, {align:'right'}); doc.text('Wert', 196, y, {align:'right'});
-  y += 3; doc.line(14, y, 196, y); y += 5;
-  doc.setFont(undefined,'normal');
-
-  var totalValue = 0;
-  products.forEach(function(p) {
-    var val = (parseFloat(p.purchasePrice)||0) * (parseFloat(p.quantity)||0);
-    totalValue += val;
-    doc.setFontSize(9);
-    doc.text(String(p.name).substring(0,40), 14, y);
-    doc.text(String(parseFloat(p.quantity)||0) + ' ' + (p.unit||''), 100, y, {align:'right'});
-    doc.text(fmtBu(p.sellPrice), 150, y, {align:'right'});
-    doc.text(fmtBu(val), 196, y, {align:'right'});
-    y += 6;
-    if(y > 280) { doc.addPage(); y = 20; }
-  });
-
-  y += 2; doc.line(14, y, 196, y); y += 6;
-  doc.setFont(undefined,'bold');
-  doc.text('Gesamtwert', 14, y);
-  doc.text(fmtBu(totalValue), 196, y, {align:'right'});
-  doc.save('Lagerbestand_' + todayBu() + '.pdf');
-}
-
-// ── read-only attachment viewers (same IndexedDB the main app writes to) ──
-// Read-only: never call indexedDB.open(name, version) with an explicit version,
-// because if the DB doesn't exist yet that call CREATES it — and the main app's
-// own open('name', 1) would then see a DB already at version 1 and skip its
-// onupgradeneeded, leaving the object store missing forever. So we only ever
-// connect to a DB that indexedDB.databases() confirms already exists, and we
-// open it with no version argument (always safe, never triggers an upgrade).
-function dbExists(dbName) {
-  if(!indexedDB.databases) return Promise.resolve(true); // older browsers: assume it exists, fail closed inside idbGet instead
-  return indexedDB.databases().then(function(list) {
-    return list.some(function(d){ return d.name === dbName; });
-  }).catch(function(){ return false; });
-}
-function idbGet(dbName, storeName, id) {
-  return dbExists(dbName).then(function(exists) {
-    if(!exists) return null;
-    return new Promise(function(resolve) {
-      var req = indexedDB.open(dbName);
-      req.onsuccess = function(e) {
-        var db = e.target.result;
-        if(!db.objectStoreNames.contains(storeName)) { db.close(); resolve(null); return; }
-        var r = db.transaction(storeName).objectStore(storeName).get(id);
-        r.onsuccess = function(){ db.close(); resolve(r.result); };
-        r.onerror = function(){ db.close(); resolve(null); };
-      };
-      req.onerror = function(){ resolve(null); };
-      req.onupgradeneeded = function(e) { e.target.transaction.abort(); }; // safety net: never let this connection create anything
+function pkBuild(kind) {
+  var from = $('pkFrom').value, to = $('pkTo').value, st = $('pkStatus'); if(!from || !to) return;
+  if(from > to) { var t = from; from = to; to = t; }
+  st.textContent = 'Wird erstellt…';
+  var emps = [];
+  (S.data.employees || []).forEach(function(e) {
+    TrabisPackage.monthRange(from, to).forEach(function(mk) {
+      var s = wtMonthStats(e, mk), v = wtVacation(e, mk);
+      if(!(s.hours > 0 || s.urlaub || s.krank || s.karenz)) return;
+      emps.push({name: empName(e), month: mk, hours: s.hours, workDays: s.workDays, urlaub: s.urlaub, krank: s.krank, karenz: s.karenz, feiertag: s.feiertag, entitled: v.entitled || 0, rest: v.rest || 0});
     });
-  }).catch(function(){ return null; });
-}
-function viewReceipt(id) { idbGet('smartac_receipts','receipts', id).then(showAttachment); }
-function viewEmpDoc(id) { idbGet('smartac_empdocs','docs', id).then(showAttachment); }
-var _viewerFilename = '';
-function attachmentExt(type) {
-  var map = {'application/pdf':'pdf', 'image/jpeg':'jpg', 'image/jpg':'jpg', 'image/png':'png', 'image/webp':'webp'};
-  return map[type] || 'jpg';
-}
-function showAttachment(rec) {
-  if(!rec || !rec.blob) { alert('Anhang nicht gefunden (evtl. auf einem anderen Gerät gespeichert).'); return; }
-  var url = URL.createObjectURL(rec.blob);
-  var content = rec.type === 'application/pdf'
-    ? '<iframe src="' + url + '" style="width:90vw;height:88vh;border:none;background:#fff;border-radius:12px"></iframe>'
-    : '<img src="' + url + '" style="max-width:90vw;max-height:88vh;border-radius:12px"/>';
-  document.getElementById('viewerContent').innerHTML = content;
-  document.getElementById('viewerOverlay').classList.add('open');
-  document.getElementById('viewerOverlay').dataset.url = url;
-  _viewerFilename = (rec.name ? rec.name.replace(/\.[^.]+$/, '') : 'Beleg') + '.' + attachmentExt(rec.type);
-  document.getElementById('viewerDownload').style.display = 'flex';
-}
-function downloadAttachment() {
-  var ov = document.getElementById('viewerOverlay');
-  if(!ov.dataset.url) return;
-  var a = document.createElement('a');
-  a.href = ov.dataset.url; a.download = _viewerFilename; a.click();
-}
-function closeViewer() {
-  var ov = document.getElementById('viewerOverlay');
-  ov.classList.remove('open');
-  document.getElementById('viewerDownload').style.display = 'none';
-  if(ov.dataset.url) { URL.revokeObjectURL(ov.dataset.url); delete ov.dataset.url; }
-  document.getElementById('viewerContent').innerHTML = '';
+  });
+  var rows = txs().map(function(t) { return {id: t.id, type: t.type, name: t.name, amount: t.amount, vatRate: t.vatRate || 0, date: t.date, invoice: t.invoice, receiptId: t.receiptId, category: t.category || '', party: t.clientName || t.supplierName || ''}; });
+  TrabisPackage.build({
+    company: {name: S.data.businessName, address: S.data.businessAddress, taxId: S.data.businessTaxId}, from: from, to: to, transactions: rows, employees: emps,
+    getAttachment: function(tx) { return getAttachment(tx).then(function(a) { return a ? a.blob.arrayBuffer().then(function(ab) { return {bytes: new Uint8Array(ab), type: a.type}; }) : null; }); },
+    want: {pdf: kind === 'pdf', xlsx: kind === 'xlsx', csv: kind === 'csv'}
+  }).then(function(r) {
+    if(!r.counts.income && !r.counts.expense) { st.textContent = 'Keine Buchungen in diesem Zeitraum.'; return; }
+    if(kind === 'pdf') TrabisPackage.download(r.pdf, r.base + '.pdf', 'application/pdf');
+    if(kind === 'xlsx') TrabisPackage.download(r.xlsx, r.base + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    if(kind === 'csv') TrabisPackage.download(r.csv, r.base + '.csv', 'text/csv;charset=utf-8');
+    st.textContent = 'Fertig — Datei heruntergeladen.'; BuApi.audit(S.clientId, 'export_package', from + '..' + to + ' ' + kind);
+  }).catch(function(e) { st.textContent = 'Fehler: ' + (e && e.message || e); });
 }
 
-// ── Einstellungen / Rechtliches ──
-function renderSettingsHtml() {
-  var h = '<div class="card"><div class="card-title">Rechtliches</div>';
-  h += '<button class="dl-btn" onclick="buOpenPrivacy()">' + svgIconBu('fileText',14) + ' Datenschutzrichtlinie</button>';
-  h += '<button class="dl-btn" onclick="buOpenTerms()">' + svgIconBu('fileText',14) + ' Nutzungsbedingungen</button>';
-  h += '<button class="dl-btn" onclick="buOpenImpressum()">' + svgIconBu('fileText',14) + ' Impressum</button>';
-  h += '</div>';
-  h += '<div class="card"><div class="card-title">Über dieses Portal</div>';
-  h += '<div style="font-size:13px;color:var(--text2);line-height:1.7">Trabis Buchhalter-Portal — eine schreibgeschützte Ansicht für Steuerberater. Alle Daten werden ausschließlich lokal auf dem Gerät des Geschäftsinhabers gespeichert; es finden keine Datenübertragungen an externe Server statt.</div>';
-  h += '</div>';
-  return h;
-}
-function buOpenLegalOverlay(title, subtitle, contentHTML) {
-  document.getElementById('legalTitle').textContent = title;
-  document.getElementById('legalSub').textContent = subtitle;
-  document.getElementById('legalBody').innerHTML = contentHTML;
-  document.getElementById('legalOverlay').classList.add('open');
-  document.getElementById('legalOverlay').scrollTop = 0;
-}
-function closeLegalOverlay() {
-  document.getElementById('legalOverlay').classList.remove('open');
-}
-function buOpenTerms() {
-  var h = '';
-  h += '<h2>1. Geltungsbereich</h2><p>Diese Nutzungsbedingungen gelten für den Zugang zum Trabis Buchhalter-Portal — einer schreibgeschützten Ansicht, die Ihnen von Ihrem Mandanten (dem Geschäftsinhaber) zur Verfügung gestellt wird.</p>';
-  h += '<h2>2. Nutzung des Portals</h2><p>Der Zugang gewährt eine reine Leseansicht der von Ihrem Mandanten in Trabis erfassten Geschäftsdaten. Sie dürfen diesen Zugang ausschließlich für die mit Ihrem Mandanten vereinbarten steuerlichen und buchhalterischen Zwecke nutzen.</p>';
-  h += '<h2>3. Vertraulichkeit der Zugangsdaten</h2><p>Sie sind dafür verantwortlich, die Ihnen mitgeteilten Zugangsdaten vertraulich zu behandeln und nicht an unbefugte Dritte weiterzugeben.</p>';
-  h += '<h2>4. Datenspeicherung</h2><p>Alle Daten werden ausschließlich lokal im Browser des Geräts gespeichert, auf dem Ihr Mandant Trabis verwendet (localStorage/IndexedDB). Smartordi OG erhebt, überträgt oder speichert keine dieser Daten auf externen Servern.</p>';
-  h += '<h2>5. Haftungsausschluss</h2><p>Die im Portal angezeigten Daten werden von Ihrem Mandanten erfasst und von Smartordi OG nicht auf Richtigkeit oder Vollständigkeit geprüft. Smartordi OG haftet nicht für Datenverlust, Fehler in den angezeigten Daten oder Schäden, die aus der Nutzung oder Nichtnutzung des Portals entstehen.</p>';
-  h += '<h2>6. Änderungen</h2><p>Smartordi OG behält sich das Recht vor, das Portal jederzeit ohne vorherige Ankündigung zu ändern, einzuschränken oder einzustellen.</p>';
-  h += '<h2>7. Anwendbares Recht</h2><p>Es gilt österreichisches Recht. Gerichtsstand ist das zuständige Gericht in Linz, Österreich.</p>';
-  h += '<h2>8. Kontakt</h2><p>Bei Fragen: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
-  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
-  buOpenLegalOverlay('Nutzungsbedingungen', 'Buchhalter-Portal · Stand: Juli 2026 · Smartordi OG', h);
-}
-function buOpenPrivacy() {
-  var h = '';
-  h += '<h2>1. Verantwortlicher</h2><p>Smartordi OG · Steingasse 6a, 4020 Linz · <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
-  h += '<h2>2. Welche Daten Sie einsehen können</h2><p>Über das Buchhalter-Portal können Sie die Geschäftsdaten einsehen, die Ihr Mandant in Trabis erfasst hat (Transaktionen, Rechnungen, Belege, Mitarbeiterdaten u. a.). Diese Daten gehören Ihrem Mandanten — Smartordi OG hat keinen Zugriff darauf und speichert sie nicht.</p>';
-  h += '<h2>3. Keine Datenübertragung an Dritte</h2><p>Trabis überträgt keine Daten an externe Server. Sämtliche Daten verbleiben ausschließlich auf dem Gerät Ihres Mandanten; ein Zugriff durch Smartordi OG oder Dritte ist technisch nicht möglich.</p>';
-  h += '<h2>4. Cookies und Tracking</h2><p>Das Portal verwendet keine Cookies und keine Tracking- oder Analysetechnologien.</p>';
-  h += '<h2>5. Rechte an den Daten</h2><p>Die angezeigten Daten gehören Ihrem Mandanten. Anfragen zu Auskunft, Berichtigung oder Löschung von Daten (DSGVO/GDPR) sind direkt an Ihren Mandanten zu richten, nicht an Smartordi OG. Als Steuerberater unterliegen Sie zusätzlich Ihren eigenen berufsrechtlichen Verschwiegenheitspflichten hinsichtlich der eingesehenen Daten.</p>';
-  h += '<h2>6. Datensicherheit</h2><p>Die Datensicherheit hängt vom Gerät Ihres Mandanten ab. Smartordi OG haftet nicht für Datenverlust durch Geräteausfall, gelöschte Browserdaten oder unbefugten Zugriff auf das Gerät.</p>';
-  h += '<h2>7. Kontakt</h2><p>Bei Fragen zum Datenschutz: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>';
-  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
-  buOpenLegalOverlay('Datenschutzrichtlinie', 'Buchhalter-Portal · Stand: Juli 2026 · Smartordi OG', h);
-}
-function buOpenImpressum() {
-  var h = '';
-  h += '<h2>Unternehmen</h2><p><strong>Smartordi OG</strong><br>Steingasse 6a, 4020 Linz<br>Firmenbuchnummer: FN 675586 i<br>Firmenbuchgericht: Landesgericht Linz<br>Rechtsform: Offene Gesellschaft (OG)</p>';
-  h += '<h2>Kontakt</h2><p>E-Mail: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a><br>Tel: <a href="tel:+436677624392">+43 667 762439293</a></p>';
-  h += '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
-  buOpenLegalOverlay('Impressum', 'Angaben gemäß § 5 ECG', h);
+// ── legal ───────────────────────────────────────────────────────────────────
+var LEGAL_FOOT = '<div class="legal-footer">© 2026 Smartordi OG · Steingasse 6a, 4020 Linz · FN 675586 i</div>';
+function buOpenLegal() {
+  $('legalBody').innerHTML = '<h1>Rechtliches</h1>'
+    + '<h2>Zugang und Nutzung</h2><p>Das Buchhalter-Portal bietet eine schreibgeschützte Ansicht der Geschäftsdaten, die Ihr Mandant ausdrücklich für Sie freigegeben hat. Der Zugang ist personenbezogen und darf nicht weitergegeben werden. Daten dürfen nur für die vereinbarte steuerliche Betreuung verwendet werden.</p>'
+    + '<h2>Datenschutz</h2><p>Verantwortlich: Smartordi OG, Steingasse 6a, 4020 Linz. Die Daten werden auf Servern in der EU (Frankfurt) verarbeitet. Sie sehen nur Daten freigegebener Mandanten; jeder Zugriff (Ansehen eines Monats, Download eines Belegs, Export) wird protokolliert und ist für den Mandanten einsehbar. Das Portal verwendet keine Tracking- oder Analysetechnologien. Anfragen zu Auskunft, Berichtigung oder Löschung richten Sie bitte an Ihren Mandanten bzw. an <a href="mailto:team@smartordi.eu">team@smartordi.eu</a>.</p>'
+    + '<h2>Haftung</h2><p>Die angezeigten Daten werden vom Mandanten erfasst und von Smartordi OG nicht auf Richtigkeit oder Vollständigkeit geprüft. Es gilt österreichisches Recht, Gerichtsstand ist Linz.</p>'
+    + '<h2>Impressum</h2><p><strong>Smartordi OG</strong><br>Steingasse 6a, 4020 Linz · FN 675586 i<br>E-Mail: <a href="mailto:team@smartordi.eu">team@smartordi.eu</a></p>' + LEGAL_FOOT;
+  $('legalOv').classList.add('open'); $('legalOv').scrollTop = 0;
 }
 
-// Resume the accountant session on refresh instead of forcing back to the login screen —
-// sessionStorage clears on tab close, so a fresh browser session still requires login.
-(function buRestoreSession() {
+// resume the session on refresh
+(function() {
   if(sessionStorage.getItem('bu_loggedin') !== '1') return;
-  var savedUser = sessionStorage.getItem('bu_account');
-  if(savedUser) {
-    var accounts = {};
-    try { accounts = JSON.parse(localStorage.getItem('smartac_accounts') || '{}'); } catch(e) {}
-    if(accounts[savedUser]) {
-      document.getElementById('loginScreen').style.display = 'none';
-      selectAccount(savedUser);
-      return;
-    }
-  }
-  showAccountScreen();
+  var id = sessionStorage.getItem('bu_account');
+  if(id) { BuApi.listClients().then(function(l) { if(l.some(function(c) { return String(c.id) === id; })) buSelectClient(id); else buShowClients(); }); }
+  else buShowClients();
 })();
 </script>
 </body>

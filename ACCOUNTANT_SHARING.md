@@ -142,3 +142,45 @@ create policy "owner manages exports" on exports using (auth.uid() = owner_id) w
 - صيغة التصدير النهائية: Excel عادي أم BMD/RZL/DATEV؟
 - هل نحتاج إتاحة بند "مراجَع من المحاسب" (علامة تأكيد) في المرحلة 1؟
 - هل المحاسب الواحد يخدم أكتر من عميل في نفس الحساب؟ (التصميم بيدعم ده فعلاً.)
+
+---
+
+## عقد الـ API الفعلي لواجهة المحاسب (`buchhalter.html`)
+
+الواجهة اتبنت (سبتمبر/أكتوبر 2026) بحيث كل الوصول للبيانات يمر عبر كائن واحد `BuApi` في أول السكريبت. الافتراضي **local** (نفس المتصفح، للـ prototype). لتفعيل السيرفر يكفي قبل تحميل السكريبت:
+
+```html
+<script>window.BU_API_BASE = 'https://<api-host>';</script>
+```
+
+عندها الواجهة بتكلم السيرفر (Bearer token في `sessionStorage`):
+
+| الدالة في `BuApi` | الطلب | الرد المطلوب |
+|---|---|---|
+| `login(user, pass)` | `POST /auth/accountant/login` `{email, password}` | `{token}` |
+| `listClients()` | `GET /accountant/clients` | `[{id, name, sub}]` (العملاء اللي شاركوا مع المحاسب) |
+| `loadClient(id)` | `GET /accountant/clients/:id/snapshot` | الكائن تحت |
+| `getFile(id, kind, fileId)` | `GET /accountant/clients/:id/files/{receipt\|empdoc}/:fileId` | الملف نفسه (binary + Content-Type) |
+| `audit(id, action, object)` | `POST /accountant/audit` `{clientId, action, object}` | أي رد 2xx |
+
+**شكل `snapshot`** (نفس مفاتيح التخزين المحلي، بالحقول اللي الواجهة بتستخدمها فعلاً):
+```json
+{
+  "businessName": "…", "businessAddress": "…", "businessTaxId": "ATU…", "businessType": "transport",
+  "transactions": [{"id":1,"type":"income|expense","name":"…","amount":1234.56,"vatRate":20,"date":"YYYY-MM-DD",
+                    "category":"…","clientName":"…","supplierName":"…","govId":null,
+                    "invoice":null, "invoiceName":null, "receiptId":"…"}],
+  "recurring":   [{"id":1,"name":"…","amount":894,"vatRate":20,"day":10,"lastRecorded":"YYYY-MM"}],
+  "fixedIncome": [{"id":1,"name":"…","amount":0,"vatRate":0,"day":1,"lastRecorded":"YYYY-MM"}],
+  "employees":   [{"id":1,"name":"…","fullName":"…","position":"…","salary":2640,"startDate":"YYYY-MM-DD","vacationFactor":2.08,
+                   "workHours":[{"id":1,"date":"YYYY-MM-DD","start":"08:00","end":"16:30","breakMinutes":30,"hours":null}],
+                   "leavePeriods":[{"id":1,"type":"urlaub|krankenstand|karenz|feiertag","from":"YYYY-MM-DD","to":"YYYY-MM-DD","docId":null}]}],
+  "contacts":    [{"id":1,"type":"government|company|person|other","name":"…"}]
+}
+```
+- `amount` = **Brutto** (الواجهة بتفصل الصافي والضريبة بنفسها بنفس معادلة تطبيق العميل).
+- `invoice` (data URL) تفضّل تتحول لـ `receiptId` + ملف في الـ bucket؛ الواجهة بتدعم الاتنين.
+- لو الـ snapshot كبير: ممكن تقسمه بـ `?from=YYYY-MM&to=YYYY-MM` ونضيفه للواجهة بعدين.
+- `GET /months/{y}/{m}` المذكور فوق مش لازم للواجهة دي، لأنها بتحسب الأرقام من الـ snapshot بنفس منطق العميل.
+
+**التحقق من الصلاحيات** على السيرفر (`can_read`) لكل طلب؛ الواجهة نفسها قراءة فقط ومفيش فيها أي طلب كتابة غير `audit`.
