@@ -7,16 +7,16 @@
 <link rel="icon" type="image/png" href="logo-circle.png"/>
 <style>
 :root{
-  --bg:#f0f8ff; --card:#ffffff; --card2:#f6fbff; --border:#cce4f7; --primary:#1a7fd4; --primary-light:#e3f2fd;
-  --text:#1a2a3a; --text2:#4a6a8a; --text3:#8aabb8; --shadow:0 2px 12px rgba(26,127,212,0.10);
-  --income:#16a34a; --expense:#dc2626;
+  --bg:#f4faff; --card:#ffffff; --card2:#f4faff; --border:#bfc7d4; --primary:#0061a4; --primary-light:#dcebf7;
+  --text:#001f2a; --text2:#404752; --text3:#707883; --shadow:0 2px 12px rgba(0,97,164,0.10);
+  --income:#006e1c; --expense:#bb1614;
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
 button,input,select{font-family:inherit}
 button{cursor:pointer}
-.num{font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
+.num{font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;unicode-bidi:isolate-override;direction:ltr}
 
 /* login + client list */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
@@ -120,7 +120,7 @@ button{cursor:pointer}
 .ts-stats div{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:10px;font-size:11px;color:var(--text3)}.ts-stats b{display:block;font-size:16px;color:var(--text);margin-top:2px}
 .ts-row{display:grid;grid-template-columns:62px 34px minmax(0,1fr) 62px;gap:8px;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:12.5px;background:var(--card)}
 .ts-row.wk{background:var(--card2);color:var(--text3)}
-.ts-row .st{font-weight:700}.st-urlaub{color:#2563eb}.st-krankenstand{color:#dc2626}.st-karenz{color:#7c3aed}.st-feiertag{color:#d97706}
+.ts-row .st{font-weight:700}.st-urlaub{color:#2563eb}.st-krankenstand{color:#bb1614}.st-karenz{color:#7c3aed}.st-feiertag{color:#d97706}
 .ts-hol{grid-column:1/-1;font-size:11px;color:#d97706}
 .ts-card{border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:14px}
 

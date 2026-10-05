@@ -241,7 +241,7 @@
     if(!J) throw new Error('jsPDF missing');
     var doc = new J({unit: 'mm', format: 'a4'}), W = 210, M = 15, y;
     function head(title) {
-      doc.setFillColor(26, 127, 212); doc.rect(0, 0, W, 5, 'F');
+      doc.setFillColor(0, 97, 164); doc.rect(0, 0, W, 5, 'F');
       doc.setFont('helvetica', 'bold'); doc.setFontSize(13); doc.setTextColor(20);
       doc.text(lat(title), M, 17);
       doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(120);
@@ -249,9 +249,9 @@
       y = 26;
     }
     // cover
-    doc.setFillColor(26, 127, 212); doc.rect(0, 0, W, 8, 'F');
+    doc.setFillColor(0, 97, 164); doc.rect(0, 0, W, 8, 'F');
     doc.setFont('helvetica', 'bold'); doc.setFontSize(24); doc.setTextColor(20); doc.text('Unterlagen für den Steuerberater', M, 50);
-    doc.setFontSize(14); doc.setTextColor(26, 127, 212); doc.text(lat(opts.company.name || ''), M, 62);
+    doc.setFontSize(14); doc.setTextColor(0, 97, 164); doc.text(lat(opts.company.name || ''), M, 62);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(11); doc.setTextColor(60);
     var info = [['Zeitraum', monthLabel(opts.from) + (opts.from === opts.to ? '' : ' bis ' + monthLabel(opts.to))],
       ['Adresse', opts.company.address || '—'], ['UID-Nummer', opts.company.taxId || '—'],

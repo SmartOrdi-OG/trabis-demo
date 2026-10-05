@@ -10,29 +10,29 @@
 
 <style>*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 :root{
-  --bg:#f0f8ff;
-  --bg2:#e8f4fd;
+  --bg:#f4faff;
+  --bg2:#e6f6ff;
   --card:#ffffff;
-  --card2:#f5fbff;
-  --border:#cce4f7;
-  --primary:#1a7fd4;
-  --primary-light:#e3f2fd;
-  --primary-glow:rgba(26,127,212,0.15);
+  --card2:#f4faff;
+  --border:#bfc7d4;
+  --primary:#0061a4;
+  --primary-light:#dcebf7;
+  --primary-glow:rgba(0,97,164,0.15);
   --accent:#2196f3;
   --accent2:#64b5f6;
-  --green:#16a34a;
+  --green:#006e1c;
   --green-light:#ecfdf5;
-  --red:#dc2626;
+  --red:#bb1614;
   --red-light:#fef2f2;
   --orange:#d97706;
   --orange-light:rgba(217,119,6,0.12);
-  --text:#1a2a3a;
-  --text2:#4a6a8a;
-  --text3:#8aabb8;
-  --shadow:0 2px 12px rgba(26,127,212,0.10);
-  --shadow-lg:0 4px 24px rgba(26,127,212,0.15);
-  --income:#16a34a;
-  --expense:#dc2626;
+  --text:#001f2a;
+  --text2:#404752;
+  --text3:#707883;
+  --shadow:0 2px 12px rgba(0,97,164,0.10);
+  --shadow-lg:0 4px 24px rgba(0,97,164,0.15);
+  --income:#006e1c;
+  --expense:#bb1614;
 }
 body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:clip}
 /* HEADER */
@@ -314,8 +314,12 @@ body.art .tx-row-nm{font-size:13.5px;font-weight:700}
 .tx-row-sub i{font-style:normal;white-space:nowrap}
 .tx-row-sub{flex:0 0 100%;display:flex;flex-wrap:wrap;gap:1px 8px;font-size:10.5px;text-align:start;color:var(--text3);font-variant-numeric:tabular-nums;unicode-bidi:plaintext;margin-top:2px}
 body.art .month-card{margin-top:-8px}
+/* numbers: monospace, bold, German separators (matches the server build) */
+.carry-v,.tx-row-am,.tx-grp-sum,.tx-row-sub,.year-net-v,.rcpt-amt{font-family:ui-monospace,"SF Mono","Roboto Mono",Menlo,Consolas,monospace}
+.carry-v,.tx-row-am,.tx-grp-sum,.year-net-v,.rcpt-amt{font-weight:700;letter-spacing:-.02em}
+
 @media (max-width:1023px){body.art .carry-card{padding:14px 14px;gap:6px}
-body.art .carry-v,body.art .carry-row.tot .carry-v{font-size:14.5px}
+body.art .carry-v,body.art .carry-row.tot .carry-v{font-size:13px}
 body.art #homePicker,body.art #monthDetail{padding:16px 16px 60px}
 body.art .hp-wrap{grid-template-columns:minmax(0,1fr) 40%;gap:10px}}
 /* settings in the artifact's card style */
@@ -402,7 +406,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;height:100%}
 .bar{width:100%;border-radius:4px 4px 0 0;transition:all 0.5s;min-height:4px}
 .bar.income{background:linear-gradient(to top,#059669,#10b981)}
-.bar.expense{background:linear-gradient(to top,#dc2626,#ef4444)}
+.bar.expense{background:linear-gradient(to top,#bb1614,#ef4444)}
 .bar-label{font-size:9px;color:var(--text3);font-weight:500}
 /* DAILY SUMMARY */
 .daily-msg-highlight{color:var(--green);font-weight:600}
@@ -477,7 +481,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .ob-card{
   background:var(--card);border-radius:28px;padding:32px 24px;
   width:100%;max-width:390px;
-  box-shadow:0 8px 40px rgba(26,127,212,0.15);border:1px solid var(--border);
+  box-shadow:0 8px 40px rgba(0,97,164,0.15);border:1px solid var(--border);
   animation:obSlideUp 0.4s cubic-bezier(0.34,1.2,0.64,1) both;
 }
 @keyframes obSlideUp{
@@ -488,9 +492,9 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
   text-align:center;margin-bottom:28px;
 }
 .ob-header-icon{
-  width:64px;height:64px;background:linear-gradient(135deg,#1a7fd4,#2196f3);
+  width:64px;height:64px;background:linear-gradient(135deg,#0061a4,#2196f3);
   border-radius:20px;display:flex;align-items:center;justify-content:center;
-  font-size:30px;margin:0 auto 14px;box-shadow:0 8px 20px rgba(26,127,212,0.25);
+  font-size:30px;margin:0 auto 14px;box-shadow:0 8px 20px rgba(0,97,164,0.25);
 }
 .ob-header-title{
   font-size:22px;font-weight:800;color:var(--text);letter-spacing:-0.5px;
@@ -606,7 +610,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 }
 /* Toggle password */
 /* ── PWA INSTALL BANNER ── */
-#pwaInstallBanner{display:none;align-items:center;gap:10px;background:linear-gradient(135deg,#1a7fd4,#2196f3);color:#fff;padding:10px 16px;font-size:13px;position:sticky;top:0;z-index:200;max-width:430px;margin:0 auto;box-sizing:border-box}
+#pwaInstallBanner{display:none;align-items:center;gap:10px;background:linear-gradient(135deg,#0061a4,#2196f3);color:#fff;padding:10px 16px;font-size:13px;position:sticky;top:0;z-index:200;max-width:430px;margin:0 auto;box-sizing:border-box}
 #pwaInstallBanner .pwa-text{flex:1;font-size:12px;font-weight:500}
 #pwaInstallBanner .pwa-install-btn{background:rgba(255,255,255,0.22);border:1px solid rgba(255,255,255,0.45);color:#fff;border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;white-space:nowrap}
 #pwaInstallBanner .pwa-dismiss-btn{background:none;border:none;color:rgba(255,255,255,0.75);font-size:20px;cursor:pointer;flex-shrink:0;padding:0 2px;line-height:1}
@@ -654,7 +658,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 /* RIGHT PANEL */
 .lp-right{flex:0 0 50%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 48px;min-height:100vh;position:relative;overflow:hidden;box-sizing:border-box}
 .lp-pill{padding:7px 18px;border-radius:20px;border:1.5px solid var(--border);background:none;color:var(--text3);font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s;letter-spacing:0.3px}
-.lp-pill.active{background:#ffffff;border-color:#ffffff;color:#1a7fd4;box-shadow:0 4px 16px rgba(26,127,212,0.3)}
+.lp-pill.active{background:#ffffff;border-color:#ffffff;color:#0061a4;box-shadow:0 4px 16px rgba(0,97,164,0.3)}
 .lp-auth-card{position:relative;z-index:1;width:100%;max-width:420px;background:#ffffff;border-radius:20px;padding:32px 28px;box-shadow:0 20px 60px -12px rgba(26,122,82,0.18),0 8px 24px rgba(0,0,0,0.06);box-sizing:border-box;overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:100vh;animation:lpCardIn 0.55s cubic-bezier(.16,1,.3,1) both;animation-delay:0.12s}
 /* Arabic (RTL): only the text/content inside the landing page mirrors, never the split-screen layout itself */
 .lang-ar .lp-left{text-align:right}
@@ -669,13 +673,13 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .reg-input-wrap{border-radius:12px;overflow:hidden;transition:border-color 0.2s}
 .reg-input-wrap input:focus,.reg-input-wrap select:focus,.reg-input-wrap textarea:focus{outline:none!important;box-shadow:none!important;border:none!important}
 #lp-view-register input:focus,#lp-view-register select:focus{outline:none!important;box-shadow:none!important}
-.reg-input-wrap:focus-within{border-color:#1a7fd4!important;box-shadow:0 0 0 3px rgba(26,127,212,0.12)!important}
+.reg-input-wrap:focus-within{border-color:#0061a4!important;box-shadow:0 0 0 3px rgba(0,97,164,0.12)!important}
 @media (prefers-reduced-motion:reduce){.lp-logo-wrap,.lp-headline,.lp-desc,.lp-feature,.lp-trusted,.lp-auth-card,.lp-bg-glow{animation:none!important}
 .lp-btn,.lp-btn-outline,.lp-link,.lp-feature-icon{transition:none!important}}
 .lp-input{flex:1;border:none;outline:none;background:transparent;padding:0;font-size:15px;color:#1e293b;box-sizing:border-box;height:100%;display:block}
 .lp-input::placeholder{color:var(--text3)}
 .lp-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(46,158,107,0.12)}
-.lp-btn{width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#1a7fd4,var(--accent));color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 6px 24px var(--primary-glow);transition:transform 0.2s cubic-bezier(.16,1,.3,1),box-shadow 0.2s;letter-spacing:0.3px}
+.lp-btn{width:100%;padding:15px;border-radius:14px;border:none;background:linear-gradient(135deg,#0061a4,var(--accent));color:#fff;font-size:16px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 6px 24px var(--primary-glow);transition:transform 0.2s cubic-bezier(.16,1,.3,1),box-shadow 0.2s;letter-spacing:0.3px}
 .lp-btn:hover{transform:translateY(-2px);box-shadow:0 10px 30px var(--primary-glow)}
 .lp-btn:active{transform:translateY(0) scale(0.98)}
 .lp-btn-outline{width:100%;padding:14px;border-radius:14px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:15px;font-weight:600;cursor:pointer;margin-top:10px;transition:all 0.2s;display:block;text-align:center}
@@ -686,7 +690,7 @@ html.theme-dark .date-fix-wrap input[type="date"]{color-scheme:dark}
 .lp-link{width:100%;padding:13px;border-radius:14px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:14px;font-weight:600;cursor:pointer;margin-top:10px;transition:all 0.2s;display:block;text-align:center}
 .lp-link:hover{border-color:var(--primary);color:var(--primary);transform:translateY(-1px)}
 #lp-username,#lp-password{transition:border-color 0.2s,box-shadow 0.2s}
-#lp-username:focus,#lp-password:focus{border-color:#1a7fd4!important;box-shadow:0 0 0 3px rgba(26,127,212,0.12)!important}
+#lp-username:focus,#lp-password:focus{border-color:#0061a4!important;box-shadow:0 0 0 3px rgba(0,97,164,0.12)!important}
 .lp-error{color:var(--red);font-size:12px;margin-bottom:14px;padding:10px 14px;background:var(--red-light);border-radius:10px;border-left:3px solid var(--red);font-weight:500;display:none}
 .lp-divider{text-align:center;color:var(--text3);font-size:12px;margin:16px 0;position:relative}
 .lp-divider::before,.lp-divider::after{content:'';position:absolute;top:50%;width:40%;height:1px;background:var(--border)}
@@ -810,9 +814,9 @@ body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #repo
 /* ── IN-APP NOTIFICATIONS ── */
 #inAppNotifContainer{position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:600000;display:flex;flex-direction:column;gap:8px;width:min(480px,calc(100vw - 32px));pointer-events:none}
 .inapp-notif{padding:12px 14px;border-radius:14px;display:flex;align-items:flex-start;gap:10px;box-shadow:0 4px 20px rgba(0,0,0,0.12);animation:notifIn 0.35s cubic-bezier(0.34,1.56,0.64,1);pointer-events:all;cursor:pointer;font-size:13px;line-height:1.45}
-.inapp-notif.green{background:#ecfdf5;border-left:4px solid #16a34a;color:#14532d}
+.inapp-notif.green{background:#ecfdf5;border-left:4px solid #006e1c;color:#14532d}
 .inapp-notif.orange{background:#fff7ed;border-left:4px solid #d97706;color:#92400e}
-.inapp-notif.red{background:#fef2f2;border-left:4px solid #dc2626;color:#7f1d1d}
+.inapp-notif.red{background:#fef2f2;border-left:4px solid #bb1614;color:#7f1d1d}
 .inapp-notif.yellow{background:#fefce8;border-left:4px solid #ca8a04;color:#713f12}
 .inapp-notif-icon{font-size:18px;flex-shrink:0;margin-top:1px}
 .inapp-notif-body{flex:1;min-width:0}
@@ -840,14 +844,14 @@ body.lang-ar .hdr,body.lang-ar #mainPage,body.lang-ar .scroll,body.lang-ar #repo
 .lp-field-feedback{font-size:11px;min-height:16px;padding:0 2px;margin-bottom:10px}
 /* ── THEME SYSTEM ── */
 html.theme-light{
-  --bg:#f0f8ff; --bg2:#e8f4fd; --card:#ffffff; --card2:#f5fbff;
-  --border:#cce4f7; --primary:#1a7fd4; --primary-light:#e3f2fd;
-  --primary-glow:rgba(26,127,212,0.15); --accent:#2196f3; --accent2:#64b5f6;
-  --green:#16a34a; --green-light:#ecfdf5; --red:#dc2626; --red-light:#fef2f2;
+  --bg:#f4faff; --bg2:#e6f6ff; --card:#ffffff; --card2:#f4faff;
+  --border:#bfc7d4; --primary:#0061a4; --primary-light:#dcebf7;
+  --primary-glow:rgba(0,97,164,0.15); --accent:#2196f3; --accent2:#64b5f6;
+  --green:#006e1c; --green-light:#ecfdf5; --red:#bb1614; --red-light:#fef2f2;
   --orange:#d97706; --orange-light:rgba(217,119,6,0.12);
-  --text:#1a2a3a; --text2:#4a6a8a; --text3:#8aabb8;
-  --shadow:0 2px 12px rgba(26,127,212,0.10); --shadow-lg:0 4px 24px rgba(26,127,212,0.15);
-  --income:#16a34a; --expense:#dc2626;
+  --text:#001f2a; --text2:#404752; --text3:#707883;
+  --shadow:0 2px 12px rgba(0,97,164,0.10); --shadow-lg:0 4px 24px rgba(0,97,164,0.15);
+  --income:#006e1c; --expense:#bb1614;
 }
 html.theme-dark{
   --bg:#16222e; --bg2:#1b2938; --card:#1f3040; --card2:#25384a;
@@ -915,7 +919,7 @@ body.lang-ar .invoice-dl-disclaimer{ border-left:none; border-right:3px solid va
 <meta name="mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="Trabis"/>
-<meta name="theme-color" content="#f0f8ff"/>
+<meta name="theme-color" content="#f4faff"/>
 
 <script id="jspdf-lib">
 /** @license
@@ -1456,7 +1460,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
           <div class="lp-sub" id="lp-sub-default">Sign in or create your account</div>
           <button class="lp-btn" id="lp-btn-signin" onclick="lpShowLoginForm()" style="margin-top:8px">Sign In</button>
           <button class="lp-btn-outline" id="lp-btn-create" onclick="lpShowRegisterForm()">Create Account</button>
-          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#1a7fd4;font-weight:700">Try the demo</button>
+          <button class="lp-link" id="lp-demo-btn" onclick="lpDemoLogin()" style="margin-top:8px;color:#0061a4;font-weight:700">Try the demo</button>
           <div id="lp-demo-note" style="text-align:center;margin-top:6px;font-size:11.5px;color:#94a3b8;line-height:1.5"></div>
 
         </div>
@@ -2201,7 +2205,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
     </div>
     <div class="settings-item" style="cursor:pointer" onclick="toggleTheme()">
       <div class="settings-item-left">
-        <div class="settings-item-icon" style="background:rgba(33,150,243,0.12);color:#1a7fd4" id="theme-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg></div>
+        <div class="settings-item-icon" style="background:rgba(33,150,243,0.12);color:#0061a4" id="theme-icon-wrap"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z"/></svg></div>
         <div class="settings-item-text">
           <div class="title" id="lbl-theme">Dark Mode</div>
           <div class="sub" id="lbl-theme-sub">Switch theme</div>
@@ -2673,9 +2677,9 @@ function fmt(n) {
   for(var i = intPart.length - 1; i >= 0; i--) {
     result = intPart[i] + result;
     count++;
-    if(count % 3 === 0 && i !== 0) result = ',' + result;
+    if(count % 3 === 0 && i !== 0) result = '.' + result;
   }
-  return state.currency + result + '.' + decPart;
+  return state.currency + ' ' + result + ',' + decPart;
 }
 
 // Accepts both "30.5" and "30,5" (Austrian/German decimal comma), plus
@@ -3116,7 +3120,7 @@ function renderEmployeesPage() {
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
   h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + emptx('title') + '</div></div>';
-  h += '<button id="empAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + emptx('add') + '</button>';
+  h += '<button id="empAddBtn" style="background:#0061a4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + emptx('add') + '</button>';
   h += '</div></div>';
 
   h += '<div id="employeesPageBody" style="padding:0 16px 120px">';
@@ -3533,7 +3537,7 @@ function renderFleetPage() {
   var h = '';
   h += '<div style="padding:16px 16px 0"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">';
   h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + fleettx('title') + '</div></div>';
-  h += '<button id="fleetAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + fleettx('add') + '</button>';
+  h += '<button id="fleetAddBtn" style="background:#0061a4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + fleettx('add') + '</button>';
   h += '</div></div>';
 
   h += '<div id="fleetPageBody" style="padding:0 16px 120px">';
@@ -4778,7 +4782,7 @@ function helpStepsHtml(text) {
     var num = m ? m[1] : '•';
     var txt = m ? m[2] : line;
     h += '<div style="display:flex;gap:12px;margin-bottom:14px;align-items:flex-start">'
-      + '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#1a7fd4;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">' + num + '</div>'
+      + '<div style="flex-shrink:0;width:24px;height:24px;border-radius:50%;background:#0061a4;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center">' + num + '</div>'
       + '<div style="flex:1;font-size:14px;color:#475569;line-height:1.7;padding-top:2px">' + txt + '</div>'
       + '</div>';
   });
@@ -4920,7 +4924,7 @@ var KAL_DAY_NAMES = {
   ar: ['اثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت','أحد'],
   de: ['Mo','Di','Mi','Do','Fr','Sa','So'],
 };
-var KAL_TYPE_COLORS = {personal:'#16a34a', business:'#2563eb', document:'#f59e0b', vehicle:'#dc2626'};
+var KAL_TYPE_COLORS = {personal:'#006e1c', business:'#2563eb', document:'#f59e0b', vehicle:'#bb1614'};
 
 var _kalYear = null;
 var _kalMonth = null;
@@ -5037,7 +5041,7 @@ function renderKalenderPage() {
   h += '<div style="font-size:18px;font-weight:700">' + monthLabel + '</div>';
   h += '<button id="kalRightBtn" style="background:var(--card);border:1px solid var(--border);border-radius:10px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;cursor:pointer">' + svgIcon('chevronRight', 18) + '</button>';
   h += '</div>';
-  h += '<button id="kalAddBtn" style="width:100%;background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">' + kaltx('addAppt') + '</button>';
+  h += '<button id="kalAddBtn" style="width:100%;background:#0061a4;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;margin-bottom:12px">' + kaltx('addAppt') + '</button>';
   h += '</div>';
 
   h += '<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:6px">';
@@ -5685,7 +5689,7 @@ function renderNotizenPage() {
   var h = '';
   h += '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">';
   h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:18px;font-weight:700">' + nztx('title') + '</div></div>';
-  h += '<button id="notizAddBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + nztx('newNote') + '</button>';
+  h += '<button id="notizAddBtn" style="background:#0061a4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:13px;font-weight:600;cursor:pointer">' + nztx('newNote') + '</button>';
   h += '</div>';
 
   var notes = (state.notes || []).slice().sort(function(a, b) {
@@ -7284,7 +7288,7 @@ function renderContactsPage() {
   var h = '';
   h += '<div style="padding:16px 16px 0;display:flex;align-items:center;justify-content:space-between;direction:' + dir + '">';
   h += '<div style="display:flex;align-items:center;gap:8px">' + moreBackBtnHtml() + '<div style="font-size:20px;font-weight:700">' + cttx('title') + '</div></div>';
-  h += '<button id="addContactBtn" style="background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('add') + '</button>';
+  h += '<button id="addContactBtn" style="background:#0061a4;color:#fff;border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('add') + '</button>';
   h += '</div>';
   h += '<div id="contactForm" style="display:none;background:var(--card);border-radius:14px;margin:12px 16px;padding:16px;box-shadow:var(--shadow);direction:' + dir + '">';
   h += '<div id="contactFormTitle" style="font-size:14px;font-weight:600;margin-bottom:10px">' + cttx('newContact') + '</div>';
@@ -7296,7 +7300,7 @@ function renderContactsPage() {
   h += '</select>';
   h += '<textarea id="cf-notes" placeholder="' + cttx('notes') + '" rows="3" style="' + inputStyle + ';resize:vertical"></textarea>';
   h += '<div style="display:flex;gap:8px">';
-  h += '<button id="saveContactBtn" style="flex:1;background:#1a7fd4;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('save') + '</button>';
+  h += '<button id="saveContactBtn" style="flex:1;background:#0061a4;color:#fff;border:none;border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('save') + '</button>';
   h += '<button id="cancelContactBtn" style="flex:1;background:var(--card);color:var(--text);border:1.5px solid var(--border);border-radius:10px;padding:10px;font-size:14px;font-weight:600;cursor:pointer">' + cttx('cancel') + '</button>';
   h += '</div></div>';
   h += '<div style="padding:12px 16px 0;direction:' + dir + '">';
@@ -7333,7 +7337,7 @@ function renderContactsList(list) {
   var h = '';
   list.forEach(function(c) {
     h += '<div style="background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--shadow);display:flex;align-items:center;gap:12px">';
-    h += '<div style="width:44px;height:44px;border-radius:50%;background:#1a7fd4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">' + (c.name ? c.name.charAt(0).toUpperCase() : '?') + '</div>';
+    h += '<div style="width:44px;height:44px;border-radius:50%;background:#0061a4;color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">' + (c.name ? c.name.charAt(0).toUpperCase() : '?') + '</div>';
     h += '<div style="flex:1;min-width:0">';
     h += '<div style="font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">' + escHtml(c.name) + '</div>';
     h += '<div style="font-size:12px;color:var(--text3);margin-top:1px">' + contactTypeLabel(c.type) + '</div>';
@@ -7448,7 +7452,7 @@ function openContactProfile(contactId) {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:var(--bg);overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch';
 
   var h = '';
-  h += '<div style="position:sticky;top:0;z-index:1;background:#1a7fd4;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;direction:' + dir + '">';
+  h += '<div style="position:sticky;top:0;z-index:1;background:#0061a4;color:#fff;padding:12px 16px;display:flex;align-items:center;gap:12px;direction:' + dir + '">';
   h += '<button id="cntBackBtn" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:6px 12px;font-size:14px;font-weight:600;cursor:pointer">' + backLbl + '</button>';
   h += '<div style="font-size:17px;font-weight:700;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(contact.name) + '</div>';
   h += '<button id="cntEditBtn" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:8px;padding:6px 10px;cursor:pointer;display:flex">' + svgIcon('pencil',15) + '</button>';
@@ -7456,7 +7460,7 @@ function openContactProfile(contactId) {
   h += '</div>';
   h += '<div style="background:var(--card);border-radius:16px;padding:20px;margin:16px;box-shadow:var(--shadow);direction:' + dir + '">';
   h += '<div style="text-align:center;margin-bottom:16px">';
-  h += '<div style="width:56px;height:56px;border-radius:50%;background:#1a7fd4;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:700">' + contact.name.charAt(0).toUpperCase() + '</div>';
+  h += '<div style="width:56px;height:56px;border-radius:50%;background:#0061a4;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:24px;font-weight:700">' + contact.name.charAt(0).toUpperCase() + '</div>';
   h += '<div style="font-size:18px;font-weight:700;margin-top:8px">' + escHtml(contact.name) + '</div>';
   h += '<div style="font-size:13px;color:var(--text3);margin-top:2px">' + contactTypeLabel(contact.type) + '</div>';
   h += '</div>';
@@ -8582,7 +8586,7 @@ function renderHome() {
   if(dashSaldoAmtEl) {
     var saldo = netCalc.zahllast; // > 0 = payable to Finanzamt, < 0 = credit
     dashSaldoAmtEl.textContent = fmt(Math.abs(saldo));
-    dashSaldoAmtEl.style.color = saldo >= 0 ? '#dc2626' : 'var(--green)';
+    dashSaldoAmtEl.style.color = saldo >= 0 ? '#bb1614' : 'var(--green)';
     if(dashSaldoLblEl) {
       var saldoLbl = saldo >= 0
         ? {en:'VAT Payable (Zahllast)', ar:'ضريبة مستحقة للدفع', de:'Zahllast'}
@@ -10826,7 +10830,7 @@ function renderBankAccountSection() {
 function invoiceTplMockup(kind) {
   if(kind === 'modern') {
     return '<div style="width:100%;height:110px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#fff">'
-      + '<div style="height:26px;background:#1a7fd4;display:flex;align-items:center;padding:0 8px;gap:5px">'
+      + '<div style="height:26px;background:#0061a4;display:flex;align-items:center;padding:0 8px;gap:5px">'
       + '<div style="width:14px;height:14px;border-radius:4px;background:#fff"></div>'
       + '<div style="flex:1;height:5px;background:rgba(255,255,255,0.6);border-radius:2px;margin-top:1px"></div>'
       + '</div>'
@@ -10841,7 +10845,7 @@ function invoiceTplMockup(kind) {
       + '</div>';
   }
   return '<div style="width:100%;height:110px;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#fff;padding:8px;box-sizing:border-box">'
-    + '<div style="height:3px;background:#16a34a;margin:-8px -8px 8px"></div>'
+    + '<div style="height:3px;background:#006e1c;margin:-8px -8px 8px"></div>'
     + '<div style="display:flex;align-items:center;gap:5px;margin-bottom:10px">'
     + '<div style="width:14px;height:14px;border-radius:3px;background:#cbd5e1"></div>'
     + '<div style="width:45%;height:4px;background:#94a3b8;border-radius:2px"></div>'
@@ -10849,7 +10853,7 @@ function invoiceTplMockup(kind) {
     + '<div style="display:flex;justify-content:space-between;padding:2px 0;border:1px solid #e2e8f0"><div style="width:40%;height:3px;background:#e2e8f0;border-radius:2px;margin:2px"></div><div style="width:15%;height:3px;background:#e2e8f0;border-radius:2px;margin:2px"></div></div>'
     + '<div style="display:flex;justify-content:space-between;padding:2px 0;border:1px solid #e2e8f0;border-top:none"><div style="width:35%;height:3px;background:#e2e8f0;border-radius:2px;margin:2px"></div><div style="width:15%;height:3px;background:#e2e8f0;border-radius:2px;margin:2px"></div></div>'
     + '<div style="display:flex;justify-content:flex-end;margin-top:8px">'
-    + '<div style="width:45%;height:14px;border:1.5px solid #16a34a;border-radius:5px"></div>'
+    + '<div style="width:45%;height:14px;border:1.5px solid #006e1c;border-radius:5px"></div>'
     + '</div>'
     + '</div>';
 }
@@ -10931,7 +10935,7 @@ function renderPlanSection() {
   if(!card) return;
   card.innerHTML = '<div style="font-weight:700;font-size:15px;margin-bottom:12px">' + stx('planTitle') + '</div>'
     + '<span style="background:var(--primary-light);color:var(--primary);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:14px">' + stx('freePlanBadge') + '</span>'
-    + '<button id="upgradeProBtn" style="width:100%;padding:12px;border-radius:12px;border:none;background:#1a7fd4;color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + stx('upgradePro') + '</button>';
+    + '<button id="upgradeProBtn" style="width:100%;padding:12px;border-radius:12px;border:none;background:#0061a4;color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + stx('upgradePro') + '</button>';
   var upBtn = document.getElementById('upgradeProBtn');
   if(upBtn) upBtn.onclick = function(){ showToast(stx('comingSoon'), 'info'); };
 }
@@ -11406,7 +11410,7 @@ function safeNotify(title, body, fallback) {
 }
 
 // ── NOTIFICATION CENTER ──
-var NOTIF_COLORS = {success:'#16a34a', warning:'#f97316', error:'#dc2626', info:'#3b82f6'};
+var NOTIF_COLORS = {success:'#006e1c', warning:'#f97316', error:'#bb1614', info:'#3b82f6'};
 
 function formatNotifTime(iso) {
   var d = new Date(iso);
@@ -11633,8 +11637,8 @@ function _renderInvoiceList(items, colorIsGreen, deleteFunc, type) {
   var h = '';
   for(var i=items.length-1;i>=0;i--) {
     var inv = items[i];
-    var statusColor = inv.status==='Paid' ? '#16a34a' : inv.status==='Overdue' ? '#dc2626' : '#d97706';
-    var amtColor = colorIsGreen ? '#16a34a' : '#dc2626';
+    var statusColor = inv.status==='Paid' ? '#006e1c' : inv.status==='Overdue' ? '#bb1614' : '#d97706';
+    var amtColor = colorIsGreen ? '#006e1c' : '#bb1614';
     var name = inv.clientName || inv.supplierName || '';
     var ref = inv.number || '';
     var amt = parseFloat(inv.total||0);
@@ -12499,7 +12503,7 @@ function buildClassicInvoice(inv, type) {
   '@media print{body{margin:0}.no-print{display:none}@page{size:A4}}' +
   '</style></head><body dir="' + dirAttr + '">' +
   '<div class="no-print">' +
-  '<button onclick="window.print()" style="padding:10px 20px;background:#16a34a;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+  '<button onclick="window.print()" style="padding:10px 20px;background:#006e1c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
   '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
   '</div>' +
   '<div style="position:relative;display:flex;flex-direction:column;min-height:1123px;padding:32px;box-sizing:border-box">' +
@@ -12520,7 +12524,7 @@ function buildClassicInvoice(inv, type) {
   (inv.dueDate ? '<div style="font-size:12px;color:#6b7280">' + ptx('dueLbl') + ': ' + ltrSpan(formatDateDisplay(inv.dueDate)) + '</div>' : '') +
   '</div>' +
   '</div>' +
-  '<div style="border-top:3px solid #16a34a;margin-bottom:24px"></div>' +
+  '<div style="border-top:3px solid #006e1c;margin-bottom:24px"></div>' +
   '<div style="margin-bottom:24px">' +
   '<div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px">' + billLabel + '</div>' +
   '<div style="font-size:15px;font-weight:700">' + partyName + '</div>' +
@@ -12538,7 +12542,7 @@ function buildClassicInvoice(inv, type) {
   '<div style="width:260px">' +
   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('subtotal') + '</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('vat') + ' (' + (inv.vatRate||0) + '%)</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
-  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid #16a34a;border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:#16a34a">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid #006e1c;border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:#006e1c">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
   '</div></div>' +
   (showBankBox ? '<div style="display:flex;gap:16px;align-items:flex-start;margin-top:20px">' + bankBoxHtml + qrHtml + '</div>' : '') +
   notesHtml +
@@ -12557,7 +12561,7 @@ function buildModernInvoice(inv, type) {
   var dirAttr = isRTL ? 'rtl' : 'ltr';
   var alignStart = isRTL ? 'right' : 'left';
   var alignEnd = isRTL ? 'left' : 'right';
-  var accent = '#1a7fd4';
+  var accent = '#0061a4';
   var typeLabel = type==='issued' ? ptx('invoice') : type==='receipt' ? ptx('receipt') : ptx('receivedInvoice');
   var billLabel = type==='received' ? ptx('fromSupplier') : ptx('billTo');
   var partyName = inv.clientName || inv.supplierName || '';
@@ -12677,7 +12681,7 @@ var DE_MONTH_NAMES = ['Januar','Februar','März','April','Mai','Juni','Juli','Au
 
 function invoiceNoPrintBar() {
   return '<div class="no-print">' +
-    '<button onclick="window.print()" style="padding:10px 20px;background:#1a7fd4;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+    '<button onclick="window.print()" style="padding:10px 20px;background:#0061a4;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
     '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
     '</div>';
 }
@@ -12712,7 +12716,7 @@ function downloadInvoicePDF(inv, type) {
   if(!inv) return;
   var toast = document.createElement('div');
   toast.textContent = itx('downloadingPdf');
-  toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1a7fd4;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999999;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:notifIn 0.4s ease';
+  toast.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#0061a4;color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;z-index:999999;box-shadow:0 4px 16px rgba(0,0,0,0.2);animation:notifIn 0.4s ease';
   document.body.appendChild(toast);
   setTimeout(function(){
     if(toast.parentNode) toast.parentNode.removeChild(toast);
@@ -13661,7 +13665,7 @@ function checkPasswordStrength(val) {
   var score = lpPwScore(c);
   var fill = document.getElementById('lp-pw-fill');
   var lbl = document.getElementById('lp-pw-strength-lbl');
-  var colors = ['#ef4444','#ef4444','#f97316','#f97316','#3b82f6','#16a34a'];
+  var colors = ['#ef4444','#ef4444','#f97316','#f97316','#3b82f6','#006e1c'];
   var widths = ['0%','20%','40%','60%','80%','100%'];
   var labels = [l.pwWeak,l.pwWeak,l.pwFair,l.pwFair,l.pwGood,l.pwStrong];
   if(fill){
@@ -13689,7 +13693,7 @@ function lpCheckPwMatch() {
   };
   var m = msgs[lpLang]||msgs.en;
   lbl.innerHTML = (match?svgIcon('check',12):svgIcon('x',12)) + ' ' + escHtml(match?m[1]:m[0]);
-  lbl.style.color = match?'#16a34a':'#ef4444';
+  lbl.style.color = match?'#006e1c':'#ef4444';
 }
 
 function lpValidateReg() {
@@ -14466,7 +14470,7 @@ function openLegalOverlay(title, subtitle, contentHTML) {
   var overlay = document.createElement('div');
   overlay.style.cssText = 'position:fixed;top:0;right:0;bottom:0;left:0;z-index:999999;background:#f8fafc;overflow-y:auto;-webkit-overflow-scrolling:touch';
   var hdr = document.createElement('div');
-  hdr.style.cssText = 'background:#1a7fd4;padding:16px 24px;display:flex;align-items:center;position:-webkit-sticky;position:sticky;top:0;z-index:1';
+  hdr.style.cssText = 'background:#0061a4;padding:16px 24px;display:flex;align-items:center;position:-webkit-sticky;position:sticky;top:0;z-index:1';
   var btn = document.createElement('button');
   btn.innerHTML = '&#8592;';
   btn.style.cssText = 'background:rgba(255,255,255,0.2);border:none;color:#fff;font-size:20px;border-radius:50%;width:36px;height:36px;cursor:pointer;flex-shrink:0;margin-right:16px;display:flex;align-items:center;justify-content:center;line-height:1';
@@ -14493,7 +14497,7 @@ function openImpressum() {
   var cs = 'background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:16px';
   var hs = 'font-size:15px;font-weight:700;color:#1e293b;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid #f0fdf4';
   var ps = 'font-size:14px;color:#475569;line-height:1.8;margin-bottom:0';
-  var as = 'color:#1a7fd4;text-decoration:none';
+  var as = 'color:#0061a4;text-decoration:none';
   var fs = 'margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center';
   var h =
     '<div style="' + cs + '">' +
@@ -14511,7 +14515,7 @@ function openContact() {
   var cs = 'background:#fff;border-radius:12px;padding:20px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.06);margin-bottom:16px';
   var hs = 'font-size:15px;font-weight:700;color:#1e293b;margin:0 0 12px;padding-bottom:6px;border-bottom:2px solid #f0fdf4';
   var ps = 'font-size:14px;color:#475569;line-height:1.8;margin-bottom:0';
-  var as = 'color:#1a7fd4;text-decoration:none';
+  var as = 'color:#0061a4;text-decoration:none';
   var fs = 'margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center';
   var h =
     '<div style="' + cs + '">' +
@@ -14524,7 +14528,7 @@ function openContact() {
 function openTerms() {
   var sh = 'font-size:15px;font-weight:700;color:#1e293b;margin:28px 0 8px;padding-bottom:6px;border-bottom:2px solid #f0fdf4';
   var ps = 'font-size:14px;color:#475569;line-height:1.8;margin-bottom:0';
-  var as = 'color:#1a7fd4;text-decoration:none';
+  var as = 'color:#0061a4;text-decoration:none';
   var fs = 'margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center';
   var h =
     '<h2 style="' + sh + '">1. Acceptance of Terms</h2>' +
@@ -14547,7 +14551,7 @@ function openTerms() {
 function openPrivacy() {
   var sh = 'font-size:15px;font-weight:700;color:#1e293b;margin:28px 0 8px;padding-bottom:6px;border-bottom:2px solid #f0fdf4';
   var ps = 'font-size:14px;color:#475569;line-height:1.8;margin-bottom:0';
-  var as = 'color:#1a7fd4;text-decoration:none';
+  var as = 'color:#0061a4;text-decoration:none';
   var fs = 'margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center';
   var h =
     '<h2 style="' + sh + '">1. Controller</h2>' +
@@ -14595,8 +14599,8 @@ initApp();
       name: 'Trabis',
       short_name: 'Trabis',
       description: 'Business Tracking System',
-      theme_color: '#1a7fd4',
-      background_color: '#f0f8ff',
+      theme_color: '#0061a4',
+      background_color: '#f4faff',
       display: 'standalone',
       orientation: 'portrait',
       start_url: './',
@@ -15520,7 +15524,7 @@ function closeSidebar() {
     <h1 style="font-size:24px;font-weight:800;color:#1e293b;margin:0 0 4px">Impressum</h1>
     <p style="font-size:13px;color:#94a3b8;margin:0 0 32px">Angaben gem&auml;&szlig; &sect; 5 ECG</p>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px"><strong>Smartordi OG</strong><br>Steingasse 6a, 4020 Linz<br>Firmenbuchnummer: FN 675586 i<br>Firmenbuchgericht: Landesgericht Linz<br>Rechtsform: Offene Gesellschaft (OG)</p>
-    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px">E-Mail: <a href="mailto:team@smartordi.eu" style="color:#1a7fd4;text-decoration:none">team@smartordi.eu</a><br>Tel: <a href="tel:+43667762439293" style="color:#1a7fd4;text-decoration:none">+43 667 762439293</a></p>
+    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px">E-Mail: <a href="mailto:team@smartordi.eu" style="color:#0061a4;text-decoration:none">team@smartordi.eu</a><br>Tel: <a href="tel:+43667762439293" style="color:#0061a4;text-decoration:none">+43 667 762439293</a></p>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px"><strong>Haftungsausschluss:</strong><br>Die Inhalte dieser App wurden mit gr&ouml;&szlig;tm&ouml;glicher Sorgfalt erstellt. F&uuml;r die Richtigkeit, Vollst&auml;ndigkeit und Aktualit&auml;t der Inhalte kann keine Gew&auml;hr &uuml;bernommen werden.</p>
     <div style="margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center">&#169; 2026 Smartordi OG</div>
   </div>
@@ -15531,7 +15535,7 @@ function closeSidebar() {
     <button onclick="closeLegalPage('contactPage')" style="background:none;border:none;font-size:14px;color:#64748b;cursor:pointer;margin-bottom:24px;padding:0;display:flex;align-items:center;gap:6px">&#8592; Back</button>
     <h1 style="font-size:24px;font-weight:800;color:#1e293b;margin:0 0 32px">Contact</h1>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px"><strong>Smartordi OG</strong><br>Steingasse 6a<br>4020 Linz, Austria</p>
-    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px">E-Mail: <a href="mailto:team@smartordi.eu" style="color:#1a7fd4;text-decoration:none">team@smartordi.eu</a><br>Tel: <a href="tel:+43667762439293" style="color:#1a7fd4;text-decoration:none">+43 667 762439293</a></p>
+    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 20px">E-Mail: <a href="mailto:team@smartordi.eu" style="color:#0061a4;text-decoration:none">team@smartordi.eu</a><br>Tel: <a href="tel:+43667762439293" style="color:#0061a4;text-decoration:none">+43 667 762439293</a></p>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0">We typically respond within 1&ndash;2 business days.</p>
     <div style="margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center">&#169; 2026 Smartordi OG</div>
   </div>
@@ -15555,7 +15559,7 @@ function closeSidebar() {
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">6. Governing Law</h2>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">These Terms are governed by the laws of Austria. Any disputes arising from these Terms shall be subject to the exclusive jurisdiction of the competent courts in Linz, Austria.</p>
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">7. Contact</h2>
-    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">For any questions regarding these Terms, please contact us at <a href="mailto:team@smartordi.eu" style="color:#1a7fd4;text-decoration:none">team@smartordi.eu</a>.</p>
+    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">For any questions regarding these Terms, please contact us at <a href="mailto:team@smartordi.eu" style="color:#0061a4;text-decoration:none">team@smartordi.eu</a>.</p>
     <div style="margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center">&#169; 2026 Smartordi OG</div>
   </div>
 </div>
@@ -15566,7 +15570,7 @@ function closeSidebar() {
     <h1 style="font-size:24px;font-weight:800;color:#1e293b;margin:0 0 4px">Privacy Policy</h1>
     <p style="font-size:13px;color:#94a3b8;margin:0 0 32px">Last updated: June 2026</p>
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">1. Controller</h2>
-    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">Data controller: Smartordi OG, Steingasse 6a, 4020 Linz, Austria. Contact: <a href="mailto:team@smartordi.eu" style="color:#1a7fd4;text-decoration:none">team@smartordi.eu</a></p>
+    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">Data controller: Smartordi OG, Steingasse 6a, 4020 Linz, Austria. Contact: <a href="mailto:team@smartordi.eu" style="color:#0061a4;text-decoration:none">team@smartordi.eu</a></p>
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">2. Data We Collect</h2>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">Trabis stores all data exclusively in your browser&apos;s localStorage on your own device. This includes your business name, transaction records, and app settings. No personal data is transmitted to or stored on our servers.</p>
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">3. No Third-Party Sharing</h2>
@@ -15578,7 +15582,7 @@ function closeSidebar() {
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">6. Data Security</h2>
     <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">Since all data is stored on your device, you are responsible for its security. We recommend keeping your device and browser up to date and protected with a strong passcode or password.</p>
     <h2 style="font-size:16px;font-weight:700;color:#1e293b;margin:0 0 8px">7. Contact</h2>
-    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">For privacy-related inquiries, please contact us at <a href="mailto:team@smartordi.eu" style="color:#1a7fd4;text-decoration:none">team@smartordi.eu</a>.</p>
+    <p style="font-size:14px;color:#475569;line-height:1.8;margin:0 0 24px">For privacy-related inquiries, please contact us at <a href="mailto:team@smartordi.eu" style="color:#0061a4;text-decoration:none">team@smartordi.eu</a>.</p>
     <div style="margin-top:48px;padding-top:20px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center">&#169; 2026 Smartordi OG</div>
   </div>
 </div>
@@ -15599,9 +15603,9 @@ function closeSidebar() {
       <input type="email" id="ivshCustomEmail" placeholder="Email address" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
       <input type="tel" id="ivshCustomPhone" placeholder="WhatsApp number (with country code)" style="padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:14px;width:100%;box-sizing:border-box;margin-bottom:8px">
     </div>
-    <div id="ivshError" style="display:none;color:#dc2626;font-size:12px;margin-bottom:8px"></div>
+    <div id="ivshError" style="display:none;color:#bb1614;font-size:12px;margin-bottom:8px"></div>
     <div style="display:flex;gap:10px;margin-top:8px">
-      <button type="button" onclick="sendInvoiceShare('email')" style="flex:1;padding:12px;border:none;background:#1a7fd4;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-email"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</button>
+      <button type="button" onclick="sendInvoiceShare('email')" style="flex:1;padding:12px;border:none;background:#0061a4;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-email"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7 12.7 13.1a1.94 1.94 0 0 1-2.06 0L2 7"/></svg> Email</button>
       <button type="button" onclick="sendInvoiceShare('whatsapp')" style="flex:1;padding:12px;border:none;background:#25d366;color:#fff;border-radius:12px;cursor:pointer;font-size:14px;font-weight:600" id="ivsh-btn-wa"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg> WhatsApp</button>
     </div>
     <div style="margin-top:8px">
