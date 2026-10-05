@@ -21,7 +21,7 @@ button{cursor:pointer}
 /* login + client list */
 .auth-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
 .auth-card{background:var(--card);border-radius:20px;padding:34px 30px;box-shadow:var(--shadow);width:100%;max-width:400px;text-align:center}
-.auth-logo{width:56px;height:56px;border-radius:14px;margin-bottom:12px}
+.auth-logo{width:64px;height:64px;margin-bottom:12px}
 .auth-title{font-size:20px;font-weight:800;margin-bottom:4px}
 .auth-sub{font-size:13px;color:var(--text2);margin-bottom:22px}
 .auth-input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:14px;background:var(--card2);color:var(--text);margin-bottom:12px;outline:none}
@@ -38,7 +38,9 @@ button{cursor:pointer}
 /* shell */
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 28px;background:var(--card);border-bottom:1px solid var(--border)}
 .tb-brand{display:flex;align-items:center;gap:12px;min-width:0}
-.tb-brand img{width:40px;height:40px;border-radius:12px;flex:none}
+.tb-brand img{width:46px;height:46px;flex:none}
+.tb-t1 i{font-style:normal;color:#2196f3}
+.tb-t1{color:#0061a4}
 .tb-t1{font-weight:800;font-size:17px;line-height:1.15}.tb-t2{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:46vw}
 .tb-act{display:flex;gap:8px;flex:none}
 .tb-btn{padding:8px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);color:var(--text2);font-size:12.5px;font-weight:700}
@@ -137,7 +139,7 @@ button{cursor:pointer}
 
 <div id="screenLogin" class="auth-wrap">
   <div class="auth-card">
-    <img src="logo-circle.png" class="auth-logo" alt="Trabis"/>
+    <img src="logo-infinity.svg" class="auth-logo" alt="Trabis"/>
     <div class="auth-title">Buchhalter-Zugang</div>
     <div class="auth-sub">Nur-Lese-Ansicht für Steuerberater</div>
     <div class="auth-error" id="loginError"></div>
@@ -160,7 +162,7 @@ button{cursor:pointer}
 
 <div id="screenApp" style="display:none">
   <div class="topbar">
-    <div class="tb-brand"><img src="logo-circle.png" alt="Trabis"/><div><div class="tb-t1">Trabis <span class="ro-badge">Nur lesen</span></div><div class="tb-t2" id="tbClient">—</div></div></div>
+    <div class="tb-brand"><img src="logo-infinity.svg" alt="Trabis"/><div><div class="tb-t1">Tra<i>bis</i> <span class="ro-badge">Nur lesen</span></div><div class="tb-t2" id="tbClient">—</div></div></div>
     <div class="tb-act">
       <button class="tb-btn" onclick="buShowClients()">Mandant wechseln</button>
       <button class="tb-btn" onclick="buOpenLegal()">Rechtliches</button>
