@@ -1318,6 +1318,7 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="trabis-package.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
@@ -2238,6 +2239,25 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-about-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
+  <div id="settings-acc-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)">
+    <div id="accTitle" style="font-weight:700;font-size:15px;margin-bottom:4px">Tax advisor package</div>
+    <div id="accSub" style="font-size:12px;color:var(--text3);margin-bottom:12px"></div>
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <label style="flex:1;font-size:11px;color:var(--text3)"><span id="accFromL">From</span><input type="month" id="accFrom" style="box-sizing:border-box;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px"/></label>
+      <label style="flex:1;font-size:11px;color:var(--text3)"><span id="accToL">To</span><input type="month" id="accTo" style="box-sizing:border-box;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px"/></label>
+    </div>
+    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
+      <button type="button" class="gov-chip" onclick="accPreset('month')" id="accPMonth">Month</button>
+      <button type="button" class="gov-chip" onclick="accPreset('quarter')" id="accPQuarter">Quarter</button>
+      <button type="button" class="gov-chip" onclick="accPreset('year')" id="accPYear">Year</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button type="button" id="accPdfBtn" onclick="accPack('pdf')" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer">PDF</button>
+      <button type="button" id="accXlsxBtn" onclick="accPack('xlsx')" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer">Excel</button>
+      <button type="button" id="accCsvBtn" onclick="accPack('csv')" style="box-sizing:border-box;width:100%;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">CSV</button>
+    </div>
+    <div id="accStatus" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
+  </div>
   <div id="settings-session-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px">
     <button type="button" id="sessSampleBtn" onclick="sampleToggle()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:600;cursor:pointer">Load sample invoices</button>
     <button type="button" id="sessLogoutBtn" onclick="logout()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer">Log out</button>
@@ -10510,6 +10530,20 @@ var SETTINGS_L = {
   sampleRemove: {en:'Remove sample invoices', ar:'حذف الفواتير التجريبية', de:'Beispiel-Rechnungen entfernen'},
   sampleAsk:    {en:'Add sample transport invoices (PDF) for the last 3 months to this account? You can remove them again.', ar:'إضافة فواتير نقل تجريبية (PDF) لآخر 3 شهور لهذا الحساب؟ تقدر تحذفها بعدين.', de:'Beispiel-Rechnungen (PDF) der letzten 3 Monate zu diesem Konto hinzufügen? Sie können sie wieder entfernen.'},
   sampleRmAsk:  {en:'Remove all sample invoices? Your own entries stay.', ar:'حذف كل الفواتير التجريبية؟ بياناتك الخاصة هتفضل.', de:'Alle Beispiel-Rechnungen entfernen? Ihre eigenen Einträge bleiben.'},
+  accTitle: {en:'Tax advisor package', ar:'حزمة المحاسب الضريبي', de:'Steuerberater-Paket'},
+  accSub: {en:'PDF with all invoices (income and expenses) + Excel with the figures, for the chosen period.', ar:'PDF بكل الفواتير (دخل ومصروفات) + Excel بالأرقام للفترة المختارة.', de:'PDF mit allen Belegen (Einnahmen und Ausgaben) + Excel mit den Zahlen für den gewählten Zeitraum.'},
+  accFrom: {en:'From', ar:'من', de:'Von'},
+  accTo: {en:'To', ar:'إلى', de:'Bis'},
+  accPMonth: {en:'This month', ar:'الشهر ده', de:'Dieser Monat'},
+  accPQuarter: {en:'This quarter', ar:'الربع ده', de:'Dieses Quartal'},
+  accPYear: {en:'This year', ar:'السنة دي', de:'Dieses Jahr'},
+  accPdf: {en:'PDF with invoices', ar:'PDF بالفواتير', de:'PDF mit Belegen'},
+  accXlsx: {en:'Excel (figures)', ar:'Excel (الأرقام)', de:'Excel (Zahlen)'},
+  accCsv: {en:'CSV for import', ar:'CSV للاستيراد', de:'CSV für Import'},
+  accBusy: {en:'Preparing…', ar:'جاري التجهيز…', de:'Wird erstellt…'},
+  accDone: {en:'Done — file downloaded.', ar:'تم — الملف اتنزّل.', de:'Fertig — Datei heruntergeladen.'},
+  accNone: {en:'No entries in this period.', ar:'مفيش بنود في الفترة دي.', de:'Keine Buchungen in diesem Zeitraum.'},
+  accOffline: {en:'Invoices could not be merged (no internet for the PDF library) — the PDF contains the registers only.', ar:'مقدرتش أدمج الفواتير (مفيش إنترنت لمكتبة الـ PDF) — الملف فيه الجداول بس.', de:'Belege konnten nicht eingefügt werden (keine Internetverbindung) — das PDF enthält nur die Verzeichnisse.'},
   dangerTitle:  {en:'Danger Zone', ar:'منطقة الخطر', de:'Gefahrenzone'},
   deleteAccount:{en:'Delete Account', ar:'حذف الحساب', de:'Konto löschen'},
 };
@@ -10934,6 +10968,7 @@ function renderAboutSection() {
 }
 
 function renderDangerSection() {
+  accRenderLabels();
   var lo = document.getElementById('sessLogoutBtn'), dm = document.getElementById('sessDemoBtn');
   if(lo) lo.textContent = stx('logoutBtn');
   var sb = document.getElementById('sessSampleBtn');
@@ -13447,6 +13482,72 @@ function seedDemoInvoiceCases() {
     t.invoiceName = (t.type === 'income' ? 'Ausgangsrechnung ' : 'Eingangsrechnung ') + t.name + (pdf ? '.pdf' : '.svg');
   });
   save();
+}
+
+// ── ACCOUNTANT PACKAGE (PDF with invoices + Excel/CSV) ──
+function accRenderLabels() {
+  var map = {accTitle:'accTitle', accSub:'accSub', accFromL:'accFrom', accToL:'accTo', accPMonth:'accPMonth', accPQuarter:'accPQuarter', accPYear:'accPYear', accPdfBtn:'accPdf', accXlsxBtn:'accXlsx', accCsvBtn:'accCsv'};
+  Object.keys(map).forEach(function(id) { var el = document.getElementById(id); if(el) el.textContent = stx(map[id]); });
+  var f = document.getElementById('accFrom'), t = document.getElementById('accTo');
+  if(f && !f.value) accPreset('month');
+}
+function accPreset(kind) {
+  var n = new Date(), y = n.getFullYear(), m = n.getMonth() + 1, a, b;
+  if(kind === 'quarter') { var q = Math.floor((m - 1) / 3); a = y + '-' + pad2(q * 3 + 1); b = y + '-' + pad2(q * 3 + 3); }
+  else if(kind === 'year') { a = y + '-01'; b = y + '-12'; }
+  else { a = b = y + '-' + pad2(m); }
+  document.getElementById('accFrom').value = a; document.getElementById('accTo').value = b;
+}
+function accAttachment(tx) {
+  function fromUrl(u) {
+    var m = /^data:([^;,]+)[^,]*;base64,(.*)$/.exec(u || '');
+    if(!m) return null;
+    var bin = atob(m[2]), bytes = new Uint8Array(bin.length);
+    for(var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return {bytes: bytes, type: m[1]};
+  }
+  if(tx.invoice) return Promise.resolve(fromUrl(tx.invoice));
+  if(tx.receiptId) {
+    return receiptGet(tx.receiptId).then(function(rec) {
+      if(!rec || !rec.blob) return null;
+      return rec.blob.arrayBuffer().then(function(ab) { return {bytes: new Uint8Array(ab), type: rec.type || rec.blob.type || ''}; });
+    });
+  }
+  return Promise.resolve(null);
+}
+function accEmployeeRows(from, to) {
+  var rows = [];
+  (state.employees || []).forEach(function(emp) {
+    TrabisPackage.monthRange(from, to).forEach(function(mk) {
+      var st = wtMonthStats(emp, mk), vac = wtVacation(emp, mk);
+      if(!(st.hours > 0 || st.urlaub || st.krank || st.karenz)) return;
+      rows.push({name: wtEmpName(emp), month: mk, hours: st.hours, workDays: st.workDays, urlaub: st.urlaub, krank: st.krank,
+                 karenz: st.karenz, feiertag: st.feiertag, entitled: vac.entitled || 0, rest: vac.rest || 0});
+    });
+  });
+  return rows;
+}
+function accPack(kind) {
+  var from = document.getElementById('accFrom').value, to = document.getElementById('accTo').value;
+  var st = document.getElementById('accStatus');
+  if(!from || !to) return;
+  if(from > to) { var sw = from; from = to; to = sw; }
+  st.textContent = stx('accBusy');
+  var txs = (state.transactions || []).map(function(t) {
+    return {id: t.id, type: t.type, name: t.name, amount: t.amount, vatRate: t.vatRate || 0, date: t.date, invoice: t.invoice, receiptId: t.receiptId,
+            category: t.category ? tc(t.category) : '', party: t.clientName || t.supplierName || ''};
+  });
+  TrabisPackage.build({
+    company: {name: state.businessName, address: state.businessAddress, taxId: state.businessTaxId},
+    from: from, to: to, transactions: txs, employees: accEmployeeRows(from, to), getAttachment: accAttachment,
+    want: {pdf: kind === 'pdf', xlsx: kind === 'xlsx', csv: kind === 'csv'}
+  }).then(function(r) {
+    if(!r.counts.income && !r.counts.expense) { st.textContent = stx('accNone'); return; }
+    if(kind === 'pdf') TrabisPackage.download(r.pdf, r.base + '.pdf', 'application/pdf');
+    if(kind === 'xlsx') TrabisPackage.download(r.xlsx, r.base + '.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    if(kind === 'csv') TrabisPackage.download(r.csv, r.base + '.csv', 'text/csv;charset=utf-8');
+    st.textContent = r.pdfError ? stx('accOffline') : stx('accDone');
+  }).catch(function(e) { st.textContent = 'Error: ' + (e && e.message || e); });
 }
 
 function sampleLoaded() {
