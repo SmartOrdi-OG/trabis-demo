@@ -2239,25 +2239,6 @@ function(t){t.__bidiEngine__=t.prototype.__bidiEngine__=function(t){var r,n,i,a,
 
   <div id="settings-about-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:var(--shadow)"></div>
 
-  <div id="settings-acc-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow)">
-    <div id="accTitle" style="font-weight:700;font-size:15px;margin-bottom:4px">Tax advisor package</div>
-    <div id="accSub" style="font-size:12px;color:var(--text3);margin-bottom:12px"></div>
-    <div style="display:flex;gap:8px;margin-bottom:10px">
-      <label style="flex:1;font-size:11px;color:var(--text3)"><span id="accFromL">From</span><input type="month" id="accFrom" style="box-sizing:border-box;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px"/></label>
-      <label style="flex:1;font-size:11px;color:var(--text3)"><span id="accToL">To</span><input type="month" id="accTo" style="box-sizing:border-box;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px"/></label>
-    </div>
-    <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap">
-      <button type="button" class="gov-chip" onclick="accPreset('month')" id="accPMonth">Month</button>
-      <button type="button" class="gov-chip" onclick="accPreset('quarter')" id="accPQuarter">Quarter</button>
-      <button type="button" class="gov-chip" onclick="accPreset('year')" id="accPYear">Year</button>
-    </div>
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <button type="button" id="accPdfBtn" onclick="accPack('pdf')" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer">PDF</button>
-      <button type="button" id="accXlsxBtn" onclick="accPack('xlsx')" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer">Excel</button>
-      <button type="button" id="accCsvBtn" onclick="accPack('csv')" style="box-sizing:border-box;width:100%;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">CSV</button>
-    </div>
-    <div id="accStatus" style="font-size:12px;color:var(--text3);margin-top:10px;min-height:16px"></div>
-  </div>
   <div id="settings-session-card" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:16px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px">
     <button type="button" id="sessSampleBtn" onclick="sampleToggle()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:600;cursor:pointer">Load sample invoices</button>
     <button type="button" id="sessLogoutBtn" onclick="logout()" style="box-sizing:border-box;width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px;font-weight:600;cursor:pointer">Log out</button>
@@ -8927,6 +8908,7 @@ var HOMEP_L = {
   navFleet: {en:'Fleet',             ar:'الأسطول',          de:'Fuhrpark'},
   navCont:  {en:'Contacts',          ar:'جهات الاتصال',     de:'Kontakte'},
   navEmp:   {en:'Employees',         ar:'الموظفين',         de:'Mitarbeiter'},
+  navPkg:   {en:'Tax advisor package', ar:'حزمة المحاسب', de:'Steuerberater-Paket'},
   navLog:   {en:'Daily Log',         ar:'سجل الأعمال',      de:'Tagesprotokoll'},
   navGov:   {en:'Government Entities', ar:'الجهات الحكومية', de:'Behörden'},
   navPrj:   {en:'Projects',          ar:'المشاريع',         de:'Projekte'},
@@ -9680,12 +9662,13 @@ function renderHomeBiz() {
     {view:'gov',       label:'navGov',   icon:'landmark',  show: true},
     {view:'employees', label:'navEmp',   icon:'users',     show: true},
     {view:'projects',  label:'navPrj',   icon:'briefcase', show: true},
-    {view:'agenda',    label:'navLog',   icon:'checklist', show: true}
+    {view:'agenda',    label:'navLog',   icon:'checklist', show: true},
+    {view:'acc',       label:'navPkg',   icon:'fileText',  show: true}
   ];
   var h = '';
   items.forEach(function(it) {
     if(!it.show) return;
-    h += '<button type="button" class="hp-nav" onclick="showNav(\'' + it.view + '\')">' +
+    h += '<button type="button" class="hp-nav" onclick="' + (it.view === 'acc' ? 'openAccPackage()' : 'showNav(\'' + it.view + '\')') + '">' +
          '<span class="hp-nav-ico">' + svgIcon(it.icon, 15) + '</span>' +
          '<span class="hp-nav-lbl">' + escHtml(hptx(it.label)) + '</span>' +
          '<span class="hp-nav-car">&rsaquo;</span></button>';
@@ -10967,7 +10950,6 @@ function renderAboutSection() {
 }
 
 function renderDangerSection() {
-  accRenderLabels();
   var lo = document.getElementById('sessLogoutBtn'), dm = document.getElementById('sessDemoBtn');
   if(lo) lo.textContent = stx('logoutBtn');
   var sb = document.getElementById('sessSampleBtn');
@@ -13484,11 +13466,36 @@ function seedDemoInvoiceCases() {
 }
 
 // ── ACCOUNTANT PACKAGE (PDF with invoices + Excel/CSV) ──
-function accRenderLabels() {
-  var map = {accTitle:'accTitle', accSub:'accSub', accFromL:'accFrom', accToL:'accTo', accPMonth:'accPMonth', accPQuarter:'accPQuarter', accPYear:'accPYear', accPdfBtn:'accPdf', accXlsxBtn:'accXlsx', accCsvBtn:'accCsv'};
-  Object.keys(map).forEach(function(id) { var el = document.getElementById(id); if(el) el.textContent = stx(map[id]); });
-  var f = document.getElementById('accFrom'), t = document.getElementById('accTo');
-  if(f && !f.value) accPreset('month');
+function openAccPackage() {
+  var ov = document.getElementById('accPkgOverlay');
+  if(!ov) {
+    ov = document.createElement('div');
+    ov.id = 'accPkgOverlay';
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(15,30,50,.45);z-index:9000;display:flex;align-items:flex-end;justify-content:center';
+    ov.onclick = function(e) { if(e.target === ov) closeAccPackage(); };
+    document.body.appendChild(ov);
+  }
+  var inp = 'box-sizing:border-box;width:100%;margin-top:4px;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--card2);color:var(--text);font-size:14px';
+  ov.innerHTML = '<div style="background:var(--card);width:100%;max-width:480px;border-radius:20px 20px 0 0;padding:20px 18px 26px;box-shadow:0 -8px 30px rgba(0,0,0,.18)">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><div style="font-weight:800;font-size:17px">' + escHtml(stx('accTitle')) + '</div>'
+    + '<button type="button" onclick="closeAccPackage()" style="border:none;background:var(--card2);width:34px;height:34px;border-radius:50%;font-size:18px;color:var(--text2);cursor:pointer">&times;</button></div>'
+    + '<div style="font-size:12px;color:var(--text3);margin-bottom:14px">' + escHtml(stx('accSub')) + '</div>'
+    + '<div style="display:flex;gap:8px;margin-bottom:10px">'
+    + '<label style="flex:1;font-size:11px;color:var(--text3)">' + escHtml(stx('accFrom')) + '<input type="month" id="accFrom" style="' + inp + '"/></label>'
+    + '<label style="flex:1;font-size:11px;color:var(--text3)">' + escHtml(stx('accTo')) + '<input type="month" id="accTo" style="' + inp + '"/></label></div>'
+    + '<div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap">'
+    + ['month:accPMonth', 'quarter:accPQuarter', 'year:accPYear'].map(function(p) { p = p.split(':'); return '<button type="button" class="gov-chip" onclick="accPreset(\'' + p[0] + '\')">' + escHtml(stx(p[1])) + '</button>'; }).join('') + '</div>'
+    + '<div style="display:flex;flex-direction:column;gap:8px">'
+    + '<button type="button" onclick="accPack(\'pdf\')" style="box-sizing:border-box;width:100%;padding:13px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:14px;font-weight:700;cursor:pointer">' + escHtml(stx('accPdf')) + '</button>'
+    + '<button type="button" onclick="accPack(\'xlsx\')" style="box-sizing:border-box;width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--primary);background:var(--card2);color:var(--primary);font-size:14px;font-weight:700;cursor:pointer">' + escHtml(stx('accXlsx')) + '</button>'
+    + '<button type="button" onclick="accPack(\'csv\')" style="box-sizing:border-box;width:100%;padding:10px;border-radius:12px;border:1.5px solid var(--border);background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer">' + escHtml(stx('accCsv')) + '</button></div>'
+    + '<div id="accStatus" style="font-size:12px;color:var(--text3);margin-top:12px;min-height:16px"></div></div>';
+  ov.style.display = 'flex';
+  accPreset('month');
+}
+function closeAccPackage() {
+  var ov = document.getElementById('accPkgOverlay');
+  if(ov) ov.style.display = 'none';
 }
 function accPreset(kind) {
   var n = new Date(), y = n.getFullYear(), m = n.getMonth() + 1, a, b;
