@@ -1,0 +1,60 @@
+# Applies patches pushed to the `patch-inbox` branch onto `main`.
+#
+# Why: changes are sent through the GitHub connector, which can only upload whole
+# files. Sending a small patch instead of every changed file is cheaper and safer:
+# `git am` refuses a patch whose context does not match main exactly, so a mistyped
+# patch changes nothing. Only people with write access can push to patch-inbox.
+#
+# How: add one or more `patches/NNNN-*.patch` files (git format-patch output) to
+# patch-inbox. This job applies them in name order on top of main, pushes main,
+# then empties patches/ on patch-inbox. To retire it: delete this file.
+name: Apply patch to main
+
+on:
+  push:
+    branches: [patch-inbox]
+    paths: ['patches/**']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: apply-patch
+  cancel-in-progress: false
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Collect patches from patch-inbox
+        id: collect
+        run: |
+          git fetch origin patch-inbox
+          rm -rf /tmp/patches && mkdir -p /tmp/patches
+          git archive origin/patch-inbox patches 2>/dev/null | tar -x -C /tmp 2>/dev/null || true
+          ls /tmp/patches/*.patch >/dev/null 2>&1 && echo "found=1" >> "$GITHUB_OUTPUT" || echo "found=0" >> "$GITHUB_OUTPUT"
+          ls -la /tmp/patches || true
+
+      - name: Apply onto main
+        if: steps.collect.outputs.found == '1'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for p in $(ls /tmp/patches/*.patch | sort); do
+            echo "Applying $p"
+            git am --ignore-whitespace --committer-date-is-author-date "$p" || { git am --abort; echo "::error::Patch did not apply: $p — main is unchanged"; exit 1; }
+          done
+          git push origin HEAD:main
+
+      - name: Empty the inbox
+        if: steps.collect.outputs.found == '1'
+        run: |
+          git checkout -B patch-inbox origin/patch-inbox
+          git rm -r -q patches
+          git commit -q -m "patch-inbox: applied to main"
+          git push origin patch-inbox
