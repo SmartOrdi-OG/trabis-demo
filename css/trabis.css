@@ -978,3 +978,9 @@ body.art .carry-wrap .carry-v{font-size:15px}
 .gov-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:10px}
 .gov-btns .gov-open{flex:1;margin-top:0;width:auto}
 .gov-pay-btn{font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--primary);border:none;border-radius:10px;padding:8px 12px;cursor:pointer}
+
+/* ── Timesheet quick entry: week + weekdays ── */
+.wt-days{display:flex;flex-wrap:wrap;gap:5px}
+.wt-day{display:inline-flex;align-items:center;gap:4px;padding:6px 8px;border:1.5px solid var(--border);border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;user-select:none;background:var(--card)}
+.wt-day input{margin:0;accent-color:var(--primary)}
+.wt-day:has(input:checked){border-color:var(--primary);color:var(--primary);background:rgba(0,97,164,.06)}

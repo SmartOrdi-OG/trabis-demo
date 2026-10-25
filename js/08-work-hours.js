@@ -67,13 +67,20 @@ var WT_L = {
   manage:    {en:'Manage staff', ar:'إدارة الموظفين', de:'Personal verwalten'},
   quick:     {en:'Quick entry', ar:'إدخال سريع', de:'Schnell-Eintrag'},
   monFri:    {en:'Mon – Fri', ar:'الاثنين – الجمعة', de:'Mo – Fr'},
+  perWeek:   {en:'one week at a time', ar:'أسبوع كامل مرة واحدة', de:'wochenweise'},
   from:      {en:'From', ar:'من', de:'Von'},
   to:        {en:'To', ar:'إلى', de:'Bis'},
   brk:       {en:'Break (min)', ar:'استراحة (د)', de:'Pause (Min)'},
   apply:     {en:'Apply', ar:'تطبيق', de:'Anwenden'},
-  quickNote: {en:'Fills every Monday–Friday that is not vacation, sick leave or a public holiday.', ar:'يملأ كل أيام الاثنين–الجمعة اللي مش إجازة ولا مرض ولا عطلة رسمية.', de:'Füllt jeden Montag–Freitag, der kein Urlaub, Krankenstand oder Feiertag ist.'},
+  quickNote: {en:'Fills the ticked weekdays of the chosen week that are not vacation, sick leave or a public holiday. Change single days in the list below afterwards.', ar:'بيملا الأيام المتعلّم عليها في الأسبوع المختار، اللي مش إجازة ولا مرضي ولا عطلة رسمية. وبعدها تقدر تغيّر أي يوم لوحده من القايمة تحت.', de:'Füllt die angehakten Wochentage der gewählten Woche, die kein Urlaub, Krankenstand oder Feiertag sind. Einzelne Tage danach unten ändern.'},
+  week:      {en:'Week', ar:'الأسبوع', de:'Woche'},
+  wholeMonth:{en:'Whole month', ar:'الشهر كله', de:'Ganzer Monat'},
+  cw:        {en:'CW', ar:'أسبوع', de:'KW'},
+  days:      {en:'Days', ar:'الأيام', de:'Tage'},
+  noDays:    {en:'Tick at least one day', ar:'علّم على يوم واحد على الأقل', de:'Mindestens einen Tag anhaken'},
   overwrite: {en:'This replaces the times already entered on some days. Continue?', ar:'ده هيستبدل الأوقات المدخلة في بعض الأيام. تكمل؟', de:'Dadurch werden bereits eingetragene Zeiten überschrieben. Fortfahren?'},
   applied:   {en:'Applied to {n} working days', ar:'اتطبّق على {n} يوم عمل', de:'Auf {n} Arbeitstage angewendet'},
+  appliedNone:{en:'No free working day in this selection', ar:'مفيش يوم شغل فاضي في الاختيار ده', de:'Kein freier Arbeitstag in dieser Auswahl'},
   date:      {en:'Date', ar:'التاريخ', de:'Datum'},
   day:       {en:'Day', ar:'اليوم', de:'Tag'},
   status:    {en:'Status', ar:'الحالة', de:'Status'},
@@ -258,7 +265,11 @@ function wtRender() {
     +   '<div class="wt-field"><div class="wt-lbl">' + escHtml(wttx('period')) + '</div><div class="wt-month-nav"><button type="button" class="wt-arrow" onclick="wtShiftMonth(-1)">&lsaquo;</button><div class="wt-month-lbl">' + escHtml(mname) + '</div><button type="button" class="wt-arrow" onclick="wtShiftMonth(1)">&rsaquo;</button></div></div>'
     +   '<button type="button" class="wt-btn" onclick="wtClose();showNav(\'employees\')">' + escHtml(wttx('manage')) + '</button>'
     + '</div></div>'
-    + '<div class="wt-card">' + wtCardHd('bolt', 'amber', escHtml(wttx('quick')), escHtml(wttx('monFri'))) + '<div class="wt-card-body">'
+    + '<div class="wt-card">' + wtCardHd('bolt', 'amber', escHtml(wttx('quick')), escHtml(wttx('perWeek'))) + '<div class="wt-card-body">'
+    +   '<div class="wt-field"><div class="wt-lbl">' + escHtml(wttx('week')) + '</div><select class="wt-input" id="wtQWeek">' + wtWeekOptions(monthKey) + '</select></div>'
+    +   '<div class="wt-field"><div class="wt-lbl">' + escHtml(wttx('days')) + '</div><div class="wt-days">' + [1, 2, 3, 4, 5, 6, 0].map(function(d) {
+          return '<label class="wt-day"><input type="checkbox" id="wtQd' + d + '"' + ((WT.quickDays ? WT.quickDays.indexOf(d) >= 0 : d >= 1 && d <= 5) ? ' checked' : '') + '><span>' + escHtml(wtWd(d)) + '</span></label>';
+        }).join('') + '</div></div>'
     +   '<div class="wt-grid3"><div><div class="wt-lbl">' + escHtml(wttx('from')) + '</div><input class="wt-input" type="time" id="wtQFrom" value="08:00"></div>'
     +   '<div><div class="wt-lbl">' + escHtml(wttx('to')) + '</div><input class="wt-input" type="time" id="wtQTo" value="17:00"></div>'
     +   '<div><div class="wt-lbl">' + escHtml(wttx('brk')) + '</div><input class="wt-input" type="number" id="wtQBrk" min="0" step="5" value="30"></div></div>'
@@ -354,12 +365,16 @@ async function wtApplyQuick() {
   var emp = wtEmp(); if(!emp) return;
   var from = document.getElementById('wtQFrom').value, to = document.getElementById('wtQTo').value, brk = parseFloat(document.getElementById('wtQBrk').value) || 0;
   if(!from || !to) return;
-  var targets = whDaysInMonth(_whViewMonth).filter(function(day) {
-    var dow = wtDow(day);
-    if(dow === 0 || dow === 6) return false;
+  var dows = [0, 1, 2, 3, 4, 5, 6].filter(function(d) { var c = document.getElementById('wtQd' + d); return c && c.checked; });
+  if(!dows.length) { showToast(wttx('noDays')); return; }
+  var wk = (document.getElementById('wtQWeek') || {}).value || '';
+  var pool = wk ? wtWeekDays(wk) : whDaysInMonth(_whViewMonth);
+  var targets = pool.filter(function(day) {
+    if(dows.indexOf(wtDow(day)) < 0) return false;
     var i = wtDayInfo(emp, day);
     return !i.leave && !i.auto;
   });
+  if(!targets.length) { showToast(wttx('appliedNone')); return; }
   var clash = targets.filter(function(day) { var e = whDayEntry(emp, day); return e && (e.start !== from || e.end !== to || (e.breakMinutes || 0) !== brk); }).length;
   if(clash && !(await confirmAsync(wttx('quick'), wttx('overwrite')))) return;
   if(!emp.workHours) emp.workHours = [];
@@ -369,8 +384,41 @@ async function wtApplyQuick() {
     if(!e) { e = {id: Date.now() + idx, date: day, fromDate: day, toDate: day}; emp.workHours.push(e); }
     e.start = from; e.end = to; e.breakMinutes = brk; e.hours = h;
   });
+  WT.quickWeek = wk; WT.quickDays = dows;
   save(); wtRender();
   showToast(wttx('applied').replace('{n}', targets.length));
+}
+
+// ── Weeks for the quick entry: Monday–Sunday weeks that touch the month on screen ──
+function wtIsoDay(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+function wtWeekDays(mondayIso) {
+  var p = mondayIso.split('-'), out = [];
+  for(var i = 0; i < 7; i++) out.push(wtIsoDay(new Date(+p[0], +p[1] - 1, +p[2] + i)));
+  return out;
+}
+function wtIsoWeekNo(mondayIso) {
+  var p = mondayIso.split('-'), d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2] + 3));   // Thursday of that week
+  var y1 = new Date(Date.UTC(d.getUTCFullYear(), 0, 4));
+  return 1 + Math.round(((d - y1) / 86400000 - 3 + ((y1.getUTCDay() + 6) % 7)) / 7);
+}
+function wtWeeksOfMonth(monthKey) {
+  var p = monthKey.split('-'), first = new Date(+p[0], +p[1] - 1, 1), last = new Date(+p[0], +p[1], 0);
+  var mon = new Date(first); mon.setDate(first.getDate() - ((first.getDay() + 6) % 7));
+  var weeks = [];
+  while(mon <= last) { weeks.push(wtIsoDay(mon)); mon = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 7); }
+  return weeks;
+}
+// Default: the week picked last time, else the current week if it is in this month, else the first week.
+function wtWeekOptions(monthKey) {
+  var weeks = wtWeeksOfMonth(monthKey), now = today(), sel = '';
+  if(WT.quickWeek && weeks.indexOf(WT.quickWeek) >= 0) sel = WT.quickWeek;
+  else weeks.forEach(function(w) { var d = wtWeekDays(w); if(now >= d[0] && now <= d[6]) sel = w; });
+  if(!sel) sel = weeks[0];
+  function dm(iso) { return iso.substring(8, 10) + '.' + iso.substring(5, 7) + '.'; }
+  return weeks.map(function(w) {
+    var d = wtWeekDays(w);
+    return '<option value="' + w + '"' + (w === sel ? ' selected' : '') + '>' + escHtml(wttx('cw')) + ' ' + wtIsoWeekNo(w) + ' · ' + dm(d[0]) + ' – ' + dm(d[6]) + '</option>';
+  }).join('') + '<option value="">' + escHtml(wttx('wholeMonth')) + '</option>';
 }
 
 function wtExportPdf() {
