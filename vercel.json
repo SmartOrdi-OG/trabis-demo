@@ -1,5 +1,8 @@
 {
   "redirects": [
     { "source": "/", "destination": "/trabis.html", "permanent": false }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": { "patch-inbox": false }
+  }
 }
