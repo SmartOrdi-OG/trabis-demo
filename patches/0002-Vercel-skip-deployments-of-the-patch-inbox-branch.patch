@@ -1,0 +1,28 @@
+From 80d065c02cbedd8c8009a1970eddf753c50841a2 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 25 Oct 2026 23:35:20 +0100
+Subject: [PATCH 2/2] Vercel: skip deployments of the patch-inbox branch
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
+---
+ vercel.json | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/vercel.json b/vercel.json
+index 52f70bb..8ac4552 100644
+--- a/vercel.json
++++ b/vercel.json
+@@ -1,5 +1,8 @@
+ {
+   "redirects": [
+     { "source": "/", "destination": "/trabis.html", "permanent": false }
+-  ]
++  ],
++  "git": {
++    "deploymentEnabled": { "patch-inbox": false }
++  }
+ }
+-- 
+2.43.0
+

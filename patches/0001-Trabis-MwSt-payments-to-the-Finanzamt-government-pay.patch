@@ -1,0 +1,626 @@
+From 951ade2f39101bd8fc82e2d42c8b0c41f7dc2cc8 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Sun, 25 Oct 2026 23:22:12 +0100
+Subject: [PATCH 1/2] Trabis: MwSt payments to the Finanzamt + government
+ payments without invoice
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- MwSt-Zahlung: separate state.vatPayments (date, period, amount); lowers only the
+  MwSt of the month it pays for, never Netto; kept out of UVA/profit; each year
+  stands on its own. "Bezahlen" on the month card, prefilled with the month's open
+  VAT; settled month shows "bezahlt". Own group in the month's expenses.
+- Behörde bezahlen: pick an entity (incl. fixed list, created on first use), amount,
+  date -> expense with 0 % VAT, category Government, govId. Also from each entity
+  card. "Finanzamt — MwSt-Zahlung" opens the VAT payment instead.
+- CHANGES_FOR_BACKEND.md: steps 2 and 3 for the server build.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
+---
+ CHANGES_FOR_BACKEND.md |  15 +++
+ css/trabis.css         |  30 ++++++
+ js/01-core.js          |   3 +
+ js/09-home.js          |  24 ++++-
+ js/11-settings.js      |   3 +-
+ js/13b-vat-payments.js | 220 +++++++++++++++++++++++++++++++++++++++++
+ js/13c-gov-payments.js | 141 ++++++++++++++++++++++++++
+ js/14-system.js        |   2 +-
+ trabis.html            |   2 +
+ 9 files changed, 436 insertions(+), 4 deletions(-)
+ create mode 100644 js/13b-vat-payments.js
+ create mode 100644 js/13c-gov-payments.js
+
+diff --git a/CHANGES_FOR_BACKEND.md b/CHANGES_FOR_BACKEND.md
+index 18ae517..2368db9 100644
+--- a/CHANGES_FOR_BACKEND.md
++++ b/CHANGES_FOR_BACKEND.md
+@@ -417,3 +417,18 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
+ 
+ ## 4. Einnahmen / Ausgaben كتابات ملف (folder tabs)
+ - التاب المفتوحة لونها لون الصفحة ومتوصلة بيها (من غير خط تحتها)، والصفحة بتاعتها (الإيصالات + القايمة) جوه إطار واحد تحتها. المحتوى نفسه زي ما هو.
++
++## الخطوة 2: دفع الضريبة للفينانس (MwSt-Zahlung) وتصفيرها
++- **نوع بيانات جديد منفصل عن المعاملات:** `vatPayments: [{id, date:'YYYY-MM-DD', period:'YYYY-MM', amount}]`. `date` = يوم الدفع، `period` = **الشهر اللي الدفعة عنه** (قرار المالك). مش بيتحط في `transactions` عشان الـ UVA والتقارير والأرباح ما تحسبهوش — دفع الضريبة تسوية، مش مصروف تشغيل ولا Vorsteuer.
++- **أثره في الزالدو:** بيتخصم من MwSt **الشهر اللي الدفعة عنه** بس (ومن زالدو الشهور السابقة للشهور اللي بعده). الـ Netto ما بيتغيرش. كل سنة مستقلة (الزالدو السابق جوه نفس السنة بس — قرار المالك)؛ دفعة في يناير عن ديسمبر بتتسجل `period` = ديسمبر فبتتحسب في السنة اللي فاتت.
++  - مثال: سبتمبر MwSt 1.000 وأكتوبر 1.500؛ في أكتوبر اتدفع 1.000 عن سبتمبر → سبتمبر MwSt 0 «bezahlt»، أكتوبر لسه 1.500.
++  - لو الدفعة ملهاش `period` (بيانات قديمة) تتحسب على شهر `date`.
++- **في شاشة الشهر:** تحت كارت «Saldo <الشهر>» سطر «Offene MwSt gesamt (inkl. Vormonate)» (معلومة)، وزرار **Bezahlen** لما يكون على الشهر ده MwSt مستحقة. الشهر اللي اتصفّر بدفعة: MwSt € 0,00 أخضر + وسم «bezahlt». فرق أقل من سنت بيتعرض صفر.
++- **نافذة الدفع:** «Bezahlt für (Monat)» (شهر + سنة، افتراضي الشهر المعروض) · المستحق عن الشهر ده + زرار «Ganz bezahlen» · المبلغ (متعبي بالمستحق = تصفير) · تاريخ الدفع (افتراضي النهارده). تعديل/حذف بالضغط على السطر.
++- **في تاب Ausgaben للشهر اللي الدفعة عنه:** جروب «Finanzamt — MwSt-Zahlungen»: Netto 0 · MwSt = المبلغ · Total = المبلغ، والتاريخ = يوم الدفع.
++
++## الخطوة 3: مدفوعات الجهات الحكومية من غير فاتورة
++- زرار **«Behörde bezahlen»** فوق قايمة تاب Ausgaben، وزرار **«+ Zahlung erfassen»** في كارت كل جهة في صفحة Behörden.
++- النافذة: الجهة (الجهات الموجودة + القايمة الثابتة: Finanzamt, SVS, ÖGK, AMS, Arbeiterkammer, Wirtschaftskammer — لو اتختارت جهة من القايمة الثابتة لأول مرة بتتعمل تلقائي)، المبلغ، التاريخ (النهارده، أو أول الشهر المعروض لو بتسجّل في شهر تاني)، ملاحظة اختيارية.
++- **بيتحفظ كمعاملة عادية:** `{type:'expense', name:'<الجهة>[ · ملاحظة]', amount, category:'Government', vatRate:0, date, govId}` — من غير إيصال ومن غير ضريبة، وبيظهر على طول في مصاريف الشهر وفي عدّاد الجهة.
++- اختيار **«Finanzamt — MwSt-Zahlung»** من نفس القايمة بيفتح نافذة دفع الضريبة (الخطوة 2) بدل ما يسجل مصروف.
+diff --git a/css/trabis.css b/css/trabis.css
+index 6613a6f..c0b3094 100644
+--- a/css/trabis.css
++++ b/css/trabis.css
+@@ -948,3 +948,33 @@ body.art .carry-wrap .carry-v{font-size:15px}
+ [data-tx="expense"] > .tx-tabs + .tx-split{border-top-right-radius:0}
+ [dir=rtl] [data-tx="income"] > .tx-tabs + .tx-split{border-top-left-radius:18px;border-top-right-radius:0}
+ [dir=rtl] [data-tx="expense"] > .tx-tabs + .tx-split{border-top-right-radius:18px;border-top-left-radius:0}
++
++/* ── MwSt payment to the Finanzamt ── */
++.vat-pay-foot{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:12.5px;color:var(--text2)}
++.vat-pay-foot-v{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
++.vat-pay-foot .vat-pay-btn{margin-inline-start:auto}
++.vat-pay-btn{font:inherit;font-size:11.5px;font-weight:700;color:#fff;background:#c2410c;border:none;border-radius:8px;padding:5px 12px;cursor:pointer}
++.vat-pay-btn:hover{filter:brightness(1.08)}
++.carry-wrap .vat-pay-btn{display:none !important}
++.vat-pay-modal{padding-top:22px}
++.vat-pay-ttl{font-size:17px;font-weight:800;margin:0 40px 14px 0}
++[dir=rtl] .vat-pay-ttl{margin:0 0 14px 40px}
++.vat-pay-open{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;color:var(--text2);background:rgba(194,65,12,.07);border-radius:12px;padding:10px 12px;margin-bottom:14px}
++.vat-pay-open b{color:#c2410c;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
++.vat-pay-use{margin-inline-start:auto;font:inherit;font-size:12px;font-weight:700;color:#c2410c;background:var(--card);border:1.5px solid rgba(194,65,12,.35);border-radius:9px;padding:5px 10px;cursor:pointer}
++.vat-pay-lbl{display:block;font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:6px}
++.vat-pay-hint{font-size:12px;color:var(--text3);margin:-4px 0 10px}
++.vat-pay-err{font-size:12.5px;color:var(--expense);min-height:16px;margin-bottom:6px}
++.vat-pay-btns{display:flex;gap:10px}
++.vat-pay-btns .wt-btn{flex:1;justify-content:center}
++.vat-pay-del{font:inherit;font-size:14px;font-weight:700;color:var(--expense);background:none;border:1.5px solid var(--expense);border-radius:12px;padding:12px 18px;cursor:pointer}
++.tx-row-vatpay .tx-row-nm{color:#c2410c}
++.vat-pay-per{display:flex;gap:8px}
++.vat-pay-per select{flex:1}
++
++/* ── Payments to government entities ── */
++.gov-pay-top{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:0 0 12px;padding:10px 12px;font:inherit;font-size:13px;font-weight:700;color:var(--primary);background:var(--card);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer}
++.gov-pay-top:hover{border-color:var(--primary)}
++.gov-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:10px}
++.gov-btns .gov-open{flex:1;margin-top:0;width:auto}
++.gov-pay-btn{font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--primary);border:none;border-radius:10px;padding:8px 12px;cursor:pointer}
+diff --git a/js/01-core.js b/js/01-core.js
+index 52325d2..060e9a0 100644
+--- a/js/01-core.js
++++ b/js/01-core.js
+@@ -282,6 +282,7 @@ var state = {
+   theme: 'light',
+   businessName: '',
+   fixedIncome: [],
++  vatPayments: [],   // MwSt paid to the Finanzamt: {id, date:'YYYY-MM-DD', period:'YYYY-MM' (month it pays for), amount}
+   issuedInvoices: [],
+   receipts: [],
+   receivedInvoices: [],
+@@ -509,6 +510,7 @@ function save() {
+   localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
+   localStorage.setItem(uk('theme'), state.theme);
+   localStorage.setItem(uk('fixed_income'), JSON.stringify(state.fixedIncome||[]));
++  localStorage.setItem(uk('vat_payments'), JSON.stringify(state.vatPayments||[]));
+   localStorage.setItem(uk('issued_inv'), JSON.stringify(state.issuedInvoices||[]));
+   localStorage.setItem(uk('receipts'), JSON.stringify(state.receipts||[]));
+   localStorage.setItem(uk('received_inv'), JSON.stringify(state.receivedInvoices||[]));
+@@ -561,6 +563,7 @@ function loadUserData() {
+   state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
+   state.theme = localStorage.getItem(uk('theme')) || 'light';
+   state.fixedIncome = JSON.parse(localStorage.getItem(uk('fixed_income')) || '[]');
++  state.vatPayments = JSON.parse(localStorage.getItem(uk('vat_payments')) || '[]');
+   state.issuedInvoices = JSON.parse(localStorage.getItem(uk('issued_inv')) || '[]');
+   state.receipts = JSON.parse(localStorage.getItem(uk('receipts')) || '[]');
+   state.receivedInvoices = JSON.parse(localStorage.getItem(uk('received_inv')) || '[]');
+diff --git a/js/09-home.js b/js/09-home.js
+index 2bc7d9b..31db58a 100644
+--- a/js/09-home.js
++++ b/js/09-home.js
+@@ -762,7 +762,8 @@ function renderGovPage() {
+           return '<div class="gov-pay"><span>' + escHtml(tx.name || '') + '</span><span class="gov-sub">' + escHtml(formatDateDisplay(tx.date)) + '</span><b>-' + fmt(tx.amount) + '</b></div>';
+         }).join('') : '<div class="gov-sub">' + escHtml(govtx('noPay')) + '</div>')
+       + '</div>'
+-      + '<button type="button" class="gov-open" onclick="openContactProfile(' + c.id + ')">' + escHtml(govtx('archive')) + ' &rsaquo;</button>'
++      + '<div class="gov-btns"><button type="button" class="gov-pay-btn" onclick="openGovPayment(' + c.id + ')">+ ' + escHtml(gptx('cardBtn')) + '</button>'
++      + '<button type="button" class="gov-open" onclick="openContactProfile(' + c.id + ')">' + escHtml(govtx('archive')) + ' &rsaquo;</button></div>'
+       + '</div>';
+   });
+   var have = ents.map(function(c) { return (c.name || '').toLowerCase(); });
+@@ -1171,6 +1172,8 @@ function carryInTotals(y, m) {
+     if(tx.type === 'income')      { netto += v.netto; vat += v.steuer; }
+     else if(tx.type === 'expense'){ netto -= v.netto; vat -= v.steuer; }
+   });
++  // MwSt paid to the Finanzamt settles VAT only — no Netto
++  vatPaymentsWhere(function(py, pm) { return py === y && pm < m; }).forEach(function(p) { vat -= p.amount; });
+   return {netto: netto, vat: vat, total: netto + vat};
+ }
+ 
+@@ -1185,6 +1188,7 @@ function monthTotals(y, m) {
+     var sm = sumRows(fixedRowsFor(p[0], y, m));
+     netto += p[1] * sm.netto; vat += p[1] * sm.steuer;
+   });
++  vatPaymentsWhere(function(py, pm) { return py === y && pm === m; }).forEach(function(p) { vat -= p.amount; });
+   return {netto: netto, vat: vat, total: netto + vat};
+ }
+ 
+@@ -1201,7 +1205,10 @@ function renderMonthCard() {
+   [['mcNetL','carryNet'],['mcVatL','carryVat'],['mcTotL','carryTot']].forEach(function(p) {
+     var el = document.getElementById(p[0]); if(el) el.textContent = hptx(p[1]);
+   });
++  // a month settled by a payment can keep a fraction of a cent from rounding — show it as settled
++  if(Math.abs(c.vat) < 0.01) { c.vat = 0; c.total = c.netto; }
+   put('mcNetV', c.netto); putVat('mcVatV', c.vat); put('mcTotV', c.total);
++  renderVatPayBtn();
+ }
+ 
+ function renderCarryCard() {
+@@ -1241,7 +1248,15 @@ function putVat(id, v) {
+   if(!el) return;
+   el.classList.remove('vat-owed', 'vat-credit');
+   el.style.color = '';
+-  if(Math.abs(v) < 0.005) { el.textContent = fmt(0); el.style.color = 'var(--text3)'; return; }
++  if(Math.abs(v) < 0.005) {
++    el.textContent = fmt(0); el.style.color = 'var(--text3)';
++    // month whose VAT was settled by a payment made for it
++    if(id === 'mcVatV' && typeof vatPaidFor === 'function' && vatPaidFor(state.year, state.month)) {
++      el.style.color = 'var(--income)'; el.classList.add('vat-credit');
++      var pt = document.createElement('span'); pt.className = 'vat-tag'; pt.textContent = vptx('paid'); el.appendChild(pt);
++    }
++    return;
++  }
+   el.textContent = fmt(Math.abs(v));
+   el.classList.add(v > 0 ? 'vat-owed' : 'vat-credit');
+   var tag = document.createElement('span');
+@@ -1347,8 +1362,10 @@ function renderTxPanes() {
+   }
+ 
+   var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
++           + (type === 'expense' ? vatPayGroupHtml(state.year, state.month) : '')
+            + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
+   if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
++  if(type === 'expense') html = '<button type="button" class="gov-pay-top" onclick="openGovPayment()">' + svgIcon('landmark', 15) + ' ' + escHtml(gptx('btn')) + '</button>' + html;
+ 
+   var yn = yearNetTotal(state.year);
+   html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
+@@ -1359,6 +1376,9 @@ function renderTxPanes() {
+   host.querySelectorAll('[data-tx]').forEach(function(el) {
+     el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
+   });
++  host.querySelectorAll('[data-vatpay]').forEach(function(el) {
++    el.onclick = function() { openVatPayment(el.getAttribute('data-vatpay')); };
++  });
+ }
+ 
+ function renderTxList(txs, showAll) {
+diff --git a/js/11-settings.js b/js/11-settings.js
+index da825d1..d0b9a94 100644
+--- a/js/11-settings.js
++++ b/js/11-settings.js
+@@ -929,7 +929,7 @@ async function exportBackup() {
+   var backup = {
+     transactions: state.transactions, clients: state.clients, suppliers: state.suppliers,
+     issuedInvoices: state.issuedInvoices, receipts: state.receipts, receivedInvoices: state.receivedInvoices,
+-    recurring: state.recurring, installments: state.installments, employees: state.employees, fixedIncome: state.fixedIncome, debts: state.debts,
++    recurring: state.recurring, installments: state.installments, employees: state.employees, fixedIncome: state.fixedIncome, vatPayments: state.vatPayments, debts: state.debts,
+     budgets: state.budgets, currency: state.currency, lang: state.lang, theme: state.theme,
+     businessLogo: state.businessLogo, businessAddress: state.businessAddress, businessTaxId: state.businessTaxId,
+     businessPhone: state.businessPhone, businessEmail: state.businessEmail, dateFormat: state.dateFormat,
+@@ -1024,6 +1024,7 @@ function handleImportBackup(file) {
+     state.installments = data.installments || [];
+     state.employees = data.employees || [];
+     state.fixedIncome = data.fixedIncome || [];
++    state.vatPayments = data.vatPayments || [];
+     state.debts = data.debts || [];
+     state.budgets = data.budgets || {};
+     state.currency = data.currency || state.currency;
+diff --git a/js/13b-vat-payments.js b/js/13b-vat-payments.js
+new file mode 100644
+index 0000000..eb4131f
+--- /dev/null
++++ b/js/13b-vat-payments.js
+@@ -0,0 +1,220 @@
++// ── MwSt PAYMENTS TO THE FINANZAMT ──
++// A payment of VAT to the Finanzamt is not an operating expense: it settles the
++// VAT owed. It is booked against the month it pays FOR (p.period, 'YYYY-MM' —
++// owner's decision), lowers only that month's MwSt (Netto stays as it is), shows
++// in that month's expenses as its own group, and is kept out of the UVA and the
++// profit figures. Each year stands on its own. Stored in state.vatPayments, not in
++// state.transactions, so reports/UVA/exports that walk transactions never count it.
++
++var VATPAY_L = {
++  grp:      {en:'Finanzamt — VAT payments', ar:'الفينانس — دفعات الضريبة', de:'Finanzamt — MwSt-Zahlungen'},
++  row:      {en:'VAT payment', ar:'دفع ضريبة', de:'MwSt-Zahlung'},
++  pay:      {en:'Pay', ar:'ادفع', de:'Bezahlen'},
++  title:    {en:'VAT payment to the Finanzamt', ar:'دفع ضريبة للفينانس', de:'MwSt-Zahlung ans Finanzamt'},
++  editTtl:  {en:'Edit VAT payment', ar:'تعديل دفعة الضريبة', de:'MwSt-Zahlung bearbeiten'},
++  amount:   {en:'Amount paid (€)', ar:'المبلغ المدفوع (€)', de:'Bezahlter Betrag (€)'},
++  date:     {en:'Payment date', ar:'تاريخ الدفع', de:'Zahlungsdatum'},
++  period:   {en:'Paid for (month)', ar:'عن شهر', de:'Bezahlt für (Monat)'},
++  paidOn:   {en:'paid on', ar:'اتدفعت يوم', de:'bezahlt am'},
++  paid:     {en:'paid', ar:'اتدفعت', de:'bezahlt'},
++  openAll:  {en:'Open VAT in total (incl. past months)', ar:'الضريبة المستحقة كلها (مع الشهور اللي فاتت)', de:'Offene MwSt gesamt (inkl. Vormonate)'},
++  open:     {en:'Open VAT for this month', ar:'الضريبة المستحقة عن الشهر ده', de:'Offene MwSt für diesen Monat'},
++  useOpen:  {en:'Pay all of it', ar:'ادفعها كلها', de:'Ganz bezahlen'},
++  hint:     {en:'Counts only against VAT — not as a net expense.', ar:'بيتخصم من الضريبة بس — مش مصروف نيتو.', de:'Wird nur mit der MwSt verrechnet — kein Netto-Aufwand.'},
++  save:     {en:'Save', ar:'حفظ', de:'Speichern'},
++  del:      {en:'Delete', ar:'حذف', de:'Löschen'},
++  delQ:     {en:'Delete this VAT payment?', ar:'تحذف دفعة الضريبة دي؟', de:'Diese MwSt-Zahlung löschen?'},
++  badAmt:   {en:'Enter an amount above 0', ar:'اكتب مبلغ أكبر من صفر', de:'Bitte einen Betrag über 0 eingeben'},
++  badDate:  {en:'Choose a date', ar:'اختار التاريخ', de:'Bitte ein Datum wählen'},
++  saved:    {en:'VAT payment saved', ar:'اتسجلت دفعة الضريبة', de:'MwSt-Zahlung gespeichert'}
++};
++function vptx(k) { return (VATPAY_L[k] && (VATPAY_L[k][state.lang] || VATPAY_L[k].en)) || k; }
++
++// Payments whose (year, monthIndex) passes the test.
++function vatPaymentsWhere(test) {
++  return (state.vatPayments || []).filter(function(p) {
++    if(!p || !(p.amount > 0)) return false;
++    var per = vatPayPeriod(p);
++    if(!per) return false;
++    return test(parseInt(per.substring(0, 4), 10), parseInt(per.substring(5, 7), 10) - 1);
++  });
++}
++
++// 'YYYY-MM' the payment is for (older records without one: the month it was paid in).
++function vatPayPeriod(p) {
++  if(p.period && /^\d{4}-\d{2}$/.test(p.period)) return p.period;
++  return p.date && /^\d{4}-\d{2}/.test(p.date) ? p.date.substring(0, 7) : '';
++}
++function vatPaidFor(y, m) {
++  return vatPaymentsWhere(function(py, pm) { return py === y && pm === m; }).length > 0;
++}
++// VAT still open up to and including the month on screen (same year scope as the saldo).
++function vatOpenUpToMonth(y, m) {
++  return carryInTotals(y, m).vat + monthTotals(y, m).vat;
++}
++
++function vatPayGroupHtml(y, m) {
++  var rows = vatPaymentsWhere(function(py, pm) { return py === y && pm === m; })
++    .sort(function(a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
++  if(!rows.length) return '';
++  var total = rows.reduce(function(s, p) { return s + p.amount; }, 0);
++  var h = '<div class="tx-grp tx-grp-vatpay"><div class="tx-grp-hdr"><span class="tx-grp-ttl">' + escHtml(vptx('grp')) + '</span>'
++        + '<span class="tx-grp-sum" style="color:var(--expense)">-' + fmt(total) + '</span></div>';
++  rows.forEach(function(p) {
++    var d = p.date ? p.date.substring(8, 10) + '.' + p.date.substring(5, 7) + '.' + p.date.substring(0, 4) : '';
++    h += '<button type="button" class="tx-row tx-row-vatpay" data-vatpay="' + escHtml(p.id) + '">'
++       + '<span class="tx-row-nm">' + escHtml(vptx('row')) + '</span>'
++       + '<span class="tx-row-dt">' + d + '</span>'
++       + '<span class="tx-row-am" style="color:var(--expense)">-' + fmt(p.amount) + '</span>'
++       + '<span class="tx-row-sub"><i>' + escHtml(hptx('rowNet')) + ' ' + fmt(0) + '</i><i>' + escHtml(hptx('rowVat')) + ' ' + fmt(p.amount)
++       + '</i><i>' + escHtml(hptx('rowTot')) + ' ' + fmt(p.amount) + '</i></span></button>';
++  });
++  return h + '</div>';
++}
++
++// Footer of the month card: VAT still open up to this month (incl. past months)
++// and the "Bezahlen" button. Hidden when nothing is open and nothing was paid.
++function renderVatPayBtn() {
++  var card = document.getElementById('monthCard');
++  if(!card) return;
++  var foot = document.getElementById('vatPayFoot');
++  if(!foot) {
++    foot = document.createElement('div');
++    foot.id = 'vatPayFoot';
++    foot.className = 'vat-pay-foot';
++    foot.innerHTML = '<span class="vat-pay-foot-l" id="vatPayFootL"></span><b class="vat-pay-foot-v" id="vatPayFootV"></b>'
++                   + '<button type="button" class="vat-pay-btn" id="vatPayBtn"></button>';
++    card.appendChild(foot);
++    document.getElementById('vatPayBtn').onclick = function(e) { e.stopPropagation(); openVatPayment(); };
++  }
++  var open = vatOpenUpToMonth(state.year, state.month);
++  var paidHere = vatPaidFor(state.year, state.month);
++  var show = open > 0.005 || paidHere || Math.abs(carryInTotals(state.year, state.month).vat) > 0.005;
++  foot.style.display = show ? '' : 'none';
++  document.getElementById('vatPayFootL').textContent = vptx('openAll') + ':';
++  var v = document.getElementById('vatPayFootV');
++  v.textContent = fmt(Math.abs(open)) + (open < -0.005 ? ' ' + hptx('vatCredit') : '');
++  v.style.color = open > 0.005 ? '#c2410c' : (open < -0.005 ? 'var(--income)' : 'var(--text3)');
++  var btn = document.getElementById('vatPayBtn');
++  btn.textContent = vptx('pay');
++  btn.style.display = monthTotals(state.year, state.month).vat > 0.005 ? '' : 'none';
++}
++
++function vatPayDefaultDate() {
++  var now = new Date();
++  return now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
++}
++
++function ensureVatPayModal() {
++  var ov = document.getElementById('vatPayOverlay');
++  if(ov) return ov;
++  ov = document.createElement('div');
++  ov.id = 'vatPayOverlay';
++  ov.className = 'modal-overlay';
++  ov.innerHTML =
++    '<div class="modal vat-pay-modal" role="dialog" aria-modal="true" aria-labelledby="vatPayTitle">' +
++      '<button type="button" class="modal-close-btn" onclick="closeVatPayment()" aria-label="Close">&times;</button>' +
++      '<div class="vat-pay-ttl" id="vatPayTitle"></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="vatPayPerM" id="vatPayPerL"></label>' +
++        '<div class="vat-pay-per"><select class="wt-input" id="vatPayPerM"></select>' +
++        '<select class="wt-input" id="vatPayPerY"></select></div></div>' +
++      '<div class="vat-pay-open"><span id="vatPayOpenL"></span><b id="vatPayOpenV"></b>' +
++        '<button type="button" class="vat-pay-use" id="vatPayUse"></button></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="vatPayAmt" id="vatPayAmtL"></label>' +
++        '<input class="wt-input" id="vatPayAmt" type="number" inputmode="decimal" step="0.01" min="0"/></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="vatPayDate" id="vatPayDateL"></label>' +
++        '<input class="wt-input" id="vatPayDate" type="date"/></div>' +
++
++      '<div class="vat-pay-hint" id="vatPayHint"></div>' +
++      '<div class="vat-pay-err" id="vatPayErr"></div>' +
++      '<div class="vat-pay-btns"><button type="button" class="wt-btn" id="vatPaySave"></button>' +
++        '<button type="button" class="vat-pay-del" id="vatPayDel"></button></div>' +
++    '</div>';
++  ov.addEventListener('click', function(e) { if(e.target === ov) closeVatPayment(); });
++  document.body.appendChild(ov);
++  return ov;
++}
++
++// id given = edit that payment; no id = new payment for the month on screen.
++function openVatPayment(id) {
++  var ov = ensureVatPayModal();
++  var p = id ? (state.vatPayments || []).filter(function(x) { return x.id === id; })[0] : null;
++  var per = p ? vatPayPeriod(p) : (state.year + '-' + pad2(state.month + 1));
++  function $(i) { return document.getElementById(i); }
++  // Month / year selects for the period it pays for
++  var names = monthNamesLocal(), mh = '', yh = '', py = parseInt(per.substring(0, 4), 10), nowY = new Date().getFullYear();
++  for(var i = 0; i < 12; i++) mh += '<option value="' + pad2(i + 1) + '">' + escHtml(names[i]) + '</option>';
++  for(var yy = Math.min(py, nowY) - 2; yy <= Math.max(py, nowY) + 1; yy++) yh += '<option value="' + yy + '">' + yy + '</option>';
++  $('vatPayPerM').innerHTML = mh; $('vatPayPerY').innerHTML = yh;
++  $('vatPayPerM').value = per.substring(5, 7); $('vatPayPerY').value = String(py);
++  // VAT still open for the chosen month (when editing, this payment's own amount counts as open)
++  function openFor() {
++    var y = parseInt($('vatPayPerY').value, 10), m = parseInt($('vatPayPerM').value, 10) - 1;
++    var o = monthTotals(y, m).vat;
++    if(p && vatPayPeriod(p) === y + '-' + pad2(m + 1)) o += p.amount;
++    return o;
++  }
++  function showOpen() {
++    var o = openFor();
++    $('vatPayOpenV').textContent = fmt(Math.max(0, o));
++    $('vatPayUse').style.display = o > 0.005 ? '' : 'none';
++    return o;
++  }
++  $('vatPayPerM').onchange = $('vatPayPerY').onchange = showOpen;
++  $('vatPayTitle').textContent = vptx(p ? 'editTtl' : 'title');
++  $('vatPayPerL').textContent = vptx('period');
++  $('vatPayOpenL').textContent = vptx('open') + ': ';
++  $('vatPayUse').textContent = vptx('useOpen');
++  $('vatPayUse').onclick = function() { $('vatPayAmt').value = (Math.round(Math.max(0, openFor()) * 100) / 100).toFixed(2); };
++  $('vatPayAmtL').textContent = vptx('amount');
++  $('vatPayDateL').textContent = vptx('date');
++  $('vatPayHint').textContent = vptx('hint');
++  $('vatPayErr').textContent = '';
++  var o = showOpen();
++  $('vatPayAmt').value = p ? p.amount.toFixed(2) : (o > 0.005 ? (Math.round(o * 100) / 100).toFixed(2) : '');
++  $('vatPayDate').value = p ? p.date : vatPayDefaultDate();
++  $('vatPaySave').textContent = vptx('save');
++  $('vatPaySave').onclick = function() { saveVatPayment(p ? p.id : null); };
++  $('vatPayDel').textContent = vptx('del');
++  $('vatPayDel').style.display = p ? '' : 'none';
++  $('vatPayDel').onclick = function() {
++    closeVatPayment();
++    showConfirm(vptx('del'), vptx('delQ'), function() {
++      state.vatPayments = (state.vatPayments || []).filter(function(x) { return x.id !== p.id; });
++      save();
++      renderHome();
++    });
++  };
++  ov.classList.add('open');
++  if(typeof syncScrollLock === 'function') syncScrollLock();
++}
++
++function closeVatPayment() {
++  var ov = document.getElementById('vatPayOverlay');
++  if(ov) ov.classList.remove('open');
++  if(typeof syncScrollLock === 'function') syncScrollLock();
++}
++
++function saveVatPayment(id) {
++  var amt = Math.round((parseFloat(String(document.getElementById('vatPayAmt').value).replace(',', '.')) || 0) * 100) / 100;
++  var date = document.getElementById('vatPayDate').value;
++  var period = document.getElementById('vatPayPerY').value + '-' + document.getElementById('vatPayPerM').value;
++  var err = document.getElementById('vatPayErr');
++  if(!(amt > 0)) { err.textContent = vptx('badAmt'); return; }
++  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) { err.textContent = vptx('badDate'); return; }
++  state.vatPayments = state.vatPayments || [];
++  if(id) {
++    state.vatPayments.forEach(function(x) { if(x.id === id) { x.amount = amt; x.date = date; x.period = period; } });
++  } else {
++    state.vatPayments.push({id: 'vp' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date: date, period: period, amount: amt});
++  }
++  save();
++  closeVatPayment();
++  renderHome();
++  if(typeof showToast === 'function') showToast(vptx('saved'), 'success');
++}
++
++document.addEventListener('keydown', function(e) {
++  var ov = document.getElementById('vatPayOverlay');
++  if(e.key === 'Escape' && ov && ov.classList.contains('open')) closeVatPayment();
++});
+diff --git a/js/13c-gov-payments.js b/js/13c-gov-payments.js
+new file mode 100644
+index 0000000..87c2d68
+--- /dev/null
++++ b/js/13c-gov-payments.js
+@@ -0,0 +1,141 @@
++// ── PAYMENTS TO GOVERNMENT ENTITIES (no invoice) ──
++// SVS, ÖGK, Magistrat … send no invoice, so these are booked by hand: pick the
++// entity from the fixed list, type the amount, done. It becomes a normal expense
++// (category Government, 0 % VAT, linked by govId) and shows on the entity's card.
++// Picking "Finanzamt — MwSt" opens the VAT payment instead (that one is not an expense).
++
++var GOVPAY_L = {
++  btn:     {en:'Pay a government entity', ar:'دفع لجهة حكومية', de:'Behörde bezahlen'},
++  cardBtn: {en:'Record payment', ar:'تسجيل دفعة', de:'Zahlung erfassen'},
++  title:   {en:'Payment to a government entity', ar:'دفعة لجهة حكومية', de:'Zahlung an eine Behörde'},
++  entity:  {en:'Entity', ar:'الجهة', de:'Behörde'},
++  vatOpt:  {en:'Finanzamt — VAT payment', ar:'الفينانس — دفع ضريبة القيمة المضافة', de:'Finanzamt — MwSt-Zahlung'},
++  amount:  {en:'Amount (€)', ar:'المبلغ (€)', de:'Betrag (€)'},
++  date:    {en:'Payment date', ar:'تاريخ الدفع', de:'Zahlungsdatum'},
++  note:    {en:'Note (optional)', ar:'ملاحظة (اختياري)', de:'Notiz (optional)'},
++  notePh:  {en:'e.g. contribution Q4', ar:'مثلاً اشتراك الربع الرابع', de:'z. B. Beitrag Q4'},
++  hint:    {en:'No invoice needed — booked straight to expenses, without VAT.', ar:'من غير فاتورة — بتتسجل في المصروفات على طول ومن غير ضريبة.', de:'Ohne Beleg — wird direkt als Ausgabe ohne MwSt gebucht.'},
++  save:    {en:'Save', ar:'حفظ', de:'Speichern'},
++  badAmt:  {en:'Enter an amount above 0', ar:'اكتب مبلغ أكبر من صفر', de:'Bitte einen Betrag über 0 eingeben'},
++  badDate: {en:'Choose a date', ar:'اختار التاريخ', de:'Bitte ein Datum wählen'},
++  badEnt:  {en:'Choose an entity', ar:'اختار الجهة', de:'Bitte eine Behörde wählen'},
++  saved:   {en:'Payment saved', ar:'اتسجلت الدفعة', de:'Zahlung gespeichert'}
++};
++function gptx(k) { return (GOVPAY_L[k] && (GOVPAY_L[k][state.lang] || GOVPAY_L[k].en)) || k; }
++
++// The entities to choose from: the ones already set up, then the fixed list (created on first use).
++function govPayChoices() {
++  var have = govEntities(), names = have.map(function(c) { return (c.name || '').toLowerCase(); });
++  var list = have.map(function(c) { return {key: 'id:' + c.id, name: c.name}; });
++  GOV_QUICK.forEach(function(q) { if(names.indexOf(q.toLowerCase()) < 0) list.push({key: 'new:' + q, name: q}); });
++  return list;
++}
++
++function govPayDefaultDate() {
++  var now = new Date();
++  if(state.homeView !== 'picker' && document.getElementById('monthDetail') &&
++     document.getElementById('monthDetail').style.display !== 'none' &&
++     (now.getFullYear() !== state.year || now.getMonth() !== state.month)) {
++    return state.year + '-' + pad2(state.month + 1) + '-01';   // booking into the month on screen
++  }
++  return now.getFullYear() + '-' + pad2(now.getMonth() + 1) + '-' + pad2(now.getDate());
++}
++
++function ensureGovPayModal() {
++  var ov = document.getElementById('govPayOverlay');
++  if(ov) return ov;
++  ov = document.createElement('div');
++  ov.id = 'govPayOverlay';
++  ov.className = 'modal-overlay';
++  ov.innerHTML =
++    '<div class="modal vat-pay-modal" role="dialog" aria-modal="true" aria-labelledby="govPayTitle">' +
++      '<button type="button" class="modal-close-btn" onclick="closeGovPayment()" aria-label="Close">&times;</button>' +
++      '<div class="vat-pay-ttl" id="govPayTitle"></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="govPayEnt" id="govPayEntL"></label>' +
++        '<select class="wt-input" id="govPayEnt"></select></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="govPayAmt" id="govPayAmtL"></label>' +
++        '<input class="wt-input" id="govPayAmt" type="number" inputmode="decimal" step="0.01" min="0"/></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="govPayDate" id="govPayDateL"></label>' +
++        '<input class="wt-input" id="govPayDate" type="date"/></div>' +
++      '<div class="wt-field"><label class="vat-pay-lbl" for="govPayNote" id="govPayNoteL"></label>' +
++        '<input class="wt-input" id="govPayNote" type="text" maxlength="60"/></div>' +
++      '<div class="vat-pay-hint" id="govPayHint"></div>' +
++      '<div class="vat-pay-err" id="govPayErr"></div>' +
++      '<div class="vat-pay-btns"><button type="button" class="wt-btn" id="govPaySave"></button></div>' +
++    '</div>';
++  ov.addEventListener('click', function(e) { if(e.target === ov) closeGovPayment(); });
++  document.body.appendChild(ov);
++  return ov;
++}
++
++// govId given = that entity is preselected (from its card on the Behörden page).
++function openGovPayment(govId) {
++  var ov = ensureGovPayModal();
++  function $(i) { return document.getElementById(i); }
++  var choices = govPayChoices();
++  var opts = '<option value="">—</option>' + choices.map(function(c) {
++    return '<option value="' + escHtml(c.key) + '">' + escHtml(c.name) + '</option>';
++  }).join('') + '<option value="vat">' + escHtml(gptx('vatOpt')) + '</option>';
++  $('govPayEnt').innerHTML = opts;
++  $('govPayEnt').value = govId != null ? 'id:' + govId : '';
++  $('govPayEnt').onchange = function() {
++    if(this.value === 'vat') { closeGovPayment(); openVatPayment(); }
++  };
++  $('govPayTitle').textContent = gptx('title');
++  $('govPayEntL').textContent = gptx('entity');
++  $('govPayAmtL').textContent = gptx('amount');
++  $('govPayDateL').textContent = gptx('date');
++  $('govPayNoteL').textContent = gptx('note');
++  $('govPayNote').placeholder = gptx('notePh');
++  $('govPayHint').textContent = gptx('hint');
++  $('govPayErr').textContent = '';
++  $('govPayAmt').value = '';
++  $('govPayNote').value = '';
++  $('govPayDate').value = govPayDefaultDate();
++  $('govPaySave').textContent = gptx('save');
++  $('govPaySave').onclick = saveGovPayment;
++  ov.classList.add('open');
++  if(typeof syncScrollLock === 'function') syncScrollLock();
++}
++
++function closeGovPayment() {
++  var ov = document.getElementById('govPayOverlay');
++  if(ov) ov.classList.remove('open');
++  if(typeof syncScrollLock === 'function') syncScrollLock();
++}
++
++function saveGovPayment() {
++  var key = document.getElementById('govPayEnt').value;
++  var amt = Math.round((parseFloat(String(document.getElementById('govPayAmt').value).replace(',', '.')) || 0) * 100) / 100;
++  var date = document.getElementById('govPayDate').value;
++  var note = (document.getElementById('govPayNote').value || '').trim();
++  var err = document.getElementById('govPayErr');
++  if(!key || key === 'vat') { err.textContent = gptx('badEnt'); return; }
++  if(!(amt > 0)) { err.textContent = gptx('badAmt'); return; }
++  if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) { err.textContent = gptx('badDate'); return; }
++  var ent;
++  if(key.indexOf('new:') === 0) {               // first payment to a fixed-list entity: set it up
++    state.contacts = state.contacts || [];
++    ent = {id: Date.now(), name: key.substring(4), phone: '', email: '', type: 'government', notes: '', createdAt: Date.now()};
++    state.contacts.push(ent);
++  } else {
++    var id = +key.substring(3);
++    ent = govEntities().filter(function(c) { return c.id === id; })[0];
++  }
++  if(!ent) { err.textContent = gptx('badEnt'); return; }
++  state.transactions = state.transactions || [];
++  state.transactions.push({
++    id: Date.now() + 1, type: 'expense', name: ent.name + (note ? ' · ' + note : ''),
++    amount: amt, category: 'Government', date: date, vatRate: 0, govId: ent.id
++  });
++  save();
++  closeGovPayment();
++  var gp = document.getElementById('govPage');
++  if(gp && gp.style.display !== 'none' && gp.offsetParent !== null) renderGovPage(); else renderHome();
++  if(typeof showToast === 'function') showToast(gptx('saved'), 'success');
++}
++
++document.addEventListener('keydown', function(e) {
++  var ov = document.getElementById('govPayOverlay');
++  if(e.key === 'Escape' && ov && ov.classList.contains('open')) closeGovPayment();
++});
+diff --git a/js/14-system.js b/js/14-system.js
+index 224e091..8306383 100644
+--- a/js/14-system.js
++++ b/js/14-system.js
+@@ -1153,7 +1153,7 @@ function cdConfirmDelete() {
+   }
+   // Correct — clear all data
+   state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[]; state.inventory=[];
+-  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
++  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.vatPayments=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
+   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
+   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
+   state.bankName=''; state.bankIban=''; state.bankBic=''; state.bankAccountHolder=''; state.businessType='';
+diff --git a/trabis.html b/trabis.html
+index 4e9fda5..1a19060 100644
+--- a/trabis.html
++++ b/trabis.html
+@@ -1036,6 +1036,8 @@
+ <script src="js/11-settings.js"></script>
+ <script src="js/12-invoices.js"></script>
+ <script src="js/13-landing-onboarding.js"></script>
++<script src="js/13b-vat-payments.js"></script>
++<script src="js/13c-gov-payments.js"></script>
+ <script src="js/14-system.js"></script>
+ <script src="js/99-boot.js"></script>
+ 
+-- 
+2.43.0
+
