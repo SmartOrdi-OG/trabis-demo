@@ -282,6 +282,7 @@ var state = {
   theme: 'light',
   businessName: '',
   fixedIncome: [],
+  vatPayments: [],   // MwSt paid to the Finanzamt: {id, date:'YYYY-MM-DD', period:'YYYY-MM' (month it pays for), amount}
   issuedInvoices: [],
   receipts: [],
   receivedInvoices: [],
@@ -509,6 +510,7 @@ function save() {
   localStorage.setItem(uk('uvaFreigaben'), JSON.stringify(state.uvaFreigaben || {}));
   localStorage.setItem(uk('theme'), state.theme);
   localStorage.setItem(uk('fixed_income'), JSON.stringify(state.fixedIncome||[]));
+  localStorage.setItem(uk('vat_payments'), JSON.stringify(state.vatPayments||[]));
   localStorage.setItem(uk('issued_inv'), JSON.stringify(state.issuedInvoices||[]));
   localStorage.setItem(uk('receipts'), JSON.stringify(state.receipts||[]));
   localStorage.setItem(uk('received_inv'), JSON.stringify(state.receivedInvoices||[]));
@@ -561,6 +563,7 @@ function loadUserData() {
   state.uvaFreigaben = JSON.parse(localStorage.getItem(uk('uvaFreigaben')) || '{}');
   state.theme = localStorage.getItem(uk('theme')) || 'light';
   state.fixedIncome = JSON.parse(localStorage.getItem(uk('fixed_income')) || '[]');
+  state.vatPayments = JSON.parse(localStorage.getItem(uk('vat_payments')) || '[]');
   state.issuedInvoices = JSON.parse(localStorage.getItem(uk('issued_inv')) || '[]');
   state.receipts = JSON.parse(localStorage.getItem(uk('receipts')) || '[]');
   state.receivedInvoices = JSON.parse(localStorage.getItem(uk('received_inv')) || '[]');

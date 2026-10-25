@@ -948,3 +948,33 @@ body.art .carry-wrap .carry-v{font-size:15px}
 [data-tx="expense"] > .tx-tabs + .tx-split{border-top-right-radius:0}
 [dir=rtl] [data-tx="income"] > .tx-tabs + .tx-split{border-top-left-radius:18px;border-top-right-radius:0}
 [dir=rtl] [data-tx="expense"] > .tx-tabs + .tx-split{border-top-right-radius:18px;border-top-left-radius:0}
+
+/* ── MwSt payment to the Finanzamt ── */
+.vat-pay-foot{grid-column:1/-1;display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);font-size:12.5px;color:var(--text2)}
+.vat-pay-foot-v{font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.vat-pay-foot .vat-pay-btn{margin-inline-start:auto}
+.vat-pay-btn{font:inherit;font-size:11.5px;font-weight:700;color:#fff;background:#c2410c;border:none;border-radius:8px;padding:5px 12px;cursor:pointer}
+.vat-pay-btn:hover{filter:brightness(1.08)}
+.carry-wrap .vat-pay-btn{display:none !important}
+.vat-pay-modal{padding-top:22px}
+.vat-pay-ttl{font-size:17px;font-weight:800;margin:0 40px 14px 0}
+[dir=rtl] .vat-pay-ttl{margin:0 0 14px 40px}
+.vat-pay-open{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;font-size:13px;color:var(--text2);background:rgba(194,65,12,.07);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.vat-pay-open b{color:#c2410c;font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.vat-pay-use{margin-inline-start:auto;font:inherit;font-size:12px;font-weight:700;color:#c2410c;background:var(--card);border:1.5px solid rgba(194,65,12,.35);border-radius:9px;padding:5px 10px;cursor:pointer}
+.vat-pay-lbl{display:block;font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:6px}
+.vat-pay-hint{font-size:12px;color:var(--text3);margin:-4px 0 10px}
+.vat-pay-err{font-size:12.5px;color:var(--expense);min-height:16px;margin-bottom:6px}
+.vat-pay-btns{display:flex;gap:10px}
+.vat-pay-btns .wt-btn{flex:1;justify-content:center}
+.vat-pay-del{font:inherit;font-size:14px;font-weight:700;color:var(--expense);background:none;border:1.5px solid var(--expense);border-radius:12px;padding:12px 18px;cursor:pointer}
+.tx-row-vatpay .tx-row-nm{color:#c2410c}
+.vat-pay-per{display:flex;gap:8px}
+.vat-pay-per select{flex:1}
+
+/* ── Payments to government entities ── */
+.gov-pay-top{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin:0 0 12px;padding:10px 12px;font:inherit;font-size:13px;font-weight:700;color:var(--primary);background:var(--card);border:1.5px dashed var(--border);border-radius:12px;cursor:pointer}
+.gov-pay-top:hover{border-color:var(--primary)}
+.gov-btns{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap;margin-top:10px}
+.gov-btns .gov-open{flex:1;margin-top:0;width:auto}
+.gov-pay-btn{font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--primary);border:none;border-radius:10px;padding:8px 12px;cursor:pointer}

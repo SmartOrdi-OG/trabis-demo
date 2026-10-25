@@ -762,7 +762,8 @@ function renderGovPage() {
           return '<div class="gov-pay"><span>' + escHtml(tx.name || '') + '</span><span class="gov-sub">' + escHtml(formatDateDisplay(tx.date)) + '</span><b>-' + fmt(tx.amount) + '</b></div>';
         }).join('') : '<div class="gov-sub">' + escHtml(govtx('noPay')) + '</div>')
       + '</div>'
-      + '<button type="button" class="gov-open" onclick="openContactProfile(' + c.id + ')">' + escHtml(govtx('archive')) + ' &rsaquo;</button>'
+      + '<div class="gov-btns"><button type="button" class="gov-pay-btn" onclick="openGovPayment(' + c.id + ')">+ ' + escHtml(gptx('cardBtn')) + '</button>'
+      + '<button type="button" class="gov-open" onclick="openContactProfile(' + c.id + ')">' + escHtml(govtx('archive')) + ' &rsaquo;</button></div>'
       + '</div>';
   });
   var have = ents.map(function(c) { return (c.name || '').toLowerCase(); });
@@ -1171,6 +1172,8 @@ function carryInTotals(y, m) {
     if(tx.type === 'income')      { netto += v.netto; vat += v.steuer; }
     else if(tx.type === 'expense'){ netto -= v.netto; vat -= v.steuer; }
   });
+  // MwSt paid to the Finanzamt settles VAT only — no Netto
+  vatPaymentsWhere(function(py, pm) { return py === y && pm < m; }).forEach(function(p) { vat -= p.amount; });
   return {netto: netto, vat: vat, total: netto + vat};
 }
 
@@ -1185,6 +1188,7 @@ function monthTotals(y, m) {
     var sm = sumRows(fixedRowsFor(p[0], y, m));
     netto += p[1] * sm.netto; vat += p[1] * sm.steuer;
   });
+  vatPaymentsWhere(function(py, pm) { return py === y && pm === m; }).forEach(function(p) { vat -= p.amount; });
   return {netto: netto, vat: vat, total: netto + vat};
 }
 
@@ -1201,7 +1205,10 @@ function renderMonthCard() {
   [['mcNetL','carryNet'],['mcVatL','carryVat'],['mcTotL','carryTot']].forEach(function(p) {
     var el = document.getElementById(p[0]); if(el) el.textContent = hptx(p[1]);
   });
+  // a month settled by a payment can keep a fraction of a cent from rounding — show it as settled
+  if(Math.abs(c.vat) < 0.01) { c.vat = 0; c.total = c.netto; }
   put('mcNetV', c.netto); putVat('mcVatV', c.vat); put('mcTotV', c.total);
+  renderVatPayBtn();
 }
 
 function renderCarryCard() {
@@ -1241,7 +1248,15 @@ function putVat(id, v) {
   if(!el) return;
   el.classList.remove('vat-owed', 'vat-credit');
   el.style.color = '';
-  if(Math.abs(v) < 0.005) { el.textContent = fmt(0); el.style.color = 'var(--text3)'; return; }
+  if(Math.abs(v) < 0.005) {
+    el.textContent = fmt(0); el.style.color = 'var(--text3)';
+    // month whose VAT was settled by a payment made for it
+    if(id === 'mcVatV' && typeof vatPaidFor === 'function' && vatPaidFor(state.year, state.month)) {
+      el.style.color = 'var(--income)'; el.classList.add('vat-credit');
+      var pt = document.createElement('span'); pt.className = 'vat-tag'; pt.textContent = vptx('paid'); el.appendChild(pt);
+    }
+    return;
+  }
   el.textContent = fmt(Math.abs(v));
   el.classList.add(v > 0 ? 'vat-owed' : 'vat-credit');
   var tag = document.createElement('span');
@@ -1347,8 +1362,10 @@ function renderTxPanes() {
   }
 
   var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
+           + (type === 'expense' ? vatPayGroupHtml(state.year, state.month) : '')
            + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
   if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
+  if(type === 'expense') html = '<button type="button" class="gov-pay-top" onclick="openGovPayment()">' + svgIcon('landmark', 15) + ' ' + escHtml(gptx('btn')) + '</button>' + html;
 
   var yn = yearNetTotal(state.year);
   html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
@@ -1358,6 +1375,9 @@ function renderTxPanes() {
   host.innerHTML = html;
   host.querySelectorAll('[data-tx]').forEach(function(el) {
     el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
+  });
+  host.querySelectorAll('[data-vatpay]').forEach(function(el) {
+    el.onclick = function() { openVatPayment(el.getAttribute('data-vatpay')); };
   });
 }
 

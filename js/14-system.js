@@ -1153,7 +1153,7 @@ function cdConfirmDelete() {
   }
   // Correct — clear all data
   state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[]; state.inventory=[];
-  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
+  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.vatPayments=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
   state.bankName=''; state.bankIban=''; state.bankBic=''; state.bankAccountHolder=''; state.businessType='';

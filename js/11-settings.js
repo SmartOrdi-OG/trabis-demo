@@ -929,7 +929,7 @@ async function exportBackup() {
   var backup = {
     transactions: state.transactions, clients: state.clients, suppliers: state.suppliers,
     issuedInvoices: state.issuedInvoices, receipts: state.receipts, receivedInvoices: state.receivedInvoices,
-    recurring: state.recurring, installments: state.installments, employees: state.employees, fixedIncome: state.fixedIncome, debts: state.debts,
+    recurring: state.recurring, installments: state.installments, employees: state.employees, fixedIncome: state.fixedIncome, vatPayments: state.vatPayments, debts: state.debts,
     budgets: state.budgets, currency: state.currency, lang: state.lang, theme: state.theme,
     businessLogo: state.businessLogo, businessAddress: state.businessAddress, businessTaxId: state.businessTaxId,
     businessPhone: state.businessPhone, businessEmail: state.businessEmail, dateFormat: state.dateFormat,
@@ -1024,6 +1024,7 @@ function handleImportBackup(file) {
     state.installments = data.installments || [];
     state.employees = data.employees || [];
     state.fixedIncome = data.fixedIncome || [];
+    state.vatPayments = data.vatPayments || [];
     state.debts = data.debts || [];
     state.budgets = data.budgets || {};
     state.currency = data.currency || state.currency;
