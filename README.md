@@ -19,6 +19,7 @@ Two HTML files make up the product:
 |---|---|
 | `trabis.html` | **The current app** (served at `/`). Full working app with the new home picker, month screen, Government Entities, Projects and the timesheet/vacation sheet. Same `smartac_*` storage keys as before. |
 | `index.html` | The previous stable app, kept untouched and reachable at `/index.html`. |
+| `css/trabis.css`, `js/*.js` | The current app's styles and code, split out of `trabis.html` by area (`01-core` … `14-system`, then `99-boot`). Plain global scripts, loaded in order — no build step. `99-boot.js` runs last (language + saved notifications). jsPDF comes from cdnjs (same 2.5.1 that used to be inlined). |
 | `preview.html` | Static design mockup with demo data only, reachable at `/preview.html`. |
 | `buchhalter.html` | Read-only accountant portal (`BuApi`: local storage now, server via `BU_API_BASE`). |
 | `trabis-package.js` | Builds the accountant package (PDF with invoices + Excel + CSV); shared by the app and the portal. |
