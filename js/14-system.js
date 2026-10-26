@@ -100,64 +100,88 @@ function showInAppBanner(type, icon, titleMap, bodyMap, actionLabel, actionFn) {
 }
 
 // ── AUTOMATIC RECURRING TRANSACTION GENERATION ──
+// Books every fixed expense, fixed income and salary into each month it is due.
+// Months in which the app was never opened are caught up too (each one with its own
+// date), so a gap can no longer silently drop rent or salaries. A rule that was never
+// booked (lastRecorded empty) starts with the current month — no back-booking of history.
+function recMonthKey(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1); }
+function recNextKey(key) {
+  var y = parseInt(key.substring(0, 4), 10), m = parseInt(key.substring(5, 7), 10);
+  return m === 12 ? (y + 1) + '-01' : y + '-' + pad2(m + 1);
+}
+function recDaysIn(key) {
+  return new Date(parseInt(key.substring(0, 4), 10), parseInt(key.substring(5, 7), 10), 0).getDate();
+}
+// Months still to book for a rule, oldest first, up to and including the current month.
+function recDueMonths(lastRecorded, curMonth) {
+  var out = [];
+  var k = /^\d{4}-\d{2}$/.test(lastRecorded || '') ? recNextKey(lastRecorded) : curMonth;
+  for(var guard = 0; k <= curMonth && guard < 120; guard++) { out.push(k); k = recNextKey(k); }
+  return out;
+}
+// Salary of one employee for one month: nothing before the start month, the start
+// month pro rata by calendar days (start day included), full months after that.
+function salaryForMonth(emp, key) {
+  var sal = parseFloat(emp.salary) || 0;
+  if(sal <= 0) return {amount: 0, date: key + '-01'};
+  var sd = /^\d{4}-\d{2}-\d{2}$/.test(emp.startDate || '') ? emp.startDate : '';
+  if(sd && sd.substring(0, 7) > key) return {amount: 0, date: key + '-01'};
+  if(sd && sd.substring(0, 7) === key) {
+    var day = parseInt(sd.substring(8, 10), 10), dim = recDaysIn(key);
+    if(day > 1) return {amount: Math.round(sal * (dim - day + 1) / dim * 100) / 100, date: sd};
+  }
+  return {amount: sal, date: key + '-01'};
+}
+
 function checkRecurringDue() {
   var now = new Date();
-  var curMonth = now.getFullYear() + '-' + pad2(now.getMonth()+1);
+  var curMonth = recMonthKey(now);
+  var todayStr = today();
   var todayDay = now.getDate();
   var recordedCount = 0;
-
-  state.recurring.forEach(function(item) {
-    if(item.day <= todayDay && item.lastRecorded !== curMonth) {
-      var name = item.description || item.name || '';
-      var dateStr = curMonth + '-' + pad2(item.day);
-      state.transactions.push({
-        id: Date.now() + Math.floor(Math.random()*1000),
-        type: 'expense',
-        name: name,
-        amount: parseFloat(item.amount) || 0,
-        vatRate: parseFloat(item.vatRate) || 0,
-        category: item.category || 'Other',
-        date: dateStr
+  var seq = 0;
+  function push(tx) {
+    tx.id = Date.now() + (seq++) + Math.floor(Math.random() * 1000) * 1000;
+    state.transactions.push(tx);
+    recordedCount++;
+  }
+  function bookRules(list, type) {
+    (list || []).forEach(function(item) {
+      var months = recDueMonths(item.lastRecorded, curMonth);
+      months.forEach(function(key) {
+        var day = Math.min(parseInt(item.day, 10) || 1, recDaysIn(key));
+        if(key === curMonth && day > todayDay) return;           // not due yet this month
+        push({
+          type: type,
+          name: (type === 'expense' ? (item.description || item.name) : item.name) || '',
+          amount: parseFloat(item.amount) || 0,
+          vatRate: parseFloat(item.vatRate) || 0,
+          category: item.category || 'Other',
+          date: key + '-' + pad2(day)
+        });
+        item.lastRecorded = key;
       });
-      item.lastRecorded = curMonth;
-      recordedCount++;
-    }
-  });
+    });
+  }
+  bookRules(state.recurring, 'expense');
+  bookRules(state.fixedIncome, 'income');
 
-  (state.fixedIncome||[]).forEach(function(item) {
-    if(item.day <= todayDay && item.lastRecorded !== curMonth) {
-      var dateStr = curMonth + '-' + pad2(item.day);
-      state.transactions.push({
-        id: Date.now() + Math.floor(Math.random()*1000),
-        type: 'income',
-        name: item.name || '',
-        amount: parseFloat(item.amount) || 0,
-        vatRate: parseFloat(item.vatRate) || 0,
-        category: item.category || 'Other',
-        date: dateStr
-      });
-      item.lastRecorded = curMonth;
-      recordedCount++;
-    }
-  });
-
-  state.employees.forEach(function(item) {
-    if(item.lastRecorded !== curMonth) {
-      var salaryLabel = {en:' - Salary', ar:' - راتب', de:' - Gehalt'};
-      var lang = state.lang || 'en';
-      var suffix = salaryLabel[lang] || salaryLabel.en;
-      var dateStr = curMonth + '-01';
-      state.transactions.push({
-        id: Date.now() + Math.floor(Math.random()*1000),
-        type: 'expense',
-        name: (item.name || '') + suffix,
-        amount: parseFloat(item.salary) || 0,
-        category: 'salary',
-        date: dateStr
-      });
-      item.lastRecorded = curMonth;
-      recordedCount++;
-    }
+  var salaryLabel = {en:' - Salary', ar:' - راتب', de:' - Gehalt'};
+  (state.employees || []).forEach(function(item) {
+    recDueMonths(item.lastRecorded, curMonth).forEach(function(key) {
+      var s = salaryForMonth(item, key);
+      if(s.amount > 0 && s.date > todayStr) return;            // start day still ahead: book later
+      if(s.amount > 0) {
+        push({
+          type: 'expense',
+          name: (item.name || '') + (salaryLabel[state.lang] || salaryLabel.en),
+          amount: s.amount,
+          category: 'salary',
+          date: s.date
+        });
+      }
+      item.lastRecorded = key;
+    });
   });
 
   if(recordedCount > 0) {

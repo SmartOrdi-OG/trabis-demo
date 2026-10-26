@@ -532,6 +532,11 @@ function fixedRowsFor(type, forYear, forMonth) {
   var rows = [];
   function add(src, name, amount, vatRate, day) {
     if(src.lastRecorded === monthKey) return;
+    if(type === 'expense' && (state.employees || []).indexOf(src) >= 0) {
+      // Same rule as the booking: nothing before the start month, start month pro rata.
+      var sm = salaryForMonth(src, monthKey);
+      amount = sm.amount; day = parseInt(sm.date.substring(8, 10), 10);
+    }
     var amt = parseFloat(amount) || 0;
     if(amt <= 0) return;
     rows.push({name: name, amount: amt, vatRate: parseFloat(vatRate) || 0,
@@ -570,7 +575,9 @@ function yearNetTotal(y) {
   });
   var now = new Date();
   if(y === now.getFullYear()) {
-    var openNet = sumRows(fixedRowsFor('income')).netto - sumRows(fixedRowsFor('expense')).netto;
+    // Only the current month can still hold unbooked rules (future months are not counted).
+    var cm = now.getMonth();
+    var openNet = sumRows(fixedRowsFor('income', y, cm)).netto - sumRows(fixedRowsFor('expense', y, cm)).netto;
     net += openNet;
   }
   return net;
