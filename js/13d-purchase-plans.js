@@ -9,7 +9,10 @@
 // set to VAT / Netto-of-that-payment, so every place that splits gross by vatRate
 // (vatBreakdown, trabis-package.js) gets exactly that Netto and that VAT.
 //
-// state.purchasePlans: [{id, name, netto, vatRate, vat, date, down, months, monthly,
+// The user types the full price (with or without VAT), the VAT amount itself (the
+// rate is worked out from it), the first payment, and how much he pays how often.
+//
+// state.purchasePlans: [{id, name, netto, vatRate, vat, date, down, months, monthly, interval (months, 0 = manual),
 //   payments:[{txId, date, netto, vat, kind:'first'|'rate'|'extra'}], status:'active'|'completed'|'stopped'}]
 
 var PP_L = {
@@ -17,13 +20,26 @@ var PP_L = {
   title:    {en:'New instalment purchase', ar:'شراء جديد بالتقسيط', de:'Neuer Ratenkauf'},
   name:     {en:'What / from whom', ar:'إيه / من مين', de:'Was / bei wem'},
   namePh:   {en:'e.g. MAN truck · Autohaus Huber', ar:'مثلاً شاحنة MAN · Autohaus Huber', de:'z. B. LKW MAN · Autohaus Huber'},
-  netto:    {en:'Invoice amount net (€)', ar:'مبلغ الفاتورة نيتو (€)', de:'Rechnungsbetrag netto (€)'},
-  rate:     {en:'VAT %', ar:'الضريبة %', de:'MwSt %'},
+  price:    {en:'Full price (€)', ar:'السعر كامل (€)', de:'Gesamtpreis (€)'},
+  gross:    {en:'incl. VAT', ar:'شامل الضريبة', de:'inkl. MwSt'},
+  net:      {en:'without VAT', ar:'من غير ضريبة', de:'ohne MwSt'},
+  vatAmt:   {en:'VAT amount (€) — paid with the 1st payment', ar:'مبلغ الضريبة (€) — بيتدفع مع أول دفعة', de:'MwSt-Betrag (€) — mit der 1. Zahlung'},
+  vatInfo:  {en:'= {r} % VAT · net {n}', ar:'= ضريبة {r} % · نيتو {n}', de:'= {r} % MwSt · netto {n}'},
+  rateAmt:  {en:'Instalment (€ net)', ar:'القسط (€ نيتو)', de:'Rate (€ netto)'},
+  every:    {en:'How often', ar:'كل قد إيه', de:'Wie oft'},
+  iv1:      {en:'every month', ar:'كل شهر', de:'jeden Monat'},
+  iv2:      {en:'every 2 months', ar:'كل شهرين', de:'alle 2 Monate'},
+  iv3:      {en:'every 3 months', ar:'كل 3 شهور', de:'alle 3 Monate'},
+  iv6:      {en:'every 6 months', ar:'كل 6 شهور', de:'alle 6 Monate'},
+  iv12:     {en:'once a year', ar:'مرة في السنة', de:'jährlich'},
+  iv0:      {en:'I book each payment myself', ar:'هسجل كل دفعة بإيدي', de:'ich buche selbst'},
+  prevPlan: {en:'1st payment {d}: {f} (net {n} + VAT {v}) · then {k} × {m} net, {iv} · last on {l}', ar:'أول دفعة {d}: {f} (نيتو {n} + الضريبة {v}) · وبعدها {k} × {m} نيتو، {iv} · آخر قسط {l}', de:'1. Zahlung {d}: {f} (netto {n} + MwSt {v}) · danach {k} × {m} netto, {iv} · letzte am {l}'},
+  prevOne:  {en:'One payment {d}: {f} (net {n} + VAT {v})', ar:'دفعة واحدة {d}: {f} (نيتو {n} + الضريبة {v})', de:'Eine Zahlung {d}: {f} (netto {n} + MwSt {v})'},
+  prevMan:  {en:'1st payment {d}: {f} (net {n} + VAT {v}) · the rest ({r} net) you book when you pay', ar:'أول دفعة {d}: {f} (نيتو {n} + الضريبة {v}) · والباقي ({r} نيتو) بتسجله وقت ما تدفع', de:'1. Zahlung {d}: {f} (netto {n} + MwSt {v}) · den Rest ({r} netto) buchst du bei Zahlung'},
+  badVat:   {en:'The VAT must be 0 or more and below the price', ar:'الضريبة لازم تكون صفر أو أكتر وأقل من السعر', de:'Die MwSt muss ≥ 0 und kleiner als der Preis sein'},
+  badRate:  {en:'Enter the down payment or the instalment amount', ar:'اكتب المقدّم أو مبلغ القسط', de:'Anzahlung oder Ratenbetrag angeben'},
   date:     {en:'First payment on', ar:'أول دفعة يوم', de:'Erste Zahlung am'},
   down:     {en:'Down payment net (€, optional)', ar:'المقدّم نيتو (€، اختياري)', de:'Anzahlung netto (€, optional)'},
-  months:   {en:'Monthly instalments (0 = I book each payment myself)', ar:'عدد الأقساط الشهرية (0 = هسجل كل دفعة بإيدي)', de:'Monatsraten (0 = ich buche jede Zahlung selbst)'},
-  preview:  {en:'First payment: {f} (net {n} + all VAT {v}) · then {k} × {m} net', ar:'أول دفعة: {f} (نيتو {n} + الضريبة كلها {v}) · وبعدها {k} × {m} نيتو', de:'Erste Zahlung: {f} (netto {n} + gesamte MwSt {v}) · danach {k} × {m} netto'},
-  preview0: {en:'First payment: {f} (net {n} + all VAT {v}) · the rest you book when you pay', ar:'أول دفعة: {f} (نيتو {n} + الضريبة كلها {v}) · والباقي بتسجله وقت ما تدفع', de:'Erste Zahlung: {f} (netto {n} + gesamte MwSt {v}) · den Rest buchst du bei Zahlung'},
   hint:     {en:'The whole VAT goes with the first payment; later payments are net only.', ar:'الضريبة كلها بتتدفع مع أول دفعة، والدفعات اللي بعدها نيتو بس.', de:'Die gesamte MwSt fällt mit der ersten Zahlung an; spätere Zahlungen sind nur netto.'},
   save:     {en:'Save', ar:'حفظ', de:'Speichern'},
   grp:      {en:'Instalment purchases', ar:'مشتريات بالتقسيط', de:'Ratenkäufe'},
@@ -44,7 +60,6 @@ var PP_L = {
   badName:  {en:'Enter what you bought', ar:'اكتب اشتريت إيه', de:'Bitte angeben, was gekauft wurde'},
   badNet:   {en:'Enter the net invoice amount', ar:'اكتب مبلغ الفاتورة نيتو', de:'Bitte den Nettobetrag eingeben'},
   badDown:  {en:'The down payment must be below the invoice amount', ar:'المقدّم لازم يكون أقل من مبلغ الفاتورة', de:'Die Anzahlung muss unter dem Rechnungsbetrag liegen'},
-  badPlan:  {en:'Without a down payment, enter at least 1 monthly instalment', ar:'من غير مقدّم لازم تكتب قسط شهري واحد على الأقل', de:'Ohne Anzahlung mindestens 1 Monatsrate angeben'},
   badAmt:   {en:'Enter an amount above 0 and not above what is open', ar:'اكتب مبلغ أكبر من صفر ومش أكتر من الباقي', de:'Betrag über 0 und nicht über dem offenen Rest'},
   badDate:  {en:'Choose a date', ar:'اختار التاريخ', de:'Bitte ein Datum wählen'},
   saved:    {en:'Instalment purchase saved', ar:'اتسجل الشراء بالتقسيط', de:'Ratenkauf gespeichert'},
@@ -60,7 +75,8 @@ function ppRatesBooked(pl) { return (pl.payments || []).filter(function(p) { ret
 
 // Date of scheduled instalment k (1-based): k months after the first payment, same day (clamped to month end).
 function ppRateDate(pl, k) {
-  var p = pl.date.split('-'), y = +p[0], m = +p[1] - 1 + k, d = +p[2];
+  var iv = pl.interval > 0 ? pl.interval : 1;
+  var p = pl.date.split('-'), y = +p[0], m = +p[1] - 1 + k * iv, d = +p[2];
   var last = new Date(y, m + 1, 0).getDate();
   var dt = new Date(y, m, Math.min(d, last));
   return dt.getFullYear() + '-' + pad2(dt.getMonth() + 1) + '-' + pad2(dt.getDate());
@@ -93,6 +109,7 @@ function checkPurchasePlansDue() {
       var amt = k === pl.months - 1 ? ppOpenNetto(pl) : Math.min(pl.monthly, ppOpenNetto(pl));
       if(amt <= 0.005) { pl.status = 'completed'; break; }
       k++;
+      // instalment numbering: with a down payment the instalments count on their own; without one the 1st payment was instalment 1
       var total = pl.down > 0 ? pl.months : pl.months + 1;
       var idx = pl.down > 0 ? k : k + 1;
       ppBook(pl, 'rate', d, amt, ppFill(pptx('rateN'), {k: idx, n: total}));
@@ -172,52 +189,80 @@ function ppTodayInMonth() {
 
 function openPurchasePlan() {
   var num = ' type="number" inputmode="decimal" step="0.01" min="0"';
+  var ivs = [1, 2, 3, 6, 12, 0].map(function(v) { return '<option value="' + v + '">' + escHtml(pptx('iv' + v)) + '</option>'; }).join('');
   ppModal('ppOverlay',
     '<div class="vat-pay-ttl">' + escHtml(pptx('title')) + '</div>'
     + ppField('ppName', pptx('name'), '<input class="wt-input" id="ppName" type="text" maxlength="80" placeholder="' + escHtml(pptx('namePh')) + '">')
-    + '<div class="pp-row2">' + ppField('ppNet', pptx('netto'), '<input class="wt-input" id="ppNet"' + num + '>')
-    + ppField('ppRate', pptx('rate'), '<input class="wt-input" id="ppRate"' + num + ' value="20">') + '</div>'
+    + ppField('ppPrice', pptx('price'), '<div class="pp-price"><input class="wt-input" id="ppPrice"' + num + '>'
+        + '<div class="invd-seg pp-mode"><button type="button" class="on" data-mode="gross">' + escHtml(pptx('gross')) + '</button>'
+        + '<button type="button" data-mode="net">' + escHtml(pptx('net')) + '</button></div></div>')
+    + ppField('ppVat', pptx('vatAmt'), '<input class="wt-input" id="ppVat"' + num + '><div class="pp-info" id="ppVatInfo"></div>')
     + ppField('ppDate', pptx('date'), '<input class="wt-input" id="ppDate" type="date" value="' + ppTodayInMonth() + '">')
-    + '<div class="pp-row2">' + ppField('ppDown', pptx('down'), '<input class="wt-input" id="ppDown"' + num + ' placeholder="0">')
-    + ppField('ppMonths', pptx('months'), '<input class="wt-input" id="ppMonths" type="number" min="0" step="1" value="12">') + '</div>'
+    + ppField('ppDown', pptx('down'), '<input class="wt-input" id="ppDown"' + num + ' placeholder="0">')
+    + '<div class="pp-row2">' + ppField('ppRateAmt', pptx('rateAmt'), '<input class="wt-input" id="ppRateAmt"' + num + '>')
+    + ppField('ppEvery', pptx('every'), '<select class="wt-input" id="ppEvery">' + ivs + '</select>') + '</div>'
     + '<div class="vat-pay-open pp-preview" id="ppPreview"></div>'
     + '<div class="vat-pay-hint">' + escHtml(pptx('hint')) + '</div>'
     + '<div class="vat-pay-err" id="ppErr"></div>'
     + '<div class="vat-pay-btns"><button type="button" class="wt-btn" onclick="savePurchasePlan()">' + escHtml(pptx('save')) + '</button></div>');
-  ['ppNet', 'ppRate', 'ppDown', 'ppMonths'].forEach(function(i) { document.getElementById(i).oninput = ppPreview; });
+  ppOpenPlan.mode = 'gross';
+  document.querySelectorAll('#ppOverlay .pp-mode button').forEach(function(bt) {
+    bt.onclick = function() {
+      ppOpenPlan.mode = bt.getAttribute('data-mode');
+      document.querySelectorAll('#ppOverlay .pp-mode button').forEach(function(x) { x.classList.toggle('on', x === bt); });
+      ppPreview();
+    };
+  });
+  ['ppPrice', 'ppVat', 'ppDown', 'ppRateAmt', 'ppEvery', 'ppDate'].forEach(function(i) {
+    var el = document.getElementById(i); el.oninput = el.onchange = ppPreview;
+  });
   ppPreview();
 }
+var ppOpenPlan = {mode: 'gross'};
 function ppNum(id) { return ppR2(parseFloat(String((document.getElementById(id) || {}).value || '').replace(',', '.')) || 0); }
+// Everything the dialog implies: net price, VAT (typed in; rate derived), first payment, instalments.
 function ppCalc() {
-  var net = ppNum('ppNet'), rate = ppNum('ppRate'), down = ppNum('ppDown'), months = Math.max(0, Math.floor(ppNum('ppMonths')));
-  var vat = ppR2(net * rate / 100);
-  var monthly = down > 0 ? (months > 0 ? ppR2((net - down) / months) : 0) : (months > 0 ? ppR2(net / months) : 0);
-  var firstNet = down > 0 ? down : monthly;
-  return {net: net, rate: rate, down: down, months: months, vat: vat, monthly: monthly, firstNet: firstNet,
-          later: down > 0 ? months : Math.max(0, months - 1)};
+  var price = ppNum('ppPrice'), vat = ppNum('ppVat'), down = ppNum('ppDown'), rateAmt = ppNum('ppRateAmt');
+  var iv = parseInt((document.getElementById('ppEvery') || {}).value, 10) || 0;
+  var net = ppR2(ppOpenPlan.mode === 'net' ? price : price - vat);
+  var rate = net > 0 ? vat / net * 100 : 0;
+  var firstNet = down > 0 ? down : rateAmt;
+  var rest = ppR2(net - firstNet);
+  var count = iv > 0 && rateAmt > 0 && rest > 0.005 ? Math.ceil(rest / rateAmt - 1e-9) : 0;
+  var lastAmt = count > 0 ? ppR2(rest - rateAmt * (count - 1)) : 0;
+  return {price: price, net: net, vat: vat, rate: rate, down: down, rateAmt: rateAmt, interval: iv,
+          firstNet: firstNet, rest: rest, count: count, lastAmt: lastAmt};
 }
+function ppDmy(iso) { return iso ? iso.substring(8, 10) + '.' + iso.substring(5, 7) + '.' + iso.substring(0, 4) : ''; }
 function ppPreview() {
-  var c = ppCalc(), el = document.getElementById('ppPreview');
+  var c = ppCalc(), el = document.getElementById('ppPreview'), info = document.getElementById('ppVatInfo');
+  var date = (document.getElementById('ppDate') || {}).value || '';
+  if(info) info.textContent = c.net > 0 ? ppFill(pptx('vatInfo'), {r: wtDe(c.rate, 1), n: fmt(c.net)}) : '';
   if(!el) return;
-  if(!(c.net > 0) || !(c.firstNet > 0)) { el.style.display = 'none'; return; }
+  if(!(c.net > 0) || !(c.firstNet > 0) || c.firstNet > c.net + 0.005) { el.style.display = 'none'; return; }
   el.style.display = '';
-  var o = {f: fmt(c.firstNet + c.vat), n: fmt(c.firstNet), v: fmt(c.vat), k: c.later, m: fmt(c.monthly)};
-  el.textContent = ppFill(pptx(c.later > 0 ? 'preview' : 'preview0'), o);
+  var o = {d: ppDmy(date), f: fmt(c.firstNet + c.vat), n: fmt(c.firstNet), v: fmt(c.vat)};
+  if(c.rest <= 0.005) { el.textContent = ppFill(pptx('prevOne'), o); return; }
+  if(c.interval === 0 || !(c.rateAmt > 0)) { o.r = fmt(c.rest); el.textContent = ppFill(pptx('prevMan'), o); return; }
+  o.k = c.count; o.m = fmt(c.rateAmt); o.iv = pptx('iv' + c.interval);
+  o.l = ppDmy(ppRateDate({date: date || today(), interval: c.interval}, c.count)) + (Math.abs(c.lastAmt - c.rateAmt) > 0.005 ? ' (' + fmt(c.lastAmt) + ')' : '');
+  el.textContent = ppFill(pptx('prevPlan'), o);
 }
 function savePurchasePlan() {
   var name = (document.getElementById('ppName').value || '').trim(), date = document.getElementById('ppDate').value;
   var c = ppCalc(), err = document.getElementById('ppErr');
   if(!name) { err.textContent = pptx('badName'); return; }
-  if(!(c.net > 0)) { err.textContent = pptx('badNet'); return; }
-  if(c.down >= c.net) { err.textContent = pptx('badDown'); return; }
-  if(!(c.down > 0) && !(c.months > 0)) { err.textContent = pptx('badPlan'); return; }
+  if(!(c.price > 0) || !(c.net > 0)) { err.textContent = pptx('badNet'); return; }
+  if(c.vat < 0 || (ppOpenPlan.mode === 'gross' && c.vat >= c.price)) { err.textContent = pptx('badVat'); return; }
+  if(!(c.firstNet > 0)) { err.textContent = pptx('badRate'); return; }
+  if(c.firstNet > c.net + 0.005) { err.textContent = pptx('badDown'); return; }
   if(!/^\d{4}-\d{2}-\d{2}$/.test(date)) { err.textContent = pptx('badDate'); return; }
-  var pl = {id: Date.now(), name: name, netto: c.net, vatRate: c.rate, vat: c.vat, date: date, down: c.down,
-            months: c.down > 0 ? c.months : c.months - 1, monthly: c.monthly, payments: [], status: 'active'};
-  // without a down payment the first instalment is the first payment; the rest are pl.months more
+  var manual = c.interval === 0 || !(c.rateAmt > 0);
+  var pl = {id: Date.now(), name: name, netto: c.net, vatRate: ppR2(c.rate), vat: c.vat, date: date, down: c.down,
+            interval: manual ? 0 : c.interval, months: manual ? 0 : c.count, monthly: c.rateAmt, payments: [], status: 'active'};
   state.purchasePlans = state.purchasePlans || [];
   state.purchasePlans.push(pl);
-  ppBook(pl, 'first', date, c.firstNet, pptx('first'));
+  ppBook(pl, 'first', date, Math.min(c.firstNet, c.net), pptx('first'));
   checkPurchasePlansDue();
   save();
   ppClose('ppOverlay');

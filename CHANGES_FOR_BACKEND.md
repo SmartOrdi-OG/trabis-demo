@@ -459,3 +459,9 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
 - `trabis-package.js`: `total = saldoNet + zahllast` (كان `saldoNet − zahllast`). العناوين: «Total (Netto + Zahllast)» في الإكسيل و«Total (Saldo Netto + Zahllast)» في الـ PDF. يعني نفس زالدو الشهر في التطبيق = الفلوس اللي في الحساب.
 - `buchhalter.html`: كارت «USt-Zahllast» بقى بيعرض المبلغ من غير سالب + «zu zahlen» / «Guthaben»، و«Total» = Saldo netto + Zahllast.
 - مثال: دخل 40.600 براتو + مصروفات 2.840 براتو (20%) → Saldo netto 31.466,66 · Zahllast 6.293,34 zu zahlen · Total 37.760,00.
+
+## الخطوة 8: Ratenkauf بحرية أكتر (تعديل الخطوة 5 — طلب المالك)
+- النافذة بقت: **Gesamtpreis** + اختيار «inkl. MwSt / ohne MwSt» · **MwSt-Betrag** بيتكتب يدوي (بيتدفع كله مع أول دفعة)، والنسبة بتتحسب لوحدها وتظهر تحته («= 20,0 % MwSt · netto …») · Erste Zahlung am · Anzahlung netto (اختياري) · **Rate (€ netto)** + **Wie oft**: jeden Monat / alle 2 / alle 3 / alle 6 Monate / jährlich / ich buche selbst.
+- netto = Preis − MwSt (لو inkl.) أو Preis (لو ohne). أول دفعة = Anzahlung (ولو مفيش: أول Rate) + الضريبة كلها. عدد الأقساط = ⌈الباقي ÷ Rate⌉، وآخر قسط بياخد الباقي. المعاينة بتوري آخر قسط وتاريخه.
+- التخزين: نفس `purchasePlans` + `interval` (شهور بين الأقساط، 0 = يدوي)؛ `monthly` = مبلغ الـ Rate؛ `months` = عدد الأقساط بعد أول دفعة؛ `vatRate` محسوبة. الخطط القديمة من غير `interval` = كل شهر.
+- تصليح: خانة التاريخ كانت بتطلع برّه النافذة على iPhone.
