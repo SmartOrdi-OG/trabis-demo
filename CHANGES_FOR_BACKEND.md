@@ -445,3 +445,12 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
 - **التخزين:** `purchasePlans: [{id, name, netto, vatRate, vat, date, down, months, monthly, payments:[{txId, date, netto, vat, kind:'first'|'rate'|'extra'}], status:'active'|'completed'|'stopped'}]`. كل دفعة = معاملة expense عادية (`category:'Other'`, `planId`). أول دفعة `amount = netto + vat` و`vatRate = vat / netto × 100` عشان أي تقسيم brutto→netto/MwSt يطلع نفس الأرقام بالظبط. **في نسخة السيرفر الأحسن** تخزّنوا netto وvat صريحين على المعاملة بدل الـ vatRate ده.
 - **الأقساط الشهرية:** بتتسجل لوحدها لما يجي ميعادها (نفس يوم أول دفعة كل شهر)، مع الـ check بتاع الأقساط الموجود. آخر قسط بياخد الباقي كله (السنتات). «Zahlung buchen» = دفعة زيادة نيتو بإيد المستخدم (مش أكتر من الباقي). «Stoppen» بيوقف الأقساط الجاية، والمدفوع بيفضل.
 - **في تاب Ausgaben:** جروب «Ratenkäufe»: الاسم، الباقي، «bezahlt x von y netto · MwSt … · nächste Rate dd.mm.yyyy · €»، وشريط تقدم.
+
+## الخطوة 6: تصميم الفاتورة (Rechnungsdesign) في الإعدادات
+- تحت اختيار القالب (Klassisch / Modern) بقى فيه «Rechnungsdesign» بمعاينة حية:
+  - **Hauptfarbe:** 6 ألوان جاهزة + «Eigene Farbe» (color picker). بتغيّر خط الهيدر وإطار الإجمالي وخلفية رأس الجدول (Klassisch) / شريط الهيدر وخطوط الجدول والإجمالي (Modern).
+  - **Logo-Position:** Links / Mitte / Rechts. **Logo-Größe:** Klein / Mittel / Groß (Klassisch 64/120/192 px، Modern 64/88/120 px).
+  - **Zeile unter den Firmendaten** (اختياري) و**Fußzeile** (اختياري).
+  - «Design zurücksetzen» بيرجّع الافتراضي (نفس شكل القوالب القديم بالظبط).
+- **التخزين:** `invoiceDesign: {accent, logoPos, logoSize, headerText, footerText}` (فاضي = الافتراضي).
+- **⚠️ تصليح مهم:** الفواتير كانت بتكتب بيانات **Smartordi OG** (FN، العنوان، team@smartordi.eu، التليفون) لو بيانات العميل ناقصة، والفوتر كان ثابت على Smartordi OG. دلوقتي الفاتورة بتعرض بيانات العميل بس، والفوتر الافتراضي = «Vielen Dank» + اسم شركته + عنوانه + UID. **اتأكد إن نسخة السيرفر مفيهاش نفس المشكلة.**

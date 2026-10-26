@@ -660,7 +660,8 @@ function renderInvoiceTemplateSection() {
     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
     + tplCard('tplCardClassic', 'classic', stx('tplClassic'))
     + tplCard('tplCardModern', 'modern', stx('tplModern'))
-    + '</div>';
+    + '</div>'
+    + '<div id="invDesignBox"></div>';
 
   function selectTemplate(kind) {
     if(state.invoiceTemplate === kind) return;
@@ -672,6 +673,7 @@ function renderInvoiceTemplateSection() {
   if(classicEl) classicEl.onclick = function(){ selectTemplate('classic'); };
   var modernEl = document.getElementById('tplCardModern');
   if(modernEl) modernEl.onclick = function(){ selectTemplate('modern'); };
+  if(typeof renderInvoiceDesign === 'function') renderInvoiceDesign();
 }
 
 function renderDataManagementSection() {
@@ -938,7 +940,7 @@ async function exportBackup() {
     fleet: state.fleet, assets: state.assets, inventory: state.inventory,
     businessName: state.businessName, businessType: state.businessType, bizTaxId: state.businessTaxId,
     uvaFreigaben: state.uvaFreigaben, uvaInterval: state.uvaInterval,
-    notifications: state.notifications, invoiceTemplate: state.invoiceTemplate,
+    notifications: state.notifications, invoiceTemplate: state.invoiceTemplate, invoiceDesign: state.invoiceDesign,
     appointments: state.appointments, notes: state.notes,
     archiveFolders: state.archiveFolders, archiveDocs: state.archiveDocs,
     contacts: state.contacts, contactDocs: state.contactDocs,
@@ -1051,6 +1053,7 @@ function handleImportBackup(file) {
     state.uvaInterval = data.uvaInterval || 'quarter';
     state.notifications = data.notifications || [];
     state.invoiceTemplate = data.invoiceTemplate || 'classic';
+    state.invoiceDesign = data.invoiceDesign || {};
     state.appointments = data.appointments || [];
     state.notes = data.notes || [];
     state.archiveFolders = data.archiveFolders || [];

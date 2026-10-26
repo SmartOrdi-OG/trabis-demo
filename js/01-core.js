@@ -302,6 +302,7 @@ var state = {
   notifications: [],
   businessType: '',
   invoiceTemplate: 'classic',
+  invoiceDesign: {},   // colour, logo position/size, header/footer text — js/13e-invoice-design.js
   appointments: [],
   notes: [],
   fleet: [],
@@ -531,6 +532,7 @@ function save() {
   localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
   localStorage.setItem(uk('businessType'), state.businessType);
   localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
+  localStorage.setItem(uk('invoice_design'), JSON.stringify(state.invoiceDesign || {}));
   localStorage.setItem(uk('appointments'), JSON.stringify(state.appointments));
   localStorage.setItem(uk('notes'), JSON.stringify(state.notes));
   localStorage.setItem(uk('archiveFolders'), JSON.stringify(state.archiveFolders || []));
@@ -587,6 +589,7 @@ function loadUserData() {
   state.appointments = JSON.parse(localStorage.getItem(uk('appointments')) || '[]');
   state.notes = JSON.parse(localStorage.getItem(uk('notes')) || '[]');
   state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
+  state.invoiceDesign = JSON.parse(localStorage.getItem(uk('invoice_design')) || '{}');
   state.archiveFolders = JSON.parse(localStorage.getItem(uk('archiveFolders')) || '[]');
   state.archiveDocs = JSON.parse(localStorage.getItem(uk('archiveDocs')) || '[]');
   state.contacts = JSON.parse(localStorage.getItem(uk('contacts')) || '[]');

@@ -806,7 +806,7 @@ function buildProfessionalReceipt(inv) {
   var bizAddress = state.businessAddress || '';
   var bizTaxId = state.businessTaxId || '';
   var bizPhone = state.businessPhone || '';
-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
+  var bizEmail = state.businessEmail || '';
 
   var sourceInv = null;
   if(inv.sourceInvoiceId) {
@@ -946,6 +946,7 @@ function buildProfessionalReceipt(inv) {
 }
 
 function buildClassicInvoice(inv, type) {
+  var D = invDesign('classic');
   var isRTL = false; // invoice PDFs always render German/LTR, regardless of app language
   var dirAttr = isRTL ? 'rtl' : 'ltr';
   var alignStart = isRTL ? 'right' : 'left';
@@ -957,9 +958,9 @@ function buildClassicInvoice(inv, type) {
   var bizName = state.businessName || 'Your Company Name';
   var bizAddress = state.businessAddress || '';
   var bizTaxId = state.businessTaxId || '';
-  var bizPhone = state.businessPhone || '+43 667 762439293';
-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
-  var bizContactLine = (bizAddress ? bizAddress + '<br>' : 'Steingasse 6a, 4020 Linz<br>') + bizEmail + '<br>' + bizPhone + (bizTaxId ? '<br>UID: ' + bizTaxId : '');
+  var bizPhone = state.businessPhone || '';
+  var bizEmail = state.businessEmail || '';
+  var bizContactLine = [bizAddress, bizEmail, bizPhone, bizTaxId ? 'UID: ' + bizTaxId : ''].filter(Boolean).join('<br>');
 
   var itemRows = '';
   var items = inv.items || [];
@@ -1007,28 +1008,31 @@ function buildClassicInvoice(inv, type) {
   '@media print{body{margin:0}.no-print{display:none}@page{size:A4}}' +
   '</style></head><body dir="' + dirAttr + '">' +
   '<div class="no-print">' +
-  '<button onclick="window.print()" style="padding:10px 20px;background:#006e1c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+  '<button onclick="window.print()" style="padding:10px 20px;background:' + D.accent + ';color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
   '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
   '</div>' +
   '<div style="position:relative;display:flex;flex-direction:column;min-height:1123px;padding:32px;box-sizing:border-box">' +
   (state.businessLogo ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none"><img src="' + state.businessLogo + '" style="width:1000px;height:1000px;object-fit:contain;opacity:0.06"></div>' : '') +
   '<div style="position:relative;z-index:1">' +
+  (D.logoPos === 'center' && state.businessLogo ? '<div style="text-align:center;margin-bottom:16px">' + invLogoHtml(D, 'classic') + '</div>' : '') +
   '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">' +
   '<div style="display:flex;align-items:center;gap:10px">' +
-  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="height:192px;max-width:400px;object-fit:contain">' : '') +
+  (D.logoPos === 'left' ? invLogoHtml(D, 'classic') : '') +
   '<div>' +
   '<div style="font-size:28px;font-weight:700;color:#1e293b">' + bizName + '</div>' +
   '<div style="font-size:12px;color:#9ca3af;margin-top:6px">' + bizContactLine + '</div>' +
+  invHeaderTextHtml(D, '#475569') +
   '</div>' +
   '</div>' +
   '<div style="text-align:' + alignEnd + '">' +
+  (D.logoPos === 'right' && state.businessLogo ? '<div style="margin-bottom:10px">' + invLogoHtml(D, 'classic') + '</div>' : '') +
   '<div style="font-size:32px;font-weight:700;color:#9ca3af;letter-spacing:2px">' + typeLabel + '</div>' +
   '<div style="font-size:14px;font-weight:600;margin-top:4px">' + ltrSpan(inv.number||'') + '</div>' +
   '<div style="font-size:12px;color:#6b7280;margin-top:4px">' + ptx('issueLbl') + ': ' + ltrSpan(formatDateDisplay(inv.issueDate||'')) + '</div>' +
   (inv.dueDate ? '<div style="font-size:12px;color:#6b7280">' + ptx('dueLbl') + ': ' + ltrSpan(formatDateDisplay(inv.dueDate)) + '</div>' : '') +
   '</div>' +
   '</div>' +
-  '<div style="border-top:3px solid #006e1c;margin-bottom:24px"></div>' +
+  '<div style="border-top:3px solid ' + D.accent + ';margin-bottom:24px"></div>' +
   '<div style="margin-bottom:24px">' +
   '<div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px">' + billLabel + '</div>' +
   '<div style="font-size:15px;font-weight:700">' + partyName + '</div>' +
@@ -1036,7 +1040,7 @@ function buildClassicInvoice(inv, type) {
   (paymentMethodLabel ? '<div style="font-size:12px;color:#6b7280;margin-top:2px">' + ptx('paymentLbl') + ': ' + paymentMethodLabel + '</div>' : '') +
   '</div>' +
   '<table style="width:100%;border-collapse:collapse;margin-bottom:24px">' +
-  '<thead><tr style="background:#f0fdf4">' +
+  '<thead><tr style="background:' + invTint(D.accent, 0.08) + '">' +
   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:' + alignStart + ';font-size:13px">' + ptx('description') + '</th>' +
   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:center;font-size:13px">' + ptx('qty') + '</th>' +
   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:' + alignEnd + ';font-size:13px">' + ptx('unitPrice') + '</th>' +
@@ -1046,13 +1050,13 @@ function buildClassicInvoice(inv, type) {
   '<div style="width:260px">' +
   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('subtotal') + '</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('vat') + ' (' + (inv.vatRate||0) + '%)</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
-  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid #006e1c;border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:#006e1c">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
+  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid ' + D.accent + ';border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:' + D.accent + '">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
   '</div></div>' +
   (showBankBox ? '<div style="display:flex;gap:16px;align-items:flex-start;margin-top:20px">' + bankBoxHtml + qrHtml + '</div>' : '') +
   notesHtml +
   '</div>' +
   '<div style="position:relative;z-index:1;border-top:1px solid #e2e8f0;margin-top:auto;padding-top:12px;text-align:center;font-size:12px;color:#9ca3af">' +
-  ptx('thanks') + ' &middot; Smartordi OG &middot; FN 675586 i &middot; Steingasse 6a, 4020 Linz' +
+  invFooterHtml(D) +
   '</div>' +
   '</div>' +
   '</body></html>';
@@ -1065,7 +1069,7 @@ function buildModernInvoice(inv, type) {
   var dirAttr = isRTL ? 'rtl' : 'ltr';
   var alignStart = isRTL ? 'right' : 'left';
   var alignEnd = isRTL ? 'left' : 'right';
-  var accent = '#0061a4';
+  var D = invDesign('modern'), accent = D.accent;
   var typeLabel = type==='issued' ? ptx('invoice') : type==='receipt' ? ptx('receipt') : ptx('receivedInvoice');
   var billLabel = type==='received' ? ptx('fromSupplier') : ptx('billTo');
   var partyName = inv.clientName || inv.supplierName || '';
@@ -1073,9 +1077,9 @@ function buildModernInvoice(inv, type) {
   var bizName = state.businessName || 'Your Company Name';
   var bizAddress = state.businessAddress || '';
   var bizTaxId = state.businessTaxId || '';
-  var bizPhone = state.businessPhone || '+43 667 762439293';
-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
-  var bizContactLine = (bizAddress ? bizAddress + '<br>' : 'Steingasse 6a, 4020 Linz<br>') + bizEmail + '<br>' + bizPhone + (bizTaxId ? '<br>UID: ' + bizTaxId : '');
+  var bizPhone = state.businessPhone || '';
+  var bizEmail = state.businessEmail || '';
+  var bizContactLine = [bizAddress, bizEmail, bizPhone, bizTaxId ? 'UID: ' + bizTaxId : ''].filter(Boolean).join('<br>');
 
   var itemRows = '';
   var items = inv.items || [];
@@ -1124,15 +1128,18 @@ function buildModernInvoice(inv, type) {
   invoiceNoPrintBar() +
   '<div style="display:flex;flex-direction:column;min-height:1043px;box-sizing:border-box">' +
 
+  (D.logoPos === 'center' && state.businessLogo ? '<div style="background:' + accent + ';padding:28px 40px 0;text-align:center">' + invLogoHtml(D, 'modern') + '</div>' : '') +
   '<div style="background:' + accent + ';color:#fff;padding:36px 40px;display:flex;justify-content:space-between;align-items:center">' +
   '<div style="display:flex;align-items:center;gap:14px">' +
-  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="height:64px;max-width:180px;object-fit:contain;background:#fff;border-radius:8px;padding:4px">' : '') +
+  (D.logoPos === 'left' ? invLogoHtml(D, 'modern') : '') +
   '<div>' +
   '<div style="font-size:22px;font-weight:700">' + bizName + '</div>' +
   '<div style="font-size:11px;opacity:0.85;margin-top:4px;line-height:1.5">' + bizContactLine + '</div>' +
+  invHeaderTextHtml(D, 'rgba(255,255,255,.92)') +
   '</div>' +
   '</div>' +
   '<div style="text-align:' + alignEnd + '">' +
+  (D.logoPos === 'right' && state.businessLogo ? '<div style="margin-bottom:10px">' + invLogoHtml(D, 'modern') + '</div>' : '') +
   '<div style="font-size:26px;font-weight:700;letter-spacing:1px">' + typeLabel + '</div>' +
   '<div style="font-size:13px;font-weight:600;margin-top:4px;opacity:0.9">' + ltrSpan(inv.number||'') + '</div>' +
   '</div>' +
@@ -1171,7 +1178,7 @@ function buildModernInvoice(inv, type) {
   '</div>' +
 
   '<div style="border-top:1px solid #eef2f6;margin-top:auto;padding:14px 40px;text-align:center;font-size:12px;color:#9ca3af">' +
-  ptx('thanks') + ' &middot; Smartordi OG &middot; FN 675586 i &middot; Steingasse 6a, 4020 Linz' +
+  invFooterHtml(D) +
   '</div>' +
   '</div>' +
   '</body></html>';
