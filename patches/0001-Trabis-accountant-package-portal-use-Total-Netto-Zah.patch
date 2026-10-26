@@ -1,0 +1,79 @@
+From 7e6c5542d98fc0cd1de245f855bdeec6d8a65629 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 26 Oct 2026 06:30:12 +0100
+Subject: [PATCH] Trabis: accountant package + portal use Total = Netto +
+ Zahllast (same as the month saldo)
+
+- trabis-package.js: summary total = saldoNet + zahllast; Excel/PDF labels updated.
+- buchhalter.html: Zahllast shown as an amount with "zu zahlen"/"Guthaben",
+  Total = Saldo netto + Zahllast.
+- CHANGES_FOR_BACKEND.md: step 7.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
+---
+ CHANGES_FOR_BACKEND.md | 5 +++++
+ buchhalter.html        | 2 +-
+ trabis-package.js      | 6 +++---
+ 3 files changed, 9 insertions(+), 4 deletions(-)
+
+diff --git a/CHANGES_FOR_BACKEND.md b/CHANGES_FOR_BACKEND.md
+index 20ad0af..8b5eb11 100644
+--- a/CHANGES_FOR_BACKEND.md
++++ b/CHANGES_FOR_BACKEND.md
+@@ -454,3 +454,8 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
+   - «Design zurücksetzen» بيرجّع الافتراضي (نفس شكل القوالب القديم بالظبط).
+ - **التخزين:** `invoiceDesign: {accent, logoPos, logoSize, headerText, footerText}` (فاضي = الافتراضي).
+ - **⚠️ تصليح مهم:** الفواتير كانت بتكتب بيانات **Smartordi OG** (FN، العنوان، team@smartordi.eu، التليفون) لو بيانات العميل ناقصة، والفوتر كان ثابت على Smartordi OG. دلوقتي الفاتورة بتعرض بيانات العميل بس، والفوتر الافتراضي = «Vielen Dank» + اسم شركته + عنوانه + UID. **اتأكد إن نسخة السيرفر مفيهاش نفس المشكلة.**
++
++## الخطوة 7: باكدج المحاسب وبوابة المحاسب — نفس معنى الـ Total
++- `trabis-package.js`: `total = saldoNet + zahllast` (كان `saldoNet − zahllast`). العناوين: «Total (Netto + Zahllast)» في الإكسيل و«Total (Saldo Netto + Zahllast)» في الـ PDF. يعني نفس زالدو الشهر في التطبيق = الفلوس اللي في الحساب.
++- `buchhalter.html`: كارت «USt-Zahllast» بقى بيعرض المبلغ من غير سالب + «zu zahlen» / «Guthaben»، و«Total» = Saldo netto + Zahllast.
++- مثال: دخل 40.600 براتو + مصروفات 2.840 براتو (20%) → Saldo netto 31.466,66 · Zahllast 6.293,34 zu zahlen · Total 37.760,00.
+diff --git a/buchhalter.html b/buchhalter.html
+index f23b48e..9ca89be 100644
+--- a/buchhalter.html
++++ b/buchhalter.html
+@@ -490,7 +490,7 @@ function kpi(l, v, sub) { return '<div class="kpi"><div class="kl">' + l + '</di
+ function viewOverview(P) {
+   var t = {iN: 0, iV: 0, eN: 0, eV: 0}; P.summary.forEach(function(s) { t.iN += s.iN; t.iV += s.iV; t.eN += s.eN; t.eV += s.eV; });
+   var saldo = t.iN - t.eN, zl = t.iV - t.eV, withFile = P.rows.filter(function(r) { return hasFile(r.tx); }).length, missing = P.rows.length - withFile;
+-  var h = sharesHtml() + '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', sgn(-zl), 'Total ' + sgn(saldo - zl)) + '</div>';
++  var h = sharesHtml() + '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', eur(Math.abs(zl)) + (Math.abs(zl) < 0.005 ? '' : (zl > 0 ? ' zu zahlen' : ' Guthaben')), 'Total ' + sgn(saldo + zl)) + '</div>';
+   h += '<h2 class="sec">Downloads für ' + esc(periodLabel()) + '</h2><div class="dls">'
+     + dl('PDF', 'Komplettpaket als PDF', 'Zusammenfassung, Verzeichnisse und alle ' + withFile + ' Belege – Einnahmen und Ausgaben getrennt, nummeriert.', 'pdf', 'Herunterladen')
+     + dl('XLS', 'Excel-Datei', 'Zusammenfassung, Einnahmen, Ausgaben, Journal und Mitarbeiter-Stunden – mit Summenformeln.', 'xlsx', 'Herunterladen')
+diff --git a/trabis-package.js b/trabis-package.js
+index 98bbd5b..c58f606 100644
+--- a/trabis-package.js
++++ b/trabis-package.js
+@@ -67,7 +67,7 @@
+         o[k + 'N'] += r.net; o[k + 'V'] += r.vat; o[k + 'G'] += r.gross;
+       });
+       ['iN','iV','iG','eN','eV','eG'].forEach(function(k) { o[k] = r2(o[k]); });
+-      o.saldoNet = r2(o.iN - o.eN); o.zahllast = r2(o.iV - o.eV); o.total = r2(o.saldoNet - o.zahllast);
++      o.saldoNet = r2(o.iN - o.eN); o.zahllast = r2(o.iV - o.eV); o.total = r2(o.saldoNet + o.zahllast);   // Netto + MwSt = what is in the account (same as the app's month saldo)
+       return o;
+     });
+     return {months: months, rows: rows, income: income, expense: expense, summary: summary};
+@@ -155,7 +155,7 @@
+   function buildSheets(P, opts) {
+     var sheets = [];
+     // Zusammenfassung
+-    var z = [['Monat', 'Einnahmen Netto', 'Einnahmen USt', 'Einnahmen Brutto', 'Ausgaben Netto', 'Vorsteuer (Ausgaben USt)', 'Ausgaben Brutto', 'Saldo Netto', 'USt-Zahllast (E − A)', 'Total (Netto − Zahllast)']];
++    var z = [['Monat', 'Einnahmen Netto', 'Einnahmen USt', 'Einnahmen Brutto', 'Ausgaben Netto', 'Vorsteuer (Ausgaben USt)', 'Ausgaben Brutto', 'Saldo Netto', 'USt-Zahllast (E − A)', 'Total (Netto + Zahllast)']];
+     P.summary.forEach(function(s) {
+       z.push([monthLabel(s.month), {n: s.iN}, {n: s.iV}, {n: s.iG}, {n: s.eN}, {n: s.eV}, {n: s.eG}, {n: s.saldoNet}, {n: s.zahllast}, {n: s.total}]);
+     });
+@@ -281,7 +281,7 @@
+     y += 14;
+     var sN = r2(tot.iN - tot.eN), zl = r2(tot.iV - tot.eV);
+     doc.setFontSize(11);
+-    [['Saldo Netto (Einnahmen − Ausgaben)', sN], ['USt-Zahllast (Einnahmen-USt − Vorsteuer)', zl], ['Total (Saldo Netto − Zahllast)', r2(sN - zl)]].forEach(function(r) {
++    [['Saldo Netto (Einnahmen − Ausgaben)', sN], ['USt-Zahllast (Einnahmen-USt − Vorsteuer)', zl], ['Total (Saldo Netto + Zahllast)', r2(sN + zl)]].forEach(function(r) {
+       doc.setFont('helvetica', 'normal'); doc.setTextColor(60); doc.text(lat(r[0]), M, y);
+       doc.setFont('helvetica', 'bold'); doc.setTextColor(20); doc.text('EUR ' + deNum(r[1]), W - M, y, {align: 'right'}); y += 8;
+     });
+-- 
+2.43.0
+
