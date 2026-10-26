@@ -1027,3 +1027,9 @@ body.art .carry-wrap .carry-v{font-size:15px}
 .pp-info{font-size:12px;color:var(--text3);margin-top:5px;min-height:15px}
 .vat-pay-modal .wt-input{box-sizing:border-box;max-width:100%;min-width:0}
 .vat-pay-modal input[type=date].wt-input{-webkit-appearance:none;appearance:none;display:block;width:100%}
+
+.pp-file{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pp-file-btn{display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.pp-file-name{font-size:12px;color:var(--text2);word-break:break-all}
+.pp-btns{flex-wrap:wrap}
+.pp-btns .pp-stop{display:inline-flex;align-items:center;gap:5px}

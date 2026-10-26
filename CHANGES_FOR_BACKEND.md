@@ -465,3 +465,8 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
 - netto = Preis − MwSt (لو inkl.) أو Preis (لو ohne). أول دفعة = Anzahlung (ولو مفيش: أول Rate) + الضريبة كلها. عدد الأقساط = ⌈الباقي ÷ Rate⌉، وآخر قسط بياخد الباقي. المعاينة بتوري آخر قسط وتاريخه.
 - التخزين: نفس `purchasePlans` + `interval` (شهور بين الأقساط، 0 = يدوي)؛ `monthly` = مبلغ الـ Rate؛ `months` = عدد الأقساط بعد أول دفعة؛ `vatRate` محسوبة. الخطط القديمة من غير `interval` = كل شهر.
 - تصليح: خانة التاريخ كانت بتطلع برّه النافذة على iPhone.
+
+## الخطوة 9: رفع فاتورة الشراء بالتقسيط
+- في نافذة «Ratenkauf» خانة «Rechnung (PDF oder Foto, optional)»: «Rechnung hochladen» أو «Foto aufnehmen».
+- الفاتورة بتتحفظ على **أول دفعة** زي أي إيصال: نفس تخزين الإيصالات (IndexedDB `receipts`، `id` = id المعاملة) و`tx.receiptId` / `tx.receiptName`. فبتظهر مع «Belege» في الشهر، وبتتفتح في عارض الإيصالات، وبتدخل في باكدج المحاسب زي أي فاتورة.
+- كارت الـ Ratenkauf: زرار «Rechnung» يفتحها، أو «Rechnung hinzufügen» لو لسه ما اترفعتش (تقدر تضيفها بعدين).

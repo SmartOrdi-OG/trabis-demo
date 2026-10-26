@@ -37,6 +37,12 @@ var PP_L = {
   prevOne:  {en:'One payment {d}: {f} (net {n} + VAT {v})', ar:'دفعة واحدة {d}: {f} (نيتو {n} + الضريبة {v})', de:'Eine Zahlung {d}: {f} (netto {n} + MwSt {v})'},
   prevMan:  {en:'1st payment {d}: {f} (net {n} + VAT {v}) · the rest ({r} net) you book when you pay', ar:'أول دفعة {d}: {f} (نيتو {n} + الضريبة {v}) · والباقي ({r} نيتو) بتسجله وقت ما تدفع', de:'1. Zahlung {d}: {f} (netto {n} + MwSt {v}) · den Rest ({r} netto) buchst du bei Zahlung'},
   badVat:   {en:'The VAT must be 0 or more and below the price', ar:'الضريبة لازم تكون صفر أو أكتر وأقل من السعر', de:'Die MwSt muss ≥ 0 und kleiner als der Preis sein'},
+  file:     {en:'Invoice (PDF or photo, optional)', ar:'الفاتورة (PDF أو صورة، اختياري)', de:'Rechnung (PDF oder Foto, optional)'},
+  pick:     {en:'Upload invoice', ar:'ارفع الفاتورة', de:'Rechnung hochladen'},
+  photo:    {en:'Take photo', ar:'صوّر الفاتورة', de:'Foto aufnehmen'},
+  addInv:   {en:'Add invoice', ar:'إضافة الفاتورة', de:'Rechnung hinzufügen'},
+  showInv:  {en:'Invoice', ar:'الفاتورة', de:'Rechnung'},
+  invSaved: {en:'Invoice attached', ar:'الفاتورة اتضافت', de:'Rechnung angehängt'},
   badRate:  {en:'Enter the down payment or the instalment amount', ar:'اكتب المقدّم أو مبلغ القسط', de:'Anzahlung oder Ratenbetrag angeben'},
   date:     {en:'First payment on', ar:'أول دفعة يوم', de:'Erste Zahlung am'},
   down:     {en:'Down payment net (€, optional)', ar:'المقدّم نيتو (€، اختياري)', de:'Anzahlung netto (€, optional)'},
@@ -94,6 +100,38 @@ function ppBook(pl, kind, date, netto, label) {
   pl.payments = pl.payments || [];
   pl.payments.push({txId: txId, date: date, netto: ppR2(netto), vat: ppR2(vat), kind: kind});
   if(ppOpenNetto(pl) <= 0.005) pl.status = 'completed';
+  return txId;
+}
+
+// The purchase invoice goes on the first payment, like any other receipt: stored in
+// IndexedDB under the transaction id, so it shows in the month's "Belege", the
+// receipt viewer and the accountant package.
+function ppAttachInvoice(pl, file) {
+  var first = (pl.payments || []).filter(function(p) { return p.kind === 'first'; })[0];
+  var tx = first && (state.transactions || []).filter(function(t) { return t.id === first.txId; })[0];
+  if(!tx || !file) return Promise.resolve(false);
+  return receiptPut({id: tx.id, user: localStorage.getItem('smartac_user') || '', name: file.name || 'Rechnung',
+                     type: file.type || 'application/octet-stream', blob: file, createdAt: new Date().toISOString()})
+    .then(function() { tx.receiptId = tx.id; tx.receiptName = file.name || 'Rechnung'; pl.invoiceTxId = tx.id; save(); return true; });
+}
+function ppHasInvoice(pl) {
+  var first = (pl.payments || []).filter(function(p) { return p.kind === 'first'; })[0];
+  var tx = first && (state.transactions || []).filter(function(t) { return t.id === first.txId; })[0];
+  return tx && tx.receiptId ? tx : null;
+}
+function ppPickInvoice(id) {
+  var inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = 'application/pdf,image/*';
+  inp.onchange = function() {
+    var pl = ppFind(id), f = inp.files && inp.files[0];
+    if(!pl || !f) return;
+    ppAttachInvoice(pl, f).then(function(ok) { if(ok) { renderHome(); if(typeof showToast === 'function') showToast(pptx('invSaved'), 'success'); } });
+  };
+  inp.click();
+}
+function ppShowInvoice(id) {
+  var pl = ppFind(id), tx = pl && ppHasInvoice(pl);
+  if(tx) receiptGet(tx.receiptId).then(function(rec) { if(rec) openReceiptViewer(rec); });
 }
 
 // Books every scheduled instalment that is due by today. Called with the other "due" checks.
@@ -139,8 +177,12 @@ function ppGroupHtml() {
        + '<span class="pp-open">' + escHtml(pptx('open')) + ' <b>' + fmt(Math.max(0, open)) + '</b></span></div>'
        + '<div class="pp-sub">' + escHtml(ppFill(pptx('paidOf'), {p: fmt(ppPaidNetto(pl)), t: fmt(pl.netto)})) + ' · MwSt ' + fmt(pl.vat) + (st ? ' · ' + escHtml(st) : '') + '</div>'
        + '<div class="pp-bar"><i style="width:' + Math.min(100, Math.round(ppPaidNetto(pl) / pl.netto * 100)) + '%"></i></div>'
-       + (pl.status === 'active' ? '<div class="pp-btns"><button type="button" class="pp-pay" data-pp-pay="' + pl.id + '">' + escHtml(pptx('pay')) + '</button>'
-          + '<button type="button" class="pp-stop" data-pp-stop="' + pl.id + '">' + escHtml(pptx('stop')) + '</button></div>' : '')
+       + '<div class="pp-btns">'
+       + (pl.status === 'active' ? '<button type="button" class="pp-pay" data-pp-pay="' + pl.id + '">' + escHtml(pptx('pay')) + '</button>' : '')
+       + (ppHasInvoice(pl) ? '<button type="button" class="pp-stop" onclick="ppShowInvoice(' + pl.id + ')">' + svgIcon('fileText', 14) + ' ' + escHtml(pptx('showInv')) + '</button>'
+                           : '<button type="button" class="pp-stop" onclick="ppPickInvoice(' + pl.id + ')">' + svgIcon('upload', 14) + ' ' + escHtml(pptx('addInv')) + '</button>')
+       + (pl.status === 'active' ? '<button type="button" class="pp-stop" data-pp-stop="' + pl.id + '">' + escHtml(pptx('stop')) + '</button>' : '')
+       + '</div>'
        + '</div>';
   });
   return h + '</div>';
@@ -201,11 +243,22 @@ function openPurchasePlan() {
     + ppField('ppDown', pptx('down'), '<input class="wt-input" id="ppDown"' + num + ' placeholder="0">')
     + '<div class="pp-row2">' + ppField('ppRateAmt', pptx('rateAmt'), '<input class="wt-input" id="ppRateAmt"' + num + '>')
     + ppField('ppEvery', pptx('every'), '<select class="wt-input" id="ppEvery">' + ivs + '</select>') + '</div>'
+    + '<div class="wt-field"><label class="vat-pay-lbl">' + escHtml(pptx('file')) + '</label><div class="pp-file">'
+    +   '<label class="pp-stop pp-file-btn">' + svgIcon('upload', 14) + ' ' + escHtml(pptx('pick')) + '<input type="file" id="ppFile" accept="application/pdf,image/*" hidden></label>'
+    +   '<label class="pp-stop pp-file-btn">' + svgIcon('camera', 14) + ' ' + escHtml(pptx('photo')) + '<input type="file" id="ppFileCam" accept="image/*" capture="environment" hidden></label>'
+    +   '<span class="pp-file-name" id="ppFileName"></span></div></div>'
     + '<div class="vat-pay-open pp-preview" id="ppPreview"></div>'
     + '<div class="vat-pay-hint">' + escHtml(pptx('hint')) + '</div>'
     + '<div class="vat-pay-err" id="ppErr"></div>'
     + '<div class="vat-pay-btns"><button type="button" class="wt-btn" onclick="savePurchasePlan()">' + escHtml(pptx('save')) + '</button></div>');
   ppOpenPlan.mode = 'gross';
+  ppOpenPlan.file = null;
+  ['ppFile', 'ppFileCam'].forEach(function(i) {
+    document.getElementById(i).onchange = function() {
+      ppOpenPlan.file = (this.files && this.files[0]) || null;
+      document.getElementById('ppFileName').textContent = ppOpenPlan.file ? ppOpenPlan.file.name : '';
+    };
+  });
   document.querySelectorAll('#ppOverlay .pp-mode button').forEach(function(bt) {
     bt.onclick = function() {
       ppOpenPlan.mode = bt.getAttribute('data-mode');
@@ -265,6 +318,7 @@ function savePurchasePlan() {
   ppBook(pl, 'first', date, Math.min(c.firstNet, c.net), pptx('first'));
   checkPurchasePlansDue();
   save();
+  if(ppOpenPlan.file) ppAttachInvoice(pl, ppOpenPlan.file).then(function() { renderHome(); });
   ppClose('ppOverlay');
   renderHome();
   if(typeof showToast === 'function') showToast(pptx('saved'), 'success');
