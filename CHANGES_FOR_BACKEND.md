@@ -454,3 +454,8 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
   - «Design zurücksetzen» بيرجّع الافتراضي (نفس شكل القوالب القديم بالظبط).
 - **التخزين:** `invoiceDesign: {accent, logoPos, logoSize, headerText, footerText}` (فاضي = الافتراضي).
 - **⚠️ تصليح مهم:** الفواتير كانت بتكتب بيانات **Smartordi OG** (FN، العنوان، team@smartordi.eu، التليفون) لو بيانات العميل ناقصة، والفوتر كان ثابت على Smartordi OG. دلوقتي الفاتورة بتعرض بيانات العميل بس، والفوتر الافتراضي = «Vielen Dank» + اسم شركته + عنوانه + UID. **اتأكد إن نسخة السيرفر مفيهاش نفس المشكلة.**
+
+## الخطوة 7: باكدج المحاسب وبوابة المحاسب — نفس معنى الـ Total
+- `trabis-package.js`: `total = saldoNet + zahllast` (كان `saldoNet − zahllast`). العناوين: «Total (Netto + Zahllast)» في الإكسيل و«Total (Saldo Netto + Zahllast)» في الـ PDF. يعني نفس زالدو الشهر في التطبيق = الفلوس اللي في الحساب.
+- `buchhalter.html`: كارت «USt-Zahllast» بقى بيعرض المبلغ من غير سالب + «zu zahlen» / «Guthaben»، و«Total» = Saldo netto + Zahllast.
+- مثال: دخل 40.600 براتو + مصروفات 2.840 براتو (20%) → Saldo netto 31.466,66 · Zahllast 6.293,34 zu zahlen · Total 37.760,00.

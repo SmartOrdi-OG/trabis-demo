@@ -490,7 +490,7 @@ function kpi(l, v, sub) { return '<div class="kpi"><div class="kl">' + l + '</di
 function viewOverview(P) {
   var t = {iN: 0, iV: 0, eN: 0, eV: 0}; P.summary.forEach(function(s) { t.iN += s.iN; t.iV += s.iV; t.eN += s.eN; t.eV += s.eV; });
   var saldo = t.iN - t.eN, zl = t.iV - t.eV, withFile = P.rows.filter(function(r) { return hasFile(r.tx); }).length, missing = P.rows.length - withFile;
-  var h = sharesHtml() + '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', sgn(-zl), 'Total ' + sgn(saldo - zl)) + '</div>';
+  var h = sharesHtml() + '<div class="kpis">' + kpi('Einnahmen netto', eur(t.iN), 'USt ' + eur(t.iV)) + kpi('Ausgaben netto', eur(t.eN), 'Vorsteuer ' + eur(t.eV)) + kpi('Saldo netto', sgn(saldo), '') + kpi('USt-Zahllast', eur(Math.abs(zl)) + (Math.abs(zl) < 0.005 ? '' : (zl > 0 ? ' zu zahlen' : ' Guthaben')), 'Total ' + sgn(saldo + zl)) + '</div>';
   h += '<h2 class="sec">Downloads für ' + esc(periodLabel()) + '</h2><div class="dls">'
     + dl('PDF', 'Komplettpaket als PDF', 'Zusammenfassung, Verzeichnisse und alle ' + withFile + ' Belege – Einnahmen und Ausgaben getrennt, nummeriert.', 'pdf', 'Herunterladen')
     + dl('XLS', 'Excel-Datei', 'Zusammenfassung, Einnahmen, Ausgaben, Journal und Mitarbeiter-Stunden – mit Summenformeln.', 'xlsx', 'Herunterladen')

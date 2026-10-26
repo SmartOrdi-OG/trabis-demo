@@ -67,7 +67,7 @@
         o[k + 'N'] += r.net; o[k + 'V'] += r.vat; o[k + 'G'] += r.gross;
       });
       ['iN','iV','iG','eN','eV','eG'].forEach(function(k) { o[k] = r2(o[k]); });
-      o.saldoNet = r2(o.iN - o.eN); o.zahllast = r2(o.iV - o.eV); o.total = r2(o.saldoNet - o.zahllast);
+      o.saldoNet = r2(o.iN - o.eN); o.zahllast = r2(o.iV - o.eV); o.total = r2(o.saldoNet + o.zahllast);   // Netto + MwSt = what is in the account (same as the app's month saldo)
       return o;
     });
     return {months: months, rows: rows, income: income, expense: expense, summary: summary};
@@ -155,7 +155,7 @@
   function buildSheets(P, opts) {
     var sheets = [];
     // Zusammenfassung
-    var z = [['Monat', 'Einnahmen Netto', 'Einnahmen USt', 'Einnahmen Brutto', 'Ausgaben Netto', 'Vorsteuer (Ausgaben USt)', 'Ausgaben Brutto', 'Saldo Netto', 'USt-Zahllast (E − A)', 'Total (Netto − Zahllast)']];
+    var z = [['Monat', 'Einnahmen Netto', 'Einnahmen USt', 'Einnahmen Brutto', 'Ausgaben Netto', 'Vorsteuer (Ausgaben USt)', 'Ausgaben Brutto', 'Saldo Netto', 'USt-Zahllast (E − A)', 'Total (Netto + Zahllast)']];
     P.summary.forEach(function(s) {
       z.push([monthLabel(s.month), {n: s.iN}, {n: s.iV}, {n: s.iG}, {n: s.eN}, {n: s.eV}, {n: s.eG}, {n: s.saldoNet}, {n: s.zahllast}, {n: s.total}]);
     });
@@ -281,7 +281,7 @@
     y += 14;
     var sN = r2(tot.iN - tot.eN), zl = r2(tot.iV - tot.eV);
     doc.setFontSize(11);
-    [['Saldo Netto (Einnahmen − Ausgaben)', sN], ['USt-Zahllast (Einnahmen-USt − Vorsteuer)', zl], ['Total (Saldo Netto − Zahllast)', r2(sN - zl)]].forEach(function(r) {
+    [['Saldo Netto (Einnahmen − Ausgaben)', sN], ['USt-Zahllast (Einnahmen-USt − Vorsteuer)', zl], ['Total (Saldo Netto + Zahllast)', r2(sN + zl)]].forEach(function(r) {
       doc.setFont('helvetica', 'normal'); doc.setTextColor(60); doc.text(lat(r[0]), M, y);
       doc.setFont('helvetica', 'bold'); doc.setTextColor(20); doc.text('EUR ' + deNum(r[1]), W - M, y, {align: 'right'}); y += 8;
     });
