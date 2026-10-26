@@ -34,10 +34,10 @@ index 2753748..b3f6305 100644
    if(type === 'expense') {
      (state.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
      (state.employees || []).forEach(function(e) {
--      add(e, hptx('salary') + ' · ' + (e.name || e.fullName || ''), e.salary, 0, 1);
+-      add(e, hptx('salary') + ' \\u00b7 ' + (e.name || e.fullName || ''), e.salary, 0, 1);
 +      // Same rule as the booking: nothing before the start month, start month pro rata.
 +      var sm = salaryForMonth(e, monthKey);
-+      add(e, hptx('salary') + ' · ' + (e.name || e.fullName || ''), sm.amount, 0, parseInt(sm.date.substring(8, 10), 10));
++      add(e, hptx('salary') + ' \\u00b7 ' + (e.name || e.fullName || ''), sm.amount, 0, parseInt(sm.date.substring(8, 10), 10));
      });
    } else {
      (state.fixedIncome || []).forEach(function(fi) { add(fi, fi.name, fi.amount, fi.vatRate, fi.day); });
