@@ -673,6 +673,28 @@ function imageBlobToDataUrl(blob) {
     reader.readAsDataURL(blob);
   });
 }
+// jsPDF only embeds JPEG/PNG reliably: anything else (SVG, WebP, GIF, HEIC the browser
+// can show, …) is drawn onto a white canvas and turned into a PNG first.
+function imageBlobToPdfSafeBlob(blob) {
+  var t = (blob && blob.type) || '';
+  if(/^image\/(jpeg|jpg|png)$/i.test(t)) return Promise.resolve(blob);
+  return new Promise(function(resolve) {
+    var url = URL.createObjectURL(blob), img = new Image();
+    img.onload = function() {
+      var w = img.naturalWidth || 1240, h = img.naturalHeight || 1754;
+      var sc = Math.min(4, Math.max(1, 1600 / Math.max(w, h)));
+      var c = document.createElement('canvas');
+      c.width = Math.round(w * sc); c.height = Math.round(h * sc);
+      var x = c.getContext('2d');
+      x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+      x.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      c.toBlob(function(b) { resolve(b || blob); }, 'image/png');
+    };
+    img.onerror = function() { URL.revokeObjectURL(url); resolve(blob); };
+    img.src = url;
+  });
+}
 function imageDimensionsFromDataUrl(dataUrl) {
   return new Promise(function(resolve) {
     var img = new Image();
@@ -689,17 +711,18 @@ function downloadInvoicesPdf(type) {
   var list = invDlReceiptsForPeriod(type, _invDlPeriod, _invDlInterval);
   if(!list.length) return;
   var lang = state.lang;
-  var typeLbl = type === 'expense' ? invdltx('expenseLbl') : invdltx('incomeLbl');
-  var captionLbl = type === 'expense' ? invdltx('expenseCaption') : invdltx('incomeCaption');
+  // PDF text is always German (jsPDF's built-in fonts can't draw Arabic), like the invoices
+  var typeLbl = INVDL_L[type === 'expense' ? 'expenseLbl' : 'incomeLbl'].de;
+  var captionLbl = INVDL_L[type === 'expense' ? 'expenseCaption' : 'incomeCaption'].de;
 
   var doc = new JsPdf({orientation:'p', unit:'mm', format:'a4'});
   doc.setFontSize(18); doc.setFont(undefined,'bold');
   doc.text(typeLbl + ' — ' + (state.businessName||''), 14, 24);
   doc.setFontSize(11); doc.setFont(undefined,'normal');
   doc.text(uvaKeyLabel(_invDlPeriod), 14, 34);
-  doc.text(String(list.length), 14, 42);
+  doc.text(list.length + ' Belege', 14, 42);
   doc.setFontSize(9); doc.setTextColor(140);
-  doc.text(new Date().toLocaleDateString(), 14, 52);
+  doc.text('Erstellt am ' + new Date().toLocaleDateString('de-AT'), 14, 52);
   doc.setTextColor(0);
 
   function jsPdfImageFormat(dataUrl) {
@@ -759,7 +782,7 @@ function downloadInvoicesPdf(type) {
               }, Promise.resolve());
             }).catch(function(){});
           }
-          return imageBlobToDataUrl(att.blob).then(function(url) {
+          return imageBlobToPdfSafeBlob(att.blob).then(imageBlobToDataUrl).then(function(url) {
             return imageDimensionsFromDataUrl(url).then(function(dims) { addImagePage(url, dims, caption); });
           });
         });

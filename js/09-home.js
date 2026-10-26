@@ -490,6 +490,7 @@ var HOMEP_L = {
   upFile:   {en:'Upload file (PDF or photo)', ar:'رفع ملف (PDF أو صورة)', de:'Datei hochladen (PDF oder Foto)'},
   takePhoto:{en:'Take photo',        ar:'تصوير فاتورة',     de:'Foto aufnehmen'},
   createInv:{en:'Create invoice',    ar:'إنشاء فاتورة',     de:'Rechnung erstellen'},
+  allPdf:   {en:'All as one PDF',    ar:'كل الفواتير PDF واحد', de:'Alle als ein PDF'},
   noDocs:   {en:'No invoices yet',   ar:'لا توجد فواتير بعد', de:'Noch keine Belege'},
   rowNet:   {en:'Net', ar:'صافي', de:'Netto'},
   rowVat:   {en:'VAT', ar:'ضريبة', de:'MwSt'},
@@ -643,7 +644,19 @@ function renderRcptActions(type) {
   if(type === 'income') {
     h += '<button type="button" class="rcpt-add-btn green" onclick="openIssuedInvoiceForm()"><span class="rcpt-add-circle">' + svgIcon('file', 16) + '</span>' + escHtml(hptx('createInv')) + '</button>';
   }
+  // One PDF with every invoice/receipt of this month and this side (income or expenses)
+  var n = getFiltered().filter(function(tx) { return tx.type === type && (tx.invoice || tx.receiptId); }).length;
+  h += '<button type="button" class="rcpt-pdf-btn" onclick="monthReceiptsPdf(\'' + type + '\')"' + (n ? '' : ' disabled') + '>'
+     + svgIcon('fileText', 15) + '<span>' + escHtml(hptx('allPdf')) + (n ? ' (' + n + ')' : '') + '</span></button>'
+     + '<div class="rcpt-pdf-st" id="invDlStatus"></div>';
   host.innerHTML = h;
+}
+// Uses the combined-PDF builder of the accountant downloads (images + every PDF page),
+// limited to the month on screen.
+function monthReceiptsPdf(type) {
+  _invDlInterval = 'month';
+  _invDlPeriod = state.year + '-' + pad2(state.month + 1);
+  downloadInvoicesPdf(type);
 }
 function rcptToggleMenu(e) {
   if(e) e.stopPropagation();

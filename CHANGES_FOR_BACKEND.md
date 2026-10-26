@@ -470,3 +470,7 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
 - في نافذة «Ratenkauf» خانة «Rechnung (PDF oder Foto, optional)»: «Rechnung hochladen» أو «Foto aufnehmen».
 - الفاتورة بتتحفظ على **أول دفعة** زي أي إيصال: نفس تخزين الإيصالات (IndexedDB `receipts`، `id` = id المعاملة) و`tx.receiptId` / `tx.receiptName`. فبتظهر مع «Belege» في الشهر، وبتتفتح في عارض الإيصالات، وبتدخل في باكدج المحاسب زي أي فاتورة.
 - كارت الـ Ratenkauf: زرار «Rechnung» يفتحها، أو «Rechnung hinzufügen» لو لسه ما اترفعتش (تقدر تضيفها بعدين).
+
+## الخطوة 10: كل فواتير الشهر في ملف PDF واحد
+- تحت شريط الفواتير (Belege) في تاب Einnahmen وتاب Ausgaben: زرار **«Alle als ein PDF (n)»** — بيعمل PDF واحد بكل فواتير/إيصالات **الشهر المعروض** للجانب ده: صفحة غلاف («Ausgaben — اسم الشركة · Okt 2026 · n Belege · Erstellt am …») وبعدها كل فاتورة في صفحة (الصور كما هي، والـ PDF كل صفحاته)، وفوق كل صفحة سطر: النوع · التاريخ · الاسم · المبلغ. اسم الملف `Ausgaben_2026-10.pdf` / `Einnahmen_2026-10.pdf`. مستقل عن باكدج المحاسب.
+- بيستخدم نفس الكود اللي كان موجود لتحميل الفواتير المرفقة (jsPDF + pdf.js)، مع تصليحين: الصور اللي مش JPEG/PNG (SVG/WebP…) بتتحول PNG قبل ما تتحط، ونصوص الـ PDF بقت ألماني دايماً (الخط مش بيدعم العربي).
