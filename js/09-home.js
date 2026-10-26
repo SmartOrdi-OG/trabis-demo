@@ -1362,10 +1362,11 @@ function renderTxPanes() {
   }
 
   var html = group(hptx(type === 'income' ? 'fixIn' : 'fixOut'), fixed, sFix.brutto, true)
-           + (type === 'expense' ? vatPayGroupHtml(state.year, state.month) : '')
+           + (type === 'expense' ? vatPayGroupHtml(state.year, state.month) + ppGroupHtml() : '')
            + group(hptx(type === 'income' ? 'restIn' : 'restOut'), txs, sTx.brutto, false);
   if(!html) html = '<div class="tx-empty">' + escHtml(hptx('none')) + '</div>';
-  if(type === 'expense') html = '<button type="button" class="gov-pay-top" onclick="openGovPayment()">' + svgIcon('landmark', 15) + ' ' + escHtml(gptx('btn')) + '</button>' + html;
+  if(type === 'expense') html = '<div class="exp-actions"><button type="button" class="gov-pay-top" onclick="openGovPayment()">' + svgIcon('landmark', 15) + ' ' + escHtml(gptx('btn')) + '</button>'
+    + '<button type="button" class="gov-pay-top" onclick="openPurchasePlan()">' + svgIcon('calendar', 15) + ' ' + escHtml(pptx('btn')) + '</button></div>' + html;
 
   var yn = yearNetTotal(state.year);
   html += '<div class="year-net"><span class="year-net-l">' + escHtml(hptx('yearNet')) + ' · ' + state.year + '</span>'
@@ -1376,6 +1377,7 @@ function renderTxPanes() {
   host.querySelectorAll('[data-tx]').forEach(function(el) {
     el.onclick = function() { showTxDetail(txs[+el.getAttribute('data-tx')].tx); };
   });
+  ppWire(host);
   host.querySelectorAll('[data-vatpay]').forEach(function(el) {
     el.onclick = function() { openVatPayment(el.getAttribute('data-vatpay')); };
   });

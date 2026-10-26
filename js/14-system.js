@@ -169,6 +169,7 @@ function checkRecurringDue() {
 
 // ── Ausschreibung / installment schedules (vehicles bought via Fleet, or any big purchase from Assets) ──
 function checkInstallmentsDue() {
+  if(typeof checkPurchasePlansDue === 'function') checkPurchasePlansDue();   // Ratenkauf instalments
   var now = new Date();
   var curMonth = now.getFullYear() + '-' + pad2(now.getMonth()+1);
   var recordedCount = 0;
@@ -1153,7 +1154,7 @@ function cdConfirmDelete() {
   }
   // Correct — clear all data
   state.transactions=[]; state.debts=[]; state.clients=[]; state.suppliers=[]; state.employees=[]; state.fleet=[]; state.assets=[]; state.inventory=[];
-  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.vatPayments=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
+  state.recurring=[]; state.budgets={}; state.fixedIncome=[]; state.vatPayments=[]; state.purchasePlans=[]; state.pendingInvoice=null; state.pendingInvoiceName=null;
   state.issuedInvoices=[]; state.receipts=[]; state.receivedInvoices=[]; state.businessLogo=null;
   state.businessAddress=''; state.businessTaxId=''; state.businessPhone=''; state.businessEmail='';
   state.bankName=''; state.bankIban=''; state.bankBic=''; state.bankAccountHolder=''; state.businessType='';

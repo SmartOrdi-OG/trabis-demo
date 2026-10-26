@@ -984,3 +984,20 @@ body.art .carry-wrap .carry-v{font-size:15px}
 .wt-day{display:inline-flex;align-items:center;gap:4px;padding:6px 8px;border:1.5px solid var(--border);border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;user-select:none;background:var(--card)}
 .wt-day input{margin:0;accent-color:var(--primary)}
 .wt-day:has(input:checked){border-color:var(--primary);color:var(--primary);background:rgba(0,97,164,.06)}
+
+/* ── Ratenkauf (instalment purchases) ── */
+.exp-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.exp-actions .gov-pay-top{margin:0;padding:10px 8px;font-size:12.5px}
+.pp-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pp-preview{font-weight:600;color:var(--text)}
+.pp-card{border:1.5px solid var(--border);border-radius:12px;padding:10px 12px;margin:0 0 8px;background:var(--card)}
+.pp-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.pp-name{font-weight:700;font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp-open{font-size:12px;color:var(--text2);white-space:nowrap}
+.pp-open b{color:var(--expense);font-variant-numeric:tabular-nums;direction:ltr;unicode-bidi:isolate}
+.pp-sub{font-size:12px;color:var(--text3);margin-top:3px}
+.pp-bar{height:5px;border-radius:99px;background:var(--border);margin-top:8px;overflow:hidden}
+.pp-bar i{display:block;height:100%;background:var(--primary)}
+.pp-btns{display:flex;gap:8px;margin-top:9px}
+.pp-pay{font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--primary);border:none;border-radius:9px;padding:7px 12px;cursor:pointer}
+.pp-stop{font:inherit;font-size:12.5px;font-weight:700;color:var(--text2);background:none;border:1.5px solid var(--border);border-radius:9px;padding:7px 12px;cursor:pointer}
