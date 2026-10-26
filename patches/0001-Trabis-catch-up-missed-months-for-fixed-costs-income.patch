@@ -1,6 +1,6 @@
-From 0454173a1eefc8f62886c3bf3e78ebf0360b47a0 Mon Sep 17 00:00:00 2001
+From 71869ab113129c9d4935c96273310145afee33cf Mon Sep 17 00:00:00 2001
 From: Claude <noreply@anthropic.com>
-Date: Mon, 26 Oct 2026 18:51:59 +0100
+Date: Mon, 26 Oct 2026 18:59:19 +0100
 Subject: [PATCH] Trabis: catch up missed months for fixed
  costs/income/salaries, pro-rata first salary month, year saldo fix
 
@@ -8,9 +8,9 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
 ---
  CHANGES_FOR_BACKEND.md |   6 ++
- js/09-home.js          |   8 ++-
+ js/09-home.js          |   9 ++-
  js/14-system.js        | 130 ++++++++++++++++++++++++-----------------
- 3 files changed, 89 insertions(+), 55 deletions(-)
+ 3 files changed, 91 insertions(+), 54 deletions(-)
 
 diff --git a/CHANGES_FOR_BACKEND.md b/CHANGES_FOR_BACKEND.md
 index 0180d52..3d49250 100644
@@ -27,21 +27,22 @@ index 0180d52..3d49250 100644
 +- التوقّع في الشهور الجاية (`fixedRowsFor`) بيستخدم نفس القاعدة (`salaryForMonth`).
 +- **Jahressaldo:** بيضيف الثوابت اللي لسه متسجّلتش في **الشهر الحالي** بس (قبل كده كان بياخد الشهر المفتوح على الشاشة فالرقم كان بيتغيّر).
 diff --git a/js/09-home.js b/js/09-home.js
-index 2753748..b3f6305 100644
+index 2753748..d5a96d6 100644
 --- a/js/09-home.js
 +++ b/js/09-home.js
-@@ -540,7 +540,9 @@ function fixedRowsFor(type, forYear, forMonth) {
-   if(type === 'expense') {
-     (state.recurring || []).forEach(function(r) { add(r, r.name, r.amount, r.vatRate, r.day); });
-     (state.employees || []).forEach(function(e) {
--      add(e, hptx('salary') + ' · ' + (e.name || e.fullName || ''), e.salary, 0, 1);
+@@ -532,6 +532,11 @@ function fixedRowsFor(type, forYear, forMonth) {
+   var rows = [];
+   function add(src, name, amount, vatRate, day) {
+     if(src.lastRecorded === monthKey) return;
++    if(type === 'expense' && (state.employees || []).indexOf(src) >= 0) {
 +      // Same rule as the booking: nothing before the start month, start month pro rata.
-+      var sm = salaryForMonth(e, monthKey);
-+      add(e, hptx('salary') + ' · ' + (e.name || e.fullName || ''), sm.amount, 0, parseInt(sm.date.substring(8, 10), 10));
-     });
-   } else {
-     (state.fixedIncome || []).forEach(function(fi) { add(fi, fi.name, fi.amount, fi.vatRate, fi.day); });
-@@ -570,7 +572,9 @@ function yearNetTotal(y) {
++      var sm = salaryForMonth(src, monthKey);
++      amount = sm.amount; day = parseInt(sm.date.substring(8, 10), 10);
++    }
+     var amt = parseFloat(amount) || 0;
+     if(amt <= 0) return;
+     rows.push({name: name, amount: amt, vatRate: parseFloat(vatRate) || 0,
+@@ -570,7 +575,9 @@ function yearNetTotal(y) {
    });
    var now = new Date();
    if(y === now.getFullYear()) {
