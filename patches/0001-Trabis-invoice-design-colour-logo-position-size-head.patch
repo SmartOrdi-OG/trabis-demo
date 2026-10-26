@@ -1,0 +1,427 @@
+From cf2d031502aa4311fb447464b82129e40b511784 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Mon, 26 Oct 2026 06:19:34 +0100
+Subject: [PATCH] =?UTF-8?q?Trabis:=20invoice=20design=20=E2=80=94=20colour?=
+ =?UTF-8?q?,=20logo=20position/size,=20header/footer=20text;=20no=20SmartO?=
+ =?UTF-8?q?rdi=20details=20on=20customer=20invoices?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- Settings → under the template choice: "Rechnungsdesign" with live preview:
+  6 swatches + own colour, logo left/centre/right and small/medium/large,
+  a line under the company details, footer text, reset. Defaults keep both
+  templates exactly as before. Stored in state.invoiceDesign (+ backup).
+- Fix: invoices fell back to Smartordi OG's address, e-mail, phone and FN, and
+  the footer was hard-coded to Smartordi OG. Now only the customer's own data;
+  default footer = thanks + company name, address, UID.
+- CHANGES_FOR_BACKEND.md: step 6.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
+---
+ CHANGES_FOR_BACKEND.md   |   9 +++
+ css/trabis.css           |  19 +++++++
+ js/01-core.js            |   3 +
+ js/11-settings.js        |   7 ++-
+ js/12-invoices.js        |  39 +++++++------
+ js/13e-invoice-design.js | 118 +++++++++++++++++++++++++++++++++++++++
+ trabis.html              |   1 +
+ 7 files changed, 178 insertions(+), 18 deletions(-)
+ create mode 100644 js/13e-invoice-design.js
+
+diff --git a/CHANGES_FOR_BACKEND.md b/CHANGES_FOR_BACKEND.md
+index 9038680..20ad0af 100644
+--- a/CHANGES_FOR_BACKEND.md
++++ b/CHANGES_FOR_BACKEND.md
+@@ -445,3 +445,12 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
+ - **التخزين:** `purchasePlans: [{id, name, netto, vatRate, vat, date, down, months, monthly, payments:[{txId, date, netto, vat, kind:'first'|'rate'|'extra'}], status:'active'|'completed'|'stopped'}]`. كل دفعة = معاملة expense عادية (`category:'Other'`, `planId`). أول دفعة `amount = netto + vat` و`vatRate = vat / netto × 100` عشان أي تقسيم brutto→netto/MwSt يطلع نفس الأرقام بالظبط. **في نسخة السيرفر الأحسن** تخزّنوا netto وvat صريحين على المعاملة بدل الـ vatRate ده.
+ - **الأقساط الشهرية:** بتتسجل لوحدها لما يجي ميعادها (نفس يوم أول دفعة كل شهر)، مع الـ check بتاع الأقساط الموجود. آخر قسط بياخد الباقي كله (السنتات). «Zahlung buchen» = دفعة زيادة نيتو بإيد المستخدم (مش أكتر من الباقي). «Stoppen» بيوقف الأقساط الجاية، والمدفوع بيفضل.
+ - **في تاب Ausgaben:** جروب «Ratenkäufe»: الاسم، الباقي، «bezahlt x von y netto · MwSt … · nächste Rate dd.mm.yyyy · €»، وشريط تقدم.
++
++## الخطوة 6: تصميم الفاتورة (Rechnungsdesign) في الإعدادات
++- تحت اختيار القالب (Klassisch / Modern) بقى فيه «Rechnungsdesign» بمعاينة حية:
++  - **Hauptfarbe:** 6 ألوان جاهزة + «Eigene Farbe» (color picker). بتغيّر خط الهيدر وإطار الإجمالي وخلفية رأس الجدول (Klassisch) / شريط الهيدر وخطوط الجدول والإجمالي (Modern).
++  - **Logo-Position:** Links / Mitte / Rechts. **Logo-Größe:** Klein / Mittel / Groß (Klassisch 64/120/192 px، Modern 64/88/120 px).
++  - **Zeile unter den Firmendaten** (اختياري) و**Fußzeile** (اختياري).
++  - «Design zurücksetzen» بيرجّع الافتراضي (نفس شكل القوالب القديم بالظبط).
++- **التخزين:** `invoiceDesign: {accent, logoPos, logoSize, headerText, footerText}` (فاضي = الافتراضي).
++- **⚠️ تصليح مهم:** الفواتير كانت بتكتب بيانات **Smartordi OG** (FN، العنوان، team@smartordi.eu، التليفون) لو بيانات العميل ناقصة، والفوتر كان ثابت على Smartordi OG. دلوقتي الفاتورة بتعرض بيانات العميل بس، والفوتر الافتراضي = «Vielen Dank» + اسم شركته + عنوانه + UID. **اتأكد إن نسخة السيرفر مفيهاش نفس المشكلة.**
+diff --git a/css/trabis.css b/css/trabis.css
+index 5d5f004..4dc9207 100644
+--- a/css/trabis.css
++++ b/css/trabis.css
+@@ -1001,3 +1001,22 @@ body.art .carry-wrap .carry-v{font-size:15px}
+ .pp-btns{display:flex;gap:8px;margin-top:9px}
+ .pp-pay{font:inherit;font-size:12.5px;font-weight:700;color:#fff;background:var(--primary);border:none;border-radius:9px;padding:7px 12px;cursor:pointer}
+ .pp-stop{font:inherit;font-size:12.5px;font-weight:700;color:var(--text2);background:none;border:1.5px solid var(--border);border-radius:9px;padding:7px 12px;cursor:pointer}
++
++/* ── Invoice design (settings) ── */
++.invd{margin-top:16px;padding-top:14px;border-top:1px solid var(--border)}
++.invd-ttl{font-weight:700;font-size:15px}
++.invd-note{font-size:12px;color:var(--text3);margin-top:3px}
++.invd-lbl{font-size:12.5px;font-weight:700;color:var(--text2);margin:14px 0 7px}
++.invd-sws{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
++.invd-sw{width:30px;height:30px;border-radius:50%;border:3px solid var(--card);box-shadow:0 0 0 1.5px var(--border);cursor:pointer}
++.invd-sw.on{box-shadow:0 0 0 2.5px var(--text)}
++.invd-own{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text2);margin-inline-start:4px}
++.invd-own input{width:34px;height:30px;border:none;background:none;padding:0;cursor:pointer}
++.invd-seg{display:flex;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
++.invd-seg button{flex:1;font:inherit;font-size:13px;font-weight:600;padding:8px 4px;border:none;background:var(--card);color:var(--text2);cursor:pointer}
++.invd-seg button+button{border-inline-start:1.5px solid var(--border)}
++.invd-seg button.on{background:var(--primary);color:#fff}
++.invd textarea.wt-input{resize:vertical;min-height:56px;font-family:inherit}
++.invd-prev{width:302px;height:427px;max-width:100%;overflow:hidden;border:1.5px solid var(--border);border-radius:10px;background:#fff;margin:0 auto}
++.invd-prev iframe{width:794px;height:1123px;border:0;transform:scale(.38);transform-origin:0 0;pointer-events:none}
++.invd-reset{margin-top:12px;font:inherit;font-size:13px;font-weight:600;color:var(--text2);background:none;border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;cursor:pointer}
+diff --git a/js/01-core.js b/js/01-core.js
+index 1e21c0e..296a109 100644
+--- a/js/01-core.js
++++ b/js/01-core.js
+@@ -302,6 +302,7 @@ var state = {
+   notifications: [],
+   businessType: '',
+   invoiceTemplate: 'classic',
++  invoiceDesign: {},   // colour, logo position/size, header/footer text — js/13e-invoice-design.js
+   appointments: [],
+   notes: [],
+   fleet: [],
+@@ -531,6 +532,7 @@ function save() {
+   localStorage.setItem(uk('notifs'), JSON.stringify(state.notifications));
+   localStorage.setItem(uk('businessType'), state.businessType);
+   localStorage.setItem(uk('invoiceTpl'), state.invoiceTemplate || 'classic');
++  localStorage.setItem(uk('invoice_design'), JSON.stringify(state.invoiceDesign || {}));
+   localStorage.setItem(uk('appointments'), JSON.stringify(state.appointments));
+   localStorage.setItem(uk('notes'), JSON.stringify(state.notes));
+   localStorage.setItem(uk('archiveFolders'), JSON.stringify(state.archiveFolders || []));
+@@ -587,6 +589,7 @@ function loadUserData() {
+   state.appointments = JSON.parse(localStorage.getItem(uk('appointments')) || '[]');
+   state.notes = JSON.parse(localStorage.getItem(uk('notes')) || '[]');
+   state.invoiceTemplate = localStorage.getItem(uk('invoiceTpl')) || 'classic';
++  state.invoiceDesign = JSON.parse(localStorage.getItem(uk('invoice_design')) || '{}');
+   state.archiveFolders = JSON.parse(localStorage.getItem(uk('archiveFolders')) || '[]');
+   state.archiveDocs = JSON.parse(localStorage.getItem(uk('archiveDocs')) || '[]');
+   state.contacts = JSON.parse(localStorage.getItem(uk('contacts')) || '[]');
+diff --git a/js/11-settings.js b/js/11-settings.js
+index 5ecb5c2..00f2cae 100644
+--- a/js/11-settings.js
++++ b/js/11-settings.js
+@@ -660,7 +660,8 @@ function renderInvoiceTemplateSection() {
+     + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+     + tplCard('tplCardClassic', 'classic', stx('tplClassic'))
+     + tplCard('tplCardModern', 'modern', stx('tplModern'))
+-    + '</div>';
++    + '</div>'
++    + '<div id="invDesignBox"></div>';
+ 
+   function selectTemplate(kind) {
+     if(state.invoiceTemplate === kind) return;
+@@ -672,6 +673,7 @@ function renderInvoiceTemplateSection() {
+   if(classicEl) classicEl.onclick = function(){ selectTemplate('classic'); };
+   var modernEl = document.getElementById('tplCardModern');
+   if(modernEl) modernEl.onclick = function(){ selectTemplate('modern'); };
++  if(typeof renderInvoiceDesign === 'function') renderInvoiceDesign();
+ }
+ 
+ function renderDataManagementSection() {
+@@ -938,7 +940,7 @@ async function exportBackup() {
+     fleet: state.fleet, assets: state.assets, inventory: state.inventory,
+     businessName: state.businessName, businessType: state.businessType, bizTaxId: state.businessTaxId,
+     uvaFreigaben: state.uvaFreigaben, uvaInterval: state.uvaInterval,
+-    notifications: state.notifications, invoiceTemplate: state.invoiceTemplate,
++    notifications: state.notifications, invoiceTemplate: state.invoiceTemplate, invoiceDesign: state.invoiceDesign,
+     appointments: state.appointments, notes: state.notes,
+     archiveFolders: state.archiveFolders, archiveDocs: state.archiveDocs,
+     contacts: state.contacts, contactDocs: state.contactDocs,
+@@ -1051,6 +1053,7 @@ function handleImportBackup(file) {
+     state.uvaInterval = data.uvaInterval || 'quarter';
+     state.notifications = data.notifications || [];
+     state.invoiceTemplate = data.invoiceTemplate || 'classic';
++    state.invoiceDesign = data.invoiceDesign || {};
+     state.appointments = data.appointments || [];
+     state.notes = data.notes || [];
+     state.archiveFolders = data.archiveFolders || [];
+diff --git a/js/12-invoices.js b/js/12-invoices.js
+index c0a5b5f..7a88ffe 100644
+--- a/js/12-invoices.js
++++ b/js/12-invoices.js
+@@ -806,7 +806,7 @@ function buildProfessionalReceipt(inv) {
+   var bizAddress = state.businessAddress || '';
+   var bizTaxId = state.businessTaxId || '';
+   var bizPhone = state.businessPhone || '';
+-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
++  var bizEmail = state.businessEmail || '';
+ 
+   var sourceInv = null;
+   if(inv.sourceInvoiceId) {
+@@ -946,6 +946,7 @@ function buildProfessionalReceipt(inv) {
+ }
+ 
+ function buildClassicInvoice(inv, type) {
++  var D = invDesign('classic');
+   var isRTL = false; // invoice PDFs always render German/LTR, regardless of app language
+   var dirAttr = isRTL ? 'rtl' : 'ltr';
+   var alignStart = isRTL ? 'right' : 'left';
+@@ -957,9 +958,9 @@ function buildClassicInvoice(inv, type) {
+   var bizName = state.businessName || 'Your Company Name';
+   var bizAddress = state.businessAddress || '';
+   var bizTaxId = state.businessTaxId || '';
+-  var bizPhone = state.businessPhone || '+43 667 762439293';
+-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
+-  var bizContactLine = (bizAddress ? bizAddress + '<br>' : 'Steingasse 6a, 4020 Linz<br>') + bizEmail + '<br>' + bizPhone + (bizTaxId ? '<br>UID: ' + bizTaxId : '');
++  var bizPhone = state.businessPhone || '';
++  var bizEmail = state.businessEmail || '';
++  var bizContactLine = [bizAddress, bizEmail, bizPhone, bizTaxId ? 'UID: ' + bizTaxId : ''].filter(Boolean).join('<br>');
+ 
+   var itemRows = '';
+   var items = inv.items || [];
+@@ -1007,28 +1008,31 @@ function buildClassicInvoice(inv, type) {
+   '@media print{body{margin:0}.no-print{display:none}@page{size:A4}}' +
+   '</style></head><body dir="' + dirAttr + '">' +
+   '<div class="no-print">' +
+-  '<button onclick="window.print()" style="padding:10px 20px;background:#006e1c;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
++  '<button onclick="window.print()" style="padding:10px 20px;background:' + D.accent + ';color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('printDownload',14) + ' ' + ptx('printBtn') + '</button>' +
+   '<button onclick="window.close()" style="padding:10px 20px;background:#6b7280;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer">' + svgIcon('x',14) + ' ' + ptx('closeBtn') + '</button>' +
+   '</div>' +
+   '<div style="position:relative;display:flex;flex-direction:column;min-height:1123px;padding:32px;box-sizing:border-box">' +
+   (state.businessLogo ? '<div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:0;pointer-events:none"><img src="' + state.businessLogo + '" style="width:1000px;height:1000px;object-fit:contain;opacity:0.06"></div>' : '') +
+   '<div style="position:relative;z-index:1">' +
++  (D.logoPos === 'center' && state.businessLogo ? '<div style="text-align:center;margin-bottom:16px">' + invLogoHtml(D, 'classic') + '</div>' : '') +
+   '<div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:20px">' +
+   '<div style="display:flex;align-items:center;gap:10px">' +
+-  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="height:192px;max-width:400px;object-fit:contain">' : '') +
++  (D.logoPos === 'left' ? invLogoHtml(D, 'classic') : '') +
+   '<div>' +
+   '<div style="font-size:28px;font-weight:700;color:#1e293b">' + bizName + '</div>' +
+   '<div style="font-size:12px;color:#9ca3af;margin-top:6px">' + bizContactLine + '</div>' +
++  invHeaderTextHtml(D, '#475569') +
+   '</div>' +
+   '</div>' +
+   '<div style="text-align:' + alignEnd + '">' +
++  (D.logoPos === 'right' && state.businessLogo ? '<div style="margin-bottom:10px">' + invLogoHtml(D, 'classic') + '</div>' : '') +
+   '<div style="font-size:32px;font-weight:700;color:#9ca3af;letter-spacing:2px">' + typeLabel + '</div>' +
+   '<div style="font-size:14px;font-weight:600;margin-top:4px">' + ltrSpan(inv.number||'') + '</div>' +
+   '<div style="font-size:12px;color:#6b7280;margin-top:4px">' + ptx('issueLbl') + ': ' + ltrSpan(formatDateDisplay(inv.issueDate||'')) + '</div>' +
+   (inv.dueDate ? '<div style="font-size:12px;color:#6b7280">' + ptx('dueLbl') + ': ' + ltrSpan(formatDateDisplay(inv.dueDate)) + '</div>' : '') +
+   '</div>' +
+   '</div>' +
+-  '<div style="border-top:3px solid #006e1c;margin-bottom:24px"></div>' +
++  '<div style="border-top:3px solid ' + D.accent + ';margin-bottom:24px"></div>' +
+   '<div style="margin-bottom:24px">' +
+   '<div style="font-size:12px;font-weight:700;color:#6b7280;text-transform:uppercase;margin-bottom:6px">' + billLabel + '</div>' +
+   '<div style="font-size:15px;font-weight:700">' + partyName + '</div>' +
+@@ -1036,7 +1040,7 @@ function buildClassicInvoice(inv, type) {
+   (paymentMethodLabel ? '<div style="font-size:12px;color:#6b7280;margin-top:2px">' + ptx('paymentLbl') + ': ' + paymentMethodLabel + '</div>' : '') +
+   '</div>' +
+   '<table style="width:100%;border-collapse:collapse;margin-bottom:24px">' +
+-  '<thead><tr style="background:#f0fdf4">' +
++  '<thead><tr style="background:' + invTint(D.accent, 0.08) + '">' +
+   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:' + alignStart + ';font-size:13px">' + ptx('description') + '</th>' +
+   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:center;font-size:13px">' + ptx('qty') + '</th>' +
+   '<th style="padding:10px;border:1px solid #e2e8f0;text-align:' + alignEnd + ';font-size:13px">' + ptx('unitPrice') + '</th>' +
+@@ -1046,13 +1050,13 @@ function buildClassicInvoice(inv, type) {
+   '<div style="width:260px">' +
+   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('subtotal') + '</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.subtotal||0).toFixed(2)) + '</span></div>' +
+   '<div style="display:flex;justify-content:space-between;padding:6px 0"><span style="font-size:13px;color:#6b7280">' + ptx('vat') + ' (' + (inv.vatRate||0) + '%)</span><span style="font-size:13px">' + ltrSpan(cur + parseFloat(inv.vatAmount||0).toFixed(2)) + '</span></div>' +
+-  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid #006e1c;border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:#006e1c">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
++  '<div style="display:flex;justify-content:space-between;padding:10px;border:2px solid ' + D.accent + ';border-radius:8px;margin-top:8px"><span style="font-size:18px;font-weight:700">' + ptx('total') + '</span><span style="font-size:18px;font-weight:700;color:' + D.accent + '">' + ltrSpan(cur + parseFloat(inv.total||0).toFixed(2)) + '</span></div>' +
+   '</div></div>' +
+   (showBankBox ? '<div style="display:flex;gap:16px;align-items:flex-start;margin-top:20px">' + bankBoxHtml + qrHtml + '</div>' : '') +
+   notesHtml +
+   '</div>' +
+   '<div style="position:relative;z-index:1;border-top:1px solid #e2e8f0;margin-top:auto;padding-top:12px;text-align:center;font-size:12px;color:#9ca3af">' +
+-  ptx('thanks') + ' &middot; Smartordi OG &middot; FN 675586 i &middot; Steingasse 6a, 4020 Linz' +
++  invFooterHtml(D) +
+   '</div>' +
+   '</div>' +
+   '</body></html>';
+@@ -1065,7 +1069,7 @@ function buildModernInvoice(inv, type) {
+   var dirAttr = isRTL ? 'rtl' : 'ltr';
+   var alignStart = isRTL ? 'right' : 'left';
+   var alignEnd = isRTL ? 'left' : 'right';
+-  var accent = '#0061a4';
++  var D = invDesign('modern'), accent = D.accent;
+   var typeLabel = type==='issued' ? ptx('invoice') : type==='receipt' ? ptx('receipt') : ptx('receivedInvoice');
+   var billLabel = type==='received' ? ptx('fromSupplier') : ptx('billTo');
+   var partyName = inv.clientName || inv.supplierName || '';
+@@ -1073,9 +1077,9 @@ function buildModernInvoice(inv, type) {
+   var bizName = state.businessName || 'Your Company Name';
+   var bizAddress = state.businessAddress || '';
+   var bizTaxId = state.businessTaxId || '';
+-  var bizPhone = state.businessPhone || '+43 667 762439293';
+-  var bizEmail = state.businessEmail || 'team@smartordi.eu';
+-  var bizContactLine = (bizAddress ? bizAddress + '<br>' : 'Steingasse 6a, 4020 Linz<br>') + bizEmail + '<br>' + bizPhone + (bizTaxId ? '<br>UID: ' + bizTaxId : '');
++  var bizPhone = state.businessPhone || '';
++  var bizEmail = state.businessEmail || '';
++  var bizContactLine = [bizAddress, bizEmail, bizPhone, bizTaxId ? 'UID: ' + bizTaxId : ''].filter(Boolean).join('<br>');
+ 
+   var itemRows = '';
+   var items = inv.items || [];
+@@ -1124,15 +1128,18 @@ function buildModernInvoice(inv, type) {
+   invoiceNoPrintBar() +
+   '<div style="display:flex;flex-direction:column;min-height:1043px;box-sizing:border-box">' +
+ 
++  (D.logoPos === 'center' && state.businessLogo ? '<div style="background:' + accent + ';padding:28px 40px 0;text-align:center">' + invLogoHtml(D, 'modern') + '</div>' : '') +
+   '<div style="background:' + accent + ';color:#fff;padding:36px 40px;display:flex;justify-content:space-between;align-items:center">' +
+   '<div style="display:flex;align-items:center;gap:14px">' +
+-  (state.businessLogo ? '<img src="' + state.businessLogo + '" style="height:64px;max-width:180px;object-fit:contain;background:#fff;border-radius:8px;padding:4px">' : '') +
++  (D.logoPos === 'left' ? invLogoHtml(D, 'modern') : '') +
+   '<div>' +
+   '<div style="font-size:22px;font-weight:700">' + bizName + '</div>' +
+   '<div style="font-size:11px;opacity:0.85;margin-top:4px;line-height:1.5">' + bizContactLine + '</div>' +
++  invHeaderTextHtml(D, 'rgba(255,255,255,.92)') +
+   '</div>' +
+   '</div>' +
+   '<div style="text-align:' + alignEnd + '">' +
++  (D.logoPos === 'right' && state.businessLogo ? '<div style="margin-bottom:10px">' + invLogoHtml(D, 'modern') + '</div>' : '') +
+   '<div style="font-size:26px;font-weight:700;letter-spacing:1px">' + typeLabel + '</div>' +
+   '<div style="font-size:13px;font-weight:600;margin-top:4px;opacity:0.9">' + ltrSpan(inv.number||'') + '</div>' +
+   '</div>' +
+@@ -1171,7 +1178,7 @@ function buildModernInvoice(inv, type) {
+   '</div>' +
+ 
+   '<div style="border-top:1px solid #eef2f6;margin-top:auto;padding:14px 40px;text-align:center;font-size:12px;color:#9ca3af">' +
+-  ptx('thanks') + ' &middot; Smartordi OG &middot; FN 675586 i &middot; Steingasse 6a, 4020 Linz' +
++  invFooterHtml(D) +
+   '</div>' +
+   '</div>' +
+   '</body></html>';
+diff --git a/js/13e-invoice-design.js b/js/13e-invoice-design.js
+new file mode 100644
+index 0000000..d7400bd
+--- /dev/null
++++ b/js/13e-invoice-design.js
+@@ -0,0 +1,118 @@
++// ── INVOICE DESIGN (Settings → invoice template) ──
++// Lets each business give its invoices its own look on top of the two templates:
++// accent colour, logo position + size, a line under the company details and the
++// footer text. Defaults reproduce the templates exactly as they were.
++// state.invoiceDesign: {accent, logoPos:'left'|'center'|'right', logoSize:'s'|'m'|'l', headerText, footerText}
++
++var INVD_DEFAULTS = {
++  classic: {accent: '#006e1c', logoSize: 'l'},
++  modern:  {accent: '#0061a4', logoSize: 's'}
++};
++var INVD_SWATCHES = ['#006e1c', '#0061a4', '#1e293b', '#7c3aed', '#c2410c', '#be123c'];
++var INVD_LOGO_PX = {classic: {s: 64, m: 120, l: 192}, modern: {s: 64, m: 88, l: 120}};
++
++var INVD_L = {
++  title:   {en:'Invoice design', ar:'تصميم الفاتورة', de:'Rechnungsdesign'},
++  note:    {en:'Applies to every invoice you create. The preview updates as you change things.', ar:'بيتطبق على كل فاتورة بتعملها، والمعاينة بتتغير وانت بتعدّل.', de:'Gilt für alle Rechnungen. Die Vorschau ändert sich sofort mit.'},
++  color:   {en:'Main colour', ar:'اللون الأساسي', de:'Hauptfarbe'},
++  own:     {en:'Own colour', ar:'لون خاص', de:'Eigene Farbe'},
++  logoPos: {en:'Logo position', ar:'مكان اللوجو', de:'Logo-Position'},
++  left:    {en:'Left', ar:'شمال', de:'Links'},
++  center:  {en:'Centre', ar:'في النص', de:'Mitte'},
++  right:   {en:'Right', ar:'يمين', de:'Rechts'},
++  logoSize:{en:'Logo size', ar:'حجم اللوجو', de:'Logo-Größe'},
++  s:       {en:'Small', ar:'صغير', de:'Klein'},
++  m:       {en:'Medium', ar:'متوسط', de:'Mittel'},
++  l:       {en:'Large', ar:'كبير', de:'Groß'},
++  noLogo:  {en:'No logo uploaded yet — add it under Business profile above.', ar:'لسه مفيش لوجو — ضيفه من بيانات الشركة فوق.', de:'Noch kein Logo — oben im Unternehmensprofil hochladen.'},
++  header:  {en:'Line under your company details (optional)', ar:'سطر تحت بيانات الشركة (اختياري)', de:'Zeile unter den Firmendaten (optional)'},
++  headerPh:{en:'e.g. Transport & logistics since 2015', ar:'مثلاً نقل ولوجستيات من 2015', de:'z. B. Transporte & Logistik seit 2015'},
++  footer:  {en:'Footer text (optional)', ar:'النص اللي تحت (اختياري)', de:'Fußzeile (optional)'},
++  footerPh:{en:'Empty = "Thank you" + your company name, address and UID', ar:'لو فاضي: «شكراً» + اسم الشركة والعنوان والـ UID', de:'Leer = „Vielen Dank“ + Firmenname, Adresse und UID'},
++  preview: {en:'Preview', ar:'معاينة', de:'Vorschau'},
++  reset:   {en:'Reset design', ar:'رجّع التصميم الأصلي', de:'Design zurücksetzen'}
++};
++function invdtx(k) { return (INVD_L[k] && (INVD_L[k][state.lang] || INVD_L[k].en)) || k; }
++
++function invDesign(tpl) {
++  var d = state.invoiceDesign || {}, def = INVD_DEFAULTS[tpl] || INVD_DEFAULTS.classic;
++  var acc = /^#[0-9a-fA-F]{6}$/.test(d.accent || '') ? d.accent : def.accent;
++  return {
++    tpl: tpl, accent: acc,
++    logoPos: ['left', 'center', 'right'].indexOf(d.logoPos) >= 0 ? d.logoPos : 'left',
++    logoSize: ['s', 'm', 'l'].indexOf(d.logoSize) >= 0 ? d.logoSize : def.logoSize,
++    headerText: (d.headerText || '').trim(), footerText: (d.footerText || '').trim()
++  };
++}
++function invTint(hex, a) {
++  var n = parseInt(String(hex).slice(1), 16);
++  return 'rgba(' + ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
++}
++function invEsc(t) { return escHtml(t).replace(/\n/g, '<br>'); }
++function invLogoHtml(D, tpl) {
++  if(!state.businessLogo) return '';
++  var h = (INVD_LOGO_PX[tpl] || INVD_LOGO_PX.classic)[D.logoSize];
++  var extra = tpl === 'modern' ? ';background:#fff;border-radius:8px;padding:4px' : '';
++  return '<img src="' + state.businessLogo + '" style="height:' + h + 'px;max-width:' + Math.round(h * 2.2) + 'px;object-fit:contain' + extra + '">';
++}
++function invHeaderTextHtml(D, color) {
++  return D.headerText ? '<div style="font-size:12.5px;font-weight:600;color:' + color + ';margin-top:6px">' + invEsc(D.headerText) + '</div>' : '';
++}
++function invFooterHtml(D) {
++  if(D.footerText) return invEsc(D.footerText);
++  var parts = [ptx('thanks'), state.businessName, state.businessAddress, state.businessTaxId ? 'UID: ' + state.businessTaxId : ''];
++  return parts.filter(Boolean).map(escHtml).join(' &middot; ');
++}
++
++// ── Settings UI ──
++function invdSet(k, v) {
++  state.invoiceDesign = state.invoiceDesign || {};
++  state.invoiceDesign[k] = v;
++  clearTimeout(invdSet._t); invdSet._t = setTimeout(save, 300);
++  renderInvoiceDesign(k === 'headerText' || k === 'footerText');
++}
++function invdReset() { state.invoiceDesign = {}; save(); renderInvoiceDesign(); }
++
++function invdSampleInvoice() {
++  var last = (state.issuedInvoices || []).slice(-1)[0];
++  if(last && (last.items || []).length) return last;
++  return {id: 'preview', number: 'RE-2026-001', issueDate: today(), dueDate: '', clientName: 'Muster GmbH',
++          items: [{desc: 'Transport Wien – Linz', qty: 1, price: 850, sub: 850}, {desc: 'Wartezeit (Std.)', qty: 2, price: 45, sub: 90}],
++          subtotal: 940, vatRate: 20, vatAmount: 188, total: 1128, currency: state.currency, notes: ''};
++}
++
++function renderInvoiceDesign(keepInputs) {
++  var box = document.getElementById('invDesignBox');
++  if(!box) return;
++  var tpl = state.invoiceTemplate === 'modern' ? 'modern' : 'classic', D = invDesign(tpl);
++  if(!keepInputs) {
++    function seg(key, vals) {
++      return '<div class="invd-seg">' + vals.map(function(v) {
++        return '<button type="button" class="' + (D[key] === v ? 'on' : '') + '" onclick="invdSet(\'' + key + '\',\'' + v + '\')">' + escHtml(invdtx(v)) + '</button>';
++      }).join('') + '</div>';
++    }
++    var sw = INVD_SWATCHES.map(function(c) {
++      return '<button type="button" class="invd-sw' + (c.toLowerCase() === D.accent.toLowerCase() ? ' on' : '') + '" style="background:' + c + '" onclick="invdSet(\'accent\',\'' + c + '\')" aria-label="' + c + '"></button>';
++    }).join('');
++    box.innerHTML = '<div class="invd">'
++      + '<div class="invd-ttl">' + escHtml(invdtx('title')) + '</div><div class="invd-note">' + escHtml(invdtx('note')) + '</div>'
++      + '<div class="invd-lbl">' + escHtml(invdtx('color')) + '</div><div class="invd-sws">' + sw
++      + '<label class="invd-own">' + escHtml(invdtx('own')) + ' <input type="color" value="' + D.accent + '" onchange="invdSet(\'accent\',this.value)"></label></div>'
++      + '<div class="invd-lbl">' + escHtml(invdtx('logoPos')) + '</div>' + seg('logoPos', ['left', 'center', 'right'])
++      + '<div class="invd-lbl">' + escHtml(invdtx('logoSize')) + '</div>' + seg('logoSize', ['s', 'm', 'l'])
++      + (state.businessLogo ? '' : '<div class="invd-note" style="margin-top:6px">' + escHtml(invdtx('noLogo')) + '</div>')
++      + '<div class="invd-lbl">' + escHtml(invdtx('header')) + '</div>'
++      + '<input class="wt-input" type="text" maxlength="90" value="' + escHtml((state.invoiceDesign || {}).headerText || '') + '" placeholder="' + escHtml(invdtx('headerPh')) + '" oninput="invdSet(\'headerText\',this.value)">'
++      + '<div class="invd-lbl">' + escHtml(invdtx('footer')) + '</div>'
++      + '<textarea class="wt-input" rows="2" maxlength="240" placeholder="' + escHtml(invdtx('footerPh')) + '" oninput="invdSet(\'footerText\',this.value)">' + escHtml((state.invoiceDesign || {}).footerText || '') + '</textarea>'
++      + '<div class="invd-lbl">' + escHtml(invdtx('preview')) + '</div><div class="invd-prev"><iframe id="invdFrame" title="preview" tabindex="-1"></iframe></div>'
++      + '<button type="button" class="invd-reset" onclick="invdReset()">' + escHtml(invdtx('reset')) + '</button>'
++      + '</div>';
++  }
++  var fr = document.getElementById('invdFrame');
++  if(fr) {
++    var html = buildInvoiceHTML(invdSampleInvoice(), 'issued')
++      .replace('</head>', '<style>.no-print{display:none!important}body{overflow:hidden}</style></head>');
++    fr.srcdoc = html;
++  }
++}
+diff --git a/trabis.html b/trabis.html
+index 7210bb3..09b4b77 100644
+--- a/trabis.html
++++ b/trabis.html
+@@ -1039,6 +1039,7 @@
+ <script src="js/13b-vat-payments.js"></script>
+ <script src="js/13c-gov-payments.js"></script>
+ <script src="js/13d-purchase-plans.js"></script>
++<script src="js/13e-invoice-design.js"></script>
+ <script src="js/14-system.js"></script>
+ <script src="js/99-boot.js"></script>
+ 
+-- 
+2.43.0
+
