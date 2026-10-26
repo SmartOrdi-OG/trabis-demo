@@ -119,18 +119,24 @@ function recDueMonths(lastRecorded, curMonth) {
   for(var guard = 0; k <= curMonth && guard < 120; guard++) { out.push(k); k = recNextKey(k); }
   return out;
 }
-// Salary of one employee for one month: nothing before the start month, the start
-// month pro rata by calendar days (start day included), full months after that.
+// Salary of one employee for one month: nothing before the start month or after the
+// end month; the start and end months pro rata by calendar days (both days included).
 function salaryForMonth(emp, key) {
   var sal = parseFloat(emp.salary) || 0;
-  if(sal <= 0) return {amount: 0, date: key + '-01'};
-  var sd = /^\d{4}-\d{2}-\d{2}$/.test(emp.startDate || '') ? emp.startDate : '';
-  if(sd && sd.substring(0, 7) > key) return {amount: 0, date: key + '-01'};
-  if(sd && sd.substring(0, 7) === key) {
-    var day = parseInt(sd.substring(8, 10), 10), dim = recDaysIn(key);
-    if(day > 1) return {amount: Math.round(sal * (dim - day + 1) / dim * 100) / 100, date: sd};
-  }
-  return {amount: sal, date: key + '-01'};
+  var none = {amount: 0, date: key + '-01'};
+  if(sal <= 0) return none;
+  var re = /^\d{4}-\d{2}-\d{2}$/;
+  var sd = re.test(emp.startDate || '') ? emp.startDate : '';
+  var ed = re.test(emp.endDate || '') ? emp.endDate : '';
+  if(sd && sd.substring(0, 7) > key) return none;
+  if(ed && ed.substring(0, 7) < key) return none;
+  if(sd && ed && ed < sd) return none;
+  var dim = recDaysIn(key);
+  var first = (sd && sd.substring(0, 7) === key) ? parseInt(sd.substring(8, 10), 10) : 1;
+  var last = (ed && ed.substring(0, 7) === key) ? parseInt(ed.substring(8, 10), 10) : dim;
+  var date = first > 1 ? sd : key + '-01';
+  if(first === 1 && last === dim) return {amount: sal, date: date};
+  return {amount: Math.round(sal * (last - first + 1) / dim * 100) / 100, date: date};
 }
 
 function checkRecurringDue() {

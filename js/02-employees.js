@@ -14,6 +14,10 @@ var EMP_L = {
   nationality:{en:'Nationality', ar:'الجنسية', de:'Nationalität'},
   birthDate:  {en:'Birth Date', ar:'تاريخ الميلاد', de:'Geburtsdatum'},
   startDate:  {en:'Start Date', ar:'تاريخ البدء', de:'Startdatum'},
+  endDate:    {en:'End Date (optional)', ar:'تاريخ النهاية (اختياري)', de:'Enddatum (optional)'},
+  endNote:    {en:'Salary stops after this day; the last month is paid pro rata by days.', ar:'المرتب بيقف بعد اليوم ده، وآخر شهر بيتحسب بالأيام.', de:'Gehalt endet nach diesem Tag; der letzte Monat wird anteilig nach Tagen gebucht.'},
+  endBefore:  {en:'End date is before the start date', ar:'تاريخ النهاية قبل تاريخ البداية', de:'Enddatum liegt vor dem Startdatum'},
+  left:       {en:'left', ar:'ساب الشغل', de:'ausgeschieden'},
   notes:      {en:'Notes', ar:'ملاحظات', de:'Notizen'},
   notesPh:    {en:'Add notes...', ar:'أضف ملاحظات...', de:'Notizen hinzufügen...'},
   documents:  {en:'Documents', ar:'المستندات', de:'Dokumente'},
@@ -66,6 +70,9 @@ var EMP_L = {
 };
 function emptx(k) { return (EMP_L[k] && EMP_L[k][state.lang]) || (EMP_L[k] && EMP_L[k].en) || k; }
 
+// Employee whose end date has passed (kept for history, no salary any more).
+function empHasLeft(e) { return !!(e && e.endDate && e.endDate < today()); }
+
 function renderEmployeesPage() {
   var page = document.getElementById('employeesPage');
   if(!page) return;
@@ -87,7 +94,8 @@ function renderEmployeesPage() {
       h += '<div class="emp-card" data-id="' + e.id + '" style="background:var(--card);border-radius:16px;padding:16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;cursor:pointer;box-shadow:var(--shadow)">';
       h += '<div style="width:48px;height:48px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0">' + escHtml(initial) + '</div>';
       h += '<div style="flex:1;min-width:0">';
-      h += '<div style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(displayName) + '</div>';
+      h += '<div style="font-size:15px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(displayName)
+        + (empHasLeft(e) ? ' <span style="display:inline-block;vertical-align:2px;font-size:10.5px;font-weight:700;color:var(--text3);background:var(--bg);border:1px solid var(--border);border-radius:999px;padding:1px 8px">' + escHtml(emptx('left')) + '</span>' : '') + '</div>';
       h += '<div style="font-size:12px;color:var(--text3);margin-top:2px">' + (position ? escHtml(position) : '—') + '</div>';
       h += '<div style="font-size:13px;color:var(--income);font-weight:600;margin-top:2px">' + fmt(parseFloat(e.salary) || 0) + '/mo</div>';
       h += '</div>';
@@ -138,6 +146,9 @@ function openAddEmployeeForm() {
   html += '<input class="input-field" id="ea-email" type="email" placeholder="' + emptx('email') + '">';
   html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label>';
   html += '<div class="date-fix-wrap"><input class="input-field" id="ea-startdate" type="date"></div>';
+  html += '<label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('endDate') + '</label>';
+  html += '<div class="date-fix-wrap"><input class="input-field" id="ea-enddate" type="date"></div>';
+  html += '<div style="font-size:11px;color:var(--text3);margin:-8px 0 12px">' + emptx('endNote') + '</div>';
   html += '<div style="display:flex;gap:10px;margin-top:10px">';
   html += '<button id="empAddSaveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
   html += '<button id="empAddCancelBtn" style="flex:1;background:var(--bg);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;padding:13px;font-size:15px;font-weight:600;cursor:pointer">' + emptx('cancel') + '</button>';
@@ -167,6 +178,9 @@ function saveNewEmployee() {
   var phoneEl = document.getElementById('ea-phone');
   var emailEl = document.getElementById('ea-email');
   var startDateEl = document.getElementById('ea-startdate');
+  var endDateEl = document.getElementById('ea-enddate');
+  var sdv = (startDateEl && startDateEl.value) || '', edv = (endDateEl && endDateEl.value) || '';
+  if(sdv && edv && edv < sdv) { showToast(emptx('endBefore'), 'error'); endDateEl.focus(); return; }
 
   state.employees.push({
     id: Date.now(),
@@ -181,7 +195,8 @@ function saveNewEmployee() {
     address: '',
     phone: (phoneEl && phoneEl.value.trim()) || '',
     email: (emailEl && emailEl.value.trim()) || '',
-    startDate: (startDateEl && startDateEl.value) || '',
+    startDate: sdv,
+    endDate: edv,
     notes: '',
     documents: [],
     workHours: [],
@@ -229,6 +244,7 @@ function renderEmployeeProfileCard(emp) {
     html += empInfoRow(emptx('nationality'), emp.nationality);
     html += empInfoRow(emptx('birthDate'), emp.birthDate ? formatDateDisplay(emp.birthDate) : '');
     html += empInfoRow(emptx('startDate'), emp.startDate ? formatDateDisplay(emp.startDate) : '');
+    if(emp.endDate) html += empInfoRow(emptx('endDate').replace(/ \(.*\)$/, ''), formatDateDisplay(emp.endDate) + (empHasLeft(emp) ? ' (' + emptx('left') + ')' : ''));
 
     html += '<div><div style="font-size:12px;color:var(--text3);margin-bottom:2px">' + emptx('salary') + '</div><div style="font-size:16px;font-weight:700;color:var(--income)">' + fmt(parseFloat(emp.salary) || 0) + '/mo</div></div>';
 
@@ -243,6 +259,7 @@ function renderEmployeeProfileCard(emp) {
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('nationality') + '</label><input id="epf-nationality" class="input-field" style="margin-bottom:0" value="' + escHtml(emp.nationality || '') + '"></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('birthDate') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input id="epf-birthdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.birthDate || '') + '"></div></div>';
     eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('startDate') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input id="epf-startdate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.startDate || '') + '"></div></div>';
+    eh += '<div style="margin-bottom:12px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('endDate') + '</label><div class="date-fix-wrap" style="margin-bottom:0"><input id="epf-enddate" type="date" class="input-field" style="margin-bottom:0" value="' + (emp.endDate || '') + '"></div><div style="font-size:11px;color:var(--text3);margin-top:4px">' + emptx('endNote') + '</div></div>';
     eh += '<div style="margin-bottom:14px"><label style="font-size:12px;color:var(--text3);display:block;margin-bottom:4px">' + emptx('salary') + '</label><input id="epf-salary" type="text" inputmode="decimal" oninput="sanitizeAmountField(this)" class="input-field" style="margin-bottom:4px" value="' + (parseFloat(emp.salary) || 0) + '"><div style="font-size:11px;color:var(--text3)">' + emptx('salaryNote') + '</div></div>';
     eh += '<div style="display:flex;gap:10px">';
     eh += '<button id="epf-saveBtn" style="flex:1;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer">' + emptx('save') + '</button>';
@@ -265,7 +282,11 @@ function renderEmployeeProfileCard(emp) {
       emp.address = document.getElementById('epf-address').value.trim();
       emp.nationality = document.getElementById('epf-nationality').value.trim();
       emp.birthDate = document.getElementById('epf-birthdate').value;
-      emp.startDate = document.getElementById('epf-startdate').value;
+      var newEnd = document.getElementById('epf-enddate').value;
+      var newStart = document.getElementById('epf-startdate').value;
+      if(newStart && newEnd && newEnd < newStart) { showToast(emptx('endBefore'), 'error'); document.getElementById('epf-enddate').focus(); return; }
+      emp.startDate = newStart;
+      emp.endDate = newEnd;
       emp.salary = parseAmount(document.getElementById('epf-salary').value) || 0;
       save();
       _empProfileEditMode = false;
