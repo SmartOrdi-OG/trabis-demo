@@ -489,6 +489,7 @@ var HOMEP_L = {
   addInv:   {en:'Add invoice',       ar:'إضافة فاتورة',     de:'Beleg hinzufügen'},
   upFile:   {en:'Upload file (PDF or photo)', ar:'رفع ملف (PDF أو صورة)', de:'Datei hochladen (PDF oder Foto)'},
   takePhoto:{en:'Take photo',        ar:'تصوير فاتورة',     de:'Foto aufnehmen'},
+  manual:   {en:'Enter manually',    ar:'إدخال يدوي',       de:'Manuell eingeben'},
   createInv:{en:'Create invoice',    ar:'إنشاء فاتورة',     de:'Rechnung erstellen'},
   allPdf:   {en:'All as one PDF',    ar:'كل الفواتير PDF واحد', de:'Alle als ein PDF'},
   noDocs:   {en:'No invoices yet',   ar:'لا توجد فواتير بعد', de:'Noch keine Belege'},
@@ -640,6 +641,7 @@ function renderRcptActions(type) {
     + '<div class="rcpt-add-menu" id="rcptAddMenu">'
     +   '<button type="button" onclick="rcptAddFile(\'' + type + '\',\'upload\')">' + svgIcon('upload', 16) + '<span>' + escHtml(hptx('upFile')) + '</span></button>'
     +   '<button type="button" onclick="rcptAddFile(\'' + type + '\',\'camera\')">' + svgIcon('camera', 16) + '<span>' + escHtml(hptx('takePhoto')) + '</span></button>'
+    +   '<button type="button" onclick="rcptManualEntry(\'' + type + '\')">' + svgIcon('pencil', 16) + '<span>' + escHtml(hptx('manual')) + '</span></button>'
     + '</div></div>';
   if(type === 'income') {
     h += '<button type="button" class="rcpt-add-btn green" onclick="openIssuedInvoiceForm()"><span class="rcpt-add-circle">' + svgIcon('file', 16) + '</span>' + escHtml(hptx('createInv')) + '</button>';
@@ -668,6 +670,14 @@ function rcptCloseMenu() {
   if(m) m.classList.remove('open');
 }
 document.addEventListener('click', rcptCloseMenu);
+// Manual entry: the review screen with one empty entry and no file; a file or photo
+// can be attached inside the card (optional).
+function rcptManualEntry(type) {
+  rcptCloseMenu();
+  _scanInv = { type: type, manual: true, files: [scanBlankEntry()] };
+  scanInvoicesOpenCapture();
+  scanInvoicesRenderReview();
+}
 function rcptAddFile(type, mode) {
   rcptCloseMenu();
   _scanInv = { type: type, files: [] };

@@ -474,3 +474,9 @@ unique (rule_id, period_key)     -- period_key = 'YYYY-MM'
 ## الخطوة 10: كل فواتير الشهر في ملف PDF واحد
 - تحت شريط الفواتير (Belege) في تاب Einnahmen وتاب Ausgaben: زرار **«Alle als ein PDF (n)»** — بيعمل PDF واحد بكل فواتير/إيصالات **الشهر المعروض** للجانب ده: صفحة غلاف («Ausgaben — اسم الشركة · Okt 2026 · n Belege · Erstellt am …») وبعدها كل فاتورة في صفحة (الصور كما هي، والـ PDF كل صفحاته)، وفوق كل صفحة سطر: النوع · التاريخ · الاسم · المبلغ. اسم الملف `Ausgaben_2026-10.pdf` / `Einnahmen_2026-10.pdf`. مستقل عن باكدج المحاسب.
 - بيستخدم نفس الكود اللي كان موجود لتحميل الفواتير المرفقة (jsPDF + pdf.js)، مع تصليحين: الصور اللي مش JPEG/PNG (SVG/WebP…) بتتحول PNG قبل ما تتحط، ونصوص الـ PDF بقت ألماني دايماً (الخط مش بيدعم العربي).
+
+## الخطوة 11: إدخال مصروف/دخل يدوي (من قائمة «+ Beleg hinzufügen»)
+- اختيار تالت في القائمة: **«Manuell eingeben»** جنب «Datei hochladen» و«Foto aufnehmen» (في Einnahmen وAusgaben).
+- بيفتح شاشة المراجعة فاضية: Bezeichnung · Kategorie · Datum · Brutto · MwSt % (و Netto بيتحسب). «+ Weiterer Eintrag» لإدخال أكتر من قيد مرة واحدة.
+- الفاتورة **اختيارية** جوه كل كارت: «Datei hochladen» أو «Foto». لو اترفعت بتتحفظ زي أي إيصال (IndexedDB `receipts`، `tx.receiptId` / `tx.receiptName`) فتظهر في Belege وفي الـ PDF المجمّع وباكدج المحاسب.
+- المعاملة: نفس شكل أي معاملة + `manual: true`. من غير فاتورة: مفيش `receiptId`. الاسم والمبلغ (> 0) إجباريين.

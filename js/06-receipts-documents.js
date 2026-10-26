@@ -233,6 +233,15 @@ var SCAN_L = {
   savedToast:    {en:' invoice(s) added', ar:' فاتورة اتضافت', de:' Rechnung(en) hinzugefügt'},
   couldNotRead:  {en:'Could not read — fill in manually', ar:'معرفناش نقراها — اكتب يدوي', de:'Konnte nicht gelesen werden — bitte manuell eingeben'},
   removeBtn:     {en:'Remove', ar:'حذف', de:'Entfernen'},
+  manualTitle:   {en:'Manual entry', ar:'إدخال يدوي', de:'Manuelle Eingabe'},
+  manualNote:    {en:'Type everything in yourself. Adding an invoice is optional.', ar:'اكتب كل البيانات بإيدك. إضافة الفاتورة اختيارية.', de:'Alles selbst eintragen. Ein Beleg ist optional.'},
+  noInvoice:     {en:'No invoice attached (optional)', ar:'مفيش فاتورة مرفقة (اختياري)', de:'Kein Beleg angehängt (optional)'},
+  attachFile:    {en:'Upload file', ar:'رفع ملف', de:'Datei hochladen'},
+  attachPhoto:   {en:'Take photo', ar:'تصوير', de:'Foto'},
+  removeFile:    {en:'Remove invoice', ar:'شيل الفاتورة', de:'Beleg entfernen'},
+  addEntry:      {en:'+ Another entry', ar:'+ قيد كمان', de:'+ Weiterer Eintrag'},
+  saveBtn:       {en:'Save', ar:'حفظ', de:'Speichern'},
+  needAmount:    {en:'Please enter a name and an amount', ar:'اكتب الاسم والمبلغ', de:'Bitte Name und Betrag eingeben'},
 };
 function scantx(k) { return (SCAN_L[k] && SCAN_L[k][state.lang]) || (SCAN_L[k] && SCAN_L[k].en) || k; }
 
@@ -361,6 +370,53 @@ function scanInvoicesFilesChosen(fileList) {
   Promise.all(promises).then(scanInvoicesRenderCapture);
 }
 
+function scanBlankEntry() {
+  return {blob: null, name: '', mimeType: null, previewUrl: null, date: today(), brutto: null, rate: 20, manual: true};
+}
+// Keep what was typed when the review screen re-renders (attach / remove / add entry).
+function scanReviewCollect() {
+  _scanInv.files.forEach(function(f, idx) {
+    var g = function(k) { return document.getElementById('scanRev-' + k + '-' + idx); };
+    if(g('item')) f.item = g('item').value;
+    if(g('cat')) f.category = g('cat').value;
+    if(g('date')) f.date = g('date').value;
+    if(g('brutto')) f.brutto = g('brutto').value === '' ? null : parseAmount(g('brutto').value);
+    if(g('vat')) f.rate = parseFloat(g('vat').value) || 0;
+  });
+}
+function scanEntryAttach(idx, mode) {
+  var inp = document.getElementById(mode === 'camera' ? 'scanRevCam' : 'scanRevFile');
+  if(!inp) return;
+  inp.onchange = function(e) {
+    var file = e.target.files && e.target.files[0];
+    e.target.value = '';
+    if(!file) return;
+    scanReviewCollect();
+    var isPdf = file.type === 'application/pdf';
+    receiptCompress(file).then(function(blob) {
+      var f = _scanInv.files[idx];
+      if(!f) return;
+      f.blob = blob;
+      f.name = file.name || ('invoice-' + Date.now() + (isPdf ? '.pdf' : '.jpg'));
+      f.mimeType = isPdf ? 'application/pdf' : 'image/jpeg';
+      f.previewUrl = isPdf ? null : URL.createObjectURL(blob);
+      scanInvoicesRenderReview();
+    });
+  };
+  inp.click();
+}
+function scanEntryDetach(idx) {
+  scanReviewCollect();
+  var f = _scanInv.files[idx];
+  if(f) { f.blob = null; f.name = ''; f.mimeType = null; f.previewUrl = null; }
+  scanInvoicesRenderReview();
+}
+function scanAddEntry() {
+  scanReviewCollect();
+  _scanInv.files.push(scanBlankEntry());
+  scanInvoicesRenderReview();
+}
+
 function scanInvoicesRemoveFile(idx) {
   _scanInv.files.splice(idx, 1);
   scanInvoicesRenderCapture();
@@ -403,12 +459,14 @@ function scanInvoicesRenderReview() {
   var html = '';
   html += '<div style="position:sticky;top:0;z-index:5;background:var(--card);padding:14px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">';
   html += '<button id="scanRevCancelBtn" style="background:none;border:none;color:var(--text);font-size:15px;cursor:pointer;padding:4px">' + scantx('cancel') + '</button>';
-  html += '<div style="flex:1;font-size:16px;font-weight:700;text-align:center">' + scantx('reviewTitle') + '</div>';
+  html += '<div style="flex:1;font-size:16px;font-weight:700;text-align:center">' + scantx(_scanInv.manual ? 'manualTitle' : 'reviewTitle') + '</div>';
   html += '<div style="width:44px"></div>';
   html += '</div>';
 
   html += '<div style="padding:16px">';
-  html += '<div style="font-size:12px;color:var(--text3);background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:14px">' + scantx('reviewNote') + '</div>';
+  html += '<div style="font-size:12px;color:var(--text3);background:var(--card);border-radius:10px;padding:10px 12px;margin-bottom:14px">' + scantx(_scanInv.manual ? 'manualNote' : 'reviewNote') + '</div>';
+  html += '<input type="file" id="scanRevFile" accept="image/*,application/pdf" style="display:none">';
+  html += '<input type="file" id="scanRevCam" accept="image/*" capture="environment" style="display:none">';
 
   files.forEach(function(f, idx) {
     var brutto = parseFloat(f.brutto) || 0;
@@ -416,12 +474,25 @@ function scanInvoicesRenderReview() {
     var b = vatBreakdown(brutto, rate);
     html += '<div style="background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:var(--shadow)">';
     html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">';
-    if(f.mimeType === 'application/pdf') html += '<span style="color:var(--text2)">' + svgIcon('fileText',20) + '</span>';
-    else html += '<img src="' + f.previewUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px">';
-    html += '<span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(f.name) + '</span>';
+    if(!f.blob) {
+      html += '<span style="color:var(--text3)">' + svgIcon('paperclip',18) + '</span>';
+      html += '<span style="flex:1;font-size:12px;color:var(--text3)">' + scantx('noInvoice') + '</span>';
+    } else {
+      if(f.mimeType === 'application/pdf') html += '<span style="color:var(--text2)">' + svgIcon('fileText',20) + '</span>';
+      else html += '<img src="' + f.previewUrl + '" style="width:36px;height:36px;object-fit:cover;border-radius:6px">';
+      html += '<span style="flex:1;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + escHtml(f.name) + '</span>';
+      if(f.manual) html += '<button type="button" onclick="scanEntryDetach(' + idx + ')" title="' + escHtml(scantx('removeFile')) + '" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:4px">' + svgIcon('x',14) + '</button>';
+    }
     html += '<button onclick="scanInvoicesRemoveReviewItem(' + idx + ')" style="border:none;background:none;color:var(--text3);cursor:pointer;padding:4px">' + svgIcon('trash',14) + '</button>';
     html += '</div>';
-    if(f.brutto == null) {
+    if(f.manual && !f.blob) {
+      var ab = 'flex:1;display:flex;align-items:center;justify-content:center;gap:6px;padding:9px;border-radius:10px;border:1.5px dashed var(--border);background:none;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit';
+      html += '<div style="display:flex;gap:8px;margin-bottom:10px">'
+        + '<button type="button" style="' + ab + '" onclick="scanEntryAttach(' + idx + ',\'upload\')">' + svgIcon('upload',14) + scantx('attachFile') + '</button>'
+        + '<button type="button" style="' + ab + '" onclick="scanEntryAttach(' + idx + ',\'camera\')">' + svgIcon('camera',14) + scantx('attachPhoto') + '</button>'
+        + '</div>';
+    }
+    if(f.brutto == null && !f.manual) {
       html += '<div style="font-size:11px;color:#ea580c;margin-bottom:8px">' + scantx('couldNotRead') + '</div>';
     }
     html += '<label style="font-size:11px;color:var(--text3);display:block;margin-bottom:3px">' + scantx('fieldItem') + '</label>';
@@ -442,7 +513,8 @@ function scanInvoicesRenderReview() {
     html += '</div>';
   });
 
-  html += '<button id="scanSaveAllBtn" style="width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer">' + scantx('saveAllBtn') + ' (' + files.length + ')</button>';
+  if(_scanInv.manual) html += '<button type="button" onclick="scanAddEntry()" style="width:100%;padding:11px;border-radius:12px;border:1.5px dashed var(--border);background:none;color:var(--text2);font-size:13px;font-weight:600;cursor:pointer;font-family:inherit">' + scantx('addEntry') + '</button>';
+  html += '<button id="scanSaveAllBtn" style="width:100%;margin-top:10px;padding:14px;border-radius:12px;border:none;background:var(--primary);color:#fff;font-size:15px;font-weight:700;cursor:pointer">' + (_scanInv.manual && files.length === 1 ? scantx('saveBtn') : scantx('saveAllBtn') + ' (' + files.length + ')') + '</button>';
   html += '</div>';
 
   ov.innerHTML = html;
@@ -463,6 +535,7 @@ function scanInvoicesRecalc(idx) {
 }
 
 function scanInvoicesRemoveReviewItem(idx) {
+  scanReviewCollect();
   _scanInv.files.splice(idx, 1);
   if(!_scanInv.files.length) { var ov = document.getElementById('scanFlowOverlay'); if(ov) ov.parentNode.removeChild(ov); return; }
   scanInvoicesRenderReview();
@@ -485,16 +558,21 @@ function scanInvoicesSaveAll() {
     var rate = parseFloat(vatEl ? vatEl.value : '') || 0;
     var itemName = (itemEl && itemEl.value.trim()) || f.name;
     var category = (catEl && catEl.value) || CATS[type][0];
-    if(brutto <= 0) return;
+    if(brutto <= 0 || !itemName) return;
 
     var newTxId = Date.now() + idx;
-    state.transactions.push({
+    var tx = {
       id: newTxId,
       name: itemName,
       amount: brutto, type: type, category: category, date: date,
-      vatRate: rate,
-      receiptId: newTxId, receiptName: f.name
-    });
+      vatRate: rate
+    };
+    if(f.manual) tx.manual = true;
+    if(f.blob) { tx.receiptId = newTxId; tx.receiptName = f.name; }
+    state.transactions.push(tx);
+    savedCount++;
+    savedDates.push(date);
+    if(!f.blob) return;
     receiptPut({
       id: newTxId,
       user: localStorage.getItem('smartac_user') || '',
@@ -503,9 +581,8 @@ function scanInvoicesSaveAll() {
       blob: f.blob,
       createdAt: new Date().toISOString()
     }).catch(function(){});
-    savedCount++;
-    savedDates.push(date);
   });
+  if(!savedCount) { showToast(scantx('needAmount'), 'error'); return; }
 
   // Scanned invoices often carry an old real-world date. If the currently
   // active period/custom filter would hide any of what was just saved
