@@ -1,0 +1,168 @@
+From fb1c1208e6bc822c33902cb2c31d05c04c83fab3 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 28 Oct 2026 11:49:37 +0100
+Subject: [PATCH] feat(brand): new Trabis logo and app icon
+
+Replace the infinity logo with the new compartment mark (hidden T) in
+trabis.html and buchhalter.html; favicon is now an SVG app icon and the
+apple-touch-icon a 180px PNG. index.html (legacy) stays untouched.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01WrSmbPeJ9qpSAgv9M15c7v
+---
+ buchhalter.html             |   6 +++---
+ trabis-apple-touch-icon.png | Bin 0 -> 2518 bytes
+ trabis-icon.svg             |   1 +
+ trabis-mark.svg             |   1 +
+ trabis.html                 |  10 +++++-----
+ 5 files changed, 10 insertions(+), 8 deletions(-)
+ create mode 100644 trabis-apple-touch-icon.png
+ create mode 100644 trabis-icon.svg
+ create mode 100644 trabis-mark.svg
+
+diff --git a/buchhalter.html b/buchhalter.html
+index 9ca89be..1a9db94 100644
+--- a/buchhalter.html
++++ b/buchhalter.html
+@@ -4,7 +4,7 @@
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Trabis — Buchhalter-Portal</title>
+-<link rel="icon" type="image/png" href="logo-circle.png"/>
++<link rel="icon" type="image/svg+xml" href="trabis-icon.svg"/>
+ <style>
+ :root{
+   --bg:#f4faff; --card:#ffffff; --card2:#f4faff; --border:#bfc7d4; --primary:#0061a4; --primary-light:#dcebf7;
+@@ -144,7 +144,7 @@ button{cursor:pointer}
+ 
+ <div id="screenLogin" class="auth-wrap">
+   <div class="auth-card">
+-    <img src="logo-infinity.svg" class="auth-logo" alt="Trabis"/>
++    <img src="trabis-mark.svg" class="auth-logo" alt="Trabis"/>
+     <div class="auth-title">Buchhalter-Zugang</div>
+     <div class="auth-sub">Nur-Lese-Ansicht für Steuerberater</div>
+     <div class="auth-error" id="loginError"></div>
+@@ -167,7 +167,7 @@ button{cursor:pointer}
+ 
+ <div id="screenApp" style="display:none">
+   <div class="topbar">
+-    <div class="tb-brand"><img src="logo-infinity.svg" alt="Trabis"/><div><div class="tb-t1">Tra<i>bis</i> <span class="ro-badge">Nur lesen</span></div><div class="tb-t2" id="tbClient">—</div></div></div>
++    <div class="tb-brand"><img src="trabis-mark.svg" alt="Trabis"/><div><div class="tb-t1">Tra<i>bis</i> <span class="ro-badge">Nur lesen</span></div><div class="tb-t2" id="tbClient">—</div></div></div>
+     <div class="tb-act">
+       <button class="tb-btn" onclick="buShowClients()">Mandant wechseln</button>
+       <button class="tb-btn" onclick="buOpenLegal()">Rechtliches</button>
+diff --git a/trabis-apple-touch-icon.png b/trabis-apple-touch-icon.png
+new file mode 100644
+index 0000000000000000000000000000000000000000..c66034c43b9759ad9b0ba554220b704f2c7afcff
+GIT binary patch
+literal 2518
+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
+
+literal 0
+HcmV?d00001
+
+diff --git a/trabis-icon.svg b/trabis-icon.svg
+new file mode 100644
+index 0000000..8edda19
+--- /dev/null
++++ b/trabis-icon.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="512" height="512"><defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2196F3"/><stop offset="1" stop-color="#0061A4"/></linearGradient></defs><rect width="1024" height="1024" fill="url(#bg)"/><g transform="translate(146 146) scale(6.1)"><rect x="14" y="14" width="92" height="30" rx="10" fill="#FFFFFF"/><rect x="14" y="52" width="42" height="54" rx="10" fill="#FFFFFF" fill-opacity="0.85"/><rect x="64" y="52" width="42" height="54" rx="10" fill="#FFFFFF" fill-opacity="0.6"/></g></svg>
+diff --git a/trabis-mark.svg b/trabis-mark.svg
+new file mode 100644
+index 0000000..0488daa
+--- /dev/null
++++ b/trabis-mark.svg
+@@ -0,0 +1 @@
++<svg xmlns="http://www.w3.org/2000/svg" viewBox="10 10 100 100" width="400" height="400" role="img" aria-label="Trabis"><path d="M32 14 H88 Q106 14 106 32 V39 Q106 44 101 44 H19 Q14 44 14 39 V32 Q14 14 32 14 Z" fill="#0061A4"/><path d="M19 52 H51 Q56 52 56 57 V101 Q56 106 51 106 H32 Q14 106 14 88 V57 Q14 52 19 52 Z" fill="#1A7FD4"/><path d="M69 52 H101 Q106 52 106 57 V88 Q106 106 88 106 H69 Q64 106 64 101 V57 Q64 52 69 52 Z" fill="#1A7FD4"/></svg>
+diff --git a/trabis.html b/trabis.html
+index 09b4b77..91b38b9 100644
+--- a/trabis.html
++++ b/trabis.html
+@@ -5,8 +5,8 @@
+ <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+ <meta name="apple-mobile-web-app-capable" content="yes"/>
+ <title>Trabis</title>
+-<link rel="icon" type="image/png" href="logo-circle.png"/>
+-<link rel="apple-touch-icon" href="logo-circle.png"/>
++<link rel="icon" type="image/svg+xml" href="trabis-icon.svg"/>
++<link rel="apple-touch-icon" href="trabis-apple-touch-icon.png"/>
+ 
+ <link rel="stylesheet" href="css/trabis.css"/>
+ <meta name="mobile-web-app-capable" content="yes"/>
+@@ -129,7 +129,7 @@
+       <!-- Collapsible content -->
+       <div class="lp-left-content" id="lp-left-content">
+         <div class="lp-logo-wrap">
+-          <img class="trabis-logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' width='64' height='64'%3E%3Cdefs%3E%3Cfilter id='s' x='-20%25' y='-20%25' width='140%25' height='150%25'%3E%3CfeDropShadow dx='0' dy='1.2' stdDeviation='1.6' flood-color='%230b3a5a' flood-opacity='.16'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='32' cy='31' r='29' fill='%23fff' filter='url%28%23s%29'/%3E%3Cpath d='M32 31C38 20 52 20 52 31C52 42 38 42 32 31C26 20 12 20 12 31C12 42 26 42 32 31Z' fill='none' stroke='%230070c0' stroke-width='5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" alt="Trabis" style="width:80px;height:80px;object-fit:contain"/>
++          <img class="trabis-logo-img" src="trabis-mark.svg" alt="Trabis" style="width:80px;height:80px;object-fit:contain"/>
+           <div class="lp-wordmark"><span class="lp-word-smart">Trabis</span></div>
+           <div class="lp-tagline" id="lp-tagline">Business Tracking System</div>
+         </div>
+@@ -461,7 +461,7 @@
+     <!-- Header -->
+     <div class="ob-header">
+       <div class="ob-header-icon" style="background:none;border-radius:0;font-size:0;padding:0">
+-        <img class="trabis-logo-img" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' width='64' height='64'%3E%3Cdefs%3E%3Cfilter id='s' x='-20%25' y='-20%25' width='140%25' height='150%25'%3E%3CfeDropShadow dx='0' dy='1.2' stdDeviation='1.6' flood-color='%230b3a5a' flood-opacity='.16'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='32' cy='31' r='29' fill='%23fff' filter='url%28%23s%29'/%3E%3Cpath d='M32 31C38 20 52 20 52 31C52 42 38 42 32 31C26 20 12 20 12 31C12 42 26 42 32 31Z' fill='none' stroke='%230070c0' stroke-width='5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E" alt="Trabis" style="width:64px;height:64px;object-fit:contain"/>
++        <img class="trabis-logo-img" src="trabis-mark.svg" alt="Trabis" style="width:64px;height:64px;object-fit:contain"/>
+       </div>
+       <div class="ob-header-title"><span class="lp-word-smart">Trabis</span></div>
+       <div class="ob-header-sub" id="ob-tagline">Business Tracking System</div>
+@@ -776,7 +776,7 @@
+ 
+ <div class="art-topbar" id="artTopbar">
+   <div class="art-brand" style="cursor:pointer" onclick="showNav('home')">
+-    <div class="art-mark"><img id="artLogo" alt="" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' width='64' height='64'%3E%3Cdefs%3E%3Cfilter id='s' x='-20%25' y='-20%25' width='140%25' height='150%25'%3E%3CfeDropShadow dx='0' dy='1.2' stdDeviation='1.6' flood-color='%230b3a5a' flood-opacity='.16'/%3E%3C/filter%3E%3C/defs%3E%3Ccircle cx='32' cy='31' r='29' fill='%23fff' filter='url%28%23s%29'/%3E%3Cpath d='M32 31C38 20 52 20 52 31C52 42 38 42 32 31C26 20 12 20 12 31C12 42 26 42 32 31Z' fill='none' stroke='%230070c0' stroke-width='5' stroke-linejoin='round' stroke-linecap='round'/%3E%3C/svg%3E"></div>
++    <div class="art-mark"><img id="artLogo" alt="" src="trabis-mark.svg"></div>
+     <div style="min-width:0"><div class="art-brand-name">Tra<i>bis</i></div><div class="art-brand-sub" id="artBizSub"></div></div>
+   </div>
+   <div class="art-actions">
+-- 
+2.43.0
+
