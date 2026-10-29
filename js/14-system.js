@@ -425,7 +425,7 @@ function openImpressum() {
     '</div>' +
     '<div style="' + cs + '">' +
     '<div style="' + hs + '">Contact</div>' +
-    '<p style="' + ps + '">E-Mail: <a href="mailto:team@smartordi.eu" style="' + as + '">team@smartordi.eu</a><br>Tel: <a href="tel:+436677624392" style="' + as + '">+43 667 762439293</a></p>' +
+    '<p style="' + ps + '">E-Mail: <a href="mailto:team@smartordi.eu" style="' + as + '">team@smartordi.eu</a><br>Tel: <a href="tel:+4367762439293" style="' + as + '">+43 677 62439293</a></p>' +
     '</div>' +
     '<div style="' + fs + '">&#169;&#65039; 2026 Smartordi OG &middot; Steingasse 6a, 4020 Linz &middot; FN 675586 i</div>';
   openLegalOverlay('Impressum', 'Angaben gemäß § 5 ECG', h);
@@ -439,7 +439,7 @@ function openContact() {
   var h =
     '<div style="' + cs + '">' +
     '<div style="' + hs + '">Get in Touch</div>' +
-    '<p style="' + ps + '"><strong>Smartordi OG</strong><br>Tel: <a href="tel:+436677624392" style="' + as + '">+43 667 762439293</a><br>E-Mail: <a href="mailto:team@smartordi.eu" style="' + as + '">team@smartordi.eu</a><br>Web: <a href="https://www.smartordiog.eu" target="_blank" style="' + as + '">www.smartordiog.eu</a></p>' +
+    '<p style="' + ps + '"><strong>Smartordi OG</strong><br>Tel: <a href="tel:+4367762439293" style="' + as + '">+43 677 62439293</a><br>E-Mail: <a href="mailto:team@smartordi.eu" style="' + as + '">team@smartordi.eu</a><br>Web: <a href="https://www.smartordiog.eu" target="_blank" style="' + as + '">www.smartordiog.eu</a></p>' +
     '</div>' +
     '<div style="' + fs + '">&#169;&#65039; 2026 Smartordi OG &middot; Steingasse 6a, 4020 Linz &middot; FN 675586 i</div>';
   openLegalOverlay('Contact', 'We are happy to help', h);
